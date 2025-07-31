@@ -1,5 +1,11 @@
 import { useState, useEffect, useMemo } from "react";
-import { getGarminData, getDailySteps, GarminData, GarminDay } from "@/lib/api";
+import {
+  getGarminData,
+  getDailySteps,
+  GarminData,
+  GarminDay,
+  Activity,
+} from "@/lib/api";
 
 export function useGarminData(): GarminData | null {
   const [data, setData] = useState<GarminData | null>(null);
@@ -25,3 +31,14 @@ export function useGarminDays(): GarminDay[] | null {
 }
 
 export const useDailySteps = useGarminDays;
+
+export function useMostRecentActivity(): Activity | null {
+  const data = useGarminData();
+
+  return useMemo(() => {
+    if (!data || !data.activities?.length) return null;
+    return [...data.activities].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    )[0];
+  }, [data]);
+}
