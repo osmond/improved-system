@@ -274,3 +274,53 @@ export async function getRunningStats(): Promise<RunningStats> {
     setTimeout(() => resolve(generateMockRunningStats()), 300)
   })
 }
+
+// ----- Benchmark stats -----
+export interface BenchmarkPoint {
+  date: string
+  /** User value for the metric on this date */
+  user: number
+  /** 50th percentile for the cohort */
+  p50: number
+  /** 75th percentile for the cohort */
+  p75: number
+  /** 90th percentile for the cohort */
+  p90: number
+}
+
+export interface BenchmarkStats {
+  pace: BenchmarkPoint[]
+  load: BenchmarkPoint[]
+}
+
+export function generateMockBenchmarkStats(): BenchmarkStats {
+  const pace: BenchmarkPoint[] = []
+  const load: BenchmarkPoint[] = []
+  for (let i = 0; i < 28; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() - (27 - i))
+
+    const p50Pace = +(7.5 + Math.random() * 0.2).toFixed(2)
+    const p75Pace = +(7.2 + Math.random() * 0.2).toFixed(2)
+    const p90Pace = +(6.8 + Math.random() * 0.2).toFixed(2)
+    const userPace = +(p90Pace + Math.random() * 0.6).toFixed(2)
+
+    const p50Load = +(1.2 + Math.random() * 0.1).toFixed(2)
+    const p75Load = +(1.5 + Math.random() * 0.1).toFixed(2)
+    const p90Load = +(2.0 + Math.random() * 0.1).toFixed(2)
+    const userLoad = +(1.3 + Math.random() * 0.5).toFixed(2)
+
+    const iso = date.toISOString().slice(0, 10)
+    pace.push({ date: iso, user: userPace, p50: p50Pace, p75: p75Pace, p90: p90Pace })
+    load.push({ date: iso, user: userLoad, p50: p50Load, p75: p75Load, p90: p90Load })
+  }
+  return { pace, load }
+}
+
+export const mockBenchmarkStats: BenchmarkStats = generateMockBenchmarkStats()
+
+export async function getBenchmarkStats(): Promise<BenchmarkStats> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockBenchmarkStats()), 300)
+  })
+}
