@@ -49,6 +49,41 @@ Keep all API-specific logic (auth, fetch, shape/normalize) inside `src/hooks/use
 
 In the handoff, document what shape `useGarminData()` returns (e.g. `{ steps: number; sleep: number; heartRate: number; calories: number }`).
 
+### Hook return shapes
+
+`useGarminData()` resolves to:
+
+```ts
+{
+  steps: number
+  sleep: number
+  heartRate: number
+  calories: number
+  activities: { id: number; type: string; distance: number; duration: number; date: string }[]
+}
+```
+
+`useRunningStats()` resolves to:
+
+```ts
+{
+  paceDistribution: { bin: string; upper: number; lower: number }[]
+  heartRateZones: { zone: string; count: number }[]
+  paceVsHeart: { pace: number; heartRate: number }[]
+  temperature: { label: string; count: number }[]
+  weatherConditions: { label: string; count: number }[]
+  annualMileage: { year: number; totalMiles: number }[]
+  byHour: { hour: number; pct: number }[]
+  byWeekday: { day: string; pct: number }[]
+  distanceBuckets: { label: string; count: number }[]
+  treadmillOutdoor: { outdoor: number; treadmill: number }
+}
+```
+
+The mock implementation uses `generateMockRunningStats()` in `src/lib/api.ts` to
+create semi-random demo data each time the app loads. You can replace this
+function with real API calls for production data.
+
 ## Charts & maps
 All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing.
 
