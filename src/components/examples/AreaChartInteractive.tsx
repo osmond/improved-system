@@ -20,6 +20,7 @@ import {
   XAxis,
 } from '@/components/ui/chart'
 import type { ChartConfig } from '@/components/ui/chart'
+import { SimpleSelect } from '@/components/ui/select'
 
 const chartData = [
   { date: '2024-04-01', desktop: 222, mobile: 150 },
@@ -136,17 +137,15 @@ export default function AreaChartInteractive() {
       <CardHeader>
         <CardTitle>Total Visitors</CardTitle>
         <CardDescription>Last {range === '90d' ? '3 months' : range === '30d' ? '30 days' : '7 days'}</CardDescription>
-        <div className="mt-2">
-          <select
-            value={range}
-            onChange={(e) => setRange(e.target.value)}
-            className="border rounded px-2 py-1 text-sm"
-          >
-            <option value="90d">Last 3 months</option>
-            <option value="30d">Last 30 days</option>
-            <option value="7d">Last 7 days</option>
-          </select>
-        </div>
+        <SimpleSelect
+          value={range}
+          onValueChange={setRange}
+          options={[
+            { value: '90d', label: 'Last 3 months' },
+            { value: '30d', label: 'Last 30 days' },
+            { value: '7d', label: 'Last 7 days' },
+          ]}
+        />
       </CardHeader>
       <CardContent className="pt-0">
         <ChartContainer config={chartConfig} className="h-60">
