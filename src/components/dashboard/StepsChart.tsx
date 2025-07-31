@@ -30,7 +30,7 @@ export function StepsChart() {
     return (
       <ChartContainer
         config={chartConfig}
-        className="h-60"
+        className="h-60 md:col-span-2"
         title="Daily Steps"
       >
         <div className="flex h-full items-center justify-center text-muted-foreground">
@@ -44,7 +44,7 @@ export function StepsChart() {
   return (
     <ChartContainer
       config={chartConfig}
-      className="h-60"
+      className="h-60 md:col-span-2"
       title="Daily Steps"
     >
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

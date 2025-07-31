@@ -23,7 +23,7 @@ export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
   return (
     <ChartContainer
       config={config}
-      className='h-60'
+      className='h-60 md:col-span-2'
       title='Treadmill vs Outdoor'
     >
       <PieChart>

@@ -26,7 +26,7 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
   return (
     <ChartContainer
       config={config}
-      className='h-60'
+      className='h-60 md:col-span-2'
       title='Pace Distribution'
     >
       <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

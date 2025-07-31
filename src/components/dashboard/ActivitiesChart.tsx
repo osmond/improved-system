@@ -32,7 +32,7 @@ export function ActivitiesChart() {
   return (
     <ChartContainer
       config={chartConfig}
-      className="h-60"
+      className="h-60 md:col-span-2"
       title="Activities"
       subtitle="Distance vs Duration"
     >

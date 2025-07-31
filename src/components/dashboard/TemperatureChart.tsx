@@ -21,7 +21,7 @@ export function TemperatureChart({ data }: TemperatureChartProps) {
   return (
     <ChartContainer
       config={config}
-      className='h-60'
+      className='h-60 md:col-span-2'
       title='Temperature'
     >
       <BarChart layout='vertical' data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
