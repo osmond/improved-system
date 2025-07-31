@@ -51,3 +51,43 @@ export async function getDailySteps(): Promise<GarminDay[]> {
     setTimeout(() => resolve(mockDailySteps), 300);
   });
 }
+
+// ----- State visit data -----
+import type { StateVisit } from "./types";
+
+export const mockStateVisits: StateVisit[] = [
+  {
+    stateCode: "CA",
+    visited: true,
+    totalDays: 10,
+    totalMiles: 1200,
+    cities: [
+      { name: "Los Angeles", days: 4, miles: 300 },
+      { name: "San Francisco", days: 3, miles: 400 },
+      { name: "San Diego", days: 3, miles: 500 },
+    ],
+  },
+  {
+    stateCode: "TX",
+    visited: true,
+    totalDays: 5,
+    totalMiles: 600,
+    cities: [
+      { name: "Austin", days: 2, miles: 200 },
+      { name: "Houston", days: 3, miles: 400 },
+    ],
+  },
+  {
+    stateCode: "NY",
+    visited: false,
+    totalDays: 0,
+    totalMiles: 0,
+    cities: [],
+  },
+];
+
+export async function getStateVisits(): Promise<StateVisit[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockStateVisits), 300);
+  });
+}
