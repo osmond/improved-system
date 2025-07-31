@@ -377,3 +377,36 @@ export async function getRunningSessions(): Promise<RunningSession[]> {
 
   })
 }
+
+// ----- Route heatmap data -----
+
+export interface RouteHeatPoint {
+  lat: number
+  lng: number
+  weight: number
+  type: string
+  date: string
+}
+
+export function generateMockRouteHeat(): RouteHeatPoint[] {
+  const points: RouteHeatPoint[] = []
+  const now = Date.now()
+  for (let i = 0; i < 100; i++) {
+    const lat = 37.75 + Math.random() * 0.1
+    const lng = -122.45 + Math.random() * 0.1
+    points.push({
+      lat,
+      lng,
+      weight: Math.random(),
+      type: Math.random() > 0.5 ? 'Run' : 'Bike',
+      date: new Date(now - Math.random() * 1000 * 60 * 60 * 24 * 30).toISOString(),
+    })
+  }
+  return points
+}
+
+export async function getRouteHeatData(): Promise<RouteHeatPoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockRouteHeat()), 200)
+  })
+}
