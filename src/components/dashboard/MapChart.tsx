@@ -2,6 +2,7 @@ import React from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import type { StateVisit } from "@/lib/types";
 import { fipsToAbbr } from "@/lib/stateCodes";
+import { ChartHeader } from "@/components/ui/chart-header";
 
 interface MapChartProps {
   data: StateVisit[];
@@ -12,10 +13,12 @@ export default function MapChart({ data, onSelectState }: MapChartProps) {
   const visited = new Set(data.filter((d) => d.visited).map((d) => d.stateCode));
 
   return (
-    <ComposableMap projection="geoAlbersUsa" width={800} height={400}>
-      <Geographies geography="/us-states.json">
-        {({ geographies }: { geographies: any[] }) =>
-          geographies.map((geo: any) => {
+    <div className="space-y-2">
+      <ChartHeader title="Visited States" />
+      <ComposableMap projection="geoAlbersUsa" width={800} height={400}>
+        <Geographies geography="/us-states.json">
+          {({ geographies }: { geographies: any[] }) =>
+            geographies.map((geo: any) => {
             const code = fipsToAbbr[geo.id as string];
             const isVisited = code ? visited.has(code) : false;
             return (
@@ -40,6 +43,7 @@ export default function MapChart({ data, onSelectState }: MapChartProps) {
           })
         }
       </Geographies>
-    </ComposableMap>
+      </ComposableMap>
+    </div>
   );
 }

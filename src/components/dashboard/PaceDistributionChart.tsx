@@ -24,7 +24,11 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
     lower: { color: 'hsl(var(--muted-foreground))' },
   }
   return (
-    <ChartContainer config={config} className='h-60'>
+    <ChartContainer
+      config={config}
+      className='h-60'
+      title='Pace Distribution'
+    >
       <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray='3 3' />
         <XAxis dataKey='bin' />

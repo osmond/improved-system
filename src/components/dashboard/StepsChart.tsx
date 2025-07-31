@@ -27,7 +27,11 @@ export function StepsChart() {
 
   // assume data is an array like [{ date: "2025-07-01", steps: 8000 }, …]
   return (
-    <ChartContainer config={chartConfig} className="h-60">
+    <ChartContainer
+      config={chartConfig}
+      className="h-60"
+      title="Daily Steps"
+    >
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />

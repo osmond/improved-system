@@ -19,7 +19,11 @@ interface RunDistancesChartProps {
 export function RunDistancesChart({ data }: RunDistancesChartProps) {
   const config = { count: { color: 'hsl(var(--chart-10))' } }
   return (
-    <ChartContainer config={config} className='h-60'>
+    <ChartContainer
+      config={config}
+      className='h-60'
+      title='Run Distances'
+    >
       <BarChart layout='vertical' data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <XAxis type='number' hide />
         <YAxis dataKey='label' type='category' />
