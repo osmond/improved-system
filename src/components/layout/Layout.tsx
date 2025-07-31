@@ -1,7 +1,6 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ThemeToggle from "@/components/ui/theme-toggle";
-import ThemePicker from "@/components/ui/theme-picker";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -18,10 +17,7 @@ export default function Layout({
     <div className="min-h-screen p-4">
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Dashboard</h1>
-        <div className="flex gap-2 items-center">
-          <ThemePicker />
-          <ThemeToggle />
-        </div>
+        <ThemeToggle />
       </header>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>

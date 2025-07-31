@@ -68,36 +68,6 @@
     --chart-10: 246 70% 80%;
   }
 
-  :root.theme-green {
-    --primary: 142.1 76% 36.3%;
-    --accent: 142.1 40% 96%;
-    --chart-1: 142 70% 45%;
-    --chart-2: 146 65% 50%;
-    --chart-3: 150 60% 55%;
-    --chart-4: 154 55% 60%;
-    --chart-5: 158 50% 65%;
-    --chart-6: 162 45% 70%;
-    --chart-7: 166 40% 75%;
-    --chart-8: 170 35% 80%;
-    --chart-9: 174 30% 85%;
-    --chart-10: 178 25% 90%;
-  }
-
-  :root.theme-rose {
-    --primary: 340 65% 55%;
-    --accent: 340 40% 96%;
-    --chart-1: 340 65% 55%;
-    --chart-2: 345 60% 60%;
-    --chart-3: 350 55% 65%;
-    --chart-4: 355 50% 70%;
-    --chart-5: 360 55% 75%;
-    --chart-6: 340 65% 60%;
-    --chart-7: 345 60% 65%;
-    --chart-8: 350 55% 70%;
-    --chart-9: 355 50% 75%;
-    --chart-10: 360 55% 80%;
-  }
-
   html, body {
     @apply bg-background text-foreground;
   }
