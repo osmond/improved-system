@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 
 const runDistanceData = [
   { range: "1mi", count: 1125 },
@@ -28,13 +29,15 @@ const config = {
 
 export default function RunDistances() {
   return (
-    <ChartContainer config={config} className="h-60" title="Run Distances">
-      <BarChart layout="vertical" data={runDistanceData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis type="number" tickLine={false} axisLine={false} />
-        <ChartTooltip />
-        <Bar dataKey="count" fill="var(--chart-4)" radius={4} />
-      </BarChart>
-    </ChartContainer>
+    <ChartCard title="Run Distances">
+      <ChartContainer config={config} className="h-60">
+        <BarChart layout="vertical" data={runDistanceData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis type="number" tickLine={false} axisLine={false} />
+          <ChartTooltip />
+          <Bar dataKey="count" fill="var(--chart-4)" radius={4} />
+        </BarChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }

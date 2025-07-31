@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 
 const annualData = [
   { month: "1", miles: 1200 },
@@ -29,13 +30,15 @@ const config = {
 
 export default function AnnualMileage() {
   return (
-    <ChartContainer config={config} className="h-64" title="Annual Mileage">
-      <BarChart data={annualData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" tickLine={false} axisLine={false} />
-        <ChartTooltip />
-        <Bar dataKey="miles" fill="var(--chart-1)" radius={2} />
-      </BarChart>
-    </ChartContainer>
+    <ChartCard title="Annual Mileage">
+      <ChartContainer config={config} className="h-64">
+        <BarChart data={annualData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" tickLine={false} axisLine={false} />
+          <ChartTooltip />
+          <Bar dataKey="miles" fill="var(--chart-1)" radius={2} />
+        </BarChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }
