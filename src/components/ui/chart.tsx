@@ -20,6 +20,7 @@ export {
   CartesianGrid,
   Tooltip,
   ReferenceLine,
+  ReferenceArea,
   XAxis,
   YAxis,
   ResponsiveContainer,

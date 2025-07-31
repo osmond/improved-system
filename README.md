@@ -80,6 +80,15 @@ In the handoff, document what shape `useGarminData()` returns (e.g. `{ steps: nu
 }
 ```
 
+`useSeasonalBaseline()` resolves to:
+
+```ts
+{ month: number; min: number; max: number }[]
+```
+
+This baseline provides expected min/max values for each month which charts can
+use for reference areas.
+
 The mock implementation uses `generateMockRunningStats()` in `src/lib/api.ts` to
 create semi-random demo data each time the app loads. You can replace this
 function with real API calls for production data.
