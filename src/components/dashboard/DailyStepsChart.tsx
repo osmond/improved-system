@@ -8,6 +8,7 @@ import {
   YAxis,
   CartesianGrid,
 } from "@/components/ui/chart";
+import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/components/ui/chart";
 import type { GarminDay } from "@/lib/api";
 import { Cell } from "recharts";
@@ -25,11 +26,8 @@ const chartConfig = {
 
 export function DailyStepsChart({ data }: DailyStepsChartProps) {
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="h-60 md:col-span-2"
-      title="Daily Steps"
-    >
+    <ChartCard title="Daily Steps" className="md:col-span-2">
+      <ChartContainer config={chartConfig} className="h-60">
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
@@ -61,6 +59,7 @@ export function DailyStepsChart({ data }: DailyStepsChartProps) {
           ))}
         </Bar>
       </BarChart>
-    </ChartContainer>
+      </ChartContainer>
+    </ChartCard>
   );
 }

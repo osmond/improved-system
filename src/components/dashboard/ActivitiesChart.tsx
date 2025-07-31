@@ -10,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
 } from "@/components/ui/chart";
+import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/components/ui/chart";
 import { useGarminData } from "@/hooks/useGarminData";
 
@@ -30,17 +31,17 @@ export function ActivitiesChart() {
   const activities = data.activities;
 
   return (
-    <ChartContainer
-      config={chartConfig}
-      className="h-60 md:col-span-2"
+    <ChartCard
       title="Activities"
-      subtitle="Distance vs Duration"
+      description="Distance vs Duration"
+      className="md:col-span-2"
     >
-      <LineChart data={activities} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
-        <YAxis yAxisId="left" orientation="left" />
-        <YAxis yAxisId="right" orientation="right" />
+      <ChartContainer config={chartConfig} className="h-60">
+        <LineChart data={activities} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
+          <YAxis yAxisId="left" orientation="left" />
+          <YAxis yAxisId="right" orientation="right" />
         <ChartTooltip
           content={<ChartTooltipContent labelFormatter={(d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" })} />}
         />
@@ -48,6 +49,7 @@ export function ActivitiesChart() {
         <Line yAxisId="left" type="monotone" dataKey="distance" stroke={chartConfig.distance.color} />
         <Line yAxisId="right" type="monotone" dataKey="duration" stroke={chartConfig.duration.color} />
       </LineChart>
-    </ChartContainer>
+      </ChartContainer>
+    </ChartCard>
   );
 }

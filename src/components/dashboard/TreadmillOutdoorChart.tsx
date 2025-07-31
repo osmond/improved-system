@@ -4,6 +4,7 @@ import {
   Pie,
   Tooltip,
 } from '@/components/ui/chart'
+import ChartCard from './ChartCard'
 
 export interface TreadmillOutdoor {
   outdoor: number
@@ -21,11 +22,8 @@ export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
     { name: 'treadmill', value: data.treadmill, fill: 'hsl(var(--chart-1))' },
   ]
   return (
-    <ChartContainer
-      config={config}
-      className='h-60 md:col-span-2'
-      title='Treadmill vs Outdoor'
-    >
+    <ChartCard title='Treadmill vs Outdoor' className='md:col-span-2'>
+      <ChartContainer config={config} className='h-60'>
       <PieChart>
         <Pie
           data={chartData}
@@ -38,6 +36,7 @@ export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
         />
         <Tooltip />
       </PieChart>
-    </ChartContainer>
+      </ChartContainer>
+    </ChartCard>
   )
 }

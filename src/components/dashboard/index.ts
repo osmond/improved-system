@@ -1,5 +1,6 @@
 export { default as MapChart } from "./MapChart";
 export { default as StateTable } from "./StateTable";
+export { default as ChartCard } from "./ChartCard";
 export * from "./ProgressRing";
 export * from "./ActivitiesChart";
 export * from "./StepsChart";
