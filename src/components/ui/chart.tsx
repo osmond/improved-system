@@ -18,6 +18,7 @@ export {
   PolarAngleAxis,
   PolarRadiusAxis,
   CartesianGrid,
+  Brush,
   Tooltip,
   ReferenceLine,
   ReferenceArea,
