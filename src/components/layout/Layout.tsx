@@ -1,5 +1,6 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import ThemeToggle from "@/components/ui/theme-toggle";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -16,6 +17,7 @@ export default function Layout({
     <div className="min-h-screen p-4">
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Garmin Dashboard</h1>
+        <ThemeToggle />
       </header>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>
