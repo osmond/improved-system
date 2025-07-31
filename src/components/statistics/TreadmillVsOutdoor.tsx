@@ -9,6 +9,7 @@ import {
 } from "@/components/ui/chart"
 import { Cell } from "recharts"
 
+
 const treadmillData = [
   { name: "Outdoor", value: 1254 },
   { name: "Treadmill", value: 477 },
@@ -24,7 +25,9 @@ export default function TreadmillVsOutdoor() {
     <ChartContainer config={config} className="h-60" title="Treadmill vs Outdoor">
       <PieChart width={200} height={160}>
         <ChartTooltip />
+
         <ChartLegend verticalAlign="bottom" height={24} />
+
         <Pie
           data={treadmillData}
           dataKey="value"
