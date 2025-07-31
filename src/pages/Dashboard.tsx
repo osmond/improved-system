@@ -6,6 +6,7 @@ import {
   MiniSparkline,
   RingDetailDialog,
 } from "@/components/dashboard";
+import { Badge } from "@/components/ui/badge";
 import {
   useGarminData,
   useMostRecentActivity,
@@ -22,6 +23,10 @@ export default function Dashboard() {
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
+  const [dismissed, setDismissed] = useState<{ pace: boolean; day: boolean }>({
+    pace: false,
+    day: false,
+  });
 
   if (!data) {
     return (
@@ -98,6 +103,46 @@ export default function Dashboard() {
               className="h-4 w-4 text-orange-600 mt-1"
               aria-label={`${insights.activeStreak}-day streak`}
             />
+          )}
+          {insights && insights.bestPaceThisMonth && !dismissed.pace && (
+            <div className="mt-1 text-[10px] flex items-center gap-1">
+              <Badge>
+                Best pace {insights.bestPaceThisMonth.toFixed(2)}
+              </Badge>
+              <button
+                className="text-muted-foreground"
+                onClick={() => setDismissed({ ...dismissed, pace: true })}
+                aria-label="Dismiss best pace message"
+              >
+                ×
+              </button>
+              <button
+                className="underline text-muted-foreground"
+                onClick={() => setExpanded("steps")}
+              >
+                Learn more
+              </button>
+            </div>
+          )}
+          {insights && insights.mostConsistentDay && !dismissed.day && (
+            <div className="mt-1 text-[10px] flex items-center gap-1">
+              <Badge>
+                Consistent on {insights.mostConsistentDay}
+              </Badge>
+              <button
+                className="text-muted-foreground"
+                onClick={() => setDismissed({ ...dismissed, day: true })}
+                aria-label="Dismiss consistent day message"
+              >
+                ×
+              </button>
+              <button
+                className="underline text-muted-foreground"
+                onClick={() => setExpanded("steps")}
+              >
+                Learn more
+              </button>
+            </div>
           )}
         </Card>
 

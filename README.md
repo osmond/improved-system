@@ -102,6 +102,8 @@ function with real API calls for production data.
   highHeartRate: boolean
   lowSleep: boolean
   calorieSurplus: boolean
+  bestPaceThisMonth: number | null
+  mostConsistentDay: string | null
 }
 ```
 
