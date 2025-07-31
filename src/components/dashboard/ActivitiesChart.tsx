@@ -16,11 +16,11 @@ import { useGarminData } from "@/hooks/useGarminData";
 const chartConfig = {
   distance: {
     label: "Distance (km)",
-    color: "var(--chart-1)",
+    color: "hsl(var(--chart-1))",
   },
   duration: {
     label: "Duration (min)",
-    color: "var(--chart-2)",
+    color: "hsl(var(--chart-2))",
   },
 } satisfies ChartConfig;
 
