@@ -1,31 +1,20 @@
+// src/components/ui/chart-header.tsx
 import * as React from "react";
 import { cn } from "@/lib/utils";
 
-export interface ChartHeaderProps extends React.HTMLAttributes<HTMLDivElement> {
-  title?: string;
+interface ChartHeaderProps {
+  title: string;
   subtitle?: string;
+  className?: string;
 }
 
-export const ChartHeader = React.forwardRef<HTMLDivElement, ChartHeaderProps>(
-  ({ title, subtitle, className, ...props }, ref) => {
-    if (!title && !subtitle) return null;
-    return (
-      <div
-        ref={ref}
-        className={cn("text-center space-y-0.5", className)}
-        {...props}
-      >
-        {title && (
-          <h3 className="text-sm font-medium tracking-wide uppercase">
-            {title}
-          </h3>
-        )}
-        {subtitle && (
-          <p className="text-xs text-muted-foreground">{subtitle}</p>
-        )}
-      </div>
-    );
-  }
-);
-ChartHeader.displayName = "ChartHeader";
-
+export function ChartHeader({ title, subtitle, className }: ChartHeaderProps) {
+  return (
+    <div className={cn("flex flex-col items-center text-center space-y-1", className)}>
+      <div className="text-sm font-medium uppercase tracking-wide">{title}</div>
+      {subtitle && (
+        <div className="text-[10px] text-muted-foreground">{subtitle}</div>
+      )}
+    </div>
+  );
+}
