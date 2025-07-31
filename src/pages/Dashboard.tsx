@@ -5,15 +5,27 @@ import { ActivitiesChart } from "@/components/dashboard/ActivitiesChart";
 import { StepsChart } from "@/components/dashboard/StepsChart";
 import MapChart from "@/components/dashboard/MapChart";
 import StateTable from "@/components/dashboard/StateTable";
+import {
+  PaceDistributionChart,
+  HeartRateZonesChart,
+  PaceVsHeartChart,
+  TemperatureChart,
+  AnnualMileageChart,
+  WorkoutTimeChart,
+  RunDistancesChart,
+  TreadmillOutdoorChart,
+} from "@/components/dashboard";
+import { useRunningStats } from "@/hooks/useRunningStats";
 import { useGarminData } from "@/hooks/useGarminData";
 import { useStateVisits } from "@/hooks/useStateVisits";
 
 export default function Dashboard() {
   const data = useGarminData();
   const visits = useStateVisits();
+  const running = useRunningStats();
   const [selected, setSelected] = React.useState<string | null>(null);
 
-  if (!data || !visits) {
+  if (!data || !visits || !running) {
     return <p>Loading…</p>;
   }
 
@@ -51,6 +63,38 @@ export default function Dashboard() {
 
       <Card className="md:col-span-2 p-4">
         <ActivitiesChart />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <PaceDistributionChart data={running.paceDistribution} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <HeartRateZonesChart data={running.heartRateZones} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <PaceVsHeartChart data={running.paceVsHeart} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <TemperatureChart data={running.temperature} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <AnnualMileageChart data={running.annualMileage} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <WorkoutTimeChart data={running.byHour} maxPct={100} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <RunDistancesChart data={running.distanceBuckets} />
+      </Card>
+
+      <Card className="md:col-span-2 p-4">
+        <TreadmillOutdoorChart data={running.treadmillOutdoor} />
       </Card>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:col-span-2">
