@@ -22,7 +22,7 @@ export function RunDistancesChart({ data }: RunDistancesChartProps) {
       <BarChart layout='vertical' data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <XAxis type='number' hide />
         <YAxis dataKey='label' type='category' />
-        <Bar dataKey='count' fill='hsl(var(--chart-10))' />
+        <Bar dataKey='count' fill='hsl(var(--chart-10))' radius={[0,4,4,0]} />
       </BarChart>
     </ChartContainer>
   )
