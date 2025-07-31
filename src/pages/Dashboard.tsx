@@ -1,17 +1,6 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-
 import { Skeleton } from "@/components/ui/skeleton";
-
-
-
-import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
-import { minutesSince } from "@/lib/utils";
-import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
-
-import useInsights from "@/hooks/useInsights";
-import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
-
 import {
   ProgressRingWithDelta,
   MiniSparkline,
@@ -24,6 +13,7 @@ import {
 } from "@/hooks/useGarminData";
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
+import { minutesSince } from "@/lib/utils";
 
 
 export default function Dashboard() {
