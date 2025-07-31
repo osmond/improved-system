@@ -13,6 +13,7 @@ import {
 import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/components/ui/chart";
 import { useGarminData } from "@/hooks/useGarminData";
+import useDashboardFilters from "@/hooks/useDashboardFilters";
 
 const chartConfig = {
   distance: {
@@ -27,8 +28,22 @@ const chartConfig = {
 
 export function ActivitiesChart() {
   const data = useGarminData();
+  const { activity, range } = useDashboardFilters();
   if (!data) return null;
-  const activities = data.activities;
+  let activities = data.activities;
+
+  if (activity !== 'all') {
+    activities = activities.filter(
+      (a) => a.type.toLowerCase() === activity,
+    );
+  }
+
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+  const start = new Date();
+  start.setDate(start.getDate() - days);
+  activities = activities.filter(
+    (a) => new Date(a.date) >= start,
+  );
 
   return (
     <ChartCard

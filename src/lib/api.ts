@@ -269,9 +269,33 @@ export function generateMockRunningStats(): RunningStats {
 
 export const mockRunningStats: RunningStats = generateMockRunningStats()
 
-export async function getRunningStats(): Promise<RunningStats> {
+export async function getRunningStats(
+  _range?: { start?: string | null; end?: string | null }
+): Promise<RunningStats> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockRunningStats()), 300)
+  })
+}
+
+export interface WeeklyVolumePoint {
+  week: string
+  miles: number
+}
+
+export function generateMockWeeklyVolume(): WeeklyVolumePoint[] {
+  const weeks: WeeklyVolumePoint[] = []
+  for (let i = 0; i < 26; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() - (25 - i) * 7)
+    const week = date.toISOString().slice(0, 10)
+    weeks.push({ week, miles: Math.round(20 + Math.random() * 30) })
+  }
+  return weeks
+}
+
+export async function getWeeklyVolume(): Promise<WeeklyVolumePoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockWeeklyVolume()), 200)
   })
 }
 

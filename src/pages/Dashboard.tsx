@@ -1,9 +1,22 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
+
 import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
 import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
+
+import {
+  ProgressRingWithDelta,
+  MiniSparkline,
+  RingDetailDialog,
+} from "@/components/dashboard";
+import {
+  useGarminData,
+  useMostRecentActivity,
+  useMonthlyStepsProjection,
+} from "@/hooks/useGarminData";
+
 
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
@@ -31,6 +44,7 @@ export default function Dashboard() {
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
   const sparkData: { date: string; value: number }[] = [];
+  const monthly = useMonthlyStepsProjection();
 
   return (
     <div className="grid gap-4">
@@ -56,6 +70,21 @@ export default function Dashboard() {
             current={data.steps}
             previous={previousSteps}
           />
+          {monthly && (
+            <div className="w-full mt-1" aria-label={`Projected ${Math.round(monthly.projectedTotal).toLocaleString()} steps`}>
+              <div className="h-1 w-full bg-muted rounded">
+                <div
+                  className={`h-full rounded ${monthly.onTrack ? 'bg-green-500' : 'bg-red-500'}`}
+                  style={{ width: `${Math.min(100, monthly.pctOfGoal).toFixed(0)}%` }}
+                />
+              </div>
+              <p
+                className={`text-[10px] mt-1 ${monthly.onTrack ? 'text-green-600' : 'text-red-600'}`}
+              >
+                {monthly.onTrack ? 'On track' : 'Off track'}
+              </p>
+            </div>
+          )}
           <span className="mt-2 text-lg font-bold">{data.steps}</span>
           <MiniSparkline data={sparkData} />
           {insights && insights.activeStreak >= 3 && (

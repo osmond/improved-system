@@ -16,6 +16,8 @@ import type { ChartConfig } from "@/components/ui/chart";
 import type { GarminDay } from "@/lib/api";
 import { useMemo } from "react";
 import { useSeasonalBaseline } from "@/hooks/useGarminData";
+import { useRunningStats } from "@/hooks/useRunningStats";
+import { Info } from "lucide-react";
 
 export interface StepsTrendWithGoalProps {
   data: GarminDay[];
@@ -40,6 +42,16 @@ export function StepsTrendWithGoal({
   }, [data, window]);
 
   const baselines = useSeasonalBaseline();
+  const stats = useRunningStats();
+  const weatherNote = useMemo(() => {
+    if (!stats) return null;
+    const rainy = stats.weatherConditions.find((w) => w.label === 'Rain')?.count || 0;
+    const snowy = stats.weatherConditions.find((w) => w.label === 'Snow')?.count || 0;
+    if (rainy + snowy > 0) {
+      return 'Recent rain or snow may have reduced activity';
+    }
+    return null;
+  }, [stats]);
 
   const baselineAreas = useMemo(() => {
     if (!baselines) return [];
@@ -114,9 +126,15 @@ export function StepsTrendWithGoal({
             stroke={chartConfig.steps.color}
             fill="url(#fillSteps)"
           />
-          <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} />
-        </AreaChart>
+        <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} />
+      </AreaChart>
       </ChartContainer>
+      {weatherNote && (
+        <p className="mt-2 flex items-center text-xs text-muted-foreground" title={weatherNote}>
+          <Info className="w-3 h-3 mr-1" />
+          {weatherNote}
+        </p>
+      )}
     </ChartCard>
   );
 }
