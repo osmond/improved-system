@@ -12,7 +12,7 @@ interface StateTableProps {
 export default function StateTable({ data, selectedState, onSelectState }: StateTableProps) {
   return (
     <Card className="p-2">
-      <Accordion type="single" collapsible value={selectedState || undefined} onValueChange={onSelectState}>
+      <Accordion value={selectedState || undefined} onValueChange={onSelectState}>
         {data
           .filter((d) => d.visited)
           .map((d) => (

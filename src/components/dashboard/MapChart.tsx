@@ -14,8 +14,8 @@ export default function MapChart({ data, onSelectState }: MapChartProps) {
   return (
     <ComposableMap projection="geoAlbersUsa" width={800} height={400}>
       <Geographies geography="/us-states.json">
-        {({ geographies }) =>
-          geographies.map((geo) => {
+        {({ geographies }: { geographies: any[] }) =>
+          geographies.map((geo: any) => {
             const code = fipsToAbbr[geo.id as string];
             const isVisited = code ? visited.has(code) : false;
             return (

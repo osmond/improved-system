@@ -4,6 +4,7 @@ import {
   Bar,
   XAxis,
   YAxis,
+  Tooltip,
 } from '@/components/ui/chart'
 
 export interface DistanceBucket {
