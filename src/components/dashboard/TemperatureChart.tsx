@@ -19,7 +19,11 @@ interface TemperatureChartProps {
 export function TemperatureChart({ data }: TemperatureChartProps) {
   const config = { count: { color: 'hsl(var(--chart-5))' } }
   return (
-    <ChartContainer config={config} className='h-60'>
+    <ChartContainer
+      config={config}
+      className='h-60'
+      title='Temperature'
+    >
       <BarChart layout='vertical' data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <XAxis type='number' hide />
         <YAxis dataKey='label' type='category' />

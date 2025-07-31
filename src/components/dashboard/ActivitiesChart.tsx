@@ -30,7 +30,12 @@ export function ActivitiesChart() {
   const activities = data.activities;
 
   return (
-    <ChartContainer config={chartConfig} className="h-60">
+    <ChartContainer
+      config={chartConfig}
+      className="h-60"
+      title="Activities"
+      subtitle="Distance vs Duration"
+    >
       <LineChart data={activities} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />

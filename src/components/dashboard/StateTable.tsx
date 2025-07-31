@@ -2,6 +2,7 @@ import React from "react";
 import { Accordion, AccordionItem, AccordionTrigger, AccordionContent } from "@/components/ui/accordion";
 import type { StateVisit } from "@/lib/types";
 import { Card } from "@/components/ui/card";
+import { ChartHeader } from "@/components/ui/chart-header";
 
 interface StateTableProps {
   data: StateVisit[];
@@ -11,7 +12,8 @@ interface StateTableProps {
 
 export default function StateTable({ data, selectedState, onSelectState }: StateTableProps) {
   return (
-    <Card className="p-2">
+    <Card className="p-2 space-y-2">
+      <ChartHeader title="Visited States" subtitle="Details" />
       <Accordion value={selectedState || undefined} onValueChange={onSelectState}>
         {data
           .filter((d) => d.visited)

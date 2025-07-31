@@ -20,7 +20,11 @@ interface AverageDailyMileageChartProps {
 export function AverageDailyMileageChart({ data, maxPct }: AverageDailyMileageChartProps) {
   const config = { pct: { color: 'hsl(var(--chart-9))' } }
   return (
-    <ChartContainer config={config} className='h-60'>
+    <ChartContainer
+      config={config}
+      className='h-60'
+      title='Daily Mileage by Day'
+    >
       <RadarChart data={data}>
         <PolarGrid stroke='hsl(var(--muted))' />
         <PolarAngleAxis dataKey='day' />

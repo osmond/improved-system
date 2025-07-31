@@ -20,7 +20,11 @@ interface WorkoutTimeChartProps {
 export function WorkoutTimeChart({ data, maxPct }: WorkoutTimeChartProps) {
   const config = { pct: { color: 'hsl(var(--chart-8))' } }
   return (
-    <ChartContainer config={config} className='h-60'>
+    <ChartContainer
+      config={config}
+      className='h-60'
+      title='Workout Activity by Time'
+    >
       <RadarChart data={data}>
         <PolarGrid stroke='hsl(var(--muted))' />
         <PolarAngleAxis dataKey='hour' />

@@ -85,7 +85,7 @@ create semi-random demo data each time the app loads. You can replace this
 function with real API calls for production data.
 
 ## Charts & maps
-All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing.
+All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing. Include a <ChartHeader> for titles so typography stays consistent.
 
 Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
 

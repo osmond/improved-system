@@ -21,7 +21,11 @@ export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
     { name: 'treadmill', value: data.treadmill, fill: 'hsl(var(--chart-1))' },
   ]
   return (
-    <ChartContainer config={config} className='h-60'>
+    <ChartContainer
+      config={config}
+      className='h-60'
+      title='Treadmill vs Outdoor'
+    >
       <PieChart>
         <Pie
           data={chartData}
