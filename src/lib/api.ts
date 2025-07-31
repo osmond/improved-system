@@ -158,53 +158,89 @@ export interface RunningStats {
   treadmillOutdoor: TreadmillOutdoor
 }
 
-export const mockRunningStats: RunningStats = {
-  paceDistribution: [
-    { bin: '5:00', upper: 10, lower: 0 },
-    { bin: '6:00', upper: 8, lower: 0 },
-    { bin: '7:00', upper: 6, lower: 0 },
-  ],
-  heartRateZones: [
-    { zone: 'Z1', count: 5 },
-    { zone: 'Z2', count: 10 },
-    { zone: 'Z3', count: 7 },
-  ],
-  paceVsHeart: [
-    { pace: 5.2, heartRate: 150 },
-    { pace: 6.1, heartRate: 145 },
-  ],
-  temperature: [
-    { label: '50-60', count: 4 },
-    { label: '60-70', count: 9 },
-  ],
-  weatherConditions: [
-    { label: 'Sunny', count: 6 },
-    { label: 'Cloudy', count: 3 },
-  ],
-  annualMileage: [
-    { year: 2023, totalMiles: 1200 },
-    { year: 2024, totalMiles: 900 },
-  ],
-  byHour: [
-    { hour: 6, pct: 30 },
-    { hour: 18, pct: 70 },
-  ],
-  byWeekday: [
-    { day: 'Mon', pct: 15 },
-    { day: 'Tue', pct: 20 },
-  ],
-  distanceBuckets: [
+export function generateMockRunningStats(): RunningStats {
+  const paceDistribution: PaceDistributionBin[] = []
+  for (let i = 0; i < 10; i++) {
+    const minutes = 5 + i * 0.5
+    const m = Math.floor(minutes)
+    const s = Math.round((minutes - m) * 60)
+    const bin = `${m}:${s.toString().padStart(2, '0')}`
+    const value = Math.round(Math.random() * 8 + 2)
+    paceDistribution.push({ bin, upper: value, lower: -value })
+  }
+
+  const heartRateZones: HeartRateZoneData[] = [
+    { zone: 'Z1', count: 20 },
+    { zone: 'Z2', count: 40 },
+    { zone: 'Z3', count: 30 },
+    { zone: 'Z4', count: 15 },
+    { zone: 'Z5', count: 5 },
+  ]
+
+  const paceVsHeart: PaceHeartPoint[] = Array.from({ length: 30 }, () => {
+    const pace = +(5 + Math.random() * 4).toFixed(2)
+    const heartRate = Math.round(130 + (10 - pace) * 10 + Math.random() * 5)
+    return { pace, heartRate }
+  })
+
+  const temperature: TempBucket[] = [
+    { label: '40-50', count: 3 },
+    { label: '50-60', count: 8 },
+    { label: '60-70', count: 12 },
+    { label: '70-80', count: 6 },
+    { label: '80-90', count: 2 },
+  ]
+
+  const weatherConditions: WeatherCondition[] = [
+    { label: 'Sunny', count: 15 },
+    { label: 'Cloudy', count: 8 },
+    { label: 'Rain', count: 4 },
+    { label: 'Snow', count: 1 },
+  ]
+
+  const currentYear = new Date().getFullYear()
+  const annualMileage: AnnualMileage[] = []
+  for (let year = currentYear - 5; year <= currentYear; year++) {
+    annualMileage.push({ year, totalMiles: 800 + Math.round(Math.random() * 700) })
+  }
+
+  const byHour: HourActivity[] = Array.from({ length: 24 }, (_, hour) => ({
+    hour,
+    pct: Math.round(Math.random() * 10),
+  }))
+
+  const byWeekday: WeekdayMileage[] = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(
+    (day) => ({ day, pct: Math.round(Math.random() * 20) })
+  )
+
+  const distanceBuckets: DistanceBucket[] = [
     { label: '0-3', count: 4 },
-    { label: '3-6', count: 8 },
-  ],
-  treadmillOutdoor: {
-    outdoor: 75,
-    treadmill: 25,
-  },
+    { label: '3-6', count: 10 },
+    { label: '6-9', count: 8 },
+    { label: '9-12', count: 5 },
+    { label: '12+', count: 2 },
+  ]
+
+  const treadmillOutdoor: TreadmillOutdoor = { outdoor: 80, treadmill: 20 }
+
+  return {
+    paceDistribution,
+    heartRateZones,
+    paceVsHeart,
+    temperature,
+    weatherConditions,
+    annualMileage,
+    byHour,
+    byWeekday,
+    distanceBuckets,
+    treadmillOutdoor,
+  }
 }
+
+export const mockRunningStats: RunningStats = generateMockRunningStats()
 
 export async function getRunningStats(): Promise<RunningStats> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(mockRunningStats), 300)
+    setTimeout(() => resolve(generateMockRunningStats()), 300)
   })
 }

@@ -5,6 +5,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
+  ReferenceLine,
 } from '@/components/ui/chart'
 
 export interface PaceDistributionBin {
@@ -28,6 +29,7 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
         <CartesianGrid strokeDasharray='3 3' />
         <XAxis dataKey='bin' />
         <YAxis hide />
+        <ReferenceLine y={0} strokeDasharray='3 3' stroke='hsl(var(--muted))' />
         <Area dataKey='upper' fill='hsl(var(--muted-foreground))' stroke='none' />
         <Area dataKey='lower' fill='hsl(var(--muted-foreground))' stroke='none' />
       </AreaChart>

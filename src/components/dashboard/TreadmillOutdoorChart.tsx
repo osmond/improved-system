@@ -17,8 +17,8 @@ interface TreadmillOutdoorChartProps {
 export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
   const config = { value: { color: 'hsl(var(--chart-1))' } }
   const chartData = [
-    { name: 'outdoor', value: data.outdoor },
-    { name: 'treadmill', value: data.treadmill },
+    { name: 'outdoor', value: data.outdoor, fill: 'hsl(var(--muted))' },
+    { name: 'treadmill', value: data.treadmill, fill: 'hsl(var(--chart-1))' },
   ]
   return (
     <ChartContainer config={config} className='h-60'>
@@ -29,7 +29,6 @@ export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
           nameKey='name'
           innerRadius={60}
           outerRadius={80}
-          fill='hsl(var(--chart-1))'
           labelLine={false}
           label={({ name }) => name}
         />

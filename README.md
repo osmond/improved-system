@@ -80,6 +80,10 @@ In the handoff, document what shape `useGarminData()` returns (e.g. `{ steps: nu
 }
 ```
 
+The mock implementation uses `generateMockRunningStats()` in `src/lib/api.ts` to
+create semi-random demo data each time the app loads. You can replace this
+function with real API calls for production data.
+
 ## Charts & maps
 All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing.
 
