@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 const US_STATES = [
   "WA","OR","CA","NV","ID","UT","AZ","MT","WY","CO","NM","ND","SD","NE","KS","OK",
   "TX","MN","IA","MO","AR","LA","WI","IL","KY","TN","MS","AL","GA","FL","SC","NC","VA",
-  "WV","OH","IN","MI","PA","NY","NJ","DE","MD","DC","MA","CT","RI","VT","NH","ME","HI"
+  "WV","OH","IN","MI","PA","NY","NJ","DE","MD","DC","MA","CT","RI","VT","NH","ME","HI","AK"
 ];
 
 interface StateSquareProps {
