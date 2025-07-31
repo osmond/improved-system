@@ -20,8 +20,8 @@ interface PaceDistributionChartProps {
 
 export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
   const config = {
-    upper: { color: 'var(--chart-primary)' },
-    lower: { color: 'var(--chart-primary)' },
+    upper: { color: 'hsl(var(--chart-primary))' },
+    lower: { color: 'hsl(var(--chart-primary))' },
   }
   return (
     <ChartContainer
@@ -39,8 +39,8 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
         />
         <YAxis hide />
         <ReferenceLine y={0} strokeDasharray='3 3' stroke='var(--axis-line)' />
-        <Area dataKey='upper' fill='var(--chart-primary)' stroke='none' />
-        <Area dataKey='lower' fill='var(--chart-primary)' stroke='none' />
+        <Area dataKey='upper' fill='hsl(var(--chart-primary))' stroke='none' />
+        <Area dataKey='lower' fill='hsl(var(--chart-primary))' stroke='none' />
       </AreaChart>
     </ChartContainer>
   )

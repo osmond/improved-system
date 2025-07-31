@@ -22,7 +22,7 @@ export interface DailyStepsChartProps {
 const chartConfig = {
   steps: {
     label: "Steps",
-    color: "var(--chart-primary)",
+    color: "hsl(var(--chart-primary))",
   },
 } satisfies ChartConfig;
 
@@ -140,7 +140,7 @@ export function DailyStepsChart({
         <Bar
           dataKey="steps"
           name="Steps"
-          fill="var(--chart-primary)"
+          fill="hsl(var(--chart-primary))"
           radius={[4, 4, 0, 0]}
           barSize={22}
           aria-label="Bar chart of daily steps"
