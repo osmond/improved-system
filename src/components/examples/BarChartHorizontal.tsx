@@ -20,18 +20,19 @@ import {
 
 export const description = 'A horizontal bar chart'
 
+// Monthly mileage totals used as mock activity data
 const chartData = [
-  { month: 'January', desktop: 186 },
-  { month: 'February', desktop: 305 },
-  { month: 'March', desktop: 237 },
-  { month: 'April', desktop: 73 },
-  { month: 'May', desktop: 209 },
-  { month: 'June', desktop: 214 },
+  { month: 'January', miles: 120 },
+  { month: 'February', miles: 150 },
+  { month: 'March', miles: 95 },
+  { month: 'April', miles: 160 },
+  { month: 'May', miles: 175 },
+  { month: 'June', miles: 140 },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
+  miles: {
+    label: 'Miles',
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig
@@ -51,7 +52,7 @@ export default function ChartBarHorizontal() {
             layout='vertical'
             margin={{ left: -20 }}
           >
-            <XAxis type='number' dataKey='desktop' hide />
+            <XAxis type='number' dataKey='miles' hide />
             <YAxis
               dataKey='month'
               type='category'
@@ -61,7 +62,7 @@ export default function ChartBarHorizontal() {
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey='desktop' fill='var(--color-desktop)' radius={5} />
+            <Bar dataKey='miles' fill='var(--color-miles)' radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>

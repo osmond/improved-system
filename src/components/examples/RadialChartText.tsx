@@ -21,17 +21,18 @@ import { ChartConfig, ChartContainer } from '@/components/ui/chart'
 
 export const description = 'A radial chart with text'
 
+// Single activity with minutes value for demonstration
 const chartData = [
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
+  { activity: 'Run', minutes: 200, fill: 'var(--color-run)' },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: 'Visitors',
+  minutes: {
+    label: 'Minutes',
   },
-  safari: {
-    label: 'Safari',
-    color: 'hsl(var(--chart-2))',
+  run: {
+    label: 'Run',
+    color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig
 
@@ -61,7 +62,7 @@ export default function ChartRadialText() {
               className='first:fill-muted last:fill-background'
               polarRadius={[86, 74]}
             />
-            <RadialBar dataKey='visitors' background cornerRadius={10} />
+            <RadialBar dataKey='minutes' background cornerRadius={10} />
             <PolarRadiusAxis tick={false} tickLine={false} axisLine={false}>
               <Label
                 content={({ viewBox }) => {
@@ -78,14 +79,14 @@ export default function ChartRadialText() {
                           y={viewBox.cy}
                           className='fill-foreground text-4xl font-bold'
                         >
-                          {chartData[0].visitors.toLocaleString()}
+                          {chartData[0].minutes.toLocaleString()}
                         </tspan>
                         <tspan
                           x={viewBox.cx}
                           y={(viewBox.cy || 0) + 24}
                           className='fill-muted-foreground'
                         >
-                          Visitors
+                          Minutes
                         </tspan>
                       </text>
                     )
@@ -101,7 +102,7 @@ export default function ChartRadialText() {
           Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total visitors for the last 6 months
+          Showing total workout minutes for the last 6 months
         </div>
       </CardFooter>
     </Card>

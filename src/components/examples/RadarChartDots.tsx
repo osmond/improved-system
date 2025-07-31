@@ -20,18 +20,19 @@ import {
 
 export const description = 'A radar chart with dots'
 
+// Mock mileage data by month
 const chartData = [
-  { month: 'January', desktop: 186 },
-  { month: 'February', desktop: 305 },
-  { month: 'March', desktop: 237 },
-  { month: 'April', desktop: 273 },
-  { month: 'May', desktop: 209 },
-  { month: 'June', desktop: 214 },
+  { month: 'January', miles: 120 },
+  { month: 'February', miles: 150 },
+  { month: 'March', miles: 95 },
+  { month: 'April', miles: 160 },
+  { month: 'May', miles: 175 },
+  { month: 'June', miles: 140 },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
+  miles: {
+    label: 'Miles',
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig
@@ -41,7 +42,7 @@ export default function ChartRadarDots() {
     <Card>
       <CardHeader className='items-center'>
         <CardTitle>Radar Chart - Dots</CardTitle>
-        <CardDescription>Showing total visitors for the last 6 months</CardDescription>
+        <CardDescription>Showing monthly mileage for the last 6 months</CardDescription>
       </CardHeader>
       <CardContent className='pb-0'>
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px]'>
@@ -49,7 +50,7 @@ export default function ChartRadarDots() {
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
             <PolarAngleAxis dataKey='month' />
             <PolarGrid />
-            <Radar dataKey='desktop' fill='var(--color-desktop)' fillOpacity={0.6} dot={{ r: 4, fillOpacity: 1 }} />
+            <Radar dataKey='miles' fill='var(--color-miles)' fillOpacity={0.6} dot={{ r: 4, fillOpacity: 1 }} />
           </RadarChart>
         </ChartContainer>
       </CardContent>
