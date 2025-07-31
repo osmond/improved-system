@@ -21,9 +21,10 @@ import { ChartConfig, ChartContainer } from '@/components/ui/chart'
 
 export const description = 'A radial chart with text'
 
-// Single activity with minutes value for demonstration
+// Total workout minutes across all activities
+// for the last six months
 const chartData = [
-  { activity: 'Run', minutes: 200, fill: 'var(--color-run)' },
+  { activity: 'Run', minutes: 7200, fill: 'var(--color-run)' },
 ]
 
 const chartConfig = {
