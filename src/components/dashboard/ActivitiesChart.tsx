@@ -14,6 +14,7 @@ import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/components/ui/chart";
 import { useGarminData } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
   distance: {
@@ -29,7 +30,7 @@ const chartConfig = {
 export function ActivitiesChart() {
   const data = useGarminData();
   const { activity, range } = useDashboardFilters();
-  if (!data) return null;
+  if (!data) return <Skeleton className="h-60 md:col-span-2" />;
   let activities = data.activities;
 
   if (activity !== 'all') {
@@ -61,8 +62,8 @@ export function ActivitiesChart() {
           content={<ChartTooltipContent labelFormatter={(d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" })} />}
         />
         <ChartLegend content={<ChartLegendContent />} />
-        <Line yAxisId="left" type="monotone" dataKey="distance" stroke={chartConfig.distance.color} />
-        <Line yAxisId="right" type="monotone" dataKey="duration" stroke={chartConfig.duration.color} />
+        <Line yAxisId="left" type="monotone" dataKey="distance" stroke={chartConfig.distance.color} animationDuration={300} />
+        <Line yAxisId="right" type="monotone" dataKey="duration" stroke={chartConfig.duration.color} animationDuration={300} />
       </LineChart>
       </ChartContainer>
     </ChartCard>

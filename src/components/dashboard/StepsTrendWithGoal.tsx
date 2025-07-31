@@ -18,6 +18,8 @@ import { useMemo } from "react";
 import { useSeasonalBaseline } from "@/hooks/useGarminData";
 import { useRunningStats } from "@/hooks/useRunningStats";
 import { Info } from "lucide-react";
+import type { TooltipProps } from "recharts";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export interface StepsTrendWithGoalProps {
   data: GarminDay[];
@@ -34,12 +36,13 @@ export function StepsTrendWithGoal({
 }: StepsTrendWithGoalProps) {
   const dataWithAvg = useMemo(() => {
     return data.map((d, idx) => {
-      const start = Math.max(0, idx - window + 1);
-      const slice = data.slice(start, idx + 1);
-      const avg = slice.reduce((sum, val) => sum + val.steps, 0) / slice.length;
-      return { ...d, avg };
-    });
-  }, [data, window]);
+      const start = Math.max(0, idx - window + 1)
+      const slice = data.slice(start, idx + 1)
+      const avg = slice.reduce((sum, val) => sum + val.steps, 0) / slice.length
+      const prev = idx === 0 ? d.steps : data[idx - 1].steps
+      return { ...d, avg, prev }
+    })
+  }, [data, window])
 
   const baselines = useSeasonalBaseline();
   const stats = useRunningStats();
@@ -81,6 +84,45 @@ export function StepsTrendWithGoal({
     baseline: { label: "Baseline", color: "hsl(var(--chart-4))" },
   } satisfies ChartConfig;
 
+  function StepsTooltip(props: TooltipProps<number, string>) {
+    const { active, payload } = props
+    if (!(active && payload && payload.length)) return null
+    const day = payload[0].payload as GarminDay & { prev: number }
+    const value = payload[0].value as number
+    const delta = value - day.prev
+    const gap = goal - value
+
+    return (
+      <ChartTooltipContent
+        {...props}
+        nameKey="steps"
+        formatter={() => (
+          <div className="grid gap-0.5">
+            <span>{value.toLocaleString()}</span>
+            <span className="text-muted-foreground">
+              {delta > 0 ? `+${delta.toLocaleString()}` : `${delta.toLocaleString()}`} vs prev
+            </span>
+            <span className="text-muted-foreground">
+              {gap >= 0
+                ? `${gap.toLocaleString()} to goal`
+                : `+${(-gap).toLocaleString()} over goal`}
+            </span>
+          </div>
+        )}
+        labelFormatter={(d) =>
+          new Date(d).toLocaleDateString("en-US", {
+            month: "short",
+            day: "numeric",
+          })
+        }
+      />
+    )
+  }
+
+  if (!baselines || !stats) {
+    return <Skeleton className="h-60 md:col-span-2" />
+  }
+
   return (
     <ChartCard title="Pace Trend (min/mile)" className="md:col-span-2">
       <ChartContainer config={chartConfig} className="h-60">
@@ -107,26 +149,15 @@ export function StepsTrendWithGoal({
             />
           ))}
           <ReferenceLine y={goal} stroke={chartConfig.goal.color} strokeDasharray="4 4" />
-          <ChartTooltip
-            content={
-              <ChartTooltipContent
-                nameKey="steps"
-                labelFormatter={(d) =>
-                  new Date(d).toLocaleDateString("en-US", {
-                    month: "short",
-                    day: "numeric",
-                  })
-                }
-              />
-            }
-          />
+          <ChartTooltip content={<StepsTooltip />} />
           <Area
             dataKey="steps"
             type="monotone"
             stroke={chartConfig.steps.color}
             fill="url(#fillSteps)"
+            animationDuration={300}
           />
-        <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} />
+        <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} animationDuration={300} />
       </AreaChart>
       </ChartContainer>
       {weatherNote && (

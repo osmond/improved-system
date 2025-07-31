@@ -25,20 +25,19 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 function StepsTooltip(props: TooltipProps<number, string>) {
-  const { active, payload } = props;
-  let summary: string | null = null;
-  if (
-    active &&
-    payload &&
-    payload.length &&
-    payload[0].payload &&
-    payload[0].value !== undefined
-  ) {
-    const day = payload[0].payload as GarminDay;
-    summary = `${payload[0].value.toLocaleString()} steps on ${new Date(
-      day.date,
-    ).toLocaleDateString()}`;
-  }
+  const { active, payload } = props
+
+  if (!(active && payload && payload.length)) return null
+
+  const day = payload[0].payload as GarminDay & { prev: number }
+  const value = payload[0].value as number
+  const delta = value - day.prev
+  const goal = 10000
+  const gap = goal - value
+
+  const summary = `${value.toLocaleString()} steps on ${new Date(
+    day.date,
+  ).toLocaleDateString()}`
 
   return (
     <div aria-live="polite">
@@ -46,6 +45,20 @@ function StepsTooltip(props: TooltipProps<number, string>) {
         active={active}
         payload={payload}
         nameKey="steps"
+        formatter={() => (
+          <div className="grid gap-0.5">
+            <span>{value.toLocaleString()}</span>
+            <span className="text-muted-foreground">
+              {delta > 0 ? `+${delta.toLocaleString()}` : `${delta.toLocaleString()}`}
+              {" vs prev"}
+            </span>
+            <span className="text-muted-foreground">
+              {gap >= 0
+                ? `${gap.toLocaleString()} to goal`
+                : `+${(-gap).toLocaleString()} over goal`}
+            </span>
+          </div>
+        )}
         labelFormatter={(d) =>
           new Date(d).toLocaleDateString("en-US", {
             month: "short",
@@ -53,9 +66,17 @@ function StepsTooltip(props: TooltipProps<number, string>) {
           })
         }
       />
-      {summary && <p className="sr-only">{summary}</p>}
+      {summary && (
+        <p className="sr-only">
+          {summary}. {delta >= 0 ? "+" : ""}
+          {delta.toLocaleString()} from previous.{' '}
+          {gap >= 0
+            ? `${gap.toLocaleString()} short of goal`
+            : `${(-gap).toLocaleString()} over goal`}
+        </p>
+      )}
     </div>
-  );
+  )
 }
 
 export interface StepsChartProps {
@@ -72,6 +93,10 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
   const start = new Date();
   start.setDate(start.getDate() - days);
   const filtered = data.filter((d) => new Date(d.date) >= start);
+  const enriched = filtered.map((d, i) => ({
+    ...d,
+    prev: i === 0 ? d.steps : filtered[i - 1].steps,
+  }))
 
   if (!filtered.length) {
     return (
@@ -97,7 +122,7 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
       className="h-60 md:col-span-2"
       title="Daily Steps"
     >
-      <BarChart data={filtered} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+      <BarChart data={enriched} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
 
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
@@ -106,8 +131,8 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
         />
         <YAxis />
         <ChartTooltip content={<StepsTooltip />} />
-        <Bar dataKey="steps" fill={chartConfig.steps.color}>
-          {filtered.map((day) => (
+        <Bar dataKey="steps" fill={chartConfig.steps.color} animationDuration={300}>
+          {enriched.map((day) => (
             <Cell
               key={day.date}
               aria-label={`${day.steps.toLocaleString()} steps on ${new Date(day.date).toLocaleDateString()}`}

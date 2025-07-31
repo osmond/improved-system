@@ -13,6 +13,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 import useWeeklyVolume from "@/hooks/useWeeklyVolume";
 import { useChartSelection } from "./ChartSelectionContext";
 import { useEffect } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function WeeklyVolumeChart() {
   const data = useWeeklyVolume();
@@ -24,7 +25,7 @@ export default function WeeklyVolumeChart() {
     }
   }, [data]);
 
-  if (!data) return null;
+  if (!data) return <Skeleton className="h-64" />;
 
   const config = {
     miles: { label: "Miles", color: "var(--chart-1)" },
@@ -37,7 +38,7 @@ export default function WeeklyVolumeChart() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
           <ChartTooltip />
-          <Bar dataKey="miles" fill="var(--chart-1)" radius={2} />
+          <Bar dataKey="miles" fill="var(--chart-1)" radius={2} animationDuration={300} />
           <Brush
             dataKey="week"
             height={20}

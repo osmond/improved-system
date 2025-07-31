@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { useRunningSessions } from "@/hooks/useRunningSessions"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const colors = [
   "var(--chart-1)",
@@ -28,7 +29,7 @@ const config = {
 export default function SessionSimilarityMap() {
   const data = useRunningSessions()
 
-  if (!data) return null
+  if (!data) return <Skeleton className="h-64" />
 
   const clusters = Array.from(new Set(data.map((d) => d.cluster)))
 
@@ -45,6 +46,7 @@ export default function SessionSimilarityMap() {
               key={c}
               data={data.filter((d) => d.cluster === c)}
               fill={colors[c % colors.length]}
+              animationDuration={300}
             />
           ))}
         </ScatterChart>

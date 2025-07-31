@@ -11,6 +11,7 @@ import {
 import ChartCard from "@/components/dashboard/ChartCard"
 import { useChartSelection } from "@/components/dashboard/ChartSelectionContext"
 import { useRunningStats } from "@/hooks/useRunningStats"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const config = {
   density: { label: "Density", color: "var(--chart-7)" },
@@ -20,7 +21,7 @@ export default function PaceDistribution() {
   const { range } = useChartSelection()
   const stats = useRunningStats(range)
 
-  if (!stats) return null
+  if (!stats) return <Skeleton className="h-64" />
 
   return (
     <ChartCard title="Pace Distribution">
@@ -36,6 +37,7 @@ export default function PaceDistribution() {
             fill="var(--chart-7)"
             fillOpacity={0.4}
             dot={false}
+            animationDuration={300}
           />
         </AreaChart>
       </ChartContainer>

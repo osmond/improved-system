@@ -11,6 +11,7 @@ import {
 import ChartCard from "@/components/dashboard/ChartCard"
 import { useChartSelection } from "@/components/dashboard/ChartSelectionContext"
 import { useRunningStats } from "@/hooks/useRunningStats"
+import { Skeleton } from "@/components/ui/skeleton"
 
 const config = {
   bpm: { label: "Heart Rate", color: "var(--chart-8)" },
@@ -20,7 +21,7 @@ export default function HeartRateZones() {
   const { range } = useChartSelection()
   const stats = useRunningStats(range)
 
-  if (!stats) return null
+  if (!stats) return <Skeleton className="h-60" />
 
   return (
     <ChartCard title="Heart Rate Zones">
@@ -29,7 +30,7 @@ export default function HeartRateZones() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="zone" tickLine={false} axisLine={false} />
           <ChartTooltip />
-          <Bar dataKey="bpm" fill="var(--chart-8)" radius={4} />
+          <Bar dataKey="bpm" fill="var(--chart-8)" radius={4} animationDuration={300} />
         </BarChart>
       </ChartContainer>
     </ChartCard>
