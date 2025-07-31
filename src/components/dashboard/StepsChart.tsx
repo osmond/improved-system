@@ -13,7 +13,7 @@ import { Cell, type TooltipProps } from "recharts";
 import type { ChartConfig } from "@/components/ui/chart";
 
 import type { GarminDay } from "@/lib/api";
-import { useDailySteps } from "@/hooks/useGarminData";
+import { useGarminDaysLazy } from "@/hooks/useGarminData";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
@@ -57,8 +57,13 @@ function StepsTooltip(props: TooltipProps<number, string>) {
   );
 }
 
-export function StepsChart() {
-  const data = useDailySteps();
+export interface StepsChartProps {
+  /** Fetch data when true */
+  active?: boolean;
+}
+
+export function StepsChart({ active = true }: StepsChartProps = {}) {
+  const data = useGarminDaysLazy(active);
   if (!data) return <Skeleton className="h-60 w-full" />;
 
   if (!data.length) {

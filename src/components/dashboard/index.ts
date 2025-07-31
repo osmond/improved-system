@@ -7,3 +7,4 @@ export * from "./StepsChart";
 export * from "./DailyStepsChart";
 export * from "./StepsTrendWithGoal";
 export * from "./MiniSparkline";
+export * from "./RingDetailDialog";

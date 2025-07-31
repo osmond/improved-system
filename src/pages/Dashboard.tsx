@@ -1,27 +1,13 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProgressRingWithDelta } from "@/components/dashboard/ProgressRingWithDelta";
-import { StepsChart, MiniSparkline } from "@/components/dashboard";
-import { useGarminData, useDailySteps, useMostRecentActivity } from "@/hooks/useGarminData";
+import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
+import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
 
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
-  const dailySteps = useDailySteps();
   const recentActivity = useMostRecentActivity();
   const [expanded, setExpanded] = useState<Metric | null>(null);
-  const dialogRef = useRef<HTMLDialogElement | null>(null);
-
-  useEffect(() => {
-    const dialog = dialogRef.current;
-    if (!dialog) return;
-    if (expanded) {
-      if (!dialog.open) dialog.showModal();
-    } else if (dialog.open) {
-      dialog.close();
-    }
-  }, [expanded]);
 
   if (!data) {
     return <p>Loading…</p>;
@@ -37,13 +23,11 @@ export default function Dashboard() {
     }
   };
 
-  const previousSteps = dailySteps && dailySteps.length > 1
-    ? dailySteps[dailySteps.length - 2].steps
-    : data.steps * 0.9;
+  const previousSteps = data.steps * 0.9;
   const previousSleep = data.sleep * 0.9;
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
-  const sparkData = dailySteps?.map((d) => ({ date: d.date, value: d.steps })) || [];
+  const sparkData: { date: string; value: number }[] = [];
 
   return (
     <div className="grid gap-4">
@@ -128,28 +112,7 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <dialog
-        ref={dialogRef}
-        className="rounded-lg p-0 max-w-lg w-full border bg-background"
-        onClose={() => setExpanded(null)}
-      >
-        <div className="p-4">
-          <Tabs value="steps" onValueChange={() => {}}>
-            <TabsList>
-              <TabsTrigger value="steps">Steps</TabsTrigger>
-            </TabsList>
-            <StepsChart />
-          </Tabs>
-          <div className="mt-4 flex justify-end">
-            <button
-              className="px-4 py-2 rounded bg-primary text-primary-foreground"
-              onClick={() => setExpanded(null)}
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      </dialog>
+      <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
     </div>
   );
 }
