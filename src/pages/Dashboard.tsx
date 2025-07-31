@@ -1,5 +1,11 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
+
+import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
+import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
+import useInsights from "@/hooks/useInsights";
+import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
+
 import {
   ProgressRingWithDelta,
   MiniSparkline,
@@ -11,10 +17,12 @@ import {
   useMonthlyStepsProjection,
 } from "@/hooks/useGarminData";
 
+
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
   const recentActivity = useMostRecentActivity();
+  const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
 
   if (!data) {
@@ -79,6 +87,12 @@ export default function Dashboard() {
           )}
           <span className="mt-2 text-lg font-bold">{data.steps}</span>
           <MiniSparkline data={sparkData} />
+          {insights && insights.activeStreak >= 3 && (
+            <Flame
+              className="h-4 w-4 text-orange-600 mt-1"
+              aria-label={`${insights.activeStreak}-day streak`}
+            />
+          )}
         </Card>
 
         <Card
@@ -97,6 +111,12 @@ export default function Dashboard() {
           />
           <span className="mt-2 text-lg font-bold">{data.sleep}</span>
           <MiniSparkline data={sparkData} />
+          {insights && insights.lowSleep && (
+            <Moon
+              className="h-4 w-4 text-yellow-500 mt-1"
+              aria-label="Low sleep"
+            />
+          )}
         </Card>
 
         <Card
@@ -115,6 +135,12 @@ export default function Dashboard() {
           />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
           <MiniSparkline data={sparkData} />
+          {insights && insights.highHeartRate && (
+            <HeartPulse
+              className="h-4 w-4 text-red-600 mt-1"
+              aria-label="High heart rate"
+            />
+          )}
         </Card>
 
         <Card
@@ -133,6 +159,12 @@ export default function Dashboard() {
           />
           <span className="mt-2 text-lg font-bold">{data.calories}</span>
           <MiniSparkline data={sparkData} />
+          {insights && insights.calorieSurplus && (
+            <Pizza
+              className="h-4 w-4 text-amber-600 mt-1"
+              aria-label="Calorie surplus"
+            />
+          )}
         </Card>
       </div>
 
