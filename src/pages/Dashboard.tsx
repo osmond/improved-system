@@ -2,13 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ProgressRingWithDelta } from "@/components/dashboard/ProgressRingWithDelta";
-import { StepsChart } from "@/components/dashboard";
-import { useGarminData, useDailySteps } from "@/hooks/useGarminData";
+import { StepsChart, MiniSparkline } from "@/components/dashboard";
+import { useGarminData, useDailySteps, useMostRecentActivity } from "@/hooks/useGarminData";
 
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
   const dailySteps = useDailySteps();
+  const recentActivity = useMostRecentActivity();
   const [expanded, setExpanded] = useState<Metric | null>(null);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
@@ -42,6 +43,7 @@ export default function Dashboard() {
   const previousSleep = data.sleep * 0.9;
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
+  const sparkData = dailySteps?.map((d) => ({ date: d.date, value: d.steps })) || [];
 
   return (
     <div className="grid gap-4">
@@ -53,7 +55,14 @@ export default function Dashboard() {
           onKeyDown={(e) => handleKey(e, "steps")}
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
-          <h2 className="text-sm mb-2">Steps</h2>
+          <h2 className="text-sm mb-2 flex items-center gap-2">
+            Steps
+            {recentActivity && (
+              <span className="px-1.5 py-0.5 rounded bg-muted text-muted-foreground text-[10px] font-medium">
+                {recentActivity.type}
+              </span>
+            )}
+          </h2>
           <ProgressRingWithDelta
             label="Steps progress"
             value={(data.steps / 10000) * 100}
@@ -61,6 +70,7 @@ export default function Dashboard() {
             previous={previousSteps}
           />
           <span className="mt-2 text-lg font-bold">{data.steps}</span>
+          <MiniSparkline data={sparkData} />
         </Card>
 
         <Card
@@ -78,6 +88,7 @@ export default function Dashboard() {
             previous={previousSleep}
           />
           <span className="mt-2 text-lg font-bold">{data.sleep}</span>
+          <MiniSparkline data={sparkData} />
         </Card>
 
         <Card
@@ -95,6 +106,7 @@ export default function Dashboard() {
             previous={previousHeartRate}
           />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
+          <MiniSparkline data={sparkData} />
         </Card>
 
         <Card
@@ -112,6 +124,7 @@ export default function Dashboard() {
             previous={previousCalories}
           />
           <span className="mt-2 text-lg font-bold">{data.calories}</span>
+          <MiniSparkline data={sparkData} />
         </Card>
       </div>
 
