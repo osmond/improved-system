@@ -1,4 +1,4 @@
-import { ChartContainer } from '@/components/ui/chart'
+import { ChartContainer } from "@/components/ui/chart"
 import {
   AreaChart,
   Area,
@@ -6,7 +6,9 @@ import {
   YAxis,
   CartesianGrid,
   ReferenceLine,
-} from '@/components/ui/chart'
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart"
 
 export interface PaceDistributionBin {
   bin: string
@@ -29,7 +31,11 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
       className='h-60 md:col-span-2'
       title='Pace Distribution'
     >
-      <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+      <AreaChart
+        data={data}
+        margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
+        stackOffset='sign'
+      >
         <CartesianGrid stroke='var(--grid-line)' strokeDasharray='3 3' />
         <XAxis
           dataKey='bin'
@@ -39,8 +45,16 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
         />
         <YAxis hide />
         <ReferenceLine y={0} strokeDasharray='3 3' stroke='var(--axis-line)' />
+
         <Area dataKey='upper' fill='hsl(var(--chart-primary))' stroke='none' />
         <Area dataKey='lower' fill='hsl(var(--chart-primary))' stroke='none' />
+
+        <ChartTooltip>
+          <ChartTooltipContent />
+        </ChartTooltip>
+        <Area dataKey='upper' stackId='violin' fill='var(--chart-primary)' stroke='none' />
+        <Area dataKey='lower' stackId='violin' fill='var(--chart-primary)' stroke='none' />
+
       </AreaChart>
     </ChartContainer>
   )
