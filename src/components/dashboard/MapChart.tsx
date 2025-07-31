@@ -1,6 +1,7 @@
 import React from "react";
 import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import type { StateVisit } from "@/lib/types";
+import { fipsToAbbr } from "@/lib/stateCodes";
 
 interface MapChartProps {
   data: StateVisit[];
@@ -15,13 +16,13 @@ export default function MapChart({ data, onSelectState }: MapChartProps) {
       <Geographies geography="/us-states.json">
         {({ geographies }) =>
           geographies.map((geo) => {
-            const code = geo.properties.iso_3166_2.split("-")[1];
-            const isVisited = visited.has(code);
+            const code = fipsToAbbr[geo.id as string];
+            const isVisited = code ? visited.has(code) : false;
             return (
               <Geography
                 key={geo.rsmKey}
                 geography={geo}
-                onClick={() => isVisited && onSelectState(code)}
+                onClick={() => isVisited && code && onSelectState(code)}
                 style={{
                   default: {
                     fill: isVisited ? "hsl(var(--primary))" : "hsl(var(--muted))",
