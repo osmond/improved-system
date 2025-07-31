@@ -2,3 +2,9 @@
 export function cn(...classes: (string | undefined | false | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
+
+export function minutesSince(date: string | number | Date): number {
+  const d = new Date(date)
+  return Math.floor((Date.now() - d.getTime()) / 60000)
+}
+

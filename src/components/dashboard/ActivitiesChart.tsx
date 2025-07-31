@@ -50,6 +50,7 @@ export function ActivitiesChart() {
       title="Activities"
       description="Distance vs Duration"
       className="md:col-span-2"
+      lastSync={data.lastSync}
     >
       <ChartContainer config={chartConfig} className="h-60">
         <LineChart data={activities} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

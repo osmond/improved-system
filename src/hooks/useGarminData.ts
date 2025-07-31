@@ -10,11 +10,26 @@ import {
 } from "@/lib/api";
 
 export function useGarminData(): GarminData | null {
-  const [data, setData] = useState<GarminData | null>(null);
+  const [data, setData] = useState<GarminData | null>(null)
+
   useEffect(() => {
-    getGarminData().then(setData);
-  }, []);
-  return data;
+    let active = true
+
+    const fetchData = () => {
+      getGarminData().then((d) => {
+        if (active) setData(d)
+      })
+    }
+
+    fetchData()
+    const id = setInterval(fetchData, 60_000)
+    return () => {
+      active = false
+      clearInterval(id)
+    }
+  }, [])
+
+  return data
 }
 
 export function useGarminDays(): GarminDay[] | null {
