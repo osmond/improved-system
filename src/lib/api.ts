@@ -100,6 +100,20 @@ export const mockStateVisits: StateVisit[] = [
       { name: "San Francisco", days: 3, miles: 400 },
       { name: "San Diego", days: 3, miles: 500 },
     ],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 5 },
+      { date: new Date().toISOString().slice(0, 10), type: "bike", miles: 10 },
+      {
+        date: new Date(Date.now() - 28 * 86400000).toISOString().slice(0, 10),
+        type: "run",
+        miles: 8,
+      },
+      {
+        date: new Date(Date.now() - 60 * 86400000).toISOString().slice(0, 10),
+        type: "bike",
+        miles: 15,
+      },
+    ],
   },
   {
     stateCode: "TX",
@@ -110,6 +124,19 @@ export const mockStateVisits: StateVisit[] = [
       { name: "Austin", days: 2, miles: 200 },
       { name: "Houston", days: 3, miles: 400 },
     ],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 3 },
+      {
+        date: new Date(Date.now() - 10 * 86400000).toISOString().slice(0, 10),
+        type: "bike",
+        miles: 12,
+      },
+      {
+        date: new Date(Date.now() - 40 * 86400000).toISOString().slice(0, 10),
+        type: "run",
+        miles: 6,
+      },
+    ],
   },
   {
     stateCode: "NY",
@@ -117,6 +144,7 @@ export const mockStateVisits: StateVisit[] = [
     totalDays: 0,
     totalMiles: 0,
     cities: [],
+    log: [],
   },
 ];
 

@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
 import { ChartContainer } from "@/components/ui/chart";
@@ -12,35 +13,61 @@ import {
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
+import statesTopo from "../../../public/us-states.json";
 
-const US_STATES = [
-  "WA","OR","CA","NV","ID","UT","AZ","MT","WY","CO","NM","ND","SD","NE","KS","OK",
-  "TX","MN","IA","MO","AR","LA","WI","IL","KY","TN","MS","AL","GA","FL","SC","NC","VA",
-  "WV","OH","IN","MI","PA","NY","NJ","DE","MD","DC","MA","CT","RI","VT","NH","ME","HI","AK"
-];
-
-interface StateSquareProps {
-  abbr: string;
-  visited: boolean;
-  selected: boolean;
-  onClick: () => void;
-}
-
-function StateSquare({ abbr, visited, selected, onClick }: StateSquareProps) {
-  return (
-    <div
-      onClick={onClick}
-      aria-label={abbr + (visited ? " visited" : " not visited")}
-      className={cn(
-        "w-10 h-10 flex items-center justify-center text-xs font-semibold border cursor-pointer select-none",
-        visited ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground",
-        selected && "ring-2 ring-ring"
-      )}
-    >
-      {abbr}
-    </div>
-  );
-}
+const FIPS_TO_ABBR: Record<string, string> = {
+  "01": "AL",
+  "02": "AK",
+  "04": "AZ",
+  "05": "AR",
+  "06": "CA",
+  "08": "CO",
+  "09": "CT",
+  "10": "DE",
+  "11": "DC",
+  "12": "FL",
+  "13": "GA",
+  "15": "HI",
+  "16": "ID",
+  "17": "IL",
+  "18": "IN",
+  "19": "IA",
+  "20": "KS",
+  "21": "KY",
+  "22": "LA",
+  "23": "ME",
+  "24": "MD",
+  "25": "MA",
+  "26": "MI",
+  "27": "MN",
+  "28": "MS",
+  "29": "MO",
+  "30": "MT",
+  "31": "NE",
+  "32": "NV",
+  "33": "NH",
+  "34": "NJ",
+  "35": "NM",
+  "36": "NY",
+  "37": "NC",
+  "38": "ND",
+  "39": "OH",
+  "40": "OK",
+  "41": "OR",
+  "42": "PA",
+  "44": "RI",
+  "45": "SC",
+  "46": "SD",
+  "47": "TN",
+  "48": "TX",
+  "49": "UT",
+  "50": "VT",
+  "51": "VA",
+  "53": "WA",
+  "54": "WV",
+  "55": "WI",
+  "56": "WY",
+};
 
 export default function GeoActivityExplorer() {
   const data = useStateVisits();
@@ -48,13 +75,44 @@ export default function GeoActivityExplorer() {
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
 
+  const now = new Date();
+  const inRange = (d: string) => {
+    const date = new Date(d);
+    if (range === "month") {
+      return (
+        date.getMonth() === now.getMonth() &&
+        date.getFullYear() === now.getFullYear()
+      );
+    }
+    if (range === "year") {
+      return date.getFullYear() === now.getFullYear();
+    }
+    return true;
+  };
+
+  const states = useMemo(() => {
+    return (data || [])
+      .map((s) => {
+        const logs = s.log.filter(
+          (l) => (activity === "all" || l.type === activity) && inRange(l.date)
+        );
+        return {
+          ...s,
+          visited: logs.length > 0,
+          totalDays: logs.length,
+          totalMiles: logs.reduce((acc, l) => acc + l.miles, 0),
+        };
+      })
+      .filter((s) => s.visited);
+  }, [data, activity, range]);
+
   const summaryMap = useMemo(() => {
     const m: Record<string, StateVisit> = {};
-    (data || []).forEach((s) => {
+    states.forEach((s) => {
       m[s.stateCode] = s;
     });
     return m;
-  }, [data]);
+  }, [states]);
 
   if (!data) {
     return <Skeleton className="h-60 w-full" />;
@@ -63,8 +121,6 @@ export default function GeoActivityExplorer() {
   const toggleState = (abbr: string) => {
     setExpandedState((prev) => (prev === abbr ? null : abbr));
   };
-
-  const states = data;
 
   return (
     <ChartContainer config={{}} title="State Visits" className="space-y-6">
@@ -91,16 +147,41 @@ export default function GeoActivityExplorer() {
         />
       </div>
       <div className="flex gap-12">
-        <div className="grid grid-cols-5 gap-1">
-          {US_STATES.map((abbr) => (
-            <StateSquare
-              key={abbr}
-              abbr={abbr}
-              visited={!!summaryMap[abbr] && summaryMap[abbr].visited}
-              selected={expandedState === abbr}
-              onClick={() => toggleState(abbr)}
-            />
-          ))}
+        <div className="w-80 h-60">
+          <ComposableMap projection="geoAlbersUsa">
+            <Geographies geography={statesTopo as any}>
+              {({ geographies }) =>
+                geographies.map((geo) => {
+                  const abbr = FIPS_TO_ABBR[geo.id as string];
+                  const visited = summaryMap[abbr]?.visited;
+                  const intensity = summaryMap[abbr]?.totalDays || 0;
+                  const colorIndex = Math.min(10, Math.max(1, Math.ceil(intensity)));
+                  const fill = visited
+                    ? `hsl(var(--chart-${colorIndex}))`
+                    : `hsl(var(--muted))`;
+                  return (
+                    <Geography
+                      key={geo.rsmKey}
+                      geography={geo}
+                      role="button"
+                      tabIndex={0}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") toggleState(abbr);
+                      }}
+                      onClick={() => toggleState(abbr)}
+                      aria-label={abbr + (visited ? " visited" : " not visited")}
+                      title={`${abbr}: ${intensity}d`}
+                      style={{
+                        default: { fill, outline: "none" },
+                        hover: { fill, outline: "none" },
+                        pressed: { fill, outline: "none" },
+                      }}
+                    />
+                  );
+                })
+              }
+            </Geographies>
+          </ComposableMap>
         </div>
 
         <div className="flex-1">
