@@ -1,21 +1,11 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
-
+import { Badge } from "@/components/ui/badge";
 import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
-import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
+import { useGarminData, useMostRecentActivity, useMonthlyStepsProjection } from "@/hooks/useGarminData";
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
-
-import {
-  ProgressRingWithDelta,
-  MiniSparkline,
-  RingDetailDialog,
-} from "@/components/dashboard";
-import {
-  useGarminData,
-  useMostRecentActivity,
-  useMonthlyStepsProjection,
-} from "@/hooks/useGarminData";
+import { formatPace } from "@/lib/utils";
 
 
 export default function Dashboard() {
@@ -24,6 +14,7 @@ export default function Dashboard() {
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
+  const [dismissed, setDismissed] = useState({ pace: false, day: false });
 
   if (!data) {
     return <p>Loading…</p>;
@@ -87,6 +78,23 @@ export default function Dashboard() {
           )}
           <span className="mt-2 text-lg font-bold">{data.steps}</span>
           <MiniSparkline data={sparkData} />
+          {insights?.mostConsistentDay && !dismissed.day && (
+            <div className="mt-1 text-[10px] flex items-center gap-1">
+              <Badge>{`Consistent on ${insights.mostConsistentDay}`}</Badge>
+              <button
+                className="underline"
+                onClick={() => setExpanded("steps")}
+              >
+                Learn more
+              </button>
+              <button
+                className="underline"
+                onClick={() => setDismissed({ ...dismissed, day: true })}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
           {insights && insights.activeStreak >= 3 && (
             <Flame
               className="h-4 w-4 text-orange-600 mt-1"
@@ -135,6 +143,23 @@ export default function Dashboard() {
           />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
           <MiniSparkline data={sparkData} />
+          {insights?.bestPaceThisMonth && !dismissed.pace && (
+            <div className="mt-1 text-[10px] flex items-center gap-1">
+              <Badge>{`Fastest pace ${formatPace(insights.bestPaceThisMonth)}/mi`}</Badge>
+              <button
+                className="underline"
+                onClick={() => setExpanded("heartRate")}
+              >
+                Learn more
+              </button>
+              <button
+                className="underline"
+                onClick={() => setDismissed({ ...dismissed, pace: true })}
+              >
+                Dismiss
+              </button>
+            </div>
+          )}
           {insights && insights.highHeartRate && (
             <HeartPulse
               className="h-4 w-4 text-red-600 mt-1"
