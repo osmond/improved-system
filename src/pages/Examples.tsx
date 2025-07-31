@@ -3,6 +3,9 @@ import AreaChartInteractive from "@/components/examples/AreaChartInteractive";
 import LineChartInteractive from "@/components/examples/LineChartInteractive";
 import BarChartInteractive from "@/components/examples/BarChartInteractive";
 
+import ChartRadarDefault from "@/components/examples/RadarChartDefault";
+
+
 export default function Examples() {
   return (
     <div className="grid gap-6">
@@ -11,6 +14,8 @@ export default function Examples() {
       <BarChartInteractive />
 
       <LineChartInteractive />
+
+      <ChartRadarDefault />
 
     </div>
   );
