@@ -1,6 +1,5 @@
 import React from "react";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useTheme } from "@/hooks/useTheme";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -13,17 +12,10 @@ export default function Layout({
   activeTab,
   setActiveTab
 }: LayoutProps) {
-  const { theme, toggleTheme } = useTheme()
   return (
     <div className="min-h-screen p-4">
       <header className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold">Garmin Dashboard</h1>
-        <button
-          onClick={toggleTheme}
-          className="px-2 py-1 text-sm border rounded"
-        >
-          {theme === "dark" ? "Light" : "Dark"} Mode
-        </button>
       </header>
       <Tabs value={activeTab} onValueChange={setActiveTab}>
         <TabsList>

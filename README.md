@@ -89,18 +89,6 @@ All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CS
 
 Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
 
-### Adding a new chart
-
-Use `src/components/dashboard/DailyStepsChart.tsx` as a template when creating
-additional charts. It demonstrates how to:
-
-1. Define a config object with CSS variable colours.
-2. Wrap your markup in `<ChartContainer>` and use `<ChartTooltipContent>` inside
-   `<ChartTooltip>`.
-3. Read colours from tokens such as `--chart-primary` or `--chart-6`.
-
-Copy the file and swap out the data keys to fit your data.
-
 ## Theming extensions
 If you need new variants—say a “danger” button or a “success” badge—run:
 
