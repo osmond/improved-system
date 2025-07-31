@@ -44,7 +44,11 @@ export default function StatsExamples() {
       <RunDistancesChart data={running.distanceBuckets} />
       <TreadmillOutdoorChart data={running.treadmillOutdoor} />
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:col-span-2">
-        <StatesMap data={visits} onSelectState={setSelected} />
+        <StatesMap
+          data={visits}
+          selectedState={selected}
+          onSelectState={setSelected}
+        />
         <StateTable data={visits} selectedState={selected} onSelectState={setSelected} />
       </div>
     </div>
