@@ -322,6 +322,8 @@ export const mockBenchmarkStats: BenchmarkStats = generateMockBenchmarkStats()
 export async function getBenchmarkStats(): Promise<BenchmarkStats> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockBenchmarkStats()), 300)
+  })
+}
 
 // ----- Running session similarity -----
 
