@@ -4,7 +4,8 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
+  ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import { SunIcon, CloudIcon, CloudRainIcon, SnowflakeIcon } from 'lucide-react'
 import * as React from 'react'
@@ -20,8 +21,8 @@ function AxisTick({ x, y, payload }: any) {
   const Icon = ICONS[payload.value] || SunIcon
   return (
     <g transform={`translate(${x},${y})`}>
-      <Icon className='h-3 w-3 translate-x-[-10px]' />
-      <text x={0} y={0} dx={4} dy={4} textAnchor='start' fill='currentColor'>
+      <Icon className='h-3 w-3 translate-x-[-10px] text-[color:var(--tick-text)]' />
+      <text x={0} y={0} dx={4} dy={4} textAnchor='start' fill='var(--tick-text)'>
         {payload.value}
       </text>
     </g>
@@ -38,7 +39,7 @@ interface WeatherConditionsChartProps {
 }
 
 export function WeatherConditionsChart({ data }: WeatherConditionsChartProps) {
-  const config = { count: { color: 'hsl(var(--chart-6))' } }
+  const config = { count: { color: 'var(--chart-6)' } }
   return (
     <ChartContainer
       config={config}
@@ -47,9 +48,17 @@ export function WeatherConditionsChart({ data }: WeatherConditionsChartProps) {
     >
       <BarChart layout='vertical' data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
         <XAxis type='number' hide />
-        <YAxis dataKey='label' type='category' tick={<AxisTick />} />
-        <Tooltip />
-        <Bar dataKey='count' fill='hsl(var(--chart-6))' radius={[0,4,4,0]} />
+        <YAxis
+          dataKey='label'
+          type='category'
+          tick={<AxisTick />}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <ChartTooltip>
+          <ChartTooltipContent />
+        </ChartTooltip>
+        <Bar dataKey='count' fill='var(--chart-6)' radius={[0,4,4,0]} />
       </BarChart>
     </ChartContainer>
   )

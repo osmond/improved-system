@@ -86,13 +86,19 @@ export function StepsChart() {
       title="Daily Steps"
     >
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-
-        <CartesianGrid strokeDasharray="3 3" />
+        <CartesianGrid stroke="var(--grid-line)" strokeDasharray="3 3" />
         <XAxis
           dataKey="date"
           tickFormatter={(d) => new Date(d).toLocaleDateString()}
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
         />
-        <YAxis />
+        <YAxis
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
         <ChartTooltip content={<StepsTooltip />} />
         <Bar dataKey="steps" fill={chartConfig.steps.color}>
           {data.map((day) => (

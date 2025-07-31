@@ -2,7 +2,8 @@ import { ChartContainer } from '@/components/ui/chart-container'
 import {
   PieChart,
   Pie,
-  Tooltip,
+  ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 
 export interface TreadmillOutdoor {
@@ -15,10 +16,10 @@ interface TreadmillOutdoorChartProps {
 }
 
 export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
-  const config = { value: { color: 'hsl(var(--chart-1))' } }
+  const config = { value: { color: 'var(--chart-1)' } }
   const chartData = [
     { name: 'outdoor', value: data.outdoor, fill: 'hsl(var(--muted))' },
-    { name: 'treadmill', value: data.treadmill, fill: 'hsl(var(--chart-1))' },
+    { name: 'treadmill', value: data.treadmill, fill: 'var(--chart-1)' },
   ]
   return (
     <ChartContainer
@@ -36,7 +37,9 @@ export function TreadmillOutdoorChart({ data }: TreadmillOutdoorChartProps) {
           labelLine={false}
           label={({ name }) => name}
         />
-        <Tooltip />
+        <ChartTooltip>
+          <ChartTooltipContent />
+        </ChartTooltip>
       </PieChart>
     </ChartContainer>
   )

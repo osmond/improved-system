@@ -5,7 +5,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 
 export interface HeartRateZoneData {
@@ -19,7 +20,7 @@ interface HeartRateZonesChartProps {
 
 export function HeartRateZonesChart({ data }: HeartRateZonesChartProps) {
   const config = {
-    count: { color: 'hsl(var(--chart-2))' },
+    count: { color: 'var(--chart-2)' },
   }
   return (
     <ChartContainer
@@ -28,11 +29,22 @@ export function HeartRateZonesChart({ data }: HeartRateZonesChartProps) {
       title='Heart Rate Zones'
     >
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-        <CartesianGrid stroke='hsl(var(--muted))' />
-        <XAxis dataKey='zone' />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey='count' fill='hsl(var(--chart-2))' radius={[4,4,0,0]} />
+        <CartesianGrid stroke='var(--grid-line)' />
+        <XAxis
+          dataKey='zone'
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <YAxis
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <ChartTooltip>
+          <ChartTooltipContent />
+        </ChartTooltip>
+        <Bar dataKey='count' fill='var(--chart-2)' radius={[4,4,0,0]} />
       </BarChart>
     </ChartContainer>
   )
