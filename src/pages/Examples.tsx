@@ -1,6 +1,7 @@
 import React from "react";
 import AreaChartInteractive from "@/components/examples/AreaChartInteractive";
 import LineChartInteractive from "@/components/examples/LineChartInteractive";
+import ChartRadarDefault from "@/components/examples/RadarChartDefault";
 
 export default function Examples() {
   return (
@@ -9,6 +10,8 @@ export default function Examples() {
 
 
       <LineChartInteractive />
+
+      <ChartRadarDefault />
 
     </div>
   );
