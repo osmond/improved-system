@@ -6,6 +6,7 @@ import {
   PolarRadiusAxis,
   Radar,
 } from '@/components/ui/chart'
+import ChartCard from './ChartCard'
 
 export interface HourActivity {
   hour: number
@@ -20,17 +21,15 @@ interface WorkoutTimeChartProps {
 export function WorkoutTimeChart({ data, maxPct }: WorkoutTimeChartProps) {
   const config = { pct: { color: 'hsl(var(--chart-8))' } }
   return (
-    <ChartContainer
-      config={config}
-      className='h-60 md:col-span-2'
-      title='Workout Activity by Time'
-    >
+    <ChartCard title='Workout Activity by Time' className='md:col-span-2'>
+      <ChartContainer config={config} className='h-60'>
       <RadarChart data={data}>
         <PolarGrid stroke='hsl(var(--muted))' />
         <PolarAngleAxis dataKey='hour' />
         <PolarRadiusAxis angle={90} domain={[0, maxPct]} />
         <Radar dataKey='pct' fill='hsl(var(--chart-8))' fillOpacity={0.6} />
       </RadarChart>
-    </ChartContainer>
+      </ChartContainer>
+    </ChartCard>
   )
 }

@@ -7,6 +7,7 @@ import {
   CartesianGrid,
   ReferenceLine,
 } from '@/components/ui/chart'
+import ChartCard from './ChartCard'
 
 export interface PaceDistributionBin {
   bin: string
@@ -24,19 +25,17 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
     lower: { color: 'hsl(var(--muted-foreground))' },
   }
   return (
-    <ChartContainer
-      config={config}
-      className='h-60 md:col-span-2'
-      title='Pace Distribution'
-    >
-      <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-        <CartesianGrid strokeDasharray='3 3' />
-        <XAxis dataKey='bin' />
-        <YAxis hide />
-        <ReferenceLine y={0} strokeDasharray='3 3' stroke='hsl(var(--muted))' />
-        <Area dataKey='upper' fill='hsl(var(--muted-foreground))' stroke='none' />
-        <Area dataKey='lower' fill='hsl(var(--muted-foreground))' stroke='none' />
-      </AreaChart>
-    </ChartContainer>
+    <ChartCard title='Pace Distribution' className='md:col-span-2'>
+      <ChartContainer config={config} className='h-60'>
+        <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+          <CartesianGrid strokeDasharray='3 3' />
+          <XAxis dataKey='bin' />
+          <YAxis hide />
+          <ReferenceLine y={0} strokeDasharray='3 3' stroke='hsl(var(--muted))' />
+          <Area dataKey='upper' fill='hsl(var(--muted-foreground))' stroke='none' />
+          <Area dataKey='lower' fill='hsl(var(--muted-foreground))' stroke='none' />
+        </AreaChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }
