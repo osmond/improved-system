@@ -56,7 +56,13 @@ export function useRunningSessions(): SessionPoint[] | null {
       }
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
-      const data = output.map(([x, y], idx) => ({ x, y, cluster: labels[idx] }))
+      const data = output.map(
+        ([x, y]: [number, number], idx: number) => ({
+          x,
+          y,
+          cluster: labels[idx],
+        }),
+      )
       setPoints(data)
     })
   }, [])

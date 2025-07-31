@@ -1,9 +1,11 @@
 "use client"
 
 
-import { EquipmentUsageTimeline, PerfVsEnvironmentMatrix } from "@/components/statistics"
-
-import { EquipmentUsageTimeline, SessionSimilarityMap } from "@/components/statistics"
+import {
+  EquipmentUsageTimeline,
+  PerfVsEnvironmentMatrix,
+  SessionSimilarityMap,
+} from "@/components/statistics"
 
 
 export default function StatisticsExamplesPage() {
