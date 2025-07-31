@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
 import { ActivitiesChart } from "@/components/dashboard/ActivitiesChart";
-import { StepsChart } from "@/components/dashboard/StepsChart";
+import { DailyStepsChart } from "@/components/dashboard/DailyStepsChart";
 import MapChart from "@/components/dashboard/MapChart";
 import StateTable from "@/components/dashboard/StateTable";
 import {
@@ -16,16 +16,17 @@ import {
   TreadmillOutdoorChart,
 } from "@/components/dashboard";
 import { useRunningStats } from "@/hooks/useRunningStats";
-import { useGarminData } from "@/hooks/useGarminData";
+import { useGarminData, useDailySteps } from "@/hooks/useGarminData";
 import { useStateVisits } from "@/hooks/useStateVisits";
 
 export default function Dashboard() {
   const data = useGarminData();
+  const dailySteps = useDailySteps();
   const visits = useStateVisits();
   const running = useRunningStats();
   const [selected, setSelected] = React.useState<string | null>(null);
 
-  if (!data || !visits || !running) {
+  if (!data || !visits || !running || !dailySteps) {
     return <p>Loading…</p>;
   }
 
@@ -58,7 +59,7 @@ export default function Dashboard() {
       </div>
 
       <Card className="md:col-span-2 p-4">
-        <StepsChart />
+        <DailyStepsChart data={dailySteps} />
       </Card>
 
       <Card className="md:col-span-2 p-4">
