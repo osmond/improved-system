@@ -21,17 +21,17 @@ import {
 export const description = 'A radar chart'
 
 const chartData = [
-  { month: 'January', desktop: 186 },
-  { month: 'February', desktop: 305 },
-  { month: 'March', desktop: 237 },
-  { month: 'April', desktop: 273 },
-  { month: 'May', desktop: 209 },
-  { month: 'June', desktop: 214 },
+  { month: 'January', miles: 186 },
+  { month: 'February', miles: 305 },
+  { month: 'March', miles: 237 },
+  { month: 'April', miles: 273 },
+  { month: 'May', miles: 209 },
+  { month: 'June', miles: 214 },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
+  miles: {
+    label: 'Miles',
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig
@@ -40,10 +40,8 @@ export default function ChartRadarDefault() {
   return (
     <Card>
       <CardHeader className='items-center pb-4'>
-        <CardTitle>Radar Chart</CardTitle>
-        <CardDescription>
-          Showing total visitors for the last 6 months
-        </CardDescription>
+        <CardTitle>Weekly Activity Distribution</CardTitle>
+        <CardDescription>Average mileage by month</CardDescription>
       </CardHeader>
       <CardContent className='pb-0'>
         <ChartContainer
@@ -55,8 +53,8 @@ export default function ChartRadarDefault() {
             <PolarAngleAxis dataKey='month' />
             <PolarGrid />
             <Radar
-              dataKey='desktop'
-              fill='var(--color-desktop)'
+              dataKey='miles'
+              fill='var(--color-miles)'
               fillOpacity={0.6}
             />
           </RadarChart>

@@ -38,13 +38,13 @@ export function StepsTrendWithGoal({
   }, [data, window]);
 
   const chartConfig = {
-    steps: { label: "Steps", color: "hsl(var(--chart-1))" },
+    steps: { label: "Pace", color: "hsl(var(--chart-1))" },
     avg: { label: `${window}d Avg`, color: "hsl(var(--chart-2))" },
     goal: { label: "Goal", color: "hsl(var(--chart-3))" },
   } satisfies ChartConfig;
 
   return (
-    <ChartCard title="Steps Trend" className="md:col-span-2">
+    <ChartCard title="Pace Trend (min/mile)" className="md:col-span-2">
       <ChartContainer config={chartConfig} className="h-60">
         <AreaChart data={dataWithAvg} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <defs>
