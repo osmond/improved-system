@@ -322,5 +322,32 @@ export const mockBenchmarkStats: BenchmarkStats = generateMockBenchmarkStats()
 export async function getBenchmarkStats(): Promise<BenchmarkStats> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockBenchmarkStats()), 300)
+
+// ----- Running session similarity -----
+
+export interface RunningSession {
+  id: number
+  pace: number
+  duration: number
+  heartRate: number
+  date: string
+}
+
+export function generateMockRunningSessions(): RunningSession[] {
+  return Array.from({ length: 30 }, (_, i) => ({
+    id: i + 1,
+    pace: +(5 + Math.random() * 3).toFixed(2),
+    duration: Math.round(25 + Math.random() * 35),
+    heartRate: Math.round(120 + Math.random() * 40),
+    date: new Date(Date.now() - i * 86400000)
+      .toISOString()
+      .slice(0, 10),
+  }))
+}
+
+export async function getRunningSessions(): Promise<RunningSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockRunningSessions()), 200)
+
   })
 }

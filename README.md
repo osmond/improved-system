@@ -98,6 +98,12 @@ All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CS
 
 Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
 
+`useRunningSessions()` returns t-SNE coordinates for recent runs and is visualised with the `SessionSimilarityMap` scatter chart.
+
+```ts
+{ x: number; y: number; cluster: number }[]
+```
+
 ### Examples page
 `src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.
 
