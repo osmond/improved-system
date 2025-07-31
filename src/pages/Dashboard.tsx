@@ -3,12 +3,17 @@ import { Card } from "@/components/ui/card";
 import { ProgressRing } from "@/components/dashboard/ProgressRing";
 import { ActivitiesChart } from "@/components/dashboard/ActivitiesChart";
 import { StepsChart } from "@/components/dashboard/StepsChart";
+import MapChart from "@/components/dashboard/MapChart";
+import StateTable from "@/components/dashboard/StateTable";
 import { useGarminData } from "@/hooks/useGarminData";
+import { useStateVisits } from "@/hooks/useStateVisits";
 
 export default function Dashboard() {
   const data = useGarminData();
+  const visits = useStateVisits();
+  const [selected, setSelected] = React.useState<string | null>(null);
 
-  if (!data) {
+  if (!data || !visits) {
     return <p>Loading…</p>;
   }
 
@@ -47,6 +52,11 @@ export default function Dashboard() {
       <Card className="md:col-span-2 p-4">
         <ActivitiesChart />
       </Card>
+
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:col-span-2">
+        <MapChart data={visits} onSelectState={setSelected} />
+        <StateTable data={visits} selectedState={selected} onSelectState={setSelected} />
+      </div>
     </div>
   );
 }
