@@ -71,3 +71,50 @@ export function useSeasonalBaseline(): SeasonalBaseline[] | null {
 
   return baseline
 }
+
+export interface MonthlyStepsProjection {
+  monthTotal: number;
+  projectedTotal: number;
+  goalTotal: number;
+  daysInMonth: number;
+  onTrack: boolean;
+  pctOfGoal: number;
+}
+
+export function computeMonthlyStepProjection(
+  days: GarminDay[],
+  goalPerDay = 10000,
+): MonthlyStepsProjection {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const monthDays = days.filter((d) => {
+    const dt = new Date(d.date);
+    return dt.getMonth() === month && dt.getFullYear() === year;
+  });
+  const total = monthDays.reduce((sum, d) => sum + d.steps, 0);
+  const recorded = monthDays.length;
+  const avg = recorded ? total / recorded : 0;
+  const projected = avg * daysInMonth;
+  const goalTotal = goalPerDay * daysInMonth;
+  const pctOfGoal = goalTotal === 0 ? 0 : (projected / goalTotal) * 100;
+  return {
+    monthTotal: total,
+    projectedTotal: projected,
+    goalTotal,
+    daysInMonth,
+    onTrack: projected >= goalTotal,
+    pctOfGoal,
+  };
+}
+
+export function useMonthlyStepsProjection(
+  goalPerDay = 10000,
+): MonthlyStepsProjection | null {
+  const days = useGarminDays();
+  return useMemo(() => {
+    if (!days) return null;
+    return computeMonthlyStepProjection(days, goalPerDay);
+  }, [days, goalPerDay]);
+}
