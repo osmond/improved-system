@@ -4,9 +4,13 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
-import { LineChart, Line, XAxis, YAxis, CartesianGrid } from "recharts";
 import { useGarminData } from "@/hooks/useGarminData";
 
 const chartConfig = {
