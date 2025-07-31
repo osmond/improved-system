@@ -21,6 +21,7 @@ import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
+import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
 
 
 export default function Examples() {
@@ -29,6 +30,8 @@ export default function Examples() {
       <AreaChartInteractive />
 
       <StepsTrendWithGoal data={mockDailySteps} />
+
+      <PeerBenchmarkBands />
 
       <BarChartInteractive />
 
