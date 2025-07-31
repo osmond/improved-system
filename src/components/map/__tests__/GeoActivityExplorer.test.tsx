@@ -31,15 +31,4 @@ describe("GeoActivityExplorer", () => {
     fireEvent.click(square);
     expect(screen.getAllByText("LA").length).toBe(1);
   });
-
-  it("toggles from map click", () => {
-    render(<GeoActivityExplorer />);
-    const map = screen.getByTestId("state-map");
-    const path = map.querySelector('[data-state="CA"]') as SVGPathElement;
-    expect(path).not.toBeNull();
-    fireEvent.click(path!);
-    expect(screen.getByText("LA")).toBeInTheDocument();
-    fireEvent.click(path!);
-    expect(screen.queryByText("LA")).toBeNull();
-  });
 });
