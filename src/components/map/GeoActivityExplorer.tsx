@@ -1,6 +1,9 @@
+import React, { useState } from "react";
+import { ComposableMap, Geographies, Geography } from "react-simple-maps";
 import React, { useMemo, useState } from "react";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
+import { fipsToAbbr } from "@/lib/stateCodes";
 import { ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { cn } from "@/lib/utils";
@@ -58,6 +61,83 @@ export default function GeoActivityExplorer() {
   const rightStates = data.slice(Math.ceil(data.length / 2));
 
   return (
+
+    <ChartContainer config={{}} title="State Visits" className="space-y-4">
+      <ComposableMap
+        projection="geoAlbersUsa"
+        className="w-full h-60"
+        data-testid="state-map"
+      >
+        <Geographies geography="/us-states.json">
+          {({ geographies }) =>
+            geographies.map((geo) => {
+              const abbr = fipsToAbbr[geo.id as string]
+              if (!abbr) return null
+              const state = data.find((d) => d.stateCode === abbr)
+              const visited = state?.visited
+              const selectedState = expanded === abbr
+              return (
+                <Geography
+                  key={geo.rsmKey}
+                  geography={geo}
+                  data-state={abbr}
+                  onClick={() =>
+                    setExpanded(selectedState ? null : abbr)
+                  }
+                  style={{
+                    default: {
+                      fill: visited
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--muted))",
+                      stroke: selectedState
+                        ? "hsl(var(--ring))"
+                        : "hsl(var(--border))",
+                      strokeWidth: selectedState ? 2 : 0.5,
+                      outline: "none",
+                    },
+                    hover: {
+                      fill: visited
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--muted))",
+                      stroke: "hsl(var(--ring))",
+                      strokeWidth: 2,
+                      outline: "none",
+                    },
+                    pressed: {
+                      fill: visited
+                        ? "hsl(var(--primary))"
+                        : "hsl(var(--muted))",
+                      stroke: "hsl(var(--ring))",
+                      strokeWidth: 2,
+                      outline: "none",
+                    },
+                  }}
+                />
+              )
+            })
+          }
+        </Geographies>
+      </ComposableMap>
+      <div className="grid grid-cols-5 gap-2">
+        {data.map((state) => (
+          <button
+            key={state.stateCode}
+            aria-pressed={expanded === state.stateCode}
+            onClick={() =>
+              setExpanded(expanded === state.stateCode ? null : state.stateCode)
+            }
+            className={cn(
+              "h-12 flex items-center justify-center rounded border text-sm font-medium focus:outline-none focus:ring",
+              state.visited
+                ? "bg-primary text-primary-foreground"
+                : "bg-muted text-muted-foreground",
+              expanded === state.stateCode && "ring-2 ring-ring"
+            )}
+          >
+            {state.stateCode}
+          </button>
+        ))}
+
     <ChartContainer config={{}} title="State Visits" className="space-y-6">
       <div className="flex gap-12">
         <div className="grid grid-cols-5 gap-1">
@@ -78,6 +158,7 @@ export default function GeoActivityExplorer() {
             <StateTable states={rightStates} expanded={expandedState} onToggle={toggleState} />
           </div>
         </div>
+
       </div>
     </ChartContainer>
   );
