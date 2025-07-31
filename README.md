@@ -105,6 +105,22 @@ function with real API calls for production data.
 }
 ```
 
+## Data sources
+All mock data lives in `src/lib/api.ts`. The hooks in `src/hooks` wrap these
+helpers so components can consume the values asynchronously:
+
+- `getGarminData()` and `getDailySteps()` drive the dashboard metrics and daily
+  step charts.
+- `getSeasonalBaselines()` provides monthly ranges used for goal overlays.
+- `getRunningStats()` supplies the detailed stats on the Statistics page.
+- `getWeeklyVolume()` feeds the weekly mileage chart.
+- `getBenchmarkStats()` returns peer comparison bands for pace and load.
+- `getRunningSessions()` and `getRouteSessions()` generate data for similarity
+  maps and route profiles.
+- `getStateVisits()` lists state and city totals for the geographic explorer.
+
+Replace these stubs with real API calls when connecting to live Garmin data.
+
 ## Charts & maps
 All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing. Include a <ChartHeader> for titles so typography stays consistent.
 
