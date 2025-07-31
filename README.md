@@ -89,6 +89,9 @@ All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CS
 
 Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
 
+### Examples page
+`src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.
+
 ## Theming extensions
 If you need new variants—say a “danger” button or a “success” badge—run:
 
