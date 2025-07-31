@@ -8,6 +8,7 @@ import TreadmillVsOutdoor from "@/components/statistics/TreadmillVsOutdoor"
 import PaceDistribution from "@/components/statistics/PaceDistribution"
 import HeartRateZones from "@/components/statistics/HeartRateZones"
 import PaceVsHR from "@/components/statistics/PaceVsHR"
+import TrainingLoadRatio from "@/components/statistics/TrainingLoadRatio"
 // import TemperatureBreakdown from "./TemperatureBreakdown"
 // import WeatherConditions from "./WeatherConditions"
 
@@ -24,10 +25,11 @@ export default function StatisticsExamplesPage() {
         <RunDistances />
         <TreadmillVsOutdoor />
       </div>
-      <div className="grid gap-8 md:grid-cols-3">
+      <div className="grid gap-8 md:grid-cols-4">
         <PaceDistribution />
         <HeartRateZones />
         <PaceVsHR />
+        <TrainingLoadRatio />
       </div>
       {/* add TemperatureBreakdown and WeatherConditions similarly */}
     </div>

@@ -6,3 +6,4 @@ export { default as TreadmillVsOutdoor } from "./TreadmillVsOutdoor";
 export { default as PaceDistribution } from "./PaceDistribution";
 export { default as HeartRateZones } from "./HeartRateZones";
 export { default as PaceVsHR } from "./PaceVsHR";
+export { default as TrainingLoadRatio } from "./TrainingLoadRatio";
