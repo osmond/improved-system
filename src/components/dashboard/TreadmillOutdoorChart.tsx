@@ -1,5 +1,5 @@
+import { ChartContainer } from '@/components/ui/chart-container'
 import {
-  ChartContainer,
   PieChart,
   Pie,
   Tooltip,
