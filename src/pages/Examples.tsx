@@ -1,6 +1,6 @@
 import React from "react";
-import ChartExamplesPage from "@/components/examples/ChartExamplesPage";
+import BarChartExamples from "@/components/examples/BarChartExamples";
 
 export default function Examples() {
-  return <ChartExamplesPage />;
+  return <BarChartExamples />;
 }
