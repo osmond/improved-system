@@ -1,6 +1,6 @@
 import * as React from "react";
+import { ChartContainer } from "@/components/ui/chart-container";
 import {
-  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   BarChart,
