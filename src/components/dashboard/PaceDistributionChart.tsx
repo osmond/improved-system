@@ -20,8 +20,8 @@ interface PaceDistributionChartProps {
 
 export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
   const config = {
-    upper: { color: 'hsl(var(--muted-foreground))' },
-    lower: { color: 'hsl(var(--muted-foreground))' },
+    upper: { color: 'var(--chart-primary)' },
+    lower: { color: 'var(--chart-primary)' },
   }
   return (
     <ChartContainer
@@ -30,12 +30,17 @@ export function PaceDistributionChart({ data }: PaceDistributionChartProps) {
       title='Pace Distribution'
     >
       <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-        <CartesianGrid strokeDasharray='3 3' />
-        <XAxis dataKey='bin' />
+        <CartesianGrid stroke='var(--grid-line)' strokeDasharray='3 3' />
+        <XAxis
+          dataKey='bin'
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
         <YAxis hide />
-        <ReferenceLine y={0} strokeDasharray='3 3' stroke='hsl(var(--muted))' />
-        <Area dataKey='upper' fill='hsl(var(--muted-foreground))' stroke='none' />
-        <Area dataKey='lower' fill='hsl(var(--muted-foreground))' stroke='none' />
+        <ReferenceLine y={0} strokeDasharray='3 3' stroke='var(--axis-line)' />
+        <Area dataKey='upper' fill='var(--chart-primary)' stroke='none' />
+        <Area dataKey='lower' fill='var(--chart-primary)' stroke='none' />
       </AreaChart>
     </ChartContainer>
   )

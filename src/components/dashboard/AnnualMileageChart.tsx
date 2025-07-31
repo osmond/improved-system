@@ -4,8 +4,9 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
   CartesianGrid,
+  ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 
 export interface AnnualMileage {
@@ -18,7 +19,7 @@ interface AnnualMileageChartProps {
 }
 
 export function AnnualMileageChart({ data }: AnnualMileageChartProps) {
-  const config = { totalMiles: { color: 'hsl(var(--chart-7))' } }
+  const config = { totalMiles: { color: 'var(--chart-7)' } }
   return (
     <ChartContainer
       config={config}
@@ -26,11 +27,22 @@ export function AnnualMileageChart({ data }: AnnualMileageChartProps) {
       title='Annual Mileage'
     >
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-        <CartesianGrid strokeDasharray='3 3' />
-        <XAxis dataKey='year' />
-        <YAxis />
-        <Tooltip />
-        <Bar dataKey='totalMiles' fill='hsl(var(--chart-7))' />
+        <CartesianGrid stroke='var(--grid-line)' strokeDasharray='3 3' />
+        <XAxis
+          dataKey='year'
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <YAxis
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <ChartTooltip>
+          <ChartTooltipContent />
+        </ChartTooltip>
+        <Bar dataKey='totalMiles' fill='var(--chart-7)' />
       </BarChart>
     </ChartContainer>
   )

@@ -5,7 +5,8 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip,
+  ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 
 export interface PaceHeartPoint {
@@ -19,7 +20,7 @@ interface PaceVsHeartChartProps {
 
 export function PaceVsHeartChart({ data }: PaceVsHeartChartProps) {
   const config = {
-    value: { color: 'hsl(var(--chart-4))' },
+    value: { color: 'var(--chart-4)' },
   }
   return (
     <ChartContainer
@@ -28,11 +29,26 @@ export function PaceVsHeartChart({ data }: PaceVsHeartChartProps) {
       title='Pace vs Heart Rate'
     >
       <ScatterChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
-        <CartesianGrid stroke='hsl(var(--muted))' />
-        <XAxis dataKey='pace' type='number' reversed />
-        <YAxis dataKey='heartRate' type='number' />
-        <Tooltip />
-        <Scatter fill='hsl(var(--chart-4))' />
+        <CartesianGrid stroke='var(--grid-line)' />
+        <XAxis
+          dataKey='pace'
+          type='number'
+          reversed
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <YAxis
+          dataKey='heartRate'
+          type='number'
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+          axisLine={{ stroke: 'var(--axis-line)' }}
+          tickLine={false}
+        />
+        <ChartTooltip>
+          <ChartTooltipContent />
+        </ChartTooltip>
+        <Scatter fill='var(--chart-4)' />
       </ScatterChart>
     </ChartContainer>
   )

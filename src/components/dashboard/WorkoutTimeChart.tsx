@@ -18,7 +18,7 @@ interface WorkoutTimeChartProps {
 }
 
 export function WorkoutTimeChart({ data, maxPct }: WorkoutTimeChartProps) {
-  const config = { pct: { color: 'hsl(var(--chart-8))' } }
+  const config = { pct: { color: 'var(--chart-8)' } }
   return (
     <ChartContainer
       config={config}
@@ -26,10 +26,17 @@ export function WorkoutTimeChart({ data, maxPct }: WorkoutTimeChartProps) {
       title='Workout Activity by Time'
     >
       <RadarChart data={data}>
-        <PolarGrid stroke='hsl(var(--muted))' />
-        <PolarAngleAxis dataKey='hour' />
-        <PolarRadiusAxis angle={90} domain={[0, maxPct]} />
-        <Radar dataKey='pct' fill='hsl(var(--chart-8))' fillOpacity={0.6} />
+        <PolarGrid stroke='var(--grid-line)' />
+        <PolarAngleAxis
+          dataKey='hour'
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+        />
+        <PolarRadiusAxis
+          angle={90}
+          domain={[0, maxPct]}
+          tick={{ fill: 'var(--tick-text)', fontSize: 10 }}
+        />
+        <Radar dataKey='pct' fill='var(--chart-8)' fillOpacity={0.6} />
       </RadarChart>
     </ChartContainer>
   )
