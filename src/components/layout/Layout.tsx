@@ -16,7 +16,7 @@ export default function Layout({
   return (
     <div className="min-h-screen p-4">
       <header className="flex justify-between items-center mb-4">
-        <h1 className="text-xl font-bold">Garmin Dashboard</h1>
+        <h1 className="text-xl font-bold">Dashboard</h1>
         <ThemeToggle />
       </header>
       <Tabs value={activeTab} onValueChange={setActiveTab}>

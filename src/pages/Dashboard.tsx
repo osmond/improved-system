@@ -1,9 +1,11 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 
+
 import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
 import { minutesSince } from "@/lib/utils";
 import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
+
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
 

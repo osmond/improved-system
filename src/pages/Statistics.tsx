@@ -14,6 +14,7 @@ import {
   EquipmentUsageTimeline,
   PerfVsEnvironmentMatrix,
   SessionSimilarityMap,
+  RouteComparison,
 } from "@/components/statistics"
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands"
 
@@ -44,6 +45,7 @@ function Filters() {
         <EquipmentUsageTimeline />
         <PerfVsEnvironmentMatrix />
         <SessionSimilarityMap />
+        <RouteComparison route="River Loop" />
         <PeerBenchmarkBands />
       </div>
     </ChartSelectionProvider>
@@ -70,6 +72,7 @@ export default function Statistics() {
         <EquipmentUsageTimeline />
         <PerfVsEnvironmentMatrix />
         <SessionSimilarityMap />
+        <RouteComparison route="River Loop" />
         <PeerBenchmarkBands />
       </div>
     </DashboardFiltersProvider>
