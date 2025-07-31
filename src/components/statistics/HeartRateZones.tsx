@@ -9,23 +9,23 @@ import {
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
-
-const hrZoneData = [
-  { zone: "Recovery", bpm: 120 },
-  { zone: "Easy", bpm: 137 },
-  { zone: "Tempo", bpm: 161 },
-  { zone: "Threshold", bpm: 180 },
-]
+import { useChartSelection } from "@/components/dashboard/ChartSelectionContext"
+import { useRunningStats } from "@/hooks/useRunningStats"
 
 const config = {
   bpm: { label: "Heart Rate", color: "var(--chart-8)" },
 } satisfies Record<string, unknown>
 
 export default function HeartRateZones() {
+  const { range } = useChartSelection()
+  const stats = useRunningStats(range)
+
+  if (!stats) return null
+
   return (
     <ChartCard title="Heart Rate Zones">
       <ChartContainer config={config} className="h-60">
-        <BarChart data={hrZoneData}>
+        <BarChart data={stats.heartRateZones}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="zone" tickLine={false} axisLine={false} />
           <ChartTooltip />

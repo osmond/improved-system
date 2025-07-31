@@ -9,26 +9,23 @@ import {
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
-
-const violinData = [
-  { pace: "5:00", density: 0.1 },
-  { pace: "5:30", density: 0.3 },
-  { pace: "6:00", density: 0.6 },
-  { pace: "6:30", density: 0.9 },
-  { pace: "7:00", density: 0.6 },
-  { pace: "7:30", density: 0.3 },
-  { pace: "8:00", density: 0.1 },
-]
+import { useChartSelection } from "@/components/dashboard/ChartSelectionContext"
+import { useRunningStats } from "@/hooks/useRunningStats"
 
 const config = {
   density: { label: "Density", color: "var(--chart-7)" },
 } satisfies Record<string, unknown>
 
 export default function PaceDistribution() {
+  const { range } = useChartSelection()
+  const stats = useRunningStats(range)
+
+  if (!stats) return null
+
   return (
     <ChartCard title="Pace Distribution">
       <ChartContainer config={config} className="h-64">
-        <AreaChart data={violinData}>
+        <AreaChart data={stats.paceDistribution}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="pace" tickLine={false} axisLine={false} />
           <ChartTooltip />
