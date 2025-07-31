@@ -377,3 +377,39 @@ export async function getRunningSessions(): Promise<RunningSession[]> {
 
   })
 }
+
+export interface RouteProfilePoint {
+  distance: number
+  elevation: number
+}
+
+export interface RouteSession {
+  id: number
+  route: string
+  date: string
+  profile: RouteProfilePoint[]
+  paceDistribution: PaceDistributionBin[]
+}
+
+export function generateMockRouteSessions(route = 'River Loop'): RouteSession[] {
+  return Array.from({ length: 4 }, (_, i) => ({
+    id: i + 1,
+    route,
+    date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10),
+    profile: Array.from({ length: 8 }, (__, j) => ({
+      distance: j,
+      elevation: 20 * Math.sin(j / 2) + Math.random() * 5,
+    })),
+    paceDistribution: Array.from({ length: 5 }, (__, j) => ({
+      bin: `${5 + j}:00`,
+      upper: Math.round(Math.random() * 8 + 2),
+      lower: 0,
+    })),
+  }))
+}
+
+export async function getRouteSessions(route: string): Promise<RouteSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockRouteSessions(route)), 200)
+  })
+}
