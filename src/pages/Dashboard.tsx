@@ -58,45 +58,25 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <Card className="md:col-span-2 p-4">
-        <DailyStepsChart data={dailySteps} />
-      </Card>
+      <DailyStepsChart data={dailySteps} />
 
-      <Card className="md:col-span-2 p-4">
-        <ActivitiesChart />
-      </Card>
+      <ActivitiesChart />
 
-      <Card className="md:col-span-2 p-4">
-        <PaceDistributionChart data={running.paceDistribution} />
-      </Card>
+      <PaceDistributionChart data={running.paceDistribution} />
 
-      <Card className="md:col-span-2 p-4">
-        <HeartRateZonesChart data={running.heartRateZones} />
-      </Card>
+      <HeartRateZonesChart data={running.heartRateZones} />
 
-      <Card className="md:col-span-2 p-4">
-        <PaceVsHeartChart data={running.paceVsHeart} />
-      </Card>
+      <PaceVsHeartChart data={running.paceVsHeart} />
 
-      <Card className="md:col-span-2 p-4">
-        <TemperatureChart data={running.temperature} />
-      </Card>
+      <TemperatureChart data={running.temperature} />
 
-      <Card className="md:col-span-2 p-4">
-        <AnnualMileageChart data={running.annualMileage} />
-      </Card>
+      <AnnualMileageChart data={running.annualMileage} />
 
-      <Card className="md:col-span-2 p-4">
-        <WorkoutTimeChart data={running.byHour} maxPct={100} />
-      </Card>
+      <WorkoutTimeChart data={running.byHour} maxPct={100} />
 
-      <Card className="md:col-span-2 p-4">
-        <RunDistancesChart data={running.distanceBuckets} />
-      </Card>
+      <RunDistancesChart data={running.distanceBuckets} />
 
-      <Card className="md:col-span-2 p-4">
-        <TreadmillOutdoorChart data={running.treadmillOutdoor} />
-      </Card>
+      <TreadmillOutdoorChart data={running.treadmillOutdoor} />
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 md:col-span-2">
         <MapChart data={visits} onSelectState={setSelected} />

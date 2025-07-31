@@ -22,7 +22,7 @@ export function AverageDailyMileageChart({ data, maxPct }: AverageDailyMileageCh
   return (
     <ChartContainer
       config={config}
-      className='h-60'
+      className='h-60 md:col-span-2'
       title='Daily Mileage by Day'
     >
       <RadarChart data={data}>

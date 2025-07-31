@@ -22,7 +22,7 @@ export function WorkoutTimeChart({ data, maxPct }: WorkoutTimeChartProps) {
   return (
     <ChartContainer
       config={config}
-      className='h-60'
+      className='h-60 md:col-span-2'
       title='Workout Activity by Time'
     >
       <RadarChart data={data}>

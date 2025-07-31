@@ -42,7 +42,7 @@ export function WeatherConditionsChart({ data }: WeatherConditionsChartProps) {
   return (
     <ChartContainer
       config={config}
-      className='h-60'
+      className='h-60 md:col-span-2'
       title='Weather Conditions'
     >
       <BarChart layout='vertical' data={data} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>

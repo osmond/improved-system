@@ -63,7 +63,13 @@ export function StepsChart() {
 
   if (!data.length) {
     return (
-      <ChartContainer config={chartConfig} className="h-60" title="Daily Steps">
+
+      <ChartContainer
+        config={chartConfig}
+        className="h-60 md:col-span-2"
+        title="Daily Steps"
+      >
+
         <div className="flex h-full items-center justify-center text-muted-foreground">
           No data
         </div>
@@ -73,11 +79,14 @@ export function StepsChart() {
 
   // assume data is an array like [{ date: "2025-07-01", steps: 8000 }, …]
   return (
-    <ChartContainer config={chartConfig} className="h-60" title="Daily Steps">
-      <BarChart
-        data={data}
-        margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
-      >
+
+    <ChartContainer
+      config={chartConfig}
+      className="h-60 md:col-span-2"
+      title="Daily Steps"
+    >
+      <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
           dataKey="date"
