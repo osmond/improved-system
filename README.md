@@ -80,6 +80,12 @@ In the handoff, document what shape `useGarminData()` returns (e.g. `{ steps: nu
 }
 ```
 
+`useRunningSessions()` resolves to:
+
+```ts
+{ x: number; y: number; cluster: number }[]
+```
+
 The mock implementation uses `generateMockRunningStats()` in `src/lib/api.ts` to
 create semi-random demo data each time the app loads. You can replace this
 function with real API calls for production data.
@@ -88,6 +94,8 @@ function with real API calls for production data.
 All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing. Include a <ChartHeader> for titles so typography stays consistent.
 
 Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
+
+The `useRunningSessions()` hook powers the `<SessionSimilarityMap>` component, which plots t‑SNE embeddings of recent runs.
 
 ### Examples page
 `src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.

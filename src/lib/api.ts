@@ -244,3 +244,34 @@ export async function getRunningStats(): Promise<RunningStats> {
     setTimeout(() => resolve(generateMockRunningStats()), 300)
   })
 }
+
+export interface RunningSession {
+  id: number
+  pace: number
+  duration: number
+  heartRate: number
+  date: string
+}
+
+export function generateMockRunningSessions(): RunningSession[] {
+  return Array.from({ length: 50 }, (_, i) => {
+    const pace = +(5 + Math.random() * 4).toFixed(2)
+    const duration = Math.round(20 + Math.random() * 40)
+    const heartRate = Math.round(120 + Math.random() * 40)
+    const date = new Date(
+      Date.now() - Math.random() * 1000 * 60 * 60 * 24 * 180
+    )
+      .toISOString()
+      .slice(0, 10)
+    return { id: i + 1, pace, duration, heartRate, date }
+  })
+}
+
+export const mockRunningSessions: RunningSession[] = generateMockRunningSessions()
+
+export async function getRunningSessions(): Promise<RunningSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockRunningSessions()), 300)
+  })
+}
+
