@@ -20,18 +20,19 @@ import {
 
 export const description = 'A bar chart'
 
+// Mock monthly mileage totals so the chart resembles fitness data
 const chartData = [
-  { month: 'January', desktop: 186 },
-  { month: 'February', desktop: 305 },
-  { month: 'March', desktop: 237 },
-  { month: 'April', desktop: 73 },
-  { month: 'May', desktop: 209 },
-  { month: 'June', desktop: 214 },
+  { month: 'January', miles: 120 },
+  { month: 'February', miles: 150 },
+  { month: 'March', miles: 95 },
+  { month: 'April', miles: 160 },
+  { month: 'May', miles: 175 },
+  { month: 'June', miles: 140 },
 ]
 
 const chartConfig = {
-  desktop: {
-    label: 'Desktop',
+  miles: {
+    label: 'Miles',
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig
@@ -55,7 +56,7 @@ export default function ChartBarDefault() {
               tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey='desktop' fill='var(--color-desktop)' radius={8} />
+            <Bar dataKey='miles' fill='var(--color-miles)' radius={8} />
           </BarChart>
         </ChartContainer>
       </CardContent>

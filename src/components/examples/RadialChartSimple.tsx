@@ -20,38 +20,22 @@ import {
 
 export const description = 'A radial chart'
 
+// Distribution of workout minutes by activity type
 const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 90, fill: 'var(--color-other)' },
+  { activity: 'Run', minutes: 520, fill: 'var(--color-run)' },
+  { activity: 'Bike', minutes: 340, fill: 'var(--color-bike)' },
+  { activity: 'Swim', minutes: 120, fill: 'var(--color-swim)' },
+  { activity: 'Strength', minutes: 220, fill: 'var(--color-strength)' },
+  { activity: 'Other', minutes: 90, fill: 'var(--color-other)' },
 ]
 
 const chartConfig = {
-  visitors: {
-    label: 'Visitors',
-  },
-  chrome: {
-    label: 'Chrome',
-    color: 'hsl(var(--chart-1))',
-  },
-  safari: {
-    label: 'Safari',
-    color: 'hsl(var(--chart-2))',
-  },
-  firefox: {
-    label: 'Firefox',
-    color: 'hsl(var(--chart-3))',
-  },
-  edge: {
-    label: 'Edge',
-    color: 'hsl(var(--chart-4))',
-  },
-  other: {
-    label: 'Other',
-    color: 'hsl(var(--chart-5))',
-  },
+  minutes: { label: 'Minutes' },
+  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
+  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
+  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
+  strength: { label: 'Strength', color: 'hsl(var(--chart-4))' },
+  other: { label: 'Other', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
 
 export default function ChartRadialSimple() {
@@ -69,9 +53,9 @@ export default function ChartRadialSimple() {
           <RadialBarChart data={chartData} innerRadius={30} outerRadius={110}>
             <ChartTooltip
               cursor={false}
-              content={<ChartTooltipContent hideLabel nameKey='browser' />}
+              content={<ChartTooltipContent hideLabel nameKey='activity' />}
             />
-            <RadialBar dataKey='visitors' background />
+            <RadialBar dataKey='minutes' background />
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
@@ -80,7 +64,7 @@ export default function ChartRadialSimple() {
           Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total visitors for the last 6 months
+          Showing total workout minutes for the last 6 months
         </div>
       </CardFooter>
     </Card>

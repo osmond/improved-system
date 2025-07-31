@@ -20,20 +20,21 @@ import {
 
 export const description = 'A mixed bar chart'
 
+// Share of different activity types measured in session counts
 const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 90, fill: 'var(--color-other)' },
+  { activity: 'run', sessions: 45, fill: 'var(--color-run)' },
+  { activity: 'bike', sessions: 30, fill: 'var(--color-bike)' },
+  { activity: 'swim', sessions: 12, fill: 'var(--color-swim)' },
+  { activity: 'hike', sessions: 8, fill: 'var(--color-hike)' },
+  { activity: 'other', sessions: 6, fill: 'var(--color-other)' },
 ]
 
 const chartConfig = {
-  visitors: { label: 'Visitors' },
-  chrome: { label: 'Chrome', color: 'hsl(var(--chart-1))' },
-  safari: { label: 'Safari', color: 'hsl(var(--chart-2))' },
-  firefox: { label: 'Firefox', color: 'hsl(var(--chart-3))' },
-  edge: { label: 'Edge', color: 'hsl(var(--chart-4))' },
+  sessions: { label: 'Sessions' },
+  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
+  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
+  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
+  hike: { label: 'Hike', color: 'hsl(var(--chart-4))' },
   other: { label: 'Other', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
 
@@ -48,16 +49,16 @@ export default function ChartBarMixed() {
         <ChartContainer config={chartConfig} className='h-60'>
           <BarChart accessibilityLayer data={chartData} layout='vertical' margin={{ left: 0 }}>
             <YAxis
-              dataKey='browser'
+              dataKey='activity'
               type='category'
               tickLine={false}
               tickMargin={10}
               axisLine={false}
               tickFormatter={(value) => chartConfig[value as keyof typeof chartConfig]?.label}
             />
-            <XAxis dataKey='visitors' type='number' hide />
+            <XAxis dataKey='sessions' type='number' hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey='visitors' layout='vertical' radius={5} />
+            <Bar dataKey='sessions' layout='vertical' radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
@@ -66,7 +67,7 @@ export default function ChartBarMixed() {
           Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total visitors for the last 6 months
+          Showing total sessions for the last 6 months
         </div>
       </CardFooter>
     </Card>

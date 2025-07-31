@@ -20,18 +20,19 @@ import {
 
 export const description = 'A bar chart with a custom label'
 
+// Mock monthly mileage split by activity type
 const chartData = [
-  { month: 'January', desktop: 186, mobile: 80 },
-  { month: 'February', desktop: 305, mobile: 200 },
-  { month: 'March', desktop: 237, mobile: 120 },
-  { month: 'April', desktop: 73, mobile: 190 },
-  { month: 'May', desktop: 209, mobile: 130 },
-  { month: 'June', desktop: 214, mobile: 140 },
+  { month: 'January', run: 60, bike: 40 },
+  { month: 'February', run: 70, bike: 50 },
+  { month: 'March', run: 55, bike: 65 },
+  { month: 'April', run: 80, bike: 80 },
+  { month: 'May', run: 90, bike: 85 },
+  { month: 'June', run: 75, bike: 65 },
 ]
 
 const chartConfig = {
-  desktop: { label: 'Desktop', color: 'hsl(var(--chart-2))' },
-  mobile: { label: 'Mobile', color: 'hsl(var(--chart-2))' },
+  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
+  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
   label: { color: 'hsl(var(--background))' },
 } satisfies ChartConfig
 
@@ -55,11 +56,11 @@ export default function ChartBarLabelCustom() {
               tickFormatter={(value) => value.slice(0, 3)}
               hide
             />
-            <XAxis dataKey='desktop' type='number' hide />
+            <XAxis dataKey='run' type='number' hide />
             <ChartTooltip cursor={false} content={<ChartTooltipContent indicator='line' />} />
-            <Bar dataKey='desktop' layout='vertical' fill='var(--color-desktop)' radius={4}>
+            <Bar dataKey='run' layout='vertical' fill='var(--color-run)' radius={4}>
               <LabelList dataKey='month' position='insideLeft' offset={8} className='fill-[var(--color-label)]' fontSize={12} />
-              <LabelList dataKey='desktop' position='right' offset={8} className='fill-foreground' fontSize={12} />
+              <LabelList dataKey='run' position='right' offset={8} className='fill-foreground' fontSize={12} />
             </Bar>
           </BarChart>
         </ChartContainer>
@@ -69,7 +70,7 @@ export default function ChartBarLabelCustom() {
           Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total visitors for the last 6 months
+          Showing run mileage for the last 6 months
         </div>
       </CardFooter>
     </Card>
