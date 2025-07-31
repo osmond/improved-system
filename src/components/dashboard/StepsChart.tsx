@@ -13,6 +13,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 
 import type { GarminDay } from "@/lib/api";
 import { useDailySteps } from "@/hooks/useGarminData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
   steps: {
@@ -23,7 +24,21 @@ const chartConfig = {
 
 export function StepsChart() {
   const data = useDailySteps();
-  if (!data) return null;
+  if (!data) return <Skeleton className="h-60 w-full" />;
+
+  if (!data.length) {
+    return (
+      <ChartContainer
+        config={chartConfig}
+        className="h-60"
+        title="Daily Steps"
+      >
+        <div className="flex h-full items-center justify-center text-muted-foreground">
+          No data
+        </div>
+      </ChartContainer>
+    );
+  }
 
   // assume data is an array like [{ date: "2025-07-01", steps: 8000 }, …]
   return (
