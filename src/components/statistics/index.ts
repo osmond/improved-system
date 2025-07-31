@@ -8,3 +8,4 @@ export { default as HeartRateZones } from "./HeartRateZones";
 export { default as PaceVsHR } from "./PaceVsHR";
 export { default as TrainingLoadRatio } from "./TrainingLoadRatio";
 export { default as EquipmentUsageTimeline } from "./EquipmentUsageTimeline";
+export { default as SessionSimilarityMap } from "./SessionSimilarityMap";
