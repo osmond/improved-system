@@ -15,7 +15,8 @@ import ChartRadarDots from "@/components/examples/RadarChartDots";
 import RadarChartWorkoutByTime from "@/components/examples/RadarChartWorkoutByTime";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
-import ChartTreadmillVsOutdoor from "@/components/examples/TreadmillVsOutdoor";
+import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
+import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 
@@ -48,6 +49,9 @@ export default function Examples() {
       <ChartBarMixed />
       <ChartBarLabelCustom />
       <ChartTreadmillVsOutdoor />
+
+      <ScatterChartPaceHeartRate />
+      <AreaChartLoadRatio />
 
     </div>
   );
