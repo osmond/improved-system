@@ -14,13 +14,21 @@ vi.mock("@/hooks/useStateVisits", () => ({
   ],
 }));
 
+beforeAll(() => {
+  global.ResizeObserver = class {
+    observe() {}
+    unobserve() {}
+    disconnect() {}
+  } as any;
+});
+
 describe("GeoActivityExplorer", () => {
   it("toggles state details", () => {
     render(<GeoActivityExplorer />);
-    const button = screen.getByRole("button", { name: "CA" });
-    fireEvent.click(button);
-    expect(screen.getByText("LA")).toBeInTheDocument();
-    fireEvent.click(button);
-    expect(screen.queryByText("LA")).toBeNull();
+    const square = screen.getByLabelText("CA visited");
+    fireEvent.click(square);
+    expect(screen.getAllByText("LA").length).toBeGreaterThan(1);
+    fireEvent.click(square);
+    expect(screen.getAllByText("LA").length).toBe(1);
   });
 });
