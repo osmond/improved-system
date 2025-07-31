@@ -19,6 +19,7 @@ import { minutesSince } from "@/lib/utils";
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
+  const monthly = useMonthlyStepsProjection();
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
@@ -48,7 +49,6 @@ export default function Dashboard() {
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
   const sparkData: { date: string; value: number }[] = [];
-  const monthly = useMonthlyStepsProjection();
   const lastSyncedMinutes = minutesSince(data.lastSync);
 
   return (
