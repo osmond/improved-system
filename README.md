@@ -57,11 +57,8 @@ Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can re
 ## Theming extensions
 If you need new variants—say a “danger” button or a “success” badge—run:
 
-```bash
-npx shadcn@latest add button --variant danger
-```
-
-or manually copy/edit the template in `src/components/ui/button.tsx` and register the variant in your Tailwind `theme.extend`.
+ manually copy/edit the template in `src/components/ui/button.tsx` and register the variant in your Tailwind `theme.extend`.
+https://ui.shadcn.com/docs/components
 
 ## Documentation & testing
 Storybook (or even MDX) is great for cataloguing all `ui/` components with knobs for variant/size.
