@@ -20,7 +20,7 @@ export interface DailyStepsChartProps {
 const chartConfig = {
   steps: {
     label: "Steps",
-    color: "var(--chart-1)",
+    color: "hsl(var(--chart-1))",
   },
 } satisfies ChartConfig;
 
