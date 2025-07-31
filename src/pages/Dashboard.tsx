@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
 
+import { Skeleton } from "@/components/ui/skeleton";
+
+
 
 import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
 import { minutesSince } from "@/lib/utils";
@@ -19,6 +22,8 @@ import {
   useMostRecentActivity,
   useMonthlyStepsProjection,
 } from "@/hooks/useGarminData";
+import useInsights from "@/hooks/useInsights";
+import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
 
 
 export default function Dashboard() {
@@ -29,7 +34,13 @@ export default function Dashboard() {
   const [expanded, setExpanded] = useState<Metric | null>(null);
 
   if (!data) {
-    return <p>Loading…</p>;
+    return (
+      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        {Array.from({ length: 4 }).map((_, i) => (
+          <Skeleton key={i} className="h-44" />
+        ))}
+      </div>
+    )
   }
 
   const handleKey = (
