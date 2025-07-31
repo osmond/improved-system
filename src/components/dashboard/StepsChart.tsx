@@ -1,5 +1,5 @@
 // src/components/dashboard/StepsChart.tsx
-import { ChartContainer } from "@/components/ui/chart-container";
+import { ChartContainer } from "@/components/ui/chart";
 import {
   ChartTooltip,
   ChartTooltipContent,

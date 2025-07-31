@@ -130,7 +130,19 @@ ${colorConfig
   )
 }
 
-const ChartTooltip = RechartsPrimitive.Tooltip
+function ChartTooltip(
+  props: React.ComponentProps<typeof RechartsPrimitive.Tooltip> & {
+    children?: React.ReactNode
+  }
+) {
+  const { children, ...rest } = props
+  return (
+    <RechartsPrimitive.Tooltip
+      {...rest}
+      content={children as React.ReactElement}
+    />
+  )
+}
 
 const ChartTooltipContent = React.forwardRef<
   HTMLDivElement,
@@ -141,6 +153,7 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed"
       nameKey?: string
       labelKey?: string
+      valueFormatter?: (value: any) => React.ReactNode
     }
 >(
   (
@@ -155,6 +168,7 @@ const ChartTooltipContent = React.forwardRef<
       labelFormatter,
       labelClassName,
       formatter,
+      valueFormatter,
       color,
       nameKey,
       labelKey,
@@ -266,9 +280,13 @@ const ChartTooltipContent = React.forwardRef<
                           {itemConfig?.label || item.name}
                         </span>
                       </div>
-                      {item.value && (
+                      {item.value !== undefined && (
                         <span className="font-mono font-medium tabular-nums text-foreground">
-                          {item.value.toLocaleString()}
+                          {valueFormatter
+                            ? valueFormatter(item.value)
+                            : typeof item.value === "number"
+                            ? item.value.toLocaleString()
+                            : String(item.value)}
                         </span>
                       )}
                     </div>
@@ -384,6 +402,7 @@ function getPayloadConfigFromPayload(
 }
 
 export {
+  ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
   ChartLegend,
