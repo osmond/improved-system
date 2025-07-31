@@ -1,5 +1,5 @@
 import * as React from "react";
-import { ChartContainer } from "@/components/ui/chart-container";
+import { ChartContainer } from "@/components/ui/chart";
 import {
   ChartTooltip,
   ChartTooltipContent,
@@ -80,8 +80,6 @@ export function DailyStepsChart({
       <BarChart
         data={last7}
         margin={{ top: 20, right: 20, bottom: 20, left: 0 }}
-        // enable animation for polish
-        isAnimationActive={true}
       >
         <CartesianGrid
           stroke="var(--grid-line)"
@@ -146,6 +144,7 @@ export function DailyStepsChart({
           radius={[4, 4, 0, 0]}
           barSize={22}
           aria-label="Bar chart of daily steps"
+          isAnimationActive
         >
           {last7.map((day) => (
             <Cell

@@ -1,4 +1,4 @@
-import { ChartContainer } from "@/components/ui/chart-container";
+import { ChartContainer } from "@/components/ui/chart";
 import {
   ChartTooltip,
   ChartTooltipContent,
