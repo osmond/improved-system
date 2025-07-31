@@ -1,20 +1,34 @@
 import React from "react";
 
+export interface ProgressRingProps {
+  /** Progress percentage from 0-100 */
+  value: number;
+  /** Outer dimension of the ring */
+  size?: number;
+  /** Stroke width of the ring */
+  strokeWidth?: number;
+  /** Accessible label describing the metric */
+  label: string;
+}
+
 export function ProgressRing({
   value,
   size = 80,
   strokeWidth = 8,
-}: {
-  value: number;
-  size?: number;
-  strokeWidth?: number;
-}) {
+  label,
+}: ProgressRingProps) {
   const radius = size / 2 - strokeWidth / 2;
   const circumference = 2 * Math.PI * radius;
   const offset = circumference - (value / 100) * circumference;
 
   return (
-    <svg width={size} height={size} className="rotate-[-90deg]">
+    <svg
+      width={size}
+      height={size}
+      role="img"
+      aria-label={label}
+      className="rotate-[-90deg]"
+    >
       <circle
         cx={size / 2}
         cy={size / 2}

@@ -46,7 +46,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Steps</h2>
-          <ProgressRing value={(data.steps / 10000) * 100} />
+          <ProgressRing label="Steps progress" value={(data.steps / 10000) * 100} />
           <span className="mt-2 text-lg font-bold">{data.steps}</span>
         </Card>
 
@@ -58,7 +58,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Sleep (hrs)</h2>
-          <ProgressRing value={(data.sleep / 8) * 100} />
+          <ProgressRing label="Sleep progress" value={(data.sleep / 8) * 100} />
           <span className="mt-2 text-lg font-bold">{data.sleep}</span>
         </Card>
 
@@ -70,7 +70,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Heart Rate</h2>
-          <ProgressRing value={(data.heartRate / 200) * 100} />
+          <ProgressRing label="Heart rate progress" value={(data.heartRate / 200) * 100} />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
         </Card>
 
@@ -82,7 +82,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Calories</h2>
-          <ProgressRing value={(data.calories / 3000) * 100} />
+          <ProgressRing label="Calories progress" value={(data.calories / 3000) * 100} />
           <span className="mt-2 text-lg font-bold">{data.calories}</span>
         </Card>
       </div>
