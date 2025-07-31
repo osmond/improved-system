@@ -13,3 +13,4 @@ export { default as EquipmentUsageTimeline } from "./EquipmentUsageTimeline";
 export { default as PerfVsEnvironmentMatrix } from "./PerfVsEnvironmentMatrix";
 export { default as SessionSimilarityMap } from "./SessionSimilarityMap";
 
+export { default as RouteComparison } from './RouteComparison'
