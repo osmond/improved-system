@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { getGarminData, getDailySteps, GarminData, GarminDay } from "@/lib/api";
 
 export function useGarminData(): GarminData | null {
@@ -9,10 +9,19 @@ export function useGarminData(): GarminData | null {
   return data;
 }
 
-export function useDailySteps(): GarminDay[] | null {
-  const [data, setData] = useState<GarminDay[] | null>(null);
+export function useGarminDays(): GarminDay[] | null {
+  const [days, setDays] = useState<GarminDay[] | null>(null);
+
   useEffect(() => {
-    getDailySteps().then(setData);
+    getDailySteps().then(setDays);
   }, []);
-  return data;
+
+  return useMemo(() => {
+    if (!days) return days;
+    return [...days].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+  }, [days]);
 }
+
+export const useDailySteps = useGarminDays;
