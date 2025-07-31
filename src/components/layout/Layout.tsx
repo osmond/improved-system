@@ -28,6 +28,9 @@ export default function Layout({
           <TabsTrigger value="map" onClick={() => setActiveTab("map")}>
             Map
           </TabsTrigger>
+          <TabsTrigger value="examples" onClick={() => setActiveTab("examples")}>
+            Examples
+          </TabsTrigger>
         </TabsList>
       </Tabs>
       <div className="mt-2">{children}</div>
