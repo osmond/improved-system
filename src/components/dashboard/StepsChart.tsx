@@ -14,6 +14,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 
 import type { GarminDay } from "@/lib/api";
 import { useGarminDaysLazy } from "@/hooks/useGarminData";
+import useDashboardFilters from "@/hooks/useDashboardFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 
 const chartConfig = {
@@ -64,9 +65,15 @@ export interface StepsChartProps {
 
 export function StepsChart({ active = true }: StepsChartProps = {}) {
   const data = useGarminDaysLazy(active);
+  const { range } = useDashboardFilters();
   if (!data) return <Skeleton className="h-60 w-full" />;
 
-  if (!data.length) {
+  const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+  const start = new Date();
+  start.setDate(start.getDate() - days);
+  const filtered = data.filter((d) => new Date(d.date) >= start);
+
+  if (!filtered.length) {
     return (
 
       <ChartContainer
@@ -90,7 +97,7 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
       className="h-60 md:col-span-2"
       title="Daily Steps"
     >
-      <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+      <BarChart data={filtered} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
 
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis
@@ -100,7 +107,7 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
         <YAxis />
         <ChartTooltip content={<StepsTooltip />} />
         <Bar dataKey="steps" fill={chartConfig.steps.color}>
-          {data.map((day) => (
+          {filtered.map((day) => (
             <Cell
               key={day.date}
               aria-label={`${day.steps.toLocaleString()} steps on ${new Date(day.date).toLocaleDateString()}`}
