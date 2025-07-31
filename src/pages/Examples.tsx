@@ -12,6 +12,7 @@ import ChartRadialGrid from "@/components/examples/RadialChartGrid";
 import ChartBarHorizontal from "@/components/examples/BarChartHorizontal";
 import ChartPieDonut from "@/components/examples/PieChartDonut";
 import ChartRadarDots from "@/components/examples/RadarChartDots";
+import RadarChartWorkoutByTime from "@/components/examples/RadarChartWorkoutByTime";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
 import { mockDailySteps } from "@/lib/api";
@@ -30,6 +31,7 @@ export default function Examples() {
       <LineChartInteractive />
 
       <ChartRadarDefault />
+      <RadarChartWorkoutByTime />
 
       <ChartRadialSimple />
 
