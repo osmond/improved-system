@@ -12,6 +12,8 @@
     --primary-foreground: 210 40% 98%;
     --muted: 210 40% 96%;
     --muted-foreground: 215 16% 47%;
+    --chart-primary: var(--chart-1);
+    --axis-line: var(--muted-foreground);
   }
   :root {
     --chart-1: oklch(0.646 0.222 41.116);
@@ -35,6 +37,8 @@
     --primary-foreground: 222 47% 11%;
     --muted: 217 33% 20%;
     --muted-foreground: 215 20% 65%;
+    --chart-primary: var(--chart-1);
+    --axis-line: var(--muted-foreground);
   }
 
   html, body {
