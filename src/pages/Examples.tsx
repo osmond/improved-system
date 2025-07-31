@@ -10,12 +10,11 @@ import ChartRadialText from "@/components/examples/RadialChartText";
 import ChartBarDefault from "@/components/examples/BarChartDefault";
 import ChartRadialGrid from "@/components/examples/RadialChartGrid";
 import ChartBarHorizontal from "@/components/examples/BarChartHorizontal";
-import ChartPieDonut from "@/components/examples/PieChartDonut";
+import ChartPieInteractive from "@/components/examples/PieChartInteractive";
 import ChartRadarDots from "@/components/examples/RadarChartDots";
 import RadarChartWorkoutByTime from "@/components/examples/RadarChartWorkoutByTime";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
-import ChartTreadmillVsOutdoor from "@/components/examples/TreadmillVsOutdoor";
 import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
 import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison";
@@ -49,12 +48,11 @@ export default function Examples() {
       <ChartBarDefault />
       <ChartRadialGrid />
       <ChartBarHorizontal />
-      <ChartPieDonut />
       <ChartRadarDots />
       <ChartBarMixed />
       <ChartBarLabelCustom />
-      <ChartTreadmillVsOutdoor />
-
+      <ChartPieInteractive />
+      
       <ScatterChartPaceHeartRate />
       <AreaChartLoadRatio />
 
