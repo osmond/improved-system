@@ -1,6 +1,17 @@
 import React, { useState } from "react";
 import { Card } from "@/components/ui/card";
+
 import { Skeleton } from "@/components/ui/skeleton";
+
+
+
+import { ProgressRingWithDelta, MiniSparkline, RingDetailDialog } from "@/components/dashboard";
+import { minutesSince } from "@/lib/utils";
+import { useGarminData, useMostRecentActivity } from "@/hooks/useGarminData";
+
+import useInsights from "@/hooks/useInsights";
+import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
+
 import {
   ProgressRingWithDelta,
   MiniSparkline,
@@ -48,6 +59,7 @@ export default function Dashboard() {
   const previousCalories = data.calories * 0.9;
   const sparkData: { date: string; value: number }[] = [];
   const monthly = useMonthlyStepsProjection();
+  const lastSyncedMinutes = minutesSince(data.lastSync);
 
   return (
     <div className="grid gap-4">
@@ -67,6 +79,7 @@ export default function Dashboard() {
               </span>
             )}
           </h2>
+            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Steps progress"
             value={(data.steps / 10000) * 100}
@@ -106,6 +119,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Sleep (hrs)</h2>
+            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Sleep progress"
             value={(data.sleep / 8) * 100}
@@ -130,6 +144,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Heart Rate</h2>
+            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Heart rate progress"
             value={(data.heartRate / 200) * 100}
@@ -154,6 +169,7 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Calories</h2>
+            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Calories progress"
             value={(data.calories / 3000) * 100}
