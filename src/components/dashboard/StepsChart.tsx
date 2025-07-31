@@ -4,10 +4,11 @@ import {
   ChartTooltip,
   ChartTooltipContent,
 } from "@/components/ui/chart";
+import type { ChartConfig } from "@/components/ui/chart";
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 import type { GarminDay } from "@/lib/api";
-import { useGarminData } from "@/hooks/useGarminData";
+import { useDailySteps } from "@/hooks/useGarminData";
 
 const chartConfig = {
   steps: {
@@ -17,7 +18,7 @@ const chartConfig = {
 } satisfies ChartConfig;
 
 export function StepsChart() {
-  const { data } = useGarminData<GarminDay[]>();
+  const data = useDailySteps();
   if (!data) return null;
 
   // assume data is an array like [{ date: "2025-07-01", steps: 8000 }, …]
