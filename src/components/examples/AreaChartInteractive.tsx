@@ -23,6 +23,7 @@ import type { ChartConfig } from '@/components/ui/chart'
 import { SimpleSelect } from '@/components/ui/select'
 
 const chartData = [
+
   { date: '2024-04-01', bike: 30, run: 4 },
   { date: '2024-04-02', bike: 10, run: 7 },
   { date: '2024-04-03', bike: 17, run: 6 },
@@ -114,6 +115,7 @@ const chartData = [
   { date: '2024-06-28', bike: 29, run: 6 },
   { date: '2024-06-29', bike: 14, run: 8 },
   { date: '2024-06-30', bike: 34, run: 5 },
+
 ]
 
 const chartConfig = {

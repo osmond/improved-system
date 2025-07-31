@@ -4,7 +4,6 @@ import LineChartInteractive from "@/components/examples/LineChartInteractive";
 import BarChartInteractive from "@/components/examples/BarChartInteractive";
 
 import ChartRadarDefault from "@/components/examples/RadarChartDefault";
-import ChartRadialSimple from "@/components/examples/RadialChartSimple";
 import ChartRadialLabel from "@/components/examples/RadialChartLabel";
 import ChartRadialText from "@/components/examples/RadialChartText";
 import ChartBarDefault from "@/components/examples/BarChartDefault";
@@ -36,10 +35,9 @@ export default function Examples() {
 
       <LineChartInteractive />
 
+
       <ChartRadarDefault />
       <RadarChartWorkoutByTime />
-
-      <ChartRadialSimple />
 
       <ChartRadialLabel />
 
