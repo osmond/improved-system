@@ -12,6 +12,8 @@ export type GarminData = {
   heartRate: number;
   calories: number;
   activities: Activity[];
+  /** ISO timestamp of the last sync with Garmin */
+  lastSync: string;
 };
 
 export type GarminDay = {
@@ -68,14 +70,16 @@ export const mockGarminData: GarminData = {
     { id: 1, type: "Run", distance: 5.2, duration: 42, date: "2025-07-30" },
     { id: 2, type: "Walk", distance: 2.1, duration: 25, date: "2025-07-29" },
   ],
+  lastSync: new Date().toISOString(),
 };
 
 export async function getGarminData(): Promise<GarminData> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve(mockGarminData), 500);
-  });
+    setTimeout(() => {
+      resolve({ ...mockGarminData, lastSync: new Date().toISOString() })
+    }, 500)
+  })
 }
-
 export async function getDailySteps(): Promise<GarminDay[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockDailySteps), 300);
