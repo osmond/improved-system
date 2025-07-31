@@ -3,6 +3,14 @@ import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
 import { ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/components/ui/accordion";
+import { SimpleSelect } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 
 const US_STATES = [
@@ -37,6 +45,8 @@ function StateSquare({ abbr, visited, selected, onClick }: StateSquareProps) {
 export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
+  const [activity, setActivity] = useState("all");
+  const [range, setRange] = useState("year");
 
   const summaryMap = useMemo(() => {
     const m: Record<string, StateVisit> = {};
@@ -54,11 +64,32 @@ export default function GeoActivityExplorer() {
     setExpandedState((prev) => (prev === abbr ? null : abbr));
   };
 
-  const leftStates = data.slice(0, Math.ceil(data.length / 2));
-  const rightStates = data.slice(Math.ceil(data.length / 2));
+  const states = data;
 
   return (
     <ChartContainer config={{}} title="State Visits" className="space-y-6">
+      <div className="flex gap-4 mb-4">
+        <SimpleSelect
+          label="Activity"
+          value={activity}
+          onValueChange={setActivity}
+          options={[
+            { value: "all", label: "All" },
+            { value: "run", label: "Run" },
+            { value: "bike", label: "Bike" },
+          ]}
+        />
+        <SimpleSelect
+          label="Range"
+          value={range}
+          onValueChange={setRange}
+          options={[
+            { value: "year", label: "This Year" },
+            { value: "month", label: "This Month" },
+            { value: "all", label: "All Time" },
+          ]}
+        />
+      </div>
       <div className="flex gap-12">
         <div className="grid grid-cols-5 gap-1">
           {US_STATES.map((abbr) => (
@@ -73,65 +104,38 @@ export default function GeoActivityExplorer() {
         </div>
 
         <div className="flex-1">
-          <div className="grid grid-cols-2 gap-6">
-            <StateTable states={leftStates} expanded={expandedState} onToggle={toggleState} />
-            <StateTable states={rightStates} expanded={expandedState} onToggle={toggleState} />
-          </div>
+          <Accordion value={expandedState || undefined} onValueChange={setExpandedState}>
+            {states.map((s) => (
+              <AccordionItem key={s.stateCode} value={s.stateCode}>
+                <AccordionTrigger className="flex justify-between">
+                  <span className="flex items-center gap-2">
+                    <span className="text-xs font-medium">{s.stateCode}</span>
+                    <Badge>{s.cities.length}</Badge>
+                  </span>
+                  <span className="flex gap-2">
+                    <Badge>{s.totalDays}d</Badge>
+                    <Badge>{s.totalMiles}mi</Badge>
+                  </span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="text-sm space-y-1">
+                    {s.cities.map((c) => (
+                      <li key={c.name} className="flex justify-between px-2">
+                        <span>{c.name}</span>
+                        <span className="flex gap-2">
+                          <Badge>{c.days}d</Badge>
+                          <Badge>{c.miles}mi</Badge>
+                        </span>
+                      </li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            ))}
+          </Accordion>
         </div>
       </div>
     </ChartContainer>
   );
 }
 
-interface TableProps {
-  states: StateVisit[];
-  expanded: string | null;
-  onToggle: (abbr: string) => void;
-}
-
-function StateTable({ states, expanded, onToggle }: TableProps) {
-  return (
-    <table className="w-full text-sm border-collapse">
-      <thead>
-        <tr className="text-left border-b">
-          <th className="py-2">State</th>
-          <th className="py-2 text-right">Days</th>
-          <th className="py-2 text-right">Miles</th>
-        </tr>
-      </thead>
-      <tbody>
-        {states.map((s) => (
-          <React.Fragment key={s.stateCode}>
-            <tr
-              className={cn(
-                "cursor-pointer hover:bg-muted",
-                expanded === s.stateCode && "bg-muted"
-              )}
-              onClick={() => onToggle(s.stateCode)}
-            >
-              <td className="py-2">
-                <div className="flex items-center gap-2">
-                  <div className="text-xs font-medium">{s.stateCode}</div>
-                  <div className="text-muted-foreground text-xs">›</div>
-                </div>
-              </td>
-              <td className="py-2 text-right">{s.totalDays}</td>
-              <td className="py-2 text-right">{s.totalMiles}</td>
-            </tr>
-            {expanded === s.stateCode && (
-              <React.Fragment>
-                {s.cities.map((c) => (
-                  <tr key={c.name} className="text-muted-foreground">
-                    <td className="pl-8 py-1">{c.name}</td>
-                    <td className="py-1 text-right">{c.days}</td>
-                    <td className="py-1 text-right">{c.miles}</td>
-                  </tr>
-                ))}
-              </React.Fragment>
-            )}
-          </React.Fragment>
-        ))}
-      </tbody>
-    </table>
-  );
-}
