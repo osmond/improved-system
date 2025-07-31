@@ -3,9 +3,13 @@ import {
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
 } from "@/components/ui/chart";
 import type { ChartConfig } from "@/components/ui/chart";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid } from "recharts";
 
 import type { GarminDay } from "@/lib/api";
 import { useDailySteps } from "@/hooks/useGarminData";
