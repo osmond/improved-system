@@ -1,31 +1,26 @@
 import React from "react";
-import AreaChartInteractive from "@/components/examples/AreaChartInteractive";
-import LineChartInteractive from "@/components/examples/LineChartInteractive";
-import BarChartInteractive from "@/components/examples/BarChartInteractive";
-
-import ChartRadarDefault from "@/components/examples/RadarChartDefault";
-import ChartRadialSimple from "@/components/examples/RadialChartSimple";
-import ChartRadialLabel from "@/components/examples/RadialChartLabel";
-import ChartRadialText from "@/components/examples/RadialChartText";
+import {
+  StepsChart,
+  PaceDistributionChart,
+  HeartRateZonesChart,
+} from "@/components/dashboard";
+import { useGarminData } from "@/hooks/useGarminData";
+import { useRunningStats } from "@/hooks/useRunningStats";
 
 
 export default function Examples() {
+  const garmin = useGarminData();
+  const running = useRunningStats();
+
+  if (!garmin || !running) {
+    return <p>Loading…</p>;
+  }
+
   return (
     <div className="grid gap-6">
-      <AreaChartInteractive />
-
-      <BarChartInteractive />
-
-      <LineChartInteractive />
-
-      <ChartRadarDefault />
-
-      <ChartRadialSimple />
-
-      <ChartRadialLabel />
-
-      <ChartRadialText />
-
+      <StepsChart />
+      <PaceDistributionChart data={running.paceDistribution} />
+      <HeartRateZonesChart data={running.heartRateZones} />
     </div>
   );
 }
