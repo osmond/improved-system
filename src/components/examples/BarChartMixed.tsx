@@ -45,7 +45,7 @@ export default function ChartBarMixed() {
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig}>
+        <ChartContainer config={chartConfig} className='h-60'>
           <BarChart accessibilityLayer data={chartData} layout='vertical' margin={{ left: 0 }}>
             <YAxis
               dataKey='browser'
