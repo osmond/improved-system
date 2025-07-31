@@ -9,6 +9,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 
 const scatterData = Array.from({ length: 200 }, () => ({
   pace: 6 + Math.random() * 2,
@@ -22,14 +23,16 @@ const config = {
 
 export default function PaceVsHR() {
   return (
-    <ChartContainer config={config} className="h-64" title="Pace vs Heart Rate">
-      <ScatterChart>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="pace" name="Pace (min/mi)" />
-        <YAxis dataKey="hr" name="Heart Rate (bpm)" />
-        <ChartTooltip />
-        <Scatter data={scatterData} fill="var(--chart-9)" />
-      </ScatterChart>
-    </ChartContainer>
+    <ChartCard title="Pace vs Heart Rate">
+      <ChartContainer config={config} className="h-64">
+        <ScatterChart>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="pace" name="Pace (min/mi)" />
+          <YAxis dataKey="hr" name="Heart Rate (bpm)" />
+          <ChartTooltip />
+          <Scatter data={scatterData} fill="var(--chart-9)" />
+        </ScatterChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }

@@ -9,6 +9,7 @@ import {
   Radar,
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 
 const activityByTimeData = [
   { time: "12am", value: 2 },
@@ -31,20 +32,22 @@ const config = {
 
 export default function ActivityByTime() {
   return (
-    <ChartContainer config={config} className="h-64" title="Workout Activity by Time">
-      <RadarChart data={activityByTimeData}>
-        <PolarGrid />
-        <PolarAngleAxis dataKey="time" />
-        <PolarRadiusAxis />
-        <ChartTooltip />
-        <Radar
-          name="Activity"
-          dataKey="value"
-          stroke="var(--chart-2)"
-          fill="var(--chart-2)"
-          fillOpacity={0.6}
-        />
-      </RadarChart>
-    </ChartContainer>
+    <ChartCard title="Workout Activity by Time">
+      <ChartContainer config={config} className="h-64">
+        <RadarChart data={activityByTimeData}>
+          <PolarGrid />
+          <PolarAngleAxis dataKey="time" />
+          <PolarRadiusAxis />
+          <ChartTooltip />
+          <Radar
+            name="Activity"
+            dataKey="value"
+            stroke="var(--chart-2)"
+            fill="var(--chart-2)"
+            fillOpacity={0.6}
+          />
+        </RadarChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }

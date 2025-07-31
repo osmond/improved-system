@@ -9,6 +9,7 @@ import {
   Radar,
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 
 const dailyMileage = [
   { day: "Mon", miles: 5 },
@@ -26,20 +27,22 @@ const config = {
 
 export default function AvgDailyMileageRadar() {
   return (
-    <ChartContainer config={config} className="h-64" title="Average Daily Mileage">
-      <RadarChart data={dailyMileage}>
-        <PolarGrid />
-        <PolarAngleAxis dataKey="day" />
-        <PolarRadiusAxis />
-        <ChartTooltip />
-        <Radar
-          name="Mileage"
-          dataKey="miles"
-          stroke="var(--chart-3)"
-          fill="var(--chart-3)"
-          fillOpacity={0.4}
-        />
-      </RadarChart>
-    </ChartContainer>
+    <ChartCard title="Average Daily Mileage">
+      <ChartContainer config={config} className="h-64">
+        <RadarChart data={dailyMileage}>
+          <PolarGrid />
+          <PolarAngleAxis dataKey="day" />
+          <PolarRadiusAxis />
+          <ChartTooltip />
+          <Radar
+            name="Mileage"
+            dataKey="miles"
+            stroke="var(--chart-3)"
+            fill="var(--chart-3)"
+            fillOpacity={0.4}
+          />
+        </RadarChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }
