@@ -14,12 +14,16 @@ import ChartPieDonut from "@/components/examples/PieChartDonut";
 import ChartRadarDots from "@/components/examples/RadarChartDots";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
+import { mockDailySteps } from "@/lib/api";
+import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 
 
 export default function Examples() {
   return (
     <div className="grid gap-6">
       <AreaChartInteractive />
+
+      <StepsTrendWithGoal data={mockDailySteps} />
 
       <BarChartInteractive />
 
