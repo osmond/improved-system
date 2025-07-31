@@ -5,6 +5,8 @@ import {
   GarminData,
   GarminDay,
   Activity,
+  getSeasonalBaselines,
+  SeasonalBaseline,
 } from "@/lib/api";
 
 export function useGarminData(): GarminData | null {
@@ -41,4 +43,14 @@ export function useMostRecentActivity(): Activity | null {
       (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
     )[0];
   }, [data]);
+}
+
+export function useSeasonalBaseline(): SeasonalBaseline[] | null {
+  const [baseline, setBaseline] = useState<SeasonalBaseline[] | null>(null)
+
+  useEffect(() => {
+    getSeasonalBaselines().then(setBaseline)
+  }, [])
+
+  return baseline
 }

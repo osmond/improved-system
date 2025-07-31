@@ -9,11 +9,13 @@ import {
   XAxis,
   YAxis,
   ReferenceLine,
+  ReferenceArea,
 } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/components/ui/chart";
 import type { GarminDay } from "@/lib/api";
 import { useMemo } from "react";
+import { useSeasonalBaseline } from "@/hooks/useGarminData";
 
 export interface StepsTrendWithGoalProps {
   data: GarminDay[];
@@ -37,10 +39,34 @@ export function StepsTrendWithGoal({
     });
   }, [data, window]);
 
+  const baselines = useSeasonalBaseline();
+
+  const baselineAreas = useMemo(() => {
+    if (!baselines) return [];
+    const months = Array.from(new Set(data.map((d) => d.date.slice(0, 7))));
+    return months
+      .map((m) => {
+        const monthNum = new Date(`${m}-01`).getMonth() + 1;
+        const b = baselines.find((bl) => bl.month === monthNum);
+        if (!b) return null;
+        const start = new Date(`${m}-01`);
+        const end = new Date(start);
+        end.setMonth(end.getMonth() + 1);
+        return {
+          x1: start.toISOString().slice(0, 10),
+          x2: end.toISOString().slice(0, 10),
+          min: b.min,
+          max: b.max,
+        };
+      })
+      .filter(Boolean) as { x1: string; x2: string; min: number; max: number }[];
+  }, [baselines, data]);
+
   const chartConfig = {
     steps: { label: "Pace", color: "hsl(var(--chart-1))" },
     avg: { label: `${window}d Avg`, color: "hsl(var(--chart-2))" },
     goal: { label: "Goal", color: "hsl(var(--chart-3))" },
+    baseline: { label: "Baseline", color: "hsl(var(--chart-4))" },
   } satisfies ChartConfig;
 
   return (
@@ -56,6 +82,18 @@ export function StepsTrendWithGoal({
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
           <YAxis />
+          {baselineAreas.map((area) => (
+            <ReferenceArea
+              key={area.x1}
+              x1={area.x1}
+              x2={area.x2}
+              y1={area.min}
+              y2={area.max}
+              strokeOpacity={0}
+              fill="var(--color-baseline)"
+              fillOpacity={0.15}
+            />
+          ))}
           <ReferenceLine y={goal} stroke={chartConfig.goal.color} strokeDasharray="4 4" />
           <ChartTooltip
             content={

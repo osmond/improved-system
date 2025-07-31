@@ -19,6 +19,36 @@ export type GarminDay = {
   steps: number;
 };
 
+export interface SeasonalBaseline {
+  /** Month number 1-12 */
+  month: number
+  /** Expected minimum value for the month */
+  min: number
+  /** Expected maximum value for the month */
+  max: number
+}
+
+export const mockSeasonalBaselines: SeasonalBaseline[] = [
+  { month: 1, min: 6000, max: 10000 },
+  { month: 2, min: 6500, max: 10500 },
+  { month: 3, min: 7000, max: 11000 },
+  { month: 4, min: 7500, max: 11500 },
+  { month: 5, min: 8000, max: 12000 },
+  { month: 6, min: 8500, max: 12500 },
+  { month: 7, min: 8500, max: 12500 },
+  { month: 8, min: 8000, max: 12000 },
+  { month: 9, min: 7500, max: 11500 },
+  { month: 10, min: 7000, max: 11000 },
+  { month: 11, min: 6500, max: 10500 },
+  { month: 12, min: 6000, max: 10000 },
+]
+
+export async function getSeasonalBaselines(): Promise<SeasonalBaseline[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockSeasonalBaselines), 200)
+  })
+}
+
 export const mockDailySteps: GarminDay[] = [
   { date: "2025-07-24", steps: 7500 },
   { date: "2025-07-25", steps: 8200 },
