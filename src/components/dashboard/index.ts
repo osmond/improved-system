@@ -8,3 +8,4 @@ export * from "./DailyStepsChart";
 export * from "./StepsTrendWithGoal";
 export * from "./MiniSparkline";
 export * from "./RingDetailDialog";
+export * from "./AcwrGauge";
