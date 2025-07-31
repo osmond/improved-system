@@ -13,7 +13,11 @@ export default function MapChart({ data, onSelectState }: MapChartProps) {
   const visited = new Set(data.filter((d) => d.visited).map((d) => d.stateCode));
 
   return (
-    <ChartContainer title="Visited States" className="md:col-span-2">
+    <ChartContainer
+      title="Visited States"
+      className="md:col-span-2"
+      aria-label="Map of visited states"
+    >
       <ComposableMap projection="geoAlbersUsa" width={800} height={400}>
         <Geographies geography="/us-states.json">
           {({ geographies }: { geographies: any[] }) =>
