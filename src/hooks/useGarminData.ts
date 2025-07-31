@@ -34,6 +34,23 @@ export function useGarminDays(): GarminDay[] | null {
 
 export const useDailySteps = useGarminDays;
 
+export function useGarminDaysLazy(open: boolean): GarminDay[] | null {
+  const [days, setDays] = useState<GarminDay[] | null>(null);
+
+  useEffect(() => {
+    if (open && !days) {
+      getDailySteps().then(setDays);
+    }
+  }, [open]);
+
+  return useMemo(() => {
+    if (!days) return days;
+    return [...days].sort(
+      (a, b) => new Date(a.date).getTime() - new Date(b.date).getTime(),
+    );
+  }, [days]);
+}
+
 export function useMostRecentActivity(): Activity | null {
   const data = useGarminData();
 
