@@ -15,7 +15,7 @@ vi.mock("@/hooks/useStateVisits", () => ({
 }));
 
 beforeAll(() => {
-  global.ResizeObserver = class {
+  globalThis.ResizeObserver = class {
     observe() {}
     unobserve() {}
     disconnect() {}
