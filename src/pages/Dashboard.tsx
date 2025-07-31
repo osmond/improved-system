@@ -1,13 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { ProgressRing } from "@/components/dashboard/ProgressRing";
+import { ProgressRingWithDelta } from "@/components/dashboard/ProgressRingWithDelta";
 import { StepsChart } from "@/components/dashboard";
-import { useGarminData } from "@/hooks/useGarminData";
+import { useGarminData, useDailySteps } from "@/hooks/useGarminData";
 
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
+  const dailySteps = useDailySteps();
   const [expanded, setExpanded] = useState<Metric | null>(null);
   const dialogRef = useRef<HTMLDialogElement | null>(null);
 
@@ -35,6 +36,13 @@ export default function Dashboard() {
     }
   };
 
+  const previousSteps = dailySteps && dailySteps.length > 1
+    ? dailySteps[dailySteps.length - 2].steps
+    : data.steps * 0.9;
+  const previousSleep = data.sleep * 0.9;
+  const previousHeartRate = data.heartRate * 0.9;
+  const previousCalories = data.calories * 0.9;
+
   return (
     <div className="grid gap-4">
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -46,7 +54,12 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Steps</h2>
-          <ProgressRing label="Steps progress" value={(data.steps / 10000) * 100} />
+          <ProgressRingWithDelta
+            label="Steps progress"
+            value={(data.steps / 10000) * 100}
+            current={data.steps}
+            previous={previousSteps}
+          />
           <span className="mt-2 text-lg font-bold">{data.steps}</span>
         </Card>
 
@@ -58,7 +71,12 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Sleep (hrs)</h2>
-          <ProgressRing label="Sleep progress" value={(data.sleep / 8) * 100} />
+          <ProgressRingWithDelta
+            label="Sleep progress"
+            value={(data.sleep / 8) * 100}
+            current={data.sleep}
+            previous={previousSleep}
+          />
           <span className="mt-2 text-lg font-bold">{data.sleep}</span>
         </Card>
 
@@ -70,7 +88,12 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Heart Rate</h2>
-          <ProgressRing label="Heart rate progress" value={(data.heartRate / 200) * 100} />
+          <ProgressRingWithDelta
+            label="Heart rate progress"
+            value={(data.heartRate / 200) * 100}
+            current={data.heartRate}
+            previous={previousHeartRate}
+          />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
         </Card>
 
@@ -82,7 +105,12 @@ export default function Dashboard() {
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
           <h2 className="text-sm mb-2">Calories</h2>
-          <ProgressRing label="Calories progress" value={(data.calories / 3000) * 100} />
+          <ProgressRingWithDelta
+            label="Calories progress"
+            value={(data.calories / 3000) * 100}
+            current={data.calories}
+            previous={previousCalories}
+          />
           <span className="mt-2 text-lg font-bold">{data.calories}</span>
         </Card>
       </div>

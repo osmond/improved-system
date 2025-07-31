@@ -7,6 +7,7 @@ import {
   Tooltip as ChartTooltip,
   ChartLegend,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 import { Cell } from "recharts"
 
 
@@ -22,30 +23,32 @@ const config = {
 
 export default function TreadmillVsOutdoor() {
   return (
-    <ChartContainer config={config} className="h-60" title="Treadmill vs Outdoor">
-      <PieChart width={200} height={160}>
-        <ChartTooltip />
+    <ChartCard title="Treadmill vs Outdoor">
+      <ChartContainer config={config} className="h-60">
+        <PieChart width={200} height={160}>
+          <ChartTooltip />
 
-        <ChartLegend verticalAlign="bottom" height={24} />
+          <ChartLegend verticalAlign="bottom" height={24} />
 
-        <Pie
-          data={treadmillData}
-          dataKey="value"
-          nameKey="name"
-          innerRadius={50}
-          outerRadius={70}
-          paddingAngle={4}
-          cornerRadius={8}
-          label={({ percent }) => `${Math.round(percent * 100)}%`}
-        >
-          {treadmillData.map((entry, idx) => (
-            <Cell
-              key={entry.name}
-              fill={idx === 0 ? "var(--chart-5)" : "var(--chart-6)"}
-            />
-          ))}
-        </Pie>
-      </PieChart>
-    </ChartContainer>
+          <Pie
+            data={treadmillData}
+            dataKey="value"
+            nameKey="name"
+            innerRadius={50}
+            outerRadius={70}
+            paddingAngle={4}
+            cornerRadius={8}
+            label={({ percent }) => `${Math.round(percent * 100)}%`}
+          >
+            {treadmillData.map((entry, idx) => (
+              <Cell
+                key={entry.name}
+                fill={idx === 0 ? "var(--chart-5)" : "var(--chart-6)"}
+              />
+            ))}
+          </Pie>
+        </PieChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }

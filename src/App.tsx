@@ -3,6 +3,7 @@ import Layout from "@/components/layout/Layout";
 import Dashboard from "@/pages/Dashboard";
 import Examples from "@/pages/Examples";
 import StatisticsExamplesPage from "@/pages/StatisticsExamplesPage";
+import GeoActivityExplorer from "@/components/map/GeoActivityExplorer";
 
 function App() {
   const [tab, setTab] = useState("dashboard");
@@ -10,7 +11,7 @@ function App() {
     <Layout activeTab={tab} setActiveTab={setTab}>
       {tab === "dashboard" && <Dashboard />}
       {tab === "trends" && <p>Trends coming soon...</p>}
-      {tab === "map" && <p>Map coming soon...</p>}
+      {tab === "map" && <GeoActivityExplorer />}
       {tab === "examples" && <Examples />}
       {tab === "statistics" && <StatisticsExamplesPage />}
     </Layout>

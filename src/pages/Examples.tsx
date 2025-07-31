@@ -48,6 +48,7 @@ export default function Examples() {
       <ChartRadarDots />
       <ChartBarMixed />
       <ChartBarLabelCustom />
+      <ChartTreadmillVsOutdoor />
 
       <ScatterChartPaceHeartRate />
       <AreaChartLoadRatio />

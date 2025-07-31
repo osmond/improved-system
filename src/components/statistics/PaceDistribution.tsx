@@ -8,6 +8,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
+import ChartCard from "@/components/dashboard/ChartCard"
 
 const violinData = [
   { pace: "5:00", density: 0.1 },
@@ -25,20 +26,22 @@ const config = {
 
 export default function PaceDistribution() {
   return (
-    <ChartContainer config={config} className="h-64" title="Pace Distribution">
-      <AreaChart data={violinData}>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="pace" tickLine={false} axisLine={false} />
-        <ChartTooltip />
-        <Area
-          type="monotone"
-          dataKey="density"
-          stroke="var(--chart-7)"
-          fill="var(--chart-7)"
-          fillOpacity={0.4}
-          dot={false}
-        />
-      </AreaChart>
-    </ChartContainer>
+    <ChartCard title="Pace Distribution">
+      <ChartContainer config={config} className="h-64">
+        <AreaChart data={violinData}>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="pace" tickLine={false} axisLine={false} />
+          <ChartTooltip />
+          <Area
+            type="monotone"
+            dataKey="density"
+            stroke="var(--chart-7)"
+            fill="var(--chart-7)"
+            fillOpacity={0.4}
+            dot={false}
+          />
+        </AreaChart>
+      </ChartContainer>
+    </ChartCard>
   )
 }
