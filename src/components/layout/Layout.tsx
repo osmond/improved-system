@@ -33,9 +33,6 @@ export default function Layout({
           <TabsTrigger value="examples" onClick={() => setActiveTab("examples")}>
             Examples
           </TabsTrigger>
-          <TabsTrigger value="stats" onClick={() => setActiveTab("stats")}>
-            Stats
-          </TabsTrigger>
         </TabsList>
       </Tabs>
       <div className="mt-2">{children}</div>
