@@ -47,15 +47,16 @@ describe("Dashboard goals", () => {
   it("updates step ring when goal changes", async () => {
     render(<Dashboard />);
     const ring = screen.getByLabelText("Steps progress");
-    const circle = ring.querySelectorAll("circle")[1];
-    const initial = circle.getAttribute("stroke-dashoffset");
+    const circles = ring.querySelectorAll("circle");
+    const circle = circles[circles.length - 1];
+    const initial = circle.getAttribute("stroke-dasharray");
 
     fireEvent.click(screen.getByLabelText("Edit steps goal"));
     const input = await screen.findByLabelText("Daily goal") as HTMLInputElement;
     fireEvent.change(input, { target: { value: "5000" } });
     fireEvent.submit(input.form!);
 
-    const updated = circle.getAttribute("stroke-dashoffset");
+    const updated = circle.getAttribute("stroke-dasharray");
     expect(updated).not.toBe(initial);
   });
 });
