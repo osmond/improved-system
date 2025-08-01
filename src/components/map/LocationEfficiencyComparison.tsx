@@ -1,9 +1,7 @@
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-} from 'react-simple-maps'
+import React, { useMemo } from 'react'
+import Map, { Source, Layer, Marker } from 'react-map-gl/maplibre'
+import maplibregl from 'maplibre-gl'
+import { feature } from 'topojson-client'
 import ChartCard from '@/components/dashboard/ChartCard'
 import {
   ChartContainer,
@@ -27,6 +25,14 @@ const config = {
 
 export default function LocationEfficiencyComparison() {
   const data = useLocationEfficiency()
+  const statesGeo = useMemo(
+    () =>
+      feature(
+        statesTopo as any,
+        (statesTopo as any).objects.states
+      ) as GeoJSON.FeatureCollection,
+    []
+  )
 
   if (!data) return <Skeleton className="h-64" />
 
@@ -39,27 +45,32 @@ export default function LocationEfficiencyComparison() {
     >
       <div className="flex gap-4">
         <div className="w-64 h-40" aria-label="location map">
-          <ComposableMap projection="geoAlbersUsa">
-            <Geographies geography={statesTopo as any}>
-              {({ geographies }: { geographies: any[] }) =>
-                geographies.map((geo: any) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    style={{ default: { fill: 'hsl(var(--muted))', outline: 'none' } }}
-                  />
-                ))
-              }
-            </Geographies>
+          <Map
+            mapLib={maplibregl}
+            mapStyle="https://demotiles.maplibre.org/style.json"
+            initialViewState={{ longitude: -98, latitude: 38, zoom: 3 }}
+            attributionControl={false}
+            style={{ width: '100%', height: '100%' }}
+          >
+            <Source id="states" type="geojson" data={statesGeo as any}>
+              <Layer
+                id="fill"
+                type="fill"
+                paint={{
+                  'fill-color': 'hsl(var(--muted))',
+                  'fill-outline-color': 'hsl(var(--border))',
+                }}
+              />
+            </Source>
             {sorted.map((loc) => {
               const coords = CITY_COORDS[loc.city]
               return coords ? (
-                <Marker key={loc.city} coordinates={coords}>
+                <Marker key={loc.city} longitude={coords[0]} latitude={coords[1]}>
                   <circle r={3} fill="hsl(var(--primary))" />
                 </Marker>
               ) : null
             })}
-          </ComposableMap>
+          </Map>
         </div>
         <div className="flex-1">
           <ChartContainer config={config} className="h-40">

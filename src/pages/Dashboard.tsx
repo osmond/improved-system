@@ -19,6 +19,7 @@ import useInsights from "@/hooks/useInsights";
 import useSleepInsights from "@/hooks/useSleepInsights";
 import useHeartRateInsights from "@/hooks/useHeartRateInsights";
 import useCalorieInsights from "@/hooks/useCalorieInsights";
+import useUserGoals from "@/hooks/useUserGoals";
 
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
@@ -216,10 +217,7 @@ export default function Dashboard() {
             value={(data.steps / stepGoal) * 100}
             current={data.steps}
             previous={previousSteps}
-
-            tertiary={stepContext}
             goal={100}
-
           />
           {monthly && (
             <div className="w-full mt-1" aria-label={`Projected ${Math.round(monthly.projectedTotal).toLocaleString()} steps`}>

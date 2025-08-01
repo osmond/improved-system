@@ -1,6 +1,13 @@
 import { render, screen } from '@testing-library/react'
 import LocationEfficiencyComparison from '../LocationEfficiencyComparison'
 import { vi } from 'vitest'
+vi.mock('react-map-gl/maplibre', () => ({
+  __esModule: true,
+  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Layer: () => null,
+  Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+}))
 import '@testing-library/jest-dom'
 
 vi.mock('@/hooks/useLocationEfficiency', () => ({

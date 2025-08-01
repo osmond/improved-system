@@ -5,3 +5,7 @@ if (typeof globalThis.ResizeObserver === 'undefined') {
     disconnect() {}
   } as any
 }
+
+if (typeof globalThis.URL.createObjectURL === 'undefined') {
+  globalThis.URL.createObjectURL = () => ''
+}
