@@ -1076,12 +1076,29 @@ export interface WildGame {
   gameDate: string;
   opponent: string;
   home: boolean;
+  /** URL to stream or watch the game */
+  watchUrl: string;
 }
 
 const mockWildSchedule: WildGame[] = [
-  { gameDate: "2025-10-01T00:00:00Z", opponent: "Blues", home: true },
-  { gameDate: "2025-10-03T00:00:00Z", opponent: "Blackhawks", home: false },
-  { gameDate: "2025-10-05T00:00:00Z", opponent: "Avalanche", home: true },
+  {
+    gameDate: "2025-10-01T00:00:00Z",
+    opponent: "Blues",
+    home: true,
+    watchUrl: "https://www.nhl.com/wild/live",
+  },
+  {
+    gameDate: "2025-10-03T00:00:00Z",
+    opponent: "Blackhawks",
+    home: false,
+    watchUrl: "https://www.nhl.com/wild/live",
+  },
+  {
+    gameDate: "2025-10-05T00:00:00Z",
+    opponent: "Avalanche",
+    home: true,
+    watchUrl: "https://www.nhl.com/wild/live",
+  },
 ];
 
 export async function getWildSchedule(

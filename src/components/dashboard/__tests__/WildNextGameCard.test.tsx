@@ -6,16 +6,22 @@ import WildNextGameCard from '../WildNextGameCard'
 vi.mock('@/hooks/useWildSchedule', () => ({
   __esModule: true,
   default: () => [
-    { gameDate: '2025-10-01T00:00:00Z', opponent: 'Blues', home: true }
+    {
+      gameDate: '2025-10-01T00:00:00Z',
+      opponent: 'Blues',
+      home: true,
+      watchUrl: 'https://example.com/watch'
+    }
   ]
 }))
 
 describe('WildNextGameCard', () => {
-  it('renders card title and actions when schedule is loaded', () => {
+  it('renders card title and watch link when schedule is loaded', () => {
     const { container } = render(<WildNextGameCard />)
     expect(screen.getByText('Next Game')).toBeInTheDocument()
     expect(container.firstChild).toHaveClass('text-wild-primary')
-    expect(screen.getByText('Add to Calendar')).toBeInTheDocument()
-    expect(screen.getByText('Game Details')).toBeInTheDocument()
+    const link = screen.getByRole('link', { name: /game details/i })
+    expect(link).toHaveAttribute('href', 'https://example.com/watch')
+    expect(container.querySelector('svg')).toBeInTheDocument()
   })
 })
