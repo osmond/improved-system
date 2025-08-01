@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { TrendingUp } from 'lucide-react'
-import { generateTrendMessage } from '@/lib/utils'
+import { TrendingUp } from "lucide-react";
+import { generateTrendMessage } from "@/lib/utils";
 import {
   ChartContainer,
   ScatterChart,
@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
+} from "@/components/ui/chart";
 import {
   Card,
   CardHeader,
@@ -19,50 +19,48 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@/components/ui/card'
-import { Cell } from 'recharts'
+} from "@/components/ui/card";
 
+// Generate demo data without per-point colouring
 const scatterData = Array.from({ length: 200 }, () => {
-  const pace = 6 + Math.random() * 2
-  const hr = 120 + Math.random() * 40
-  const zone = Math.min(5, Math.max(0, Math.floor((hr - 120) / 8)))
+  const pace = 6 + Math.random() * 2;
+  const hr = 120 + Math.random() * 40;
   return {
     pace,
     hr,
-    fill: `var(--chart-${zone + 5})`,
-  }
-})
+  };
+});
 
+// Provide a single series colour matching the other demo charts
 const chartConfig = {
-  pace: { label: 'Pace', color: 'hsl(var(--chart-9))' },
-  hr: { label: 'Heart Rate', color: 'hsl(var(--chart-10))' },
-} as const
+  points: { color: "hsl(var(--chart-4))" },
+  pace: { label: "Pace" },
+  hr: { label: "Heart Rate" },
+} as const;
 
 export default function ScatterChartPaceHeartRate() {
   return (
     <Card>
       <CardHeader>
         <CardTitle>Pace vs Heart Rate</CardTitle>
-        <CardDescription>Correlation of effort and speed from recent runs</CardDescription>
+        <CardDescription>
+          Correlation of effort and speed from recent runs
+        </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-64'>
+        <ChartContainer config={chartConfig} className="h-64">
           <ScatterChart>
-            <CartesianGrid strokeDasharray='3 3' />
-            <XAxis dataKey='pace' name='Pace (min/mi)' />
-            <YAxis dataKey='hr' name='Heart Rate (bpm)' />
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="pace" name="Pace (min/mi)" />
+            <YAxis dataKey="hr" name="Heart Rate (bpm)" />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Scatter data={scatterData}>
-              {scatterData.map((pt, idx) => (
-                <Cell key={idx} fill={pt.fill} />
-              ))}
-            </Scatter>
+            <Scatter data={scatterData} fill="var(--color-points)" />
           </ScatterChart>
         </ChartContainer>
       </CardContent>
-      <CardFooter className='flex items-center gap-2 text-sm'>
-        {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+      <CardFooter className="flex items-center gap-2 text-sm">
+        {generateTrendMessage()} <TrendingUp className="h-4 w-4" />
       </CardFooter>
     </Card>
-  )
+  );
 }
