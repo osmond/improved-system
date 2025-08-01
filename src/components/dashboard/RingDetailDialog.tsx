@@ -12,13 +12,20 @@ export type Metric = "steps" | "sleep" | "heartRate" | "calories";
 export interface RingDetailDialogProps {
   metric: Metric | null;
   onClose: () => void;
+  /** Screen reader summary for the metric */
+  summary?: string;
 }
 
-export function RingDetailDialog({ metric, onClose }: RingDetailDialogProps) {
+export function RingDetailDialog({ metric, onClose, summary }: RingDetailDialogProps) {
   const open = metric !== null;
   return (
     <Dialog open={open} onOpenChange={(o) => !o && onClose()}>
       <DialogContent className="p-4">
+        {summary && (
+          <p className="sr-only" aria-live="polite">
+            {summary}
+          </p>
+        )}
         <Tabs value="steps" onValueChange={() => {}}>
           <TabsList>
             <TabsTrigger value="steps">Steps</TabsTrigger>

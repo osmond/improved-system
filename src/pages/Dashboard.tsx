@@ -19,6 +19,7 @@ import useInsights from "@/hooks/useInsights";
 import useSleepInsights from "@/hooks/useSleepInsights";
 import useHeartRateInsights from "@/hooks/useHeartRateInsights";
 import useCalorieInsights from "@/hooks/useCalorieInsights";
+import useUserGoals from "@/hooks/useUserGoals";
 
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
@@ -130,6 +131,64 @@ export default function Dashboard() {
       { value: calorieInsights.vs7DayAvg, label: 'vs 7d avg' },
     ];
 
+  // screen reader summaries for the rings
+  const stepsDelta = previousSteps === 0 ? 0 : (data.steps - previousSteps) / previousSteps;
+  const stepsSummaryParts = [
+    `${data.steps.toLocaleString()} steps`,
+    `${stepsDelta >= 0 ? '+' : ''}${(stepsDelta * 100).toFixed(1)}% vs yesterday`,
+    data.steps >= stepGoal ? 'goal met' : 'goal not met',
+  ];
+  if (insights && insights.activeStreak >= 3) {
+    stepsSummaryParts.push(`${insights.activeStreak}-day streak`);
+  }
+  if (insights && insights.bestPaceThisMonth && !dismissed.pace) {
+    stepsSummaryParts.push(`Best pace ${insights.bestPaceThisMonth.toFixed(2)}`);
+  }
+  if (insights && insights.mostConsistentDay && !dismissed.day) {
+    stepsSummaryParts.push(`Consistent on ${insights.mostConsistentDay}`);
+  }
+  const stepsSummary = stepsSummaryParts.join('. ');
+
+  const sleepDelta = (data.sleep - previousSleep) / previousSleep;
+  const sleepSummaryParts = [
+    `${data.sleep.toLocaleString()} hours sleep`,
+    `${sleepDelta >= 0 ? '+' : ''}${(sleepDelta * 100).toFixed(1)}% vs yesterday`,
+    data.sleep >= sleepGoal ? 'goal met' : 'goal not met',
+  ];
+  if (insights && insights.lowSleep) {
+    sleepSummaryParts.push('Low sleep');
+  }
+  const sleepSummary = sleepSummaryParts.join('. ');
+
+  const heartDelta = (data.heartRate - previousHeartRate) / previousHeartRate;
+  const heartSummaryParts = [
+    `${data.heartRate.toLocaleString()} bpm`,
+    `${heartDelta >= 0 ? '+' : ''}${(heartDelta * 100).toFixed(1)}% vs yesterday`,
+    data.heartRate <= heartGoal ? 'within goal' : 'over goal',
+  ];
+  if (insights && insights.highHeartRate) {
+    heartSummaryParts.push('High heart rate');
+  }
+  const heartSummary = heartSummaryParts.join('. ');
+
+  const calorieDelta = (data.calories - previousCalories) / previousCalories;
+  const calorieSummaryParts = [
+    `${data.calories.toLocaleString()} calories`,
+    `${calorieDelta >= 0 ? '+' : ''}${(calorieDelta * 100).toFixed(1)}% vs yesterday`,
+    data.calories <= calorieGoal ? 'within goal' : 'over goal',
+  ];
+  if (insights && insights.calorieSurplus) {
+    calorieSummaryParts.push('Calorie surplus');
+  }
+  const calorieSummary = calorieSummaryParts.join('. ');
+
+  const summaries: Record<Metric, string> = {
+    steps: stepsSummary,
+    sleep: sleepSummary,
+    heartRate: heartSummary,
+    calories: calorieSummary,
+  };
+
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList>
@@ -216,8 +275,6 @@ export default function Dashboard() {
             value={(data.steps / stepGoal) * 100}
             current={data.steps}
             previous={previousSteps}
-
-            tertiary={stepContext}
             goal={100}
 
           />
@@ -264,11 +321,11 @@ export default function Dashboard() {
               </button>
             </div>
           )}
-          {insights && insights.mostConsistentDay && !dismissed.day && (
-            <div className="mt-1 text-[10px] flex items-center gap-1">
-              <Badge>
-                Consistent on {insights.mostConsistentDay}
-              </Badge>
+            {insights && insights.mostConsistentDay && !dismissed.day && (
+              <div className="mt-1 text-[10px] flex items-center gap-1">
+                <Badge>
+                  Consistent on {insights.mostConsistentDay}
+                </Badge>
               <button
                 className="text-muted-foreground"
                 onClick={() => setDismissed({ ...dismissed, day: true })}
@@ -284,6 +341,7 @@ export default function Dashboard() {
               </button>
             </div>
           )}
+          <p className="sr-only" aria-live="polite">{stepsSummary}</p>
         </Card>
 
         <Card
@@ -344,6 +402,7 @@ export default function Dashboard() {
               aria-label="Low sleep"
             />
           )}
+          <p className="sr-only" aria-live="polite">{sleepSummary}</p>
         </Card>
 
         <Card
@@ -404,6 +463,7 @@ export default function Dashboard() {
               aria-label="High heart rate"
             />
           )}
+          <p className="sr-only" aria-live="polite">{heartSummary}</p>
         </Card>
 
         <Card
@@ -464,10 +524,15 @@ export default function Dashboard() {
               aria-label="Calorie surplus"
             />
           )}
+          <p className="sr-only" aria-live="polite">{calorieSummary}</p>
         </Card>
       </div>
 
-          <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
+          <RingDetailDialog
+            metric={expanded}
+            onClose={() => setExpanded(null)}
+            summary={expanded ? summaries[expanded] : undefined}
+          />
         </div>
       </TabsContent>
 
