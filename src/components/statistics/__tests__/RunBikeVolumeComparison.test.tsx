@@ -1,7 +1,20 @@
 import { render, screen, fireEvent } from '@testing-library/react'
 import RunBikeVolumeComparison from '../RunBikeVolumeComparison'
 import { vi } from 'vitest'
+import React from 'react'
 import '@testing-library/jest-dom'
+
+vi.mock('recharts', async () => {
+  const actual: any = await vi.importActual('recharts')
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
+      <div style={{ width: 800, height: 400 }}>
+        {React.cloneElement(children, { width: 800, height: 400 })}
+      </div>
+    )
+  }
+})
 
 vi.mock('@/hooks/useRunBikeVolume', () => ({
   __esModule: true,
