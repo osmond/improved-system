@@ -1,53 +1,15 @@
 "use client"
 
 
-import {
-  AnnualMileage,
-  ActivityByTime,
-  AvgDailyMileageRadar,
-  RunDistances,
-  TreadmillVsOutdoor,
-  PaceDistribution,
-  HeartRateZones,
-  PaceVsHR,
-  TrainingLoadRatio,
-  EquipmentUsageTimeline,
-  RunBikeVolumeComparison,
-  WeeklyComparisonChart,
-  PerfVsEnvironmentMatrix,
-  SessionSimilarityMap,
-  RouteComparison,
-} from "@/components/statistics"
-import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands"
-
-import {
-  ChartSelectionProvider,
-  WeeklyVolumeChart,
-} from "@/components/dashboard"
+import { ChartSelectionProvider } from "@/components/dashboard"
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters"
 
 export default function Statistics() {
   return (
     <DashboardFiltersProvider>
       <ChartSelectionProvider>
-        <div className="grid gap-6 p-6">
-          <WeeklyVolumeChart />
-          <WeeklyComparisonChart metric="steps" />
-          <AnnualMileage />
-          <ActivityByTime />
-          <AvgDailyMileageRadar />
-          <RunDistances />
-          <TreadmillVsOutdoor />
-          <PaceDistribution />
-          <HeartRateZones />
-          <PaceVsHR />
-          <TrainingLoadRatio />
-          <EquipmentUsageTimeline />
-          <RunBikeVolumeComparison />
-          <PerfVsEnvironmentMatrix />
-          <SessionSimilarityMap />
-          <RouteComparison route="River Loop" />
-          <PeerBenchmarkBands />
+        <div className="p-6 text-center text-muted-foreground">
+          Statistics charts coming soon...
         </div>
       </ChartSelectionProvider>
     </DashboardFiltersProvider>
