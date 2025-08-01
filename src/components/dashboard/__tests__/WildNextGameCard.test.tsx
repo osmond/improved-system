@@ -14,6 +14,7 @@ describe('WildNextGameCard', () => {
   it('renders card title when schedule is loaded', () => {
     const { container } = render(<WildNextGameCard />)
     expect(screen.getByText('Next Game')).toBeInTheDocument()
-    expect(container.firstChild).toHaveClass('bg-wild-primary', 'text-wild-secondary')
+    expect(container.firstChild).toHaveClass('text-wild-primary')
+    expect(container.querySelector('svg')).toBeInTheDocument()
   })
 })

@@ -21,6 +21,7 @@ describe('RunSoundtrackCard', () => {
     expect(screen.getByText('Now Playing')).toBeInTheDocument()
     expect(screen.getAllByText(/Song A/).length).toBeGreaterThan(0)
     expect(screen.getByText(/Song B/)).toBeInTheDocument()
-    expect(container.firstChild).toHaveClass('bg-spotify-primary', 'text-spotify-foreground')
+    expect(container.firstChild).toHaveClass('text-spotify-primary')
+    expect(container.querySelector('svg')).toBeInTheDocument()
   })
 })
