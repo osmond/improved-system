@@ -88,11 +88,8 @@ export default function RunSoundtrackCard() {
                 </div>
                 <div className="mt-1 w-full bg-gray-100 rounded-full h-2 overflow-hidden">
                   <div
-                    className="h-full rounded-full"
-                    style={{
-                      width: `${progressPct}%`,
-                      background: 'linear-gradient(90deg,#1DB954,#1ED760)',
-                    }}
+                    className="h-full rounded-full bg-spotify-primary"
+                    style={{ width: `${progressPct}%` }}
                   />
                 </div>
               </div>
