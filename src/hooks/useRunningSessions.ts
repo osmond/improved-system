@@ -29,13 +29,19 @@ function kMeans(data: number[][], k: number, iterations = 10): number[] {
       labels[i] = best
     }
 
+    const sums = Array.from({ length: k }, () => [0, 0])
+    const counts = new Array(k).fill(0)
+
+    for (let i = 0; i < data.length; i++) {
+      const label = labels[i]
+      sums[label][0] += data[i][0]
+      sums[label][1] += data[i][1]
+      counts[label]++
+    }
+
     for (let j = 0; j < k; j++) {
-      const pts = data.filter((_, idx) => labels[idx] === j)
-      if (pts.length) {
-        centroids[j] = [
-          pts.reduce((sum, p) => sum + p[0], 0) / pts.length,
-          pts.reduce((sum, p) => sum + p[1], 0) / pts.length,
-        ]
+      if (counts[j]) {
+        centroids[j] = [sums[j][0] / counts[j], sums[j][1] / counts[j]]
       }
     }
   }
