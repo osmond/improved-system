@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import {
   ChartContainer,
   ScatterChart,
@@ -12,6 +12,7 @@ import {
 import ChartCard from "@/components/dashboard/ChartCard";
 import { Cell } from "recharts";
 import { useRunningStats } from "@/hooks/useRunningStats";
+import { SimpleSelect } from "@/components/ui/select";
 
 interface PerfPoint {
   pace: number
@@ -64,6 +65,9 @@ function regression(
 
 export default function PerfVsEnvironmentMatrix() {
   const stats = useRunningStats()
+  const [variable, setVariable] = useState(
+    "temperature" as "temperature" | "humidity" | "wind" | "elevation",
+  )
   const DATA = useMemo(() => {
     if (!stats) return []
     return stats.paceEnvironment.map((p) =>
@@ -76,10 +80,14 @@ export default function PerfVsEnvironmentMatrix() {
     trend: { label: "Trend", color: "hsl(var(--chart-3))" },
   } as const
 
-  const tempReg = regression(DATA, "temperature", "pace")
-  const humidityReg = regression(DATA, "humidity", "pace")
-  const windReg = regression(DATA, "wind", "pace")
-  const elevReg = regression(DATA, "elevation", "pace")
+  const axisLabels = {
+    temperature: "Temp (F)",
+    humidity: "Humidity (%)",
+    wind: "Wind (mph)",
+    elevation: "Elevation (ft)",
+  }
+
+  const trend = useMemo(() => regression(DATA, variable, "pace"), [DATA, variable])
 
   return (
     <ChartCard
@@ -87,64 +95,30 @@ export default function PerfVsEnvironmentMatrix() {
       description="How pace varies with weather conditions"
       className="space-y-4"
     >
-      <div className="grid gap-4 md:grid-cols-2">
-        <ChartContainer config={config} className="h-60">
-          <ScatterChart>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="temperature" name="Temp (F)" />
-            <YAxis dataKey="pace" name="Pace (min/mi)" />
-            <ChartTooltip />
-            <Scatter data={DATA}>
-              {DATA.map((point, idx) => (
-                <Cell key={idx} fill={point.fill} />
-              ))}
-            </Scatter>
-            <Line data={tempReg} stroke={config.trend.color} dot={false} />
-          </ScatterChart>
-        </ChartContainer>
-        <ChartContainer config={config} className="h-60">
-          <ScatterChart>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="humidity" name="Humidity (%)" />
-            <YAxis dataKey="pace" name="Pace (min/mi)" />
-            <ChartTooltip />
-            <Scatter data={DATA}>
-              {DATA.map((point, idx) => (
-                <Cell key={idx} fill={point.fill} />
-              ))}
-            </Scatter>
-            <Line data={humidityReg} stroke={config.trend.color} dot={false} />
-          </ScatterChart>
-        </ChartContainer>
-        <ChartContainer config={config} className="h-60">
-          <ScatterChart>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="wind" name="Wind (mph)" />
-            <YAxis dataKey="pace" name="Pace (min/mi)" />
-            <ChartTooltip />
-            <Scatter data={DATA}>
-              {DATA.map((point, idx) => (
-                <Cell key={idx} fill={point.fill} />
-              ))}
-            </Scatter>
-            <Line data={windReg} stroke={config.trend.color} dot={false} />
-          </ScatterChart>
-        </ChartContainer>
-        <ChartContainer config={config} className="h-60">
-          <ScatterChart>
-            <CartesianGrid strokeDasharray="3 3" />
-            <XAxis dataKey="elevation" name="Elevation (ft)" />
-            <YAxis dataKey="pace" name="Pace (min/mi)" />
-            <ChartTooltip />
-            <Scatter data={DATA}>
-              {DATA.map((point, idx) => (
-                <Cell key={idx} fill={point.fill} />
-              ))}
-            </Scatter>
-            <Line data={elevReg} stroke={config.trend.color} dot={false} />
-          </ScatterChart>
-        </ChartContainer>
-      </div>
+      <SimpleSelect
+        value={variable}
+        onValueChange={(v) => setVariable(v as typeof variable)}
+        options={[
+          { value: "temperature", label: "Temperature" },
+          { value: "humidity", label: "Humidity" },
+          { value: "wind", label: "Wind" },
+          { value: "elevation", label: "Elevation" },
+        ]}
+      />
+      <ChartContainer config={config} className="h-60">
+        <ScatterChart>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey={variable} name={axisLabels[variable]} />
+          <YAxis dataKey="pace" name="Pace (min/mi)" />
+          <ChartTooltip />
+          <Scatter data={DATA}>
+            {DATA.map((point, idx) => (
+              <Cell key={idx} fill={point.fill} />
+            ))}
+          </Scatter>
+          <Line data={trend} stroke={config.trend.color} dot={false} />
+        </ScatterChart>
+      </ChartContainer>
     </ChartCard>
   );
 }
