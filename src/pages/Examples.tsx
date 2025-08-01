@@ -21,6 +21,7 @@ import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor"
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+import ChartPreview from "@/components/examples/ChartPreview";
 
 import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
 
@@ -39,48 +40,100 @@ import RunSoundtrackCardDemo from "@/components/examples/RunSoundtrackCardDemo";
 export default function Examples() {
   return (
     <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-      <AreaChartInteractive />
+      <ChartPreview>
+        <AreaChartInteractive />
+      </ChartPreview>
 
-      <StepsTrendWithGoal data={mockDailySteps} />
+      <ChartPreview>
+        <StepsTrendWithGoal data={mockDailySteps} />
+      </ChartPreview>
 
-      <PeerBenchmarkBands />
+      <ChartPreview>
+        <PeerBenchmarkBands />
+      </ChartPreview>
 
-      <GhostSelfRivalChart />
+      <ChartPreview>
+        <GhostSelfRivalChart />
+      </ChartPreview>
 
-      <WeeklyVolumeHistoryChart />
-      <ReadingProbabilityTimeline />
+      <ChartPreview>
+        <WeeklyVolumeHistoryChart />
+      </ChartPreview>
+      <ChartPreview>
+        <ReadingProbabilityTimeline />
+      </ChartPreview>
 
-      <TimeInBedChart />
+      <ChartPreview>
+        <TimeInBedChart />
+      </ChartPreview>
 
-      <BarChartInteractive />
+      <ChartPreview>
+        <BarChartInteractive />
+      </ChartPreview>
 
-      <LineChartInteractive />
-
-
-      <ChartRadarDefault />
-      <RadarChartWorkoutByTime />
-
-      <ChartRadialLabel />
-
-      <ChartRadialText />
-
-      <ChartBarDefault />
-      <ChartRadialGrid />
-      <ChartBarHorizontal />
-      <ChartRadarDots />
-      <ChartBarMixed />
-      <ChartBarLabelCustom />
-      <ShoeUsageChart />
-      <TreadmillVsOutdoorExample />
-
-      <PerfVsEnvironmentMatrixExample />
+      <ChartPreview>
+        <LineChartInteractive />
+      </ChartPreview>
 
 
-      <ScatterChartPaceHeartRate />
-      <AreaChartLoadRatio />
+      <ChartPreview>
+        <ChartRadarDefault />
+      </ChartPreview>
+      <ChartPreview>
+        <RadarChartWorkoutByTime />
+      </ChartPreview>
 
-      <WildNextGameCard />
-      <RunSoundtrackCardDemo />
+      <ChartPreview>
+        <ChartRadialLabel />
+      </ChartPreview>
+
+      <ChartPreview>
+        <ChartRadialText />
+      </ChartPreview>
+
+      <ChartPreview>
+        <ChartBarDefault />
+      </ChartPreview>
+      <ChartPreview>
+        <ChartRadialGrid />
+      </ChartPreview>
+      <ChartPreview>
+        <ChartBarHorizontal />
+      </ChartPreview>
+      <ChartPreview>
+        <ChartRadarDots />
+      </ChartPreview>
+      <ChartPreview>
+        <ChartBarMixed />
+      </ChartPreview>
+      <ChartPreview>
+        <ChartBarLabelCustom />
+      </ChartPreview>
+      <ChartPreview>
+        <ShoeUsageChart />
+      </ChartPreview>
+      <ChartPreview>
+        <TreadmillVsOutdoorExample />
+      </ChartPreview>
+
+      <ChartPreview>
+        <PerfVsEnvironmentMatrixExample />
+      </ChartPreview>
+
+
+      <ChartPreview>
+        <ScatterChartPaceHeartRate />
+      </ChartPreview>
+      <ChartPreview>
+        <AreaChartLoadRatio />
+      </ChartPreview>
+
+      <ChartPreview>
+        <WildNextGameCard />
+      </ChartPreview>
+      <ChartPreview>
+        <RunSoundtrackCardDemo />
+      </ChartPreview>
 
     </div>
   );
