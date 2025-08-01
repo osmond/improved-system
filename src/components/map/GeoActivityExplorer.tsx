@@ -151,10 +151,9 @@ export default function GeoActivityExplorer() {
                     ? `${baseFill.replace(')', ' / 0.7)')}`
                     : baseFill;
                   return (
-                    <Tooltip>
+                    <Tooltip key={geo.rsmKey}>
                       <TooltipTrigger asChild>
                         <Geography
-                            key={geo.rsmKey}
                             geography={geo}
                             role="button"
                             tabIndex={0}
