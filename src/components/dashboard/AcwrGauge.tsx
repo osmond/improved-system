@@ -1,5 +1,11 @@
 import React from "react";
 import useAcwr from "@/hooks/useAcwr";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 
 export interface AcwrGaugeProps {
   /** Array of daily training load values ordered from oldest to newest */
@@ -36,30 +42,49 @@ export function AcwrGauge({
   }
 
   return (
-    <div className="flex flex-col items-center" role="img" aria-label={`ACWR ${ratio.toFixed(2)}`}>
-      <svg width={size} height={size / 2} viewBox={`0 0 ${size} ${size / 2}`}>
-        <path
-          d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${
-            size - strokeWidth / 2
-          } ${size / 2 - strokeWidth / 2}`}
-          stroke="hsl(var(--muted))"
-          strokeWidth={strokeWidth}
-          fill="none"
-        />
-        <path
-          d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${
-            size - strokeWidth / 2
-          } ${size / 2 - strokeWidth / 2}`}
-          stroke={color}
-          strokeWidth={strokeWidth}
-          fill="none"
-          strokeDasharray={circumference}
-          strokeDashoffset={offset}
-          strokeLinecap="round"
-        />
-      </svg>
-      <span className="mt-2 text-lg font-bold tabular-nums">{ratio.toFixed(2)}</span>
-    </div>
+    <TooltipProvider delayDuration={100}>
+      <Tooltip>
+        <TooltipTrigger asChild>
+          <div
+            className="flex flex-col items-center"
+            role="img"
+            aria-label={`ACWR ${ratio.toFixed(2)}`}
+          >
+            <svg
+              width={size}
+              height={size / 2}
+              viewBox={`0 0 ${size} ${size / 2}`}
+            >
+              <path
+                d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${
+                  size - strokeWidth / 2
+                } ${size / 2 - strokeWidth / 2}`}
+                stroke="hsl(var(--muted))"
+                strokeWidth={strokeWidth}
+                fill="none"
+              />
+              <path
+                d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${
+                  size - strokeWidth / 2
+                } ${size / 2 - strokeWidth / 2}`}
+                stroke={color}
+                strokeWidth={strokeWidth}
+                fill="none"
+                strokeDasharray={circumference}
+                strokeDashoffset={offset}
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="mt-2 text-lg font-bold tabular-nums">
+              {ratio.toFixed(2)}
+            </span>
+          </div>
+        </TooltipTrigger>
+        <TooltipContent>
+          ACWR compares last 7 days of load vs last 28; 0.8–1.3 is ideal
+        </TooltipContent>
+      </Tooltip>
+    </TooltipProvider>
   );
 }
 
