@@ -22,18 +22,12 @@ import useCalorieInsights from "@/hooks/useCalorieInsights";
 import useUserGoals from "@/hooks/useUserGoals";
 
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
-import { minutesSince, cn } from "@/lib/utils";
+import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
-import {
-  NavigationMenu,
-  NavigationMenuList,
-  NavigationMenuItem,
-  NavigationMenuLink,
-} from "@/components/ui/navigation-menu";
-import Statistics from "@/pages/Statistics";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import useDashboardFilters, {
   type ActivityType,
   type DateRange,
@@ -196,77 +190,14 @@ export default function Dashboard() {
   };
 
   return (
-    <>
-      <NavigationMenu>
-        <NavigationMenuList>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <button
-                onClick={() => setActiveTab('dashboard')}
-                aria-current={activeTab === 'dashboard' ? 'page' : undefined}
-                className={cn(
-                  'px-3 py-1 rounded',
-                  activeTab === 'dashboard'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted hover:bg-muted-foreground',
-                )}
-              >
-                Dashboard
-              </button>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <button
-                onClick={() => setActiveTab('map')}
-                aria-current={activeTab === 'map' ? 'page' : undefined}
-                className={cn(
-                  'px-3 py-1 rounded',
-                  activeTab === 'map'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted hover:bg-muted-foreground',
-                )}
-              >
-                Map
-              </button>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <button
-                onClick={() => setActiveTab('examples')}
-                aria-current={activeTab === 'examples' ? 'page' : undefined}
-                className={cn(
-                  'px-3 py-1 rounded',
-                  activeTab === 'examples'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted hover:bg-muted-foreground',
-                )}
-              >
-                Examples
-              </button>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink asChild>
-              <button
-                onClick={() => setActiveTab('statistics')}
-                aria-current={activeTab === 'statistics' ? 'page' : undefined}
-                className={cn(
-                  'px-3 py-1 rounded',
-                  activeTab === 'statistics'
-                    ? 'bg-primary text-primary-foreground'
-                    : 'bg-muted hover:bg-muted-foreground',
-                )}
-              >
-                Statistics
-              </button>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-        </NavigationMenuList>
-      </NavigationMenu>
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <TabsList>
+        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="map">Map</TabsTrigger>
+        <TabsTrigger value="examples">Examples</TabsTrigger>
+      </TabsList>
 
-      {activeTab === 'dashboard' && (
+      <TabsContent value="dashboard">
         <div className="grid gap-4">
           <TopInsights />
       <div className="flex gap-4">
@@ -595,19 +526,22 @@ export default function Dashboard() {
           <p className="sr-only" aria-live="polite">{calorieSummary}</p>
         </Card>
       </div>
-      <RingDetailDialog
-        metric={expanded}
-        onClose={() => setExpanded(null)}
-        summary={expanded ? summaries[expanded] : undefined}
-      />
-    </div>
-  )}
 
-      {activeTab === 'map' && <GeoActivityExplorer />}
+          <RingDetailDialog
+            metric={expanded}
+            onClose={() => setExpanded(null)}
+            summary={expanded ? summaries[expanded] : undefined}
+          />
+        </div>
+      </TabsContent>
 
-      {activeTab === 'examples' && <Examples />}
+      <TabsContent value="map">
+        <GeoActivityExplorer />
+      </TabsContent>
 
-      {activeTab === 'statistics' && <Statistics />}
-    </>
+      <TabsContent value="examples">
+        <Examples />
+      </TabsContent>
+    </Tabs>
   );
 }
