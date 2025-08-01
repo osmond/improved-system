@@ -17,4 +17,6 @@ export { default as CommuteRank } from "./CommuteRank";
 export { default as ReadingFocusHeatmap } from "./ReadingFocusHeatmap";
 
 export { default as BooksVsCalories } from "./BooksVsCalories";
+
+export { default as ReadingStackSplit } from "./ReadingStackSplit";
 >

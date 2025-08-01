@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/accordion";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import StateVisitSummary from "./StateVisitSummary";
 
 import statesTopo from "../../../public/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
@@ -168,6 +169,7 @@ export default function GeoActivityExplorer() {
           ]}
         />
       </div>
+      <StateVisitSummary />
       <div className="flex gap-12">
         <div className="w-80 h-60">
           <Map

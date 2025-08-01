@@ -814,15 +814,35 @@ export async function getReadingProbability(): Promise<ReadingProbabilityPoint[]
 
 // ----- Reading sessions -----
 
+export type ReadingMedium =
+  | 'phone'
+  | 'computer'
+  | 'tablet'
+  | 'kindle'
+  | 'real_book'
+  | 'other'
+
 export interface ReadingSession {
   /** ISO timestamp when reading occurred */
   timestamp: string
   /** Focus intensity from 0-1 */
   intensity: number
+  /** Device or medium used for the session */
+  medium: ReadingMedium
+  /** Duration of the session in minutes */
+  duration: number
 }
 
 export function generateMockReadingSessions(count = 60): ReadingSession[] {
   const sessions: ReadingSession[] = []
+  const mediums: ReadingMedium[] = [
+    'phone',
+    'computer',
+    'tablet',
+    'kindle',
+    'real_book',
+    'other',
+  ]
   for (let i = 0; i < count; i++) {
     const d = new Date()
     d.setDate(d.getDate() - Math.floor(Math.random() * 30))
@@ -830,6 +850,8 @@ export function generateMockReadingSessions(count = 60): ReadingSession[] {
     sessions.push({
       timestamp: d.toISOString(),
       intensity: +Math.random().toFixed(2),
+      medium: mediums[Math.floor(Math.random() * mediums.length)],
+      duration: Math.floor(5 + Math.random() * 55),
     })
   }
   return sessions
@@ -840,6 +862,42 @@ export async function getReadingSessions(): Promise<ReadingSession[]> {
     setTimeout(() => resolve(generateMockReadingSessions()), 200)
   })
 }
+
+
+export interface ReadingMediumTotal {
+  medium: ReadingMedium
+  minutes: number
+}
+
+export function aggregateReadingMediumTotals(
+  sessions: ReadingSession[],
+): ReadingMediumTotal[] {
+  const totals: Record<ReadingMedium, number> = {
+    phone: 0,
+    computer: 0,
+    tablet: 0,
+    kindle: 0,
+    real_book: 0,
+    other: 0,
+  }
+  sessions.forEach((s) => {
+    totals[s.medium] += s.duration
+  })
+  return (Object.keys(totals) as ReadingMedium[]).map((m) => ({
+    medium: m,
+    minutes: totals[m],
+  }))
+}
+
+export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      const sessions = generateMockReadingSessions()
+      resolve(aggregateReadingMediumTotals(sessions))
+    }, 200)
+  })
+}
+
 
 // ----- Reading progress -----
 export interface ReadingProgress {

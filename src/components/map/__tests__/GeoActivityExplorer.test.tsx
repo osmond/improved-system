@@ -26,6 +26,18 @@ vi.mock("@/hooks/useStateVisits", () => ({
   ],
 }));
 
+vi.mock("@/hooks/useInsights", () => ({
+  __esModule: true,
+  default: () => ({
+    activeStreak: 5,
+    highHeartRate: false,
+    lowSleep: false,
+    calorieSurplus: false,
+    bestPaceThisMonth: null,
+    mostConsistentDay: null,
+  }),
+}));
+
 
 
 describe("GeoActivityExplorer", () => {
@@ -52,6 +64,14 @@ describe("GeoActivityExplorer", () => {
     fireEvent.click(trigger);
     fireEvent.click(screen.getByText("Bike"));
     expect(screen.queryByLabelText("CA visited")).not.toBeInTheDocument();
+  });
+
+  it("renders summary badges", () => {
+    render(<GeoActivityExplorer />);
+    expect(screen.getByText("1 states")).toBeInTheDocument();
+    expect(screen.getByText("100mi")).toBeInTheDocument();
+    expect(screen.getByText("Fav: CA")).toBeInTheDocument();
+    expect(screen.getByText("5d streak")).toBeInTheDocument();
   });
 
   it("shows popup with summary when state clicked", () => {
