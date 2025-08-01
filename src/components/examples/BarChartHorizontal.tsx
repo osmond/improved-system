@@ -61,7 +61,7 @@ export default function ChartBarHorizontal() {
               axisLine={false}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey='count' fill='var(--color-miles)' radius={5} />
+            <Bar dataKey='count' fill='var(--color-count)' radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
