@@ -148,3 +148,11 @@ Storybook (or even MDX) is great for cataloguing all `ui/` components with knobs
 
 Unit tests (Vitest + Testing Library) should live alongside components in a `__tests__` subfolder, e.g. `src/components/ui/button/__tests__/Button.test.tsx`.
 
+
+## Development
+
+```bash
+npm run dev
+npm run build
+npm test
+```
