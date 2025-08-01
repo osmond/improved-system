@@ -3,7 +3,9 @@ import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
 
-const StepsChart = lazy(() => import("./StepsChart"));
+const StepsChart = lazy(() =>
+  import("./StepsChart").then((m) => ({ default: m.StepsChart }))
+);
 
 export type Metric = "steps" | "sleep" | "heartRate" | "calories";
 

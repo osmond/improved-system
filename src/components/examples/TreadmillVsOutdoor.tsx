@@ -57,7 +57,10 @@ export default function TreadmillVsOutdoorExample() {
           <CardTitle>Indoor vs Outdoor Split</CardTitle>
           <CardDescription>Comparison of workout volume or sessions (e.g., treadmill vs outdoor activities)</CardDescription>
         </div>
-        <Select value={activeMonth} onValueChange={setActiveMonth}>
+        <Select
+          value={activeMonth}
+          onValueChange={(v) => setActiveMonth(v as (typeof activeMonth))}
+        >
           <SelectTrigger className='ml-auto h-7 w-[130px] rounded-lg pl-2.5' aria-label='Select month'>
             <SelectValue placeholder='Select month' />
           </SelectTrigger>

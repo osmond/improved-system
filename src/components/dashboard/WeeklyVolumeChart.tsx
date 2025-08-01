@@ -44,8 +44,17 @@ export default function WeeklyVolumeChart() {
             height={20}
             travellerWidth={10}
             onChange={(e) => {
-              if (e && data[e.startIndex] && data[e.endIndex]) {
-                setRange({ start: data[e.startIndex].week, end: data[e.endIndex].week });
+              if (
+                e &&
+                e.startIndex != null &&
+                e.endIndex != null &&
+                data[e.startIndex] &&
+                data[e.endIndex]
+              ) {
+                setRange({
+                  start: data[e.startIndex].week,
+                  end: data[e.endIndex].week,
+                })
               }
             }}
           />

@@ -110,6 +110,7 @@ export default function GeoActivityExplorer() {
       title="State Visits"
       className="h-60 space-y-6"
     >
+      <>
       <div className="flex gap-4 mb-4">
         <SimpleSelect
           label="Activity"
@@ -137,8 +138,8 @@ export default function GeoActivityExplorer() {
           <TooltipProvider delayDuration={100}>
             <ComposableMap projection="geoAlbersUsa">
               <Geographies geography={statesTopo as any}>
-                {({ geographies }) =>
-                  geographies.map((geo) => {
+                {({ geographies }: { geographies: any[] }) =>
+                  geographies.map((geo: any) => {
                   const abbr = fipsToAbbr[geo.id as string];
                   const visited = summaryMap[abbr]?.visited;
                   const intensity = summaryMap[abbr]?.totalDays || 0;
@@ -151,14 +152,13 @@ export default function GeoActivityExplorer() {
                     ? `${baseFill.replace(')', ' / 0.7)')}`
                     : baseFill;
                   return (
-                    <Tooltip>
+                    <Tooltip key={geo.rsmKey}>
                       <TooltipTrigger asChild>
                         <Geography
-                            key={geo.rsmKey}
                             geography={geo}
                             role="button"
                             tabIndex={0}
-                            onKeyDown={(e) => {
+                            onKeyDown={(e: React.KeyboardEvent<SVGPathElement>) => {
                               if (e.key === "Enter" || e.key === " ") toggleState(abbr);
                             }}
                             onClick={() => toggleState(abbr)}
@@ -244,6 +244,7 @@ export default function GeoActivityExplorer() {
           </Accordion>
         </div>
       </div>
+      </>
     </ChartContainer>
   );
 }
