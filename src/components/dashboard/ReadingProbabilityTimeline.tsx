@@ -43,12 +43,11 @@ export default function ReadingProbabilityTimeline() {
     const end = new Date(start);
     end.setHours(end.getHours() + 1);
     const range = `${start.toLocaleTimeString([], { hour: "numeric" })}–${end.toLocaleTimeString([], { hour: "numeric" })}`;
-    const prob = (payload.find((p) => p.dataKey === "probability")?.value as number) || 0;
     return (
       <ChartTooltipContent
         {...(props as any)}
         nameKey="probability"
-        formatter={() => `${Math.round(prob * 100)}%`}
+        formatter={(value) => `${Math.round((value as number) * 100)}%`}
         labelFormatter={() => range}
       />
     );
