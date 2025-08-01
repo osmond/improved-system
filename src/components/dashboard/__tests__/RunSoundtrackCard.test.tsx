@@ -7,10 +7,32 @@ vi.mock('@/hooks/useRunSoundtrack', () => ({
   __esModule: true,
   default: () => ({
     window: { start: '2025-07-30T10:00:00Z', end: '2025-07-30T10:40:00Z' },
-    nowPlaying: { item: { name: 'Song A', artists: [{ name: 'Artist' }] } },
+    nowPlaying: {
+      item: {
+        name: 'Song A',
+        artists: [{ name: 'Artist' }],
+        duration_ms: 240000,
+        album: { images: [{ url: 'https://via.placeholder.com/80' }] },
+      },
+      progress_ms: 90000,
+    },
     topTracks: [
-      { id: '1', name: 'Song A', artists: 'Artist', uri: 'x', playCount: 2 },
-      { id: '2', name: 'Song B', artists: 'Other', uri: 'y', playCount: 1 },
+      {
+        id: '1',
+        name: 'Song A',
+        artists: 'Artist',
+        uri: 'x',
+        playCount: 2,
+        thumbnail: 'https://via.placeholder.com/40',
+      },
+      {
+        id: '2',
+        name: 'Song B',
+        artists: 'Other',
+        uri: 'y',
+        playCount: 1,
+        thumbnail: 'https://via.placeholder.com/40',
+      },
     ],
   }),
 }))
