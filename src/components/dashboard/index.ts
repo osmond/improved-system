@@ -21,6 +21,8 @@ export { default as ReadingStackSplit } from "./ReadingStackSplit";
 export { default as RunSoundtrackCard } from "./RunSoundtrackCard";
 
 export { default as WildNextGameCard } from "./WildNextGameCard";
+export { default as NextGameCard } from "./NextGameCard";
+export { default as CompactNextGameCard } from "./CompactNextGameCard";
 
 export { default as MovementFingerprint } from "./MovementFingerprint";
 

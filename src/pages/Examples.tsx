@@ -33,6 +33,8 @@ import ReadingProbabilityTimeline from "@/components/dashboard/ReadingProbabilit
 
 import ReadingStackSplit from "@/components/dashboard/ReadingStackSplit";
 import WildNextGameCard from "@/components/dashboard/WildNextGameCard";
+import NextGameCard from "@/components/dashboard/NextGameCard";
+import CompactNextGameCard from "@/components/dashboard/CompactNextGameCard";
 import RunSoundtrackCardDemo from "@/components/examples/RunSoundtrackCardDemo";
 
 
@@ -130,6 +132,30 @@ export default function Examples() {
 
       <ChartPreview>
         <WildNextGameCard />
+      </ChartPreview>
+      <ChartPreview>
+        <NextGameCard
+          homeTeam="Wild"
+          awayTeam="Blues"
+          date="Sep 30, 2025"
+          time="7:00 PM"
+          location="Xcel Energy Center"
+          isHome={true}
+          countdown="in 2 months"
+          logoUrl="https://via.placeholder.com/40?text=W"
+          accentColor="#006847"
+        />
+      </ChartPreview>
+      <ChartPreview>
+        <CompactNextGameCard
+          homeTeam="Wild"
+          awayTeam="Blues"
+          date="Sep 30, 2025"
+          time="7:00 PM"
+          isHome={true}
+          countdown="in 2 months"
+          accentColor="#006847"
+        />
       </ChartPreview>
       <ChartPreview>
         <RunSoundtrackCardDemo />
