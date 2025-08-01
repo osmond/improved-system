@@ -838,6 +838,8 @@ export function generateMockReadingSessions(count = 60): ReadingSession[] {
 export async function getReadingSessions(): Promise<ReadingSession[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockReadingSessions()), 200)
+  })
+}
 
 // ----- Reading progress -----
 export interface ReadingProgress {
