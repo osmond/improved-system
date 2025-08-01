@@ -20,11 +20,18 @@ import {
   CardContent,
   CardFooter,
 } from '@/components/ui/card'
+import { Cell } from 'recharts'
 
-const scatterData = Array.from({ length: 200 }, () => ({
-  pace: 6 + Math.random() * 2,
-  hr: 120 + Math.random() * 40,
-}))
+const scatterData = Array.from({ length: 200 }, () => {
+  const pace = 6 + Math.random() * 2
+  const hr = 120 + Math.random() * 40
+  const zone = Math.min(5, Math.max(0, Math.floor((hr - 120) / 8)))
+  return {
+    pace,
+    hr,
+    fill: `var(--chart-${zone + 5})`,
+  }
+})
 
 const chartConfig = {
   pace: { label: 'Pace', color: 'hsl(var(--chart-9))' },
@@ -45,7 +52,11 @@ export default function ScatterChartPaceHeartRate() {
             <XAxis dataKey='pace' name='Pace (min/mi)' />
             <YAxis dataKey='hr' name='Heart Rate (bpm)' />
             <ChartTooltip content={<ChartTooltipContent />} />
-            <Scatter data={scatterData} fill='var(--color-pace)' />
+            <Scatter data={scatterData}>
+              {scatterData.map((pt, idx) => (
+                <Cell key={idx} fill={pt.fill} />
+              ))}
+            </Scatter>
           </ScatterChart>
         </ChartContainer>
       </CardContent>
