@@ -17,12 +17,15 @@ import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import useUserGoals from "@/hooks/useUserGoals";
 
 
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
-  const monthly = useMonthlyStepsProjection();
+  const { dailyStepGoal, setDailyStepGoal } = useUserGoals();
+  const monthly = useMonthlyStepsProjection(dailyStepGoal);
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
@@ -75,11 +78,41 @@ export default function Dashboard() {
                 {recentActivity.type}
               </span>
             )}
+            <Popover>
+              <PopoverTrigger asChild>
+                <button className="text-xs underline text-muted-foreground" aria-label="Edit goal">
+                  Edit
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const fd = new FormData(e.currentTarget)
+                    const val = parseInt(fd.get('goal') as string, 10)
+                    if (!Number.isNaN(val)) setDailyStepGoal(val)
+                  }}
+                  className="grid gap-2"
+                >
+                  <label className="text-xs" htmlFor="goal">Daily goal</label>
+                  <input
+                    id="goal"
+                    name="goal"
+                    type="number"
+                    defaultValue={dailyStepGoal}
+                    className="border rounded px-2 py-1 text-sm"
+                  />
+                  <button type="submit" className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs">
+                    Save
+                  </button>
+                </form>
+              </PopoverContent>
+            </Popover>
           </h2>
             <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Steps progress"
-            value={(data.steps / 10000) * 100}
+            value={(data.steps / dailyStepGoal) * 100}
             current={data.steps}
             previous={previousSteps}
           />

@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { useGarminDays, useGarminData } from './useGarminData'
+import useUserGoals from './useUserGoals'
 import { getRunningSessions, type RunningSession } from '@/lib/api'
 
 export interface Insights {
@@ -20,6 +21,7 @@ export interface Insights {
 export function useInsights(): Insights | null {
   const days = useGarminDays()
   const data = useGarminData()
+  const { dailyStepGoal } = useUserGoals()
   const [sessions, setSessions] = useState<RunningSession[] | null>(null)
 
   useEffect(() => {
@@ -28,7 +30,7 @@ export function useInsights(): Insights | null {
 
   return useMemo(() => {
     if (!days || !data || !sessions) return null
-    const STEP_GOAL = 8000
+    const STEP_GOAL = dailyStepGoal
     let streak = 0
     for (let i = days.length - 1; i >= 0; i--) {
       if (days[i].steps >= STEP_GOAL) streak++
@@ -70,7 +72,7 @@ export function useInsights(): Insights | null {
       bestPaceThisMonth: bestPace,
       mostConsistentDay: consistentDay,
     }
-  }, [days, data, sessions])
+  }, [days, data, sessions, dailyStepGoal])
 }
 
 export default useInsights
