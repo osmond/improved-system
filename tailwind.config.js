@@ -22,7 +22,11 @@ module.exports = {
         muted: {
           DEFAULT: "hsl(var(--muted))",
           foreground: "hsl(var(--muted-foreground))"
-        }
+        },
+        "wild-primary": "hsl(var(--wild-primary))",
+        "wild-secondary": "hsl(var(--wild-secondary))",
+        "wild-gold": "hsl(var(--wild-gold))",
+        "wild-wheat": "hsl(var(--wild-wheat))"
       },
       fontFamily: {
         sans: ["Inter", ...fontFamily.sans],
