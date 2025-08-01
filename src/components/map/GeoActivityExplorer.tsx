@@ -20,9 +20,13 @@ import {
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
+
 import useDebounce from "@/hooks/useDebounce";
 
-import statesTopo from "../../../public/us-states.json";
+import StateVisitCallout from "./StateVisitCallout";
+
+
+import statesTopo from "@/lib/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
 
@@ -31,6 +35,7 @@ export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
   const [query, setQuery] = useState("");
@@ -209,8 +214,9 @@ export default function GeoActivityExplorer() {
       </div>
       <StateVisitSummary />
       <div className="flex gap-12">
-        <div className="w-80 h-60">
+        <div className="relative w-80 h-60">
           <Map
+            aria-label="state map"
             mapLib={maplibregl}
             mapStyle="https://demotiles.maplibre.org/style.json"
             initialViewState={{ longitude: -98, latitude: 38, zoom: 3 }}
@@ -220,6 +226,12 @@ export default function GeoActivityExplorer() {
               const f = e.features?.[0] as any
               if (f?.properties?.abbr) selectState(f.properties.abbr)
             }}
+            onMouseMove={(e: MapLayerMouseEvent) => {
+              const f = e.features?.[0] as any
+              if (f?.properties?.abbr) setHoveredState(f.properties.abbr)
+              else setHoveredState(null)
+            }}
+            onMouseLeave={() => setHoveredState(null)}
             style={{ width: "100%", height: "100%" }}
           >
             <Source id="states" type="geojson" data={statesGeo as any}>
@@ -263,6 +275,20 @@ export default function GeoActivityExplorer() {
                 </Marker>
               )
             )}
+            {hoveredState && stateCoords[hoveredState] && (
+              <Popup
+                longitude={stateCoords[hoveredState][0]}
+                latitude={stateCoords[hoveredState][1]}
+                closeButton={false}
+                closeOnClick={false}
+                anchor="top"
+              >
+                <span className="flex gap-2 text-xs">
+                  <Badge>{summaryMap[hoveredState]?.totalDays ?? 0}d</Badge>
+                  <Badge>{summaryMap[hoveredState]?.totalMiles ?? 0}mi</Badge>
+                </span>
+              </Popup>
+            )}
             {selectedState && stateCoords[selectedState] && (
               <Popup
                 longitude={stateCoords[selectedState][0]}
@@ -285,6 +311,7 @@ export default function GeoActivityExplorer() {
             payload={legendPayload}
             content={<ChartLegendContent nameKey="value" hideIcon />}
           />
+          <StateVisitCallout />
         </div>
 
         <div className="flex-1">

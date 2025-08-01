@@ -1,15 +1,34 @@
+
 import { render, screen, fireEvent, act } from "@testing-library/react";
+
+import { render, screen, fireEvent } from "@testing-library/react";
+import React from "react";
+
 import GeoActivityExplorer from "../GeoActivityExplorer";
 import { vi } from "vitest";
 vi.mock("react-map-gl/maplibre", () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
   Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Popup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 import "@testing-library/jest-dom";
+
+vi.mock("recharts", async () => {
+  const actual: any = await vi.importActual("recharts");
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
+      <div style={{ width: 800, height: 400 }}>
+        {React.cloneElement(children, { width: 800, height: 400 })}
+      </div>
+    ),
+  };
+});
 
 vi.mock("@/hooks/useStateVisits", () => ({
   useStateVisits: () => [
@@ -105,5 +124,16 @@ describe("GeoActivityExplorer", () => {
     expect(screen.queryByLabelText("CA visited")).toBeNull();
     expect(screen.queryAllByLabelText("TX visited").length).toBeGreaterThan(0);
     vi.useRealTimers();
+
+  it("shows tooltip on state hover", async () => {
+    render(<GeoActivityExplorer />);
+    const map = screen.getByLabelText("state map");
+    fireEvent.mouseMove(map, {
+      features: [{ properties: { abbr: "CA" } }],
+    } as any);
+    expect(screen.getByText("1d", { exact: true })).toBeInTheDocument();
+    expect(screen.getByText("1mi", { exact: true })).toBeInTheDocument();
+    fireEvent.mouseLeave(map);
+
   });
 });
