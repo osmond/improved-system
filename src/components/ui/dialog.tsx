@@ -4,6 +4,7 @@ import { cn } from "@/lib/utils";
 
 const Dialog = DialogPrimitive.Root;
 const DialogTrigger = DialogPrimitive.Trigger;
+const DialogClose = DialogPrimitive.Close;
 
 const DialogPortal = DialogPrimitive.Portal;
 
@@ -62,4 +63,10 @@ const DialogContentFullscreen = React.forwardRef<
 ));
 DialogContentFullscreen.displayName = DialogPrimitive.Content.displayName;
 
-export { Dialog, DialogTrigger, DialogContent, DialogContentFullscreen };
+export {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogContentFullscreen,
+  DialogClose,
+};
