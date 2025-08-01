@@ -650,6 +650,30 @@ export async function getRouteSessions(route: string): Promise<RouteSession[]> {
   })
 }
 
+// ----- Sleep sessions -----
+
+export interface SleepSession {
+  date: string
+  timeInBed: number
+}
+
+export function generateMockSleepSessions(days = 30): SleepSession[] {
+  return Array.from({ length: days }, (_, i) => {
+    const d = new Date()
+    d.setDate(d.getDate() - i)
+    return {
+      date: d.toISOString().slice(0, 10),
+      timeInBed: +(6 + Math.random() * 3).toFixed(2),
+    }
+  })
+}
+
+export async function getSleepSessions(): Promise<SleepSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockSleepSessions()), 200)
+  })
+}
+
 // ----- Location efficiency -----
 
 export interface LocationEfficiency {
