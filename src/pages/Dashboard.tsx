@@ -4,6 +4,7 @@ import { useGarminData } from "@/hooks/useGarminData";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
+import { ReadingFocusHeatmap } from "@/components/dashboard";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Dashboard() {
@@ -29,7 +30,10 @@ export default function Dashboard() {
         <TabsTrigger value="examples">Examples</TabsTrigger>
       </TabsList>
       <TabsContent value="map">
-        <GeoActivityExplorer />
+        <div className="grid gap-4 md:grid-cols-2">
+          <GeoActivityExplorer />
+          <ReadingFocusHeatmap />
+        </div>
       </TabsContent>
       <TabsContent value="examples">
         <Examples />

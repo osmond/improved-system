@@ -184,6 +184,43 @@ export async function getHourlySteps(): Promise<HourlySteps[]> {
   });
 }
 
+// ----- Activity snapshots -----
+
+export interface ActivitySnapshot {
+  /** ISO timestamp for the start of the hour */
+  timestamp: string;
+  /** Average heart rate during that hour */
+  heartRate: number;
+  /** Step count recorded during that hour */
+  steps: number;
+}
+
+export function generateMockActivitySnapshots(days = 30): ActivitySnapshot[] {
+  const data: ActivitySnapshot[] = [];
+  for (let i = 0; i < days; i++) {
+    const base = new Date();
+    base.setDate(base.getDate() - i);
+    for (let h = 0; h < 24; h++) {
+      const d = new Date(base);
+      d.setHours(h, 0, 0, 0);
+      data.push({
+        timestamp: d.toISOString(),
+        heartRate: Math.round(60 + Math.random() * 40),
+        steps: Math.floor(50 + Math.random() * 450),
+      });
+    }
+  }
+  return data;
+}
+
+export async function getActivitySnapshots(
+  days = 30,
+): Promise<ActivitySnapshot[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockActivitySnapshots(days)), 200);
+  });
+}
+
 // ----- State visit data -----
 import type { StateVisit } from "./types";
 
