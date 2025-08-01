@@ -136,6 +136,7 @@ Replace these stubs with real API calls when connecting to live Garmin data.
 The reading focus heatmap interprets these snapshots into hourly intensity
 levels. Cells label high, medium and low focus as “Deep Dive,” “Skim,” and
 “Page Turn Panic” respectively.
+You can view this heatmap via the **Reading** tab on the dashboard.
 
 ## Charts & maps
 All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing. Include a <ChartHeader> for titles so typography stays consistent.
