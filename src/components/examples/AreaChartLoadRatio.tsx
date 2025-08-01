@@ -1,6 +1,7 @@
 'use client'
 
 import { TrendingUp } from 'lucide-react'
+import { generateTrendMessage } from '@/lib/utils'
 import {
   ChartContainer,
   AreaChart,
@@ -63,7 +64,7 @@ export default function AreaChartLoadRatio() {
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex items-center gap-2 text-sm'>
-        Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
+        {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
       </CardFooter>
     </Card>
   )
