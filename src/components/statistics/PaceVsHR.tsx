@@ -19,13 +19,13 @@ const scatterData = Array.from({ length: 200 }, () => {
   return {
     pace,
     hr,
-    fill: `var(--chart-${zone + 5})`,
+    fill: `hsl(var(--chart-${zone + 5}))`,
   }
 })
 
 const config = {
-  pace: { label: "Pace", color: "var(--chart-9)" },
-  hr: { label: "Heart Rate", color: "var(--chart-10)" },
+  pace: { label: "Pace", color: "hsl(var(--chart-9))" },
+  hr: { label: "Heart Rate", color: "hsl(var(--chart-10))" },
 } satisfies Record<string, unknown>
 
 export default function PaceVsHR() {

@@ -33,7 +33,7 @@ function mapPoint(pace: number, temperature: number, humidity: number, wind: num
     humidity,
     wind,
     elevation,
-    fill: `var(--chart-${colorIndex + 5})`,
+    fill: `hsl(var(--chart-${colorIndex + 5}))`,
   }
 }
 
@@ -72,8 +72,8 @@ export default function PerfVsEnvironmentMatrix() {
   }, [stats])
 
   const config = {
-    pace: { label: "Pace", color: "var(--chart-8)" },
-    trend: { label: "Trend", color: "var(--chart-3)" },
+    pace: { label: "Pace", color: "hsl(var(--chart-8))" },
+    trend: { label: "Trend", color: "hsl(var(--chart-3))" },
   } as const
 
   const tempReg = regression(DATA, "temperature", "pace")
