@@ -1,9 +1,9 @@
-import { render, screen, fireEvent } from "@testing-library/react";
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import GeoActivityExplorer from "../GeoActivityExplorer";
 import { vi } from "vitest";
 vi.mock("react-map-gl/maplibre", () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -52,4 +52,14 @@ describe("GeoActivityExplorer", () => {
     fireEvent.click(screen.getByText("Bike"));
     expect(screen.queryByLabelText("CA visited")).not.toBeInTheDocument();
   });
+
+  it("highlights row on hover", async () => {
+    render(<GeoActivityExplorer />);
+    const row = screen.getByText("CA").closest("button")!;
+    fireEvent.mouseEnter(row);
+    await waitFor(() => expect(row.className).toContain("bg-primary/20"));
+    fireEvent.mouseLeave(row);
+    expect(row.className).not.toContain("bg-primary/20");
+  });
+
 });

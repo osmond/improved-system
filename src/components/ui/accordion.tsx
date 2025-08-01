@@ -24,12 +24,20 @@ type ItemProps = {
   accordionValue?: string;
   onChange?: (v: string) => void;
   children: React.ReactNode;
+  onMouseEnter?: React.MouseEventHandler<HTMLDivElement>;
+  onMouseLeave?: React.MouseEventHandler<HTMLDivElement>;
+  className?: string;
 };
 
-export function AccordionItem({ value, accordionValue, onChange, children }: ItemProps) {
+export function AccordionItem({ value, accordionValue, onChange, children, onMouseEnter, onMouseLeave, className }: ItemProps) {
   const open = value === accordionValue;
   return (
-    <div data-open={open} className="border rounded">
+    <div
+      data-open={open}
+      className={cn("border rounded", className)}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
+    >
       {React.Children.map(children, (child) =>
         React.isValidElement(child)
           ? React.cloneElement(child as any, { open, onToggle: () => onChange?.(value) })

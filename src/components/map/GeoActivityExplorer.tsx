@@ -19,6 +19,7 @@ import {
 } from "@/components/ui/accordion";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import { cn } from "@/lib/utils";
 
 import statesTopo from "../../../public/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
@@ -28,6 +29,7 @@ import { fipsToAbbr } from "@/lib/stateCodes";
 export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
+  const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
 
@@ -157,11 +159,18 @@ export default function GeoActivityExplorer() {
       <div className="flex gap-12">
         <div className="w-80 h-60">
           <Map
+            aria-label="state map"
             mapLib={maplibregl}
             mapStyle="https://demotiles.maplibre.org/style.json"
             initialViewState={{ longitude: -98, latitude: 38, zoom: 3 }}
             interactiveLayerIds={["states-fill"]}
             attributionControl={false}
+            onMouseMove={(e: MapLayerMouseEvent) => {
+              const f = e.features?.[0] as any
+              if (f?.properties?.abbr) setHoveredState(f.properties.abbr)
+              else setHoveredState(null)
+            }}
+            onMouseLeave={() => setHoveredState(null)}
             onClick={(e: MapLayerMouseEvent) => {
               const f = e.features?.[0] as any
               if (f?.properties?.abbr) toggleState(f.properties.abbr)
@@ -173,7 +182,12 @@ export default function GeoActivityExplorer() {
                 id="states-fill"
                 type="fill"
                 paint={{
-                  "fill-color": ["get", "color"],
+                  "fill-color": [
+                    "case",
+                    ["==", ["get", "abbr"], hoveredState || ""],
+                    "hsl(var(--primary))",
+                    ["get", "color"],
+                  ],
                   "fill-outline-color": "hsl(var(--border))",
                 }}
               />
@@ -210,8 +224,18 @@ export default function GeoActivityExplorer() {
         <div className="flex-1">
           <Accordion value={expandedState || undefined} onValueChange={setExpandedState}>
             {states.map((s) => (
-              <AccordionItem key={s.stateCode} value={s.stateCode}>
-                <AccordionTrigger className="flex justify-between">
+              <AccordionItem
+                key={s.stateCode}
+                value={s.stateCode}
+                onMouseEnter={() => setHoveredState(s.stateCode)}
+                onMouseLeave={() => setHoveredState(null)}
+              >
+                <AccordionTrigger
+                  className={cn(
+                    "flex justify-between",
+                    hoveredState === s.stateCode && "bg-primary/20"
+                  )}
+                >
                   <span className="flex items-center gap-2">
                     <span className="text-xs font-medium">{s.stateCode}</span>
                     <Badge>{s.cities.length}</Badge>
