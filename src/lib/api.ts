@@ -955,7 +955,6 @@ export async function getReadingProgress(): Promise<ReadingProgress> {
   })
 }
 
-// ----- Wild schedule -----
 export interface WildGame {
   gameDate: string
   opponent: string
@@ -992,21 +991,3 @@ export async function getLatestRun(): Promise<RunWindow> {
   })
 }
 
-// ----- Wild schedule -----
-export interface WildGame {
-  gameDate: string
-  opponent: string
-  home: boolean
-}
-
-const mockWildSchedule: WildGame[] = [
-  { gameDate: '2025-10-01T00:00:00Z', opponent: 'Blues', home: true },
-  { gameDate: '2025-10-04T00:00:00Z', opponent: 'Stars', home: false },
-  { gameDate: '2025-10-07T00:00:00Z', opponent: 'Jets', home: true },
-]
-
-export async function getWildSchedule(limit = mockWildSchedule.length): Promise<WildGame[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockWildSchedule.slice(0, limit)), 100)
-  })
-}

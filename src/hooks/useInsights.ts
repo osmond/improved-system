@@ -16,6 +16,8 @@ export interface Insights {
   bestPaceThisMonth: number | null
   /** Day of week with most runs this month */
   mostConsistentDay: string | null
+  /** Low activity day with low heart rate */
+  quietDay: boolean
 }
 
 export function useInsights(): Insights | null {
@@ -47,6 +49,8 @@ export function useInsights(): Insights | null {
     const bestPace = monthly.length
       ? Math.min(...monthly.map((s) => s.pace))
       : null
+    const todaySteps = days.at(-1)?.steps ?? 0
+    const quietDay = todaySteps < 2000 && data.heartRate < 60
     const counts = Array.from({ length: 7 }, () => 0)
     monthly.forEach((s) => {
       counts[new Date(s.date).getDay()]++
@@ -71,6 +75,7 @@ export function useInsights(): Insights | null {
       calorieSurplus: data.calories > 2500,
       bestPaceThisMonth: bestPace,
       mostConsistentDay: consistentDay,
+      quietDay,
     }
   }, [days, data, sessions, dailyStepGoal])
 }
