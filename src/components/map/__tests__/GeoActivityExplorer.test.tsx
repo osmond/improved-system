@@ -44,6 +44,7 @@ describe("GeoActivityExplorer", () => {
   it("toggles state details", () => {
     render(<GeoActivityExplorer />);
     const state = screen.getByLabelText("CA visited");
+    expect(state).toHaveTextContent("1");
     expect(screen.queryByText("LA")).toBeNull();
     fireEvent.click(state);
     expect(screen.getAllByText("LA").length).toBeGreaterThan(0);

@@ -115,6 +115,7 @@ export default function GeoActivityExplorer() {
         abbr: f.properties.abbr as string,
         coords: geoCentroid(f) as [number, number],
         visited: !!summaryMap[f.properties.abbr as string],
+        count: summaryMap[f.properties.abbr as string]?.totalDays || 0,
       })),
     [statesGeo, summaryMap]
   )
@@ -207,15 +208,24 @@ export default function GeoActivityExplorer() {
                   </Marker>
                 ) : null
               })}
-            {stateMarkers.map((m: { abbr: string; coords: [number, number]; visited: boolean }) => (
-              <Marker key={m.abbr} longitude={m.coords[0]} latitude={m.coords[1]}>
-                <button
-                  className="sr-only"
-                  onClick={() => selectState(m.abbr)}
-                  aria-label={`${m.abbr} ${m.visited ? "visited" : "not visited"}`}
-                />
-              </Marker>
-            ))}
+            {stateMarkers.map(
+              (m: {
+                abbr: string
+                coords: [number, number]
+                visited: boolean
+                count: number
+              }) => (
+                <Marker key={m.abbr} longitude={m.coords[0]} latitude={m.coords[1]}>
+                  <button
+                    onClick={() => selectState(m.abbr)}
+                    aria-label={`${m.abbr} ${m.visited ? "visited" : "not visited"}`}
+                    className="bg-transparent border-none p-0 cursor-pointer"
+                  >
+                    <Badge>{m.count}</Badge>
+                  </button>
+                </Marker>
+              )
+            )}
             {selectedState && stateCoords[selectedState] && (
               <Popup
                 longitude={stateCoords[selectedState][0]}
