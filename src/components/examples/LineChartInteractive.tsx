@@ -123,10 +123,10 @@ const chartConfig = {
 export default function LineChartInteractive() {
   const [activeChart, setActiveChart] = React.useState<keyof typeof chartConfig>('bike')
 
-  const total = React.useMemo(
+  const average = React.useMemo(
     () => ({
-      bike: chartData.reduce((acc, curr) => acc + curr.bike, 0),
-      run: chartData.reduce((acc, curr) => acc + curr.run, 0),
+      bike: chartData.reduce((acc, curr) => acc + curr.bike, 0) / chartData.length,
+      run: chartData.reduce((acc, curr) => acc + curr.run, 0) / chartData.length,
     }),
     []
   )
@@ -148,7 +148,7 @@ export default function LineChartInteractive() {
             >
               <span className="text-muted-foreground text-xs">{chartConfig[key].label}</span>
               <span className="text-lg font-bold leading-none sm:text-3xl">
-                {total[key].toLocaleString()}
+                {average[key].toLocaleString(undefined, { maximumFractionDigits: 1 })}
               </span>
             </button>
           ))}
