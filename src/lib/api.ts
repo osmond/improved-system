@@ -759,3 +759,28 @@ export async function getLocationEfficiency(): Promise<LocationEfficiency[]> {
     setTimeout(() => resolve(mockLocationEfficiency), 200)
   })
 }
+
+// ----- Reading probability timeline -----
+export type ReadingProbabilityPoint = {
+  time: string
+  probability: number
+  intensity: number
+}
+
+export function generateMockReadingProbability(): ReadingProbabilityPoint[] {
+  return Array.from({ length: 24 }, (_, i) => {
+    const d = new Date()
+    d.setHours(i, 0, 0, 0)
+    return {
+      time: d.toISOString(),
+      probability: +Math.random().toFixed(2),
+      intensity: +Math.random().toFixed(2),
+    }
+  })
+}
+
+export async function getReadingProbability(): Promise<ReadingProbabilityPoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockReadingProbability()), 200)
+  })
+}
