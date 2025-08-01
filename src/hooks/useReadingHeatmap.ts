@@ -41,14 +41,20 @@ export function computeHeatmapFromActivity(
   snaps: ActivitySnapshot[],
 ): HeatmapCell[] {
   const bins = Array.from({ length: 7 }, () =>
-    Array.from({ length: 24 }, () => ({ heart: [] as number[], steps: 0 })),
+    Array.from({ length: 24 }, () => ({
+      heart: [] as number[],
+      totalSteps: 0,
+      count: 0,
+    })),
   )
   for (const s of snaps) {
     const d = new Date(s.timestamp)
     const day = d.getDay()
     const hour = d.getHours()
-    bins[day][hour].heart.push(s.heartRate)
-    bins[day][hour].steps += s.steps
+    const cell = bins[day][hour]
+    cell.heart.push(s.heartRate)
+    cell.totalSteps += s.steps
+    cell.count += 1
   }
   const stepThreshold = 200
   const hrVarThreshold = 20
@@ -63,7 +69,8 @@ export function computeHeatmapFromActivity(
       const mean = cell.heart.reduce((a, b) => a + b, 0) / cell.heart.length
       const variance =
         cell.heart.reduce((a, b) => a + (b - mean) ** 2, 0) / cell.heart.length
-      const stepScore = Math.max(0, 1 - cell.steps / stepThreshold)
+      const avgSteps = cell.totalSteps / cell.count
+      const stepScore = Math.max(0, 1 - avgSteps / stepThreshold)
       const hrScore = Math.max(0, 1 - variance / hrVarThreshold)
       const intensity = Math.min(stepScore, hrScore)
       result.push({ day, hour, intensity })
