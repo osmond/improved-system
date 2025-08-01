@@ -19,22 +19,29 @@ import {
 
 export const description = 'An interactive bar chart'
 
-const chartData = [
+const startDate = new Date('2024-04-01')
+const weeks = 12
 
-  { date: '2024-04-01', bike: 2, run: 3 },
-  { date: '2024-04-08', bike: 1, run: 4 },
-  { date: '2024-04-15', bike: 2, run: 2 },
-  { date: '2024-04-22', bike: 3, run: 3 },
-  { date: '2024-04-29', bike: 4, run: 2 },
-  { date: '2024-05-06', bike: 3, run: 1 },
-  { date: '2024-05-13', bike: 5, run: 4 },
-  { date: '2024-05-20', bike: 3, run: 2 },
-  { date: '2024-05-27', bike: 2, run: 3 },
-  { date: '2024-06-03', bike: 4, run: 3 },
-  { date: '2024-06-10', bike: 2, run: 5 },
-  { date: '2024-06-17', bike: 3, run: 2 },
+const chartData = Array.from({ length: weeks }, (_, i) => ({
+  date: new Date(startDate.getTime() + i * 7 * 24 * 60 * 60 * 1000)
+    .toISOString()
+    .slice(0, 10),
+  bike: Math.floor(Math.random() * 5) + 1,
+  run: Math.floor(Math.random() * 5) + 1,
+}))
 
-]
+// ensure totals are not identical
+const totals = chartData.reduce(
+  (acc, curr) => {
+    acc.bike += curr.bike
+    acc.run += curr.run
+    return acc
+  },
+  { bike: 0, run: 0 }
+)
+if (totals.bike === totals.run) {
+  chartData[chartData.length - 1].bike += 1
+}
 
 const chartConfig = {
   bike: {
