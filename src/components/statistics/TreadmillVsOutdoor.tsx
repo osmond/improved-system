@@ -17,8 +17,8 @@ const treadmillData = [
 ]
 
 const config = {
-  Outdoor: { label: "Outdoor", color: "var(--chart-5)" },
-  Treadmill: { label: "Treadmill", color: "var(--chart-6)" },
+  Outdoor: { label: "Outdoor", color: "hsl(var(--chart-5))" },
+  Treadmill: { label: "Treadmill", color: "hsl(var(--chart-6))" },
 } satisfies Record<string, unknown>
 
 export default function TreadmillVsOutdoor() {
@@ -46,7 +46,7 @@ export default function TreadmillVsOutdoor() {
             {treadmillData.map((entry, idx) => (
               <Cell
                 key={entry.name}
-                fill={idx === 0 ? "var(--chart-5)" : "var(--chart-6)"}
+                fill={idx === 0 ? "hsl(var(--chart-5))" : "hsl(var(--chart-6))"}
               />
             ))}
           </Pie>
