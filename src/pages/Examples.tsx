@@ -20,7 +20,6 @@ import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison
 import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
-import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
 
 
 export default function Examples() {
@@ -30,7 +29,6 @@ export default function Examples() {
 
       <StepsTrendWithGoal data={mockDailySteps} />
 
-      <PeerBenchmarkBands />
 
       <BarChartInteractive />
 

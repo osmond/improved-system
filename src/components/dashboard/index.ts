@@ -9,5 +9,3 @@ export * from "./StepsTrendWithGoal";
 export * from "./MiniSparkline";
 export * from "./RingDetailDialog";
 export * from "./AcwrGauge";
-export * from "./ChartSelectionContext";
-export { default as WeeklyVolumeChart } from "./WeeklyVolumeChart";
