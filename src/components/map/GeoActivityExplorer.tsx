@@ -139,7 +139,7 @@ export default function GeoActivityExplorer() {
         count: summaryMap[f.properties.abbr as string]?.totalDays || 0,
       })),
     [statesGeo, summaryMap]
-  )
+  ) as Array<{ abbr: string; coords: [number, number]; visited: boolean; count: number }>
 
   const stateCoords = useMemo(() => {
     const m: Record<string, [number, number]> = {}

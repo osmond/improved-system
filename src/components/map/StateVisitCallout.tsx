@@ -21,7 +21,12 @@ export default function StateVisitCallout() {
   if (!visits) return <Skeleton className="h-4 w-full" />;
   if (!latest) return null;
 
-  const message = `Latest ${latest.type}: ${latest.miles}mi in ${latest.stateCode}`;
+  const { type, miles, stateCode } = latest as {
+    type: string;
+    miles: number;
+    stateCode: string;
+  };
+  const message = `Latest ${type}: ${miles}mi in ${stateCode}`;
 
   return (
     <div className="absolute bottom-2 left-2 rounded bg-background/80 px-2 text-xs text-muted-foreground">
