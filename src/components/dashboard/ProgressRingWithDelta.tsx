@@ -19,13 +19,20 @@ export function ProgressRingWithDelta({
   tertiary,
   ...ringProps
 }: ProgressRingWithDeltaProps) {
-  const delta = previous === 0 ? 0 : (current - previous) / previous;
-  const formatted = `${delta > 0 ? "+" : ""}${(delta * 100).toFixed(decimalPlaces)}%`;
+  const formatted = React.useMemo(() => {
+    const delta = previous === 0 ? 0 : (current - previous) / previous;
+    return `${delta > 0 ? "+" : ""}${(delta * 100).toFixed(decimalPlaces)}%`;
+  }, [current, previous, decimalPlaces]);
 
   return (
     <div className="flex flex-col items-center">
       <ProgressRing {...ringProps} />
-      <span className="text-xs mt-1" aria-label="Change from previous">
+      <span
+        className="text-xs mt-1"
+        aria-label="Change from previous"
+        aria-live="polite"
+        key={formatted}
+      >
         {formatted}
       </span>
       {tertiary && (
