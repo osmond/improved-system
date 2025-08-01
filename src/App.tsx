@@ -1,13 +1,13 @@
 import React from "react";
 import Layout from "@/components/layout/Layout";
-import Home from "@/pages/Home";
+import Dashboard from "@/pages/Dashboard";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 
 function App() {
   return (
     <DashboardFiltersProvider>
       <Layout>
-        <Home />
+        <Dashboard />
       </Layout>
     </DashboardFiltersProvider>
   );
