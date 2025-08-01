@@ -18,7 +18,6 @@ import ShoeUsageChart from "@/components/examples/ShoeUsageChart";
 import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
 import PaceVsHeartRate from "@/components/examples/PaceVsHeartRate";
 import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
-import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison";
 import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
@@ -68,8 +67,6 @@ export default function Examples() {
       <ScatterChartPaceHeartRate />
       <PaceVsHeartRate />
       <AreaChartLoadRatio />
-
-      <SegmentSlopeComparison />
 
     </div>
   );
