@@ -11,6 +11,7 @@ import {
   useGarminData,
   useMostRecentActivity,
   useMonthlyStepsProjection,
+  useGarminDays,
 } from "@/hooks/useGarminData";
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
@@ -24,6 +25,7 @@ export default function Dashboard() {
   const data = useGarminData();
   const monthly = useMonthlyStepsProjection();
   const recentActivity = useMostRecentActivity();
+  const days = useGarminDays();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
   const [dismissed, setDismissed] = useState<{ pace: boolean; day: boolean }>({
@@ -55,7 +57,9 @@ export default function Dashboard() {
   const previousSleep = data.sleep * 0.9;
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
-  const sparkData: { date: string; value: number }[] = [];
+  const sparkData = (days ?? [])
+    .slice(-14)
+    .map((d) => ({ date: d.date, value: d.steps }));
   const lastSyncedMinutes = minutesSince(data.lastSync);
 
   return (
