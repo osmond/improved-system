@@ -6,6 +6,7 @@ import {
   MiniSparkline,
   RingDetailDialog,
 } from "@/components/dashboard";
+import { TopInsights } from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
 import {
   useGarminData,
@@ -80,6 +81,7 @@ export default function Dashboard() {
 
   return (
     <div className="grid gap-4">
+      <TopInsights />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card
           role="button"
