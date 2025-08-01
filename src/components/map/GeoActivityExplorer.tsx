@@ -30,6 +30,7 @@ import {
 import { cn } from "@/lib/utils";
 import statesTopo from "../../../public/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 const FIPS_TO_ABBR: Record<string, string> = {
   "01": "AL",
@@ -91,6 +92,7 @@ export default function GeoActivityExplorer() {
   const [expandedState, setExpandedState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const now = new Date();
   const inRange = (d: string) => {
@@ -194,9 +196,13 @@ export default function GeoActivityExplorer() {
                   const visited = summaryMap[abbr]?.visited;
                   const intensity = summaryMap[abbr]?.totalDays || 0;
                   const colorIndex = Math.min(10, Math.max(1, Math.ceil(intensity)));
-                  const fill = visited
+                  const baseFill = visited
                     ? `hsl(var(--chart-${colorIndex}))`
                     : `hsl(var(--muted))`;
+                  const expanded = abbr === expandedState;
+                  const fill = expanded
+                    ? `${baseFill.replace(')', ' / 0.7)')}`
+                    : baseFill;
                   return (
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -214,12 +220,21 @@ export default function GeoActivityExplorer() {
                               default: {
                                 fill,
                                 outline: "none",
-                                transition: "fill 0.2s, transform 0.2s",
-                                stroke: abbr === expandedState ? "black" : undefined,
-                                strokeWidth: abbr === expandedState ? 1 : undefined,
+                                transition: prefersReducedMotion
+                                  ? undefined
+                                  : "fill 0.3s, transform 0.3s",
+                                stroke: expanded ? "black" : undefined,
+                                strokeWidth: expanded ? 1 : undefined,
+                                transform: expanded ? "scale(1.05)" : undefined,
                               },
-                              hover: { fill, outline: "none", transform: "scale(1.03)" },
-                              pressed: { fill, outline: "none" },
+                              hover: {
+                                fill: baseFill,
+                                outline: "none",
+                                transform: prefersReducedMotion
+                                  ? undefined
+                                  : "scale(1.03)",
+                              },
+                              pressed: { fill: baseFill, outline: "none" },
                             }}
                         />
                       </TooltipTrigger>
@@ -234,7 +249,11 @@ export default function GeoActivityExplorer() {
                     const coords = CITY_COORDS[c.name]
                     return coords ? (
                       <Marker key={c.name} coordinates={coords}>
-                        <circle r={3} fill="hsl(var(--primary))" />
+                        <circle
+                          r={3}
+                          fill="hsl(var(--primary))"
+                          className="transition-transform motion-reduce:transition-none hover:scale-125"
+                        />
                       </Marker>
                     ) : null
                   })}
