@@ -3,12 +3,15 @@
 import React from 'react'
 import {
   ChartContainer,
-  PieChart,
-  Pie,
-  Tooltip as ChartTooltip,
+  BarChart,
+  Bar,
+  XAxis,
+  YAxis,
+  CartesianGrid,
   ChartLegend,
+  ChartLegendContent,
+  Tooltip as ChartTooltip,
 } from '@/components/ui/chart'
-import { Cell } from 'recharts'
 import {
   Card,
   CardContent,
@@ -16,13 +19,8 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select'
+
+import type { ChartConfig } from '@/components/ui/chart'
 
 export const description = 'A treadmill vs outdoor chart'
 
@@ -35,67 +33,31 @@ const monthlyData = [
 ] as const
 
 const chartConfig = {
-  Outdoor: { label: 'Outdoor', color: 'hsl(var(--chart-5))' },
-  Treadmill: { label: 'Treadmill', color: 'hsl(var(--chart-6))' },
-} satisfies Record<string, unknown>
+  outdoor: { label: 'Outdoor', color: 'hsl(var(--chart-5))' },
+  treadmill: { label: 'Treadmill', color: 'hsl(var(--chart-6))' },
+} satisfies ChartConfig
 
 export default function TreadmillVsOutdoorExample() {
-  const [activeMonth, setActiveMonth] = React.useState(monthlyData[0].month)
-
-  const pieData = React.useMemo(() => {
-    const current = monthlyData.find((d) => d.month === activeMonth) ?? monthlyData[0]
-    return [
-      { name: 'Outdoor', value: current.outdoor },
-      { name: 'Treadmill', value: current.treadmill },
-    ]
-  }, [activeMonth])
 
   return (
     <Card className='flex flex-col'>
-      <CardHeader className='flex-row items-start space-y-0 pb-0'>
-        <div className='grid gap-1'>
-          <CardTitle>Indoor vs Outdoor Split</CardTitle>
-          <CardDescription>Comparison of workout volume or sessions (e.g., treadmill vs outdoor activities)</CardDescription>
-        </div>
-        <Select
-          value={activeMonth}
-          onValueChange={(v) => setActiveMonth(v as (typeof activeMonth))}
-        >
-          <SelectTrigger className='ml-auto h-7 w-[130px] rounded-lg pl-2.5' aria-label='Select month'>
-            <SelectValue placeholder='Select month' />
-          </SelectTrigger>
-          <SelectContent align='end' className='rounded-xl'>
-            {monthlyData.map((m) => (
-              <SelectItem key={m.month} value={m.month} className='capitalize'>
-                {m.month}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+      <CardHeader className='space-y-0'>
+        <CardTitle>Indoor vs Outdoor Split</CardTitle>
+        <CardDescription>
+          Comparison of workout volume or sessions (e.g., treadmill vs outdoor activities)
+        </CardDescription>
       </CardHeader>
-      <CardContent className='flex flex-1 justify-center pb-0'>
-        <ChartContainer config={chartConfig} className='h-60'>
-          <PieChart width={200} height={160}>
+      <CardContent className='flex flex-1 items-center pb-0'>
+        <ChartContainer config={chartConfig} className='h-60 w-full'>
+          <BarChart data={monthlyData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+            <CartesianGrid strokeDasharray='3 3' />
+            <XAxis dataKey='month' tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(v) => v.slice(0, 3)} />
+            <YAxis />
             <ChartTooltip />
-            <ChartLegend verticalAlign='bottom' height={24} />
-            <Pie
-              data={pieData}
-              dataKey='value'
-              nameKey='name'
-              innerRadius={50}
-              outerRadius={70}
-              paddingAngle={4}
-              cornerRadius={8}
-              label={({ percent }) => `${Math.round(percent * 100)}%`}
-            >
-              {pieData.map((entry) => (
-                <Cell
-                  key={entry.name}
-                  fill={`hsl(var(--chart-${entry.name === 'Outdoor' ? 5 : 6}))`}
-                />
-              ))}
-            </Pie>
-          </PieChart>
+            <ChartLegend content={<ChartLegendContent />} />
+            <Bar dataKey='outdoor' fill={chartConfig.outdoor.color} />
+            <Bar dataKey='treadmill' fill={chartConfig.treadmill.color} />
+          </BarChart>
         </ChartContainer>
       </CardContent>
     </Card>
