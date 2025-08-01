@@ -1,7 +1,6 @@
 'use client'
 
 import { TrendingUp } from 'lucide-react'
-import { generateTrendMessage } from '@/lib/utils'
 import { Pie, PieChart } from 'recharts'
 import useReadingMediumTotals from '@/hooks/useReadingMediumTotals'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -23,6 +22,7 @@ import {
 
 export const description = 'A donut chart'
 
+
 // Distribution of reading minutes by medium
 const labels: Record<string, string> = {
   phone: 'Phone',
@@ -32,6 +32,7 @@ const labels: Record<string, string> = {
   real_book: 'Real Book',
   other: 'Other',
 }
+
 
 export default function ChartPieDonut() {
   const data = useReadingMediumTotals()
@@ -56,16 +57,20 @@ export default function ChartPieDonut() {
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px]'>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
+
             <Pie data={data} dataKey='minutes' nameKey='medium' innerRadius={60} />
+
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex-col gap-2 text-sm'>
         <div className='flex items-center gap-2 leading-none font-medium'>
-          {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+          Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
+
           Showing total reading minutes for the last 6 months
+
         </div>
       </CardFooter>
     </Card>
