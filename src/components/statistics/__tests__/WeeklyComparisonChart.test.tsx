@@ -27,7 +27,10 @@ vi.mock('@/hooks/useWeeklyComparison', () => ({
       { date: '2025-06-24', value: 8 },
       { date: '2025-06-25', value: 9 },
     ],
-    lastYear: [],
+    lastYear: [
+      { date: '2024-07-03', value: 6 },
+      { date: '2024-07-04', value: 7 },
+    ],
   }),
 }))
 
@@ -39,13 +42,15 @@ beforeAll(() => {
 })
 
 describe('WeeklyComparisonChart', () => {
-  it('shows both series and tooltip labels', () => {
+  it('shows all series and summary text', () => {
     render(<WeeklyComparisonChart metric="steps" />)
     expect(screen.getByText('This Week')).toBeInTheDocument()
     expect(screen.getByText('Last Week')).toBeInTheDocument()
+    expect(screen.getByText('Same Week Last Year')).toBeInTheDocument()
     const lines = document.querySelectorAll('path[stroke^="var(--chart-"]')
-    expect(lines.length).toBeGreaterThanOrEqual(2)
-    expect(screen.getByText('This Week')).toBeInTheDocument()
-    expect(screen.getByText('Last Week')).toBeInTheDocument()
+    expect(lines.length).toBeGreaterThanOrEqual(3)
+    expect(
+      screen.getByText("You're 9 miles ahead of 2024-you.")
+    ).toBeInTheDocument()
   })
 })

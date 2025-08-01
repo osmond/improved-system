@@ -27,11 +27,25 @@ export default function WeeklyComparisonChart({
     date: p.date,
     current: p.value,
     previous: data.previous[i]?.value ?? null,
+    lastYear: data.lastYear[i]?.value ?? null,
   }))
+
+  const totals = {
+    current: data.current.reduce((sum, p) => sum + p.value, 0),
+    previous: data.previous.reduce((sum, p) => sum + p.value, 0),
+    lastYear: data.lastYear.reduce((sum, p) => sum + p.value, 0),
+  }
+
+  const lastYearYear = data.lastYear.length
+    ? new Date(data.lastYear[0].date).getFullYear()
+    : new Date().getFullYear() - 1
+
+  const diff = totals.current - totals.lastYear
 
   const config = {
     current: { label: 'This Week', color: 'var(--chart-1)' },
     previous: { label: 'Last Week', color: 'var(--chart-2)' },
+    lastYear: { label: 'Same Week Last Year', color: 'var(--chart-3)' },
   } as const
 
   return (
@@ -47,8 +61,12 @@ export default function WeeklyComparisonChart({
           <ChartLegend content={<ChartLegendContent />} />
           <Line type="monotone" dataKey="current" stroke={config.current.color} dot={false} />
           <Line type="monotone" dataKey="previous" stroke={config.previous.color} dot={false} strokeOpacity={0.5} />
+          <Line type="monotone" dataKey="lastYear" stroke={config.lastYear.color} dot={false} strokeOpacity={0.5} />
         </LineChart>
       </ChartContainer>
+      <p className="mt-2 text-center text-xs text-muted-foreground">
+        You're {Math.abs(diff).toFixed(0)} miles {diff >= 0 ? 'ahead of' : 'behind'} {lastYearYear}-you.
+      </p>
     </ChartCard>
   )
 }
