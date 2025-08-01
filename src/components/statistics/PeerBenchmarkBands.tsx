@@ -42,8 +42,8 @@ export default function PeerBenchmarkBands() {
 
   return (
     <ChartCard
-      title="Pace Benchmark"
-      description="Percentile bands compared to peers"
+      title="Pace Benchmark vs Peers"
+      description="Your percentile rank compared to similar runs/cycles"
     >
       <ChartContainer config={config} className="h-64">
         <AreaChart data={paceData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

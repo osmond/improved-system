@@ -135,8 +135,8 @@ export default function LineChartInteractive() {
     <Card className="py-4 sm:py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
-          <CardTitle>Average Pace</CardTitle>
-          <CardDescription>Showing average pace for the last 3 months</CardDescription>
+          <CardTitle>Average Pace / Speed</CardTitle>
+          <CardDescription>Typical run pace and bike speed for recent months</CardDescription>
         </div>
         <div className="flex">
           {(['bike', 'run'] as const).map((key) => (

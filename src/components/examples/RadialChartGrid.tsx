@@ -40,8 +40,8 @@ export default function ChartRadialGrid() {
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
-        <CardTitle>Radial Chart - Grid</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Discipline & Time Grid</CardTitle>
+        <CardDescription>Layered workout mix with contextual reference grid (last 6 months)</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
         <ChartContainer

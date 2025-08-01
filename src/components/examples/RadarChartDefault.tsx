@@ -41,7 +41,7 @@ export default function ChartRadarDefault() {
     <Card>
       <CardHeader className='items-center pb-4'>
         <CardTitle>Weekly Activity Distribution</CardTitle>
-        <CardDescription>Average mileage by month</CardDescription>
+        <CardDescription>Average workout volume by month</CardDescription>
       </CardHeader>
       <CardContent className='pb-0'>
         <ChartContainer

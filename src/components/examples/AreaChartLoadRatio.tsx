@@ -39,8 +39,8 @@ export default function AreaChartLoadRatio() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Acute vs Chronic Load Ratio</CardTitle>
-        <CardDescription>Last 4 weeks</CardDescription>
+        <CardTitle>Acute:Chronic Load Ratio</CardTitle>
+        <CardDescription>Short-term load compared to longer-term training baseline (last 4 weeks)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-64'>

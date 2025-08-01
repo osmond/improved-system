@@ -46,8 +46,8 @@ export default function RadarChartWorkoutByTime() {
   return (
     <Card>
       <CardHeader className='items-center pb-4'>
-        <CardTitle>Workout Activity by Time</CardTitle>
-        <CardDescription>Session counts in two hour intervals</CardDescription>
+        <CardTitle>Activity by Time of Day</CardTitle>
+        <CardDescription>Session counts in two-hour intervals (typical daily pattern)</CardDescription>
       </CardHeader>
       <CardContent className='pb-0'>
         <ChartContainer

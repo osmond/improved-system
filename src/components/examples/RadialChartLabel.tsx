@@ -42,8 +42,8 @@ export default function ChartRadialLabel() {
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
-        <CardTitle>Radial Chart - Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Discipline Mix</CardTitle>
+        <CardDescription>Total workout minutes by type over the last 6 months</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
         <ChartContainer

@@ -35,8 +35,8 @@ export default function WeeklyVolumeHistoryChart() {
 
   return (
     <ChartCard
-      title="Weekly Volume (20y)"
-      description="Historical weekly mileage totals"
+      title="Weekly Training Volume"
+      description="Historical weekly mileage totals (run + bike)"
     >
       <ChartContainer config={config} className="h-64">
         <BarChart data={filtered} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

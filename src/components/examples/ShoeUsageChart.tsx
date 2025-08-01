@@ -36,7 +36,7 @@ export default function ShoeUsageChart() {
     <Card>
       <CardHeader>
         <CardTitle>Shoe Usage</CardTitle>
-        <CardDescription>Miles per model</CardDescription>
+        <CardDescription>Miles logged per shoe model (wear tracking)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60'>

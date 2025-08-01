@@ -77,8 +77,8 @@ export default function PerfVsEnvironmentMatrixExample() {
 
   return (
     <ChartCard
-      title='Perf vs Environment'
-      description='How pace varies with weather conditions'
+      title='Performance vs Environment'
+      description='How pace varies with conditions like temperature, wind, or elevation'
       className='space-y-4'
     >
       <div className='grid gap-4 md:grid-cols-2'>

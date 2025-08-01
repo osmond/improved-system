@@ -41,8 +41,8 @@ export default function ChartBarDefault() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Monthly Distance Comparison</CardTitle>
+        <CardDescription>Total mileage per month (January – June 2024)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60'>
