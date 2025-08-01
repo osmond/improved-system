@@ -14,7 +14,9 @@ export const CITY_COORDS: Record<string, [number, number]> = {
   Spokane: [-117.426, 47.6588],
   Tacoma: [-122.4443, 47.2529],
   Chicago: [-87.6298, 41.8781],
+
 };
 
 export default CITY_COORDS;
+
 
