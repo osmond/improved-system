@@ -1,3 +1,5 @@
+import type { DailyWeather } from './weatherApi'
+
 export type Activity = {
   id: number;
   type: string;
@@ -342,6 +344,14 @@ export interface DistanceBucket {
   count: number
 }
 
+export interface RunEnvironmentPoint {
+  pace: number
+  temperature: number
+  humidity: number
+  wind: number
+  elevation: number
+}
+
 export interface TreadmillOutdoor {
   outdoor: number
   treadmill: number
@@ -358,6 +368,8 @@ export interface RunningStats {
   byWeekday: WeekdayMileage[]
   distanceBuckets: DistanceBucket[]
   treadmillOutdoor: TreadmillOutdoor
+  paceEnvironment: RunEnvironmentPoint[]
+  dailyWeather: DailyWeather[]
 }
 
 export function generateMockRunningStats(): RunningStats {
@@ -425,6 +437,30 @@ export function generateMockRunningStats(): RunningStats {
 
   const treadmillOutdoor: TreadmillOutdoor = { outdoor: 80, treadmill: 20 }
 
+  const paceEnvironment: RunEnvironmentPoint[] = Array.from({ length: 50 }, () => {
+    const pace = +(6 + Math.random() * 2).toFixed(2)
+    return {
+      pace,
+      temperature: Math.round(40 + pace * 5 + Math.random() * 10),
+      humidity: Math.round(40 + Math.random() * 50),
+      wind: +(Math.random() * 20).toFixed(1),
+      elevation: Math.round(Math.random() * 300),
+    }
+  })
+
+  const today = new Date()
+  const dailyWeather: DailyWeather[] = Array.from({ length: 30 }, (_, i) => {
+    const d = new Date(today)
+    d.setDate(d.getDate() - i)
+    return {
+      date: d.toISOString().slice(0, 10),
+      temperature: Math.round(40 + Math.random() * 50),
+      condition: ['Sunny', 'Cloudy', 'Rain', 'Snow'][Math.floor(Math.random() * 4)],
+      humidity: Math.round(30 + Math.random() * 70),
+      wind: +(Math.random() * 20).toFixed(1),
+    }
+  })
+
   return {
     paceDistribution,
     heartRateZones,
@@ -436,6 +472,8 @@ export function generateMockRunningStats(): RunningStats {
     byWeekday,
     distanceBuckets,
     treadmillOutdoor,
+    paceEnvironment,
+    dailyWeather,
   }
 }
 

@@ -38,8 +38,12 @@ export default function GeoActivityExplorer() {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
+
+  const [showWeather, setShowWeather] = useState(false);
+
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
+
 
   const now = new Date();
   const inRange = (d: string) => {
@@ -198,6 +202,12 @@ export default function GeoActivityExplorer() {
             { value: "all", label: "All Time" },
           ]}
         />
+
+        <label className="flex items-center gap-1 text-xs">
+          <input type="checkbox" checked={showWeather} onChange={() => setShowWeather(!showWeather)} />
+          Weather
+        </label>
+
         <div className="flex flex-col gap-1 flex-1">
           <label className="text-sm font-medium" htmlFor="state-search">
             Search
@@ -211,6 +221,7 @@ export default function GeoActivityExplorer() {
             className="rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2"
           />
         </div>
+
       </div>
       <StateVisitSummary />
       <div className="flex gap-12">
@@ -244,6 +255,18 @@ export default function GeoActivityExplorer() {
                 }}
               />
             </Source>
+            {showWeather && (
+              <Source
+                id="wx"
+                type="raster"
+                tiles={[
+                  `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=YOUR_API_KEY`,
+                ]}
+                tileSize={256}
+              >
+                <Layer id="wx-layer" type="raster" />
+              </Source>
+            )}
             {expandedState &&
               summaryMap[expandedState]?.cities.map((c) => {
                 const coords = CITY_COORDS[c.name]
