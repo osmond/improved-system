@@ -21,16 +21,22 @@ import useHeartRateInsights from "@/hooks/useHeartRateInsights";
 import useCalorieInsights from "@/hooks/useCalorieInsights";
 
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
-import { minutesSince } from "@/lib/utils";
+import { minutesSince, cn } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import useDashboardFilters, {
-  type ActivityType,
-  type DateRange,
-} from "@/hooks/useDashboardFilters";
+
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import Statistics from "@/pages/Statistics";
+import useDashboardFilters from "@/hooks/useDashboardFilters";
+
 
 
 export default function Dashboard() {
@@ -38,17 +44,74 @@ export default function Dashboard() {
   const data = useGarminData();
 
 
-  const {
-    dailyStepGoal: stepGoal,
-    setDailyStepGoal: setStepGoal,
-    sleepGoal,
-    setSleepGoal,
-    heartRateGoal: heartGoal,
-    setHeartRateGoal: setHeartGoal,
-    calorieGoal,
-    setCalorieGoal,
-  } = useUserGoals()
-  const [activeTab, setActiveTab] = useState("dashboard")
+
+  const [stepGoal, setStepGoalState] = useState(10000)
+  const [sleepGoal, setSleepGoalState] = useState(8)
+  const [heartGoal, setHeartGoalState] = useState(200)
+  const [calorieGoal, setCalorieGoalState] = useState(3000)
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.replace("#", "")
+      return hash || "dashboard"
+    }
+    return "dashboard"
+  })
+
+  useEffect(() => {
+    const sg = localStorage.getItem('stepGoal')
+    if (sg) {
+      const n = parseInt(sg, 10)
+      if (!Number.isNaN(n)) setStepGoalState(n)
+    }
+    const sl = localStorage.getItem('sleepGoal')
+    if (sl) {
+      const n = parseInt(sl, 10)
+      if (!Number.isNaN(n)) setSleepGoalState(n)
+    }
+    const hg = localStorage.getItem('heartGoal')
+    if (hg) {
+      const n = parseInt(hg, 10)
+      if (!Number.isNaN(n)) setHeartGoalState(n)
+    }
+    const cg = localStorage.getItem('calorieGoal')
+    if (cg) {
+      const n = parseInt(cg, 10)
+      if (!Number.isNaN(n)) setCalorieGoalState(n)
+    }
+  }, [])
+
+  useEffect(() => {
+    const handler = () => {
+      const hash = window.location.hash.replace("#", "") || "dashboard"
+      setActiveView(hash)
+    }
+    window.addEventListener("hashchange", handler)
+    return () => window.removeEventListener("hashchange", handler)
+  }, [])
+
+  useEffect(() => {
+    if (window.location.hash.replace("#", "") !== activeView) {
+      window.history.replaceState(null, "", `#${activeView}`)
+    }
+  }, [activeView])
+
+  const setStepGoal = (n: number) => {
+    setStepGoalState(n)
+    localStorage.setItem('stepGoal', String(n))
+  }
+  const setSleepGoal = (n: number) => {
+    setSleepGoalState(n)
+    localStorage.setItem('sleepGoal', String(n))
+  }
+  const setHeartGoal = (n: number) => {
+    setHeartGoalState(n)
+    localStorage.setItem('heartGoal', String(n))
+  }
+  const setCalorieGoal = (n: number) => {
+    setCalorieGoalState(n)
+    localStorage.setItem('calorieGoal', String(n))
+  }
+
 
 
   const days = useGarminDays();
@@ -131,17 +194,60 @@ export default function Dashboard() {
     ];
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList>
-        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-        <TabsTrigger value="map">Map</TabsTrigger>
-        <TabsTrigger value="examples">Examples</TabsTrigger>
-      </TabsList>
+    <>
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "dashboard" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#dashboard" onClick={() => setActiveView("dashboard")}>Dashboard</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "map" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#map" onClick={() => setActiveView("map")}>Map</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "examples" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#examples" onClick={() => setActiveView("examples")}>Examples</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "stats" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#stats" onClick={() => setActiveView("stats")}>Stats</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
 
-      <TabsContent value="dashboard">
+      {activeView === "dashboard" && (
         <div className="grid gap-4">
           <TopInsights />
-      <div className="flex gap-4">
+          <div className="flex gap-4">
         <SimpleSelect
           label="Activity"
           value={activity}
@@ -469,15 +575,13 @@ export default function Dashboard() {
 
           <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
         </div>
-      </TabsContent>
+      )}
 
-      <TabsContent value="map">
-        <GeoActivityExplorer />
-      </TabsContent>
+      {activeView === "map" && <GeoActivityExplorer />}
 
-      <TabsContent value="examples">
-        <Examples />
-      </TabsContent>
-    </Tabs>
+      {activeView === "examples" && <Examples />}
+
+      {activeView === "stats" && <Statistics />}
+    </>
   );
 }
