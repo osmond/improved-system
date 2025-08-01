@@ -21,28 +21,36 @@ import {
 
 export const description = 'A radial chart with a grid'
 
-import useActivityMinutes from '@/hooks/useActivityMinutes'
+import useReadingMediumTotals from '@/hooks/useReadingMediumTotals'
 import { Skeleton } from '@/components/ui/skeleton'
 
-const chartConfig = {
-  minutes: { label: 'Minutes' },
-  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
-  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
-  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
-  strength: { label: 'Strength', color: 'hsl(var(--chart-4))' },
-  other: { label: 'Other', color: 'hsl(var(--chart-5))' },
-} satisfies ChartConfig
+const labels: Record<string, string> = {
+  phone: 'Phone',
+  computer: 'Computer',
+  tablet: 'Tablet',
+  kindle: 'Kindle',
+  real_book: 'Real Book',
+  other: 'Other',
+}
 
 export default function ChartRadialGrid() {
-  const data = useActivityMinutes()
+  const data = useReadingMediumTotals()
 
   if (!data) return <Skeleton className='h-64' />
+
+  const chartConfig: ChartConfig = { minutes: { label: 'Minutes' } }
+  data.forEach((d, i) => {
+    ;(chartConfig as any)[d.medium] = {
+      label: labels[d.medium],
+      color: `hsl(var(--chart-${i + 1}))`,
+    }
+  })
 
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
         <CardTitle>Discipline & Time Grid</CardTitle>
-        <CardDescription>Layered workout mix with contextual reference grid (last 6 months)</CardDescription>
+        <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
         <ChartContainer
@@ -50,7 +58,7 @@ export default function ChartRadialGrid() {
           className='mx-auto aspect-square max-h-[250px]'
         >
           <RadialBarChart data={data} innerRadius={30} outerRadius={100}>
-            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey='activity' />} />
+            <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey='medium' />} />
             <PolarGrid gridType='circle' />
             <RadialBar dataKey='minutes' />
           </RadialBarChart>
@@ -61,7 +69,7 @@ export default function ChartRadialGrid() {
           {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total workout minutes for the last 6 months
+          Showing total reading minutes for the last 6 months
         </div>
       </CardFooter>
     </Card>
