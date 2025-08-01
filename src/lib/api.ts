@@ -336,6 +336,11 @@ export interface WeeklyVolumePoint {
   miles: number
 }
 
+export interface WeeklyMetricPoint {
+  date: string
+  value: number
+}
+
 export function generateMockWeeklyVolume(): WeeklyVolumePoint[] {
   const weeks: WeeklyVolumePoint[] = []
   for (let i = 0; i < 26; i++) {
@@ -350,6 +355,26 @@ export function generateMockWeeklyVolume(): WeeklyVolumePoint[] {
 export async function getWeeklyVolume(): Promise<WeeklyVolumePoint[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockWeeklyVolume()), 200)
+  })
+}
+
+export function generateMockWeeklyVolumeHistory(years = 20): WeeklyVolumePoint[] {
+  const weeks: WeeklyVolumePoint[] = []
+  const total = years * 52
+  for (let i = 0; i < total; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() - (total - 1 - i) * 7)
+    const week = date.toISOString().slice(0, 10)
+    weeks.push({ week, miles: Math.round(20 + Math.random() * 30) })
+  }
+  return weeks
+}
+
+export async function getWeeklyVolumeHistory(
+  years = 20,
+): Promise<WeeklyVolumePoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockWeeklyVolumeHistory(years)), 200)
   })
 }
 
@@ -379,6 +404,55 @@ export function generateMockRunBikeVolume(): RunBikeVolumePoint[] {
 export async function getRunBikeVolume(): Promise<RunBikeVolumePoint[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockRunBikeVolume()), 200)
+  })
+}
+
+// ----- Weekly comparison metrics -----
+function startOfWeek(date: Date): Date {
+  const d = new Date(date)
+  const day = d.getDay()
+  d.setDate(d.getDate() - day)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+function generateWeek(start: Date): WeeklyMetricPoint[] {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
+    return {
+      date: d.toISOString().slice(0, 10),
+      value: Math.round(50 + Math.random() * 50),
+    }
+  })
+}
+
+export async function getCurrentWeek(
+  _metric: string,
+): Promise<WeeklyMetricPoint[]> {
+  return new Promise((resolve) => {
+    const start = startOfWeek(new Date())
+    setTimeout(() => resolve(generateWeek(start)), 150)
+  })
+}
+
+export async function getPreviousWeek(
+  _metric: string,
+): Promise<WeeklyMetricPoint[]> {
+  return new Promise((resolve) => {
+    const start = startOfWeek(new Date())
+    start.setDate(start.getDate() - 7)
+    setTimeout(() => resolve(generateWeek(start)), 150)
+  })
+}
+
+export async function getSameWeekLastYear(
+  _metric: string,
+): Promise<WeeklyMetricPoint[]> {
+  return new Promise((resolve) => {
+    const start = startOfWeek(new Date())
+    start.setFullYear(start.getFullYear() - 1)
+    setTimeout(() => resolve(generateWeek(start)), 150)
   })
 }
 
@@ -494,5 +568,52 @@ export function generateMockRouteSessions(route = 'River Loop'): RouteSession[] 
 export async function getRouteSessions(route: string): Promise<RouteSession[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockRouteSessions(route)), 200)
+  })
+}
+
+// ----- Location efficiency -----
+
+export interface LocationEfficiency {
+  state: string
+  city: string
+  distance: number
+  pace: number
+  effort: number
+}
+
+export const mockLocationEfficiency: LocationEfficiency[] = [
+  {
+    state: 'CA',
+    city: 'Los Angeles',
+    distance: 10,
+    pace: 8,
+    effort: 80,
+  },
+  {
+    state: 'CA',
+    city: 'San Francisco',
+    distance: 8,
+    pace: 7.5,
+    effort: 60,
+  },
+  {
+    state: 'TX',
+    city: 'Austin',
+    distance: 6,
+    pace: 7,
+    effort: 42,
+  },
+  {
+    state: 'TX',
+    city: 'Houston',
+    distance: 5,
+    pace: 8,
+    effort: 40,
+  },
+]
+
+export async function getLocationEfficiency(): Promise<LocationEfficiency[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockLocationEfficiency), 200)
   })
 }

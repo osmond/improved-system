@@ -14,6 +14,7 @@ import ChartRadarDots from "@/components/examples/RadarChartDots";
 import RadarChartWorkoutByTime from "@/components/examples/RadarChartWorkoutByTime";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
+import ShoeUsageChart from "@/components/examples/ShoeUsageChart";
 import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
 import PaceVsHeartRate from "@/components/examples/PaceVsHeartRate";
 import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
@@ -22,6 +23,10 @@ import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor"
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+
+import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
+
+import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 
 
 export default function Examples() {
@@ -32,6 +37,8 @@ export default function Examples() {
       <StepsTrendWithGoal data={mockDailySteps} />
 
       <PeerBenchmarkBands />
+
+      <WeeklyVolumeHistoryChart />
 
       <BarChartInteractive />
 
@@ -52,7 +59,11 @@ export default function Examples() {
       <ChartBarMixed />
       <ChartBarLabelCustom />
       <ChartPieInteractive />
+      <ShoeUsageChart />
       <TreadmillVsOutdoorExample />
+
+      <PerfVsEnvironmentMatrixExample />
+
 
       <ScatterChartPaceHeartRate />
       <PaceVsHeartRate />
