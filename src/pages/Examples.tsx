@@ -14,6 +14,7 @@ import ChartRadarDots from "@/components/examples/RadarChartDots";
 import RadarChartWorkoutByTime from "@/components/examples/RadarChartWorkoutByTime";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
+import ShoeUsageChart from "@/components/examples/ShoeUsageChart";
 import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
 import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison";
@@ -57,6 +58,7 @@ export default function Examples() {
       <ChartBarMixed />
       <ChartBarLabelCustom />
       <ChartPieInteractive />
+      <ShoeUsageChart />
       <TreadmillVsOutdoorExample />
       <PerfVsEnvironmentMatrixExample />
 
