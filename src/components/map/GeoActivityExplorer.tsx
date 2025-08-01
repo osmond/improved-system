@@ -1,10 +1,8 @@
 import React, { useMemo, useState } from "react";
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-} from "react-simple-maps";
+import Map, { Source, Layer, Marker, MapLayerMouseEvent } from "react-map-gl/maplibre";
+import maplibregl from "maplibre-gl";
+import { feature } from "topojson-client";
+import { geoCentroid } from "d3-geo";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
 import {
@@ -21,17 +19,10 @@ import {
 } from "@/components/ui/accordion";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { cn } from "@/lib/utils";
+
 import statesTopo from "../../../public/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
-import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 
 export default function GeoActivityExplorer() {
@@ -39,7 +30,6 @@ export default function GeoActivityExplorer() {
   const [expandedState, setExpandedState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
-  const prefersReducedMotion = usePrefersReducedMotion();
 
   const now = new Date();
   const inRange = (d: string) => {
@@ -96,6 +86,37 @@ export default function GeoActivityExplorer() {
     []
   )
 
+  const statesGeo = useMemo(() => {
+    const fc = feature(
+      statesTopo as any,
+      (statesTopo as any).objects.states
+    ) as GeoJSON.FeatureCollection
+
+    return {
+      type: "FeatureCollection",
+      features: fc.features.map((f: any) => {
+        const abbr = fipsToAbbr[f.id as string]
+        const summary = summaryMap[abbr]
+        const intensity = summary?.totalDays || 0
+        const colorIndex = Math.min(10, Math.max(1, Math.ceil(intensity)))
+        const color = summary
+          ? `hsl(var(--chart-${colorIndex}))`
+          : `hsl(var(--muted))`
+        return { ...f, properties: { ...f.properties, abbr, color } }
+      }),
+    }
+  }, [summaryMap])
+
+  const stateMarkers = useMemo(
+    () =>
+      (statesGeo.features as any).map((f: any) => ({
+        abbr: f.properties.abbr as string,
+        coords: geoCentroid(f) as [number, number],
+        visited: !!summaryMap[f.properties.abbr as string],
+      })),
+    [statesGeo, summaryMap]
+  )
+
   if (!data) {
     return <Skeleton className="h-60 w-full" />;
   }
@@ -135,77 +156,51 @@ export default function GeoActivityExplorer() {
       </div>
       <div className="flex gap-12">
         <div className="w-80 h-60">
-          <TooltipProvider delayDuration={100}>
-            <ComposableMap projection="geoAlbersUsa">
-              <Geographies geography={statesTopo as any}>
-                {({ geographies }: { geographies: any[] }) =>
-                  geographies.map((geo: any) => {
-                  const abbr = fipsToAbbr[geo.id as string];
-                  const visited = summaryMap[abbr]?.visited;
-                  const intensity = summaryMap[abbr]?.totalDays || 0;
-                  const colorIndex = Math.min(10, Math.max(1, Math.ceil(intensity)));
-                  const baseFill = visited
-                    ? `hsl(var(--chart-${colorIndex}))`
-                    : `hsl(var(--muted))`;
-                  const expanded = abbr === expandedState;
-                  const fill = expanded
-                    ? `${baseFill.replace(')', ' / 0.7)')}`
-                    : baseFill;
-                  return (
-                    <Tooltip key={geo.rsmKey}>
-                      <TooltipTrigger asChild>
-                        <Geography
-                            geography={geo}
-                            role="button"
-                            tabIndex={0}
-                            onKeyDown={(e: React.KeyboardEvent<SVGPathElement>) => {
-                              if (e.key === "Enter" || e.key === " ") toggleState(abbr);
-                            }}
-                            onClick={() => toggleState(abbr)}
-                            aria-label={abbr + (visited ? " visited" : " not visited")}
-                            style={{
-                              default: {
-                                fill,
-                                outline: "none",
-                                transition: prefersReducedMotion
-                                  ? undefined
-                                  : "fill 0.3s, transform 0.3s",
-                                stroke: expanded ? "black" : undefined,
-                                strokeWidth: expanded ? 1 : undefined,
-                                transform: expanded ? "scale(1.05)" : undefined,
-                              },
-                              hover: {
-                                fill: baseFill,
-                                outline: "none",
-                                transform: prefersReducedMotion
-                                  ? undefined
-                                  : "scale(1.03)",
-                              },
-                              pressed: { fill: baseFill, outline: "none" },
-                            }}
-                        />
-                      </TooltipTrigger>
-                      <TooltipContent>{`${abbr}: ${intensity}d ${summaryMap[abbr]?.totalMiles || 0}mi`}</TooltipContent>
-                    </Tooltip>
-                  );
-                })
-                }
-              </Geographies>
-                {expandedState &&
-                  summaryMap[expandedState]?.cities.map((c) => {
-                    const coords = CITY_COORDS[c.name]
-                    return coords ? (
-                      <Marker key={c.name} coordinates={coords}>
-                        <circle
-                          r={3}
-                          fill="hsl(var(--primary))"
-                          className="transition-transform motion-reduce:transition-none hover:scale-125"
-                        />
-                      </Marker>
-                    ) : null
-                  })}
-              </ComposableMap>
-          </TooltipProvider>
+          <Map
+            mapLib={maplibregl}
+            mapStyle="https://demotiles.maplibre.org/style.json"
+            initialViewState={{ longitude: -98, latitude: 38, zoom: 3 }}
+            interactiveLayerIds={["states-fill"]}
+            attributionControl={false}
+            onClick={(e: MapLayerMouseEvent) => {
+              const f = e.features?.[0] as any
+              if (f?.properties?.abbr) toggleState(f.properties.abbr)
+            }}
+            style={{ width: "100%", height: "100%" }}
+          >
+            <Source id="states" type="geojson" data={statesGeo as any}>
+              <Layer
+                id="states-fill"
+                type="fill"
+                paint={{
+                  "fill-color": ["get", "color"],
+                  "fill-outline-color": "hsl(var(--border))",
+                }}
+              />
+            </Source>
+            {expandedState &&
+              summaryMap[expandedState]?.cities.map((c) => {
+                const coords = CITY_COORDS[c.name]
+                return coords ? (
+                  <Marker key={c.name} longitude={coords[0]} latitude={coords[1]}>
+                    <circle
+                      r={3}
+                      fill="hsl(var(--primary))"
+                      className="transition-transform motion-reduce:transition-none hover:scale-125"
+                    />
+                  </Marker>
+                ) : null
+              })}
+            {stateMarkers.map((m) => (
+              <Marker key={m.abbr} longitude={m.coords[0]} latitude={m.coords[1]}>
+                <button
+                  className="sr-only"
+                  onClick={() => toggleState(m.abbr)}
+                  aria-label={`${m.abbr} ${m.visited ? "visited" : "not visited"}`}
+                />
+              </Marker>
+            ))}
+          </Map>
           <ChartLegend
             payload={legendPayload}
             content={<ChartLegendContent nameKey="value" hideIcon />}

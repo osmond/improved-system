@@ -276,7 +276,6 @@ export default function Dashboard() {
             current={data.steps}
             previous={previousSteps}
             goal={100}
-
           />
           {monthly && (
             <div className="w-full mt-1" aria-label={`Projected ${Math.round(monthly.projectedTotal).toLocaleString()} steps`}>
