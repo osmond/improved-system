@@ -496,3 +496,50 @@ export async function getRouteSessions(route: string): Promise<RouteSession[]> {
     setTimeout(() => resolve(generateMockRouteSessions(route)), 200)
   })
 }
+
+// ----- Location efficiency -----
+
+export interface LocationEfficiency {
+  state: string
+  city: string
+  distance: number
+  pace: number
+  effort: number
+}
+
+export const mockLocationEfficiency: LocationEfficiency[] = [
+  {
+    state: 'CA',
+    city: 'Los Angeles',
+    distance: 10,
+    pace: 8,
+    effort: 80,
+  },
+  {
+    state: 'CA',
+    city: 'San Francisco',
+    distance: 8,
+    pace: 7.5,
+    effort: 60,
+  },
+  {
+    state: 'TX',
+    city: 'Austin',
+    distance: 6,
+    pace: 7,
+    effort: 42,
+  },
+  {
+    state: 'TX',
+    city: 'Houston',
+    distance: 5,
+    pace: 8,
+    effort: 40,
+  },
+]
+
+export async function getLocationEfficiency(): Promise<LocationEfficiency[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockLocationEfficiency), 200)
+  })
+}
