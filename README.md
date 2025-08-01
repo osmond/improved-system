@@ -145,6 +145,15 @@ Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can re
 ### Examples page
 `src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.
 
+### BedToRunGauge
+Visualise how many hours of running or cycling you log for each hour spent in bed.
+
+```tsx
+import { BedToRunGauge } from '@/components/dashboard'
+
+<BedToRunGauge />
+```
+
 ## Theming extensions
 If you need new variants—like a "danger" button or a "success" badge—run `pnpm dlx shadcn-ui@latest add button` to scaffold the base component. Then copy or edit `src/components/ui/button.tsx` and register your variant in `tailwind.config.js` under `theme.extend`. See <https://ui.shadcn.com/docs/components> for more details.
 
