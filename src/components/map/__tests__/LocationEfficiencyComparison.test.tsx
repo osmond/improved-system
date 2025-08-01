@@ -3,7 +3,7 @@ import LocationEfficiencyComparison from '../LocationEfficiencyComparison'
 import { vi } from 'vitest'
 vi.mock('react-map-gl/maplibre', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
