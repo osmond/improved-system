@@ -9,6 +9,6 @@
     text { font-family: 'Inter', sans-serif; font-weight: 600; }
   </style>
   <rect width="64" height="64" fill="#000000"/>
-  <text x="32" y="44" text-anchor="middle" fill="#ffffff" font-size="36">AJO</text>
+  <text x="32" y="44" text-anchor="middle" fill="#ffffff" font-size="30">AJO</text>
 </svg>
 
