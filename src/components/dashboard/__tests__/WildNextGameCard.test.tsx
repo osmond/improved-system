@@ -11,10 +11,11 @@ vi.mock('@/hooks/useWildSchedule', () => ({
 }))
 
 describe('WildNextGameCard', () => {
-  it('renders card title when schedule is loaded', () => {
+  it('renders card title and actions when schedule is loaded', () => {
     const { container } = render(<WildNextGameCard />)
     expect(screen.getByText('Next Game')).toBeInTheDocument()
     expect(container.firstChild).toHaveClass('text-wild-primary')
-    expect(container.querySelector('svg')).toBeInTheDocument()
+    expect(screen.getByText('Add to Calendar')).toBeInTheDocument()
+    expect(screen.getByText('Game Details')).toBeInTheDocument()
   })
 })
