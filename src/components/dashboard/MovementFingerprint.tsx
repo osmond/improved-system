@@ -9,7 +9,7 @@ export default function MovementFingerprint() {
 
   if (!data) return <Skeleton className="h-24" />;
 
-  const max = Math.max(...data.map((d) => d.steps)) || 1;
+  const max = Math.max(1, ...data.map((d) => d.steps));
 
   return (
     <ChartCard title="Movement Fingerprint" description="Average steps by hour">
