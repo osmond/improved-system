@@ -2,7 +2,12 @@ import React from 'react'
 import { Eye } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogTrigger,
+  DialogContent,
+  DialogContentFullscreen,
+} from '@/components/ui/dialog'
 
 
 export default function ChartPreview({
