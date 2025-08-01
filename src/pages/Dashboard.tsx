@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/hooks/useGarminData";
 import useStepInsights from "@/hooks/useStepInsights";
 import useInsights from "@/hooks/useInsights";
+import useUserGoals from "@/hooks/useUserGoals";
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
@@ -33,51 +34,17 @@ export default function Dashboard() {
   const data = useGarminData();
 
 
-  const [stepGoal, setStepGoalState] = useState(10000)
-  const [sleepGoal, setSleepGoalState] = useState(8)
-  const [heartGoal, setHeartGoalState] = useState(200)
-  const [calorieGoal, setCalorieGoalState] = useState(3000)
+  const {
+    dailyStepGoal: stepGoal,
+    setDailyStepGoal: setStepGoal,
+    sleepGoal,
+    setSleepGoal,
+    heartRateGoal: heartGoal,
+    setHeartRateGoal: setHeartGoal,
+    calorieGoal,
+    setCalorieGoal,
+  } = useUserGoals()
   const [activeTab, setActiveTab] = useState("dashboard")
-
-  useEffect(() => {
-    const sg = localStorage.getItem('stepGoal')
-    if (sg) {
-      const n = parseInt(sg, 10)
-      if (!Number.isNaN(n)) setStepGoalState(n)
-    }
-    const sl = localStorage.getItem('sleepGoal')
-    if (sl) {
-      const n = parseInt(sl, 10)
-      if (!Number.isNaN(n)) setSleepGoalState(n)
-    }
-    const hg = localStorage.getItem('heartGoal')
-    if (hg) {
-      const n = parseInt(hg, 10)
-      if (!Number.isNaN(n)) setHeartGoalState(n)
-    }
-    const cg = localStorage.getItem('calorieGoal')
-    if (cg) {
-      const n = parseInt(cg, 10)
-      if (!Number.isNaN(n)) setCalorieGoalState(n)
-    }
-  }, [])
-
-  const setStepGoal = (n: number) => {
-    setStepGoalState(n)
-    localStorage.setItem('stepGoal', String(n))
-  }
-  const setSleepGoal = (n: number) => {
-    setSleepGoalState(n)
-    localStorage.setItem('sleepGoal', String(n))
-  }
-  const setHeartGoal = (n: number) => {
-    setHeartGoalState(n)
-    localStorage.setItem('heartGoal', String(n))
-  }
-  const setCalorieGoal = (n: number) => {
-    setCalorieGoalState(n)
-    localStorage.setItem('calorieGoal', String(n))
-  }
 
 
   const days = useGarminDays();
