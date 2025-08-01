@@ -2,6 +2,8 @@
 
 import { TrendingUp } from 'lucide-react'
 import { Pie, PieChart } from 'recharts'
+import useReadingMediumTotals from '@/hooks/useReadingMediumTotals'
+import { Skeleton } from '@/components/ui/skeleton'
 
 import {
   Card,
@@ -20,25 +22,31 @@ import {
 
 export const description = 'A donut chart'
 
-// Distribution of visitors by browser
-const chartData = [
-  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
-  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
-  { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
-  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
-  { browser: 'other', visitors: 90, fill: 'var(--color-other)' },
-]
 
-const chartConfig = {
-  visitors: { label: 'Visitors' },
-  chrome: { label: 'Chrome', color: 'var(--chart-1)' },
-  safari: { label: 'Safari', color: 'var(--chart-2)' },
-  firefox: { label: 'Firefox', color: 'var(--chart-3)' },
-  edge: { label: 'Edge', color: 'var(--chart-4)' },
-  other: { label: 'Other', color: 'var(--chart-5)' },
-} satisfies ChartConfig
+// Distribution of reading minutes by medium
+const labels: Record<string, string> = {
+  phone: 'Phone',
+  computer: 'Computer',
+  tablet: 'Tablet',
+  kindle: 'Kindle',
+  real_book: 'Real Book',
+  other: 'Other',
+}
+
 
 export default function ChartPieDonut() {
+  const data = useReadingMediumTotals()
+
+  if (!data) return <Skeleton className='h-64' />
+
+  const chartConfig: ChartConfig = { minutes: { label: 'Minutes' } }
+  data.forEach((d, i) => {
+    ;(chartConfig as any)[d.medium] = {
+      label: labels[d.medium],
+      color: `hsl(var(--chart-${i + 1}))`,
+    }
+  })
+
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
@@ -49,7 +57,9 @@ export default function ChartPieDonut() {
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px]'>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey='visitors' nameKey='browser' innerRadius={60} />
+
+            <Pie data={data} dataKey='minutes' nameKey='medium' innerRadius={60} />
+
           </PieChart>
         </ChartContainer>
       </CardContent>
@@ -58,7 +68,9 @@ export default function ChartPieDonut() {
           Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total visitors for the last 6 months
+
+          Showing total reading minutes for the last 6 months
+
         </div>
       </CardFooter>
     </Card>
