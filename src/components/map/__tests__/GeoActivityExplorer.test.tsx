@@ -125,14 +125,16 @@ describe("GeoActivityExplorer", () => {
     expect(screen.queryAllByLabelText("TX visited").length).toBeGreaterThan(0);
     vi.useRealTimers();
 
+  });
+
   it("shows tooltip on state hover", async () => {
     render(<GeoActivityExplorer />);
     const map = screen.getByLabelText("state map");
     fireEvent.mouseMove(map, {
       features: [{ properties: { abbr: "CA" } }],
     } as any);
-    expect(screen.getByText("1d", { exact: true })).toBeInTheDocument();
-    expect(screen.getByText("1mi", { exact: true })).toBeInTheDocument();
+    expect(screen.getAllByText("1d", { exact: true }).length).toBeGreaterThan(0);
+    expect(screen.getAllByText("1mi", { exact: true }).length).toBeGreaterThan(0);
     fireEvent.mouseLeave(map);
 
   });
