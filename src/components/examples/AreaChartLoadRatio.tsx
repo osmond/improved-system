@@ -11,6 +11,8 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
+  ReferenceArea,
+  ReferenceLine,
 } from '@/components/ui/chart'
 import {
   Card,
@@ -53,6 +55,14 @@ export default function AreaChartLoadRatio() {
               tickFormatter={(d) => new Date(d).toLocaleDateString()}
             />
             <YAxis domain={[0, 2]} />
+            <ReferenceArea
+              y1={0.8}
+              y2={1.3}
+              strokeOpacity={0}
+              fill='var(--color-ratio)'
+              fillOpacity={0.1}
+            />
+            <ReferenceLine y={1} stroke='var(--color-ratio)' strokeDasharray='4 4' />
             <ChartTooltip
               content={
                 <ChartTooltipContent
