@@ -29,6 +29,7 @@ import {
 } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import statesTopo from "../../../public/us-states.json";
+import CITY_COORDS from "@/lib/cityCoords";
 
 const FIPS_TO_ABBR: Record<string, string> = {
   "01": "AL",
@@ -84,6 +85,7 @@ const FIPS_TO_ABBR: Record<string, string> = {
   "56": "WY",
 };
 
+
 const CITY_COORDS: Record<string, [number, number]> = {
   "Los Angeles": [-118.2437, 34.0522],
   "San Francisco": [-122.4194, 37.7749],
@@ -101,6 +103,7 @@ const CITY_COORDS: Record<string, [number, number]> = {
   Tacoma: [-122.4443, 47.2529],
   Chicago: [-87.6298, 41.8781],
 };
+
 
 export default function GeoActivityExplorer() {
   const data = useStateVisits();

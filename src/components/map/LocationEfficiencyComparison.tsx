@@ -18,6 +18,7 @@ import { Cell } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
 import useLocationEfficiency from '@/hooks/useLocationEfficiency'
 import statesTopo from '../../../public/us-states.json'
+import CITY_COORDS from '@/lib/cityCoords'
 
 const CITY_COORDS: Record<string, [number, number]> = {
   'Los Angeles': [-118.2437, 34.0522],
@@ -35,6 +36,7 @@ const CITY_COORDS: Record<string, [number, number]> = {
   Tacoma: [-122.4443, 47.2529],
   Chicago: [-87.6298, 41.8781],
 }
+
 
 const config = {
   effort: { label: 'Effort', color: 'var(--chart-1)' },
