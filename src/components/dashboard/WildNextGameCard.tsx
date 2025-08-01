@@ -14,7 +14,7 @@ export default function WildNextGameCard() {
   const date = parseISO(game.gameDate)
 
   return (
-    <Card>
+    <Card className="bg-wild-primary text-wild-secondary">
       <CardHeader>
         <CardTitle>Next Game</CardTitle>
       </CardHeader>

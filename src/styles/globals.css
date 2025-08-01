@@ -34,6 +34,10 @@
     --chart-8: 238 90% 60%;
     --chart-9: 242 80% 65%;
     --chart-10: 246 70% 70%;
+    --wild-primary: 157 54% 18%;
+    --wild-secondary: 351 74% 37%;
+    --wild-gold: 44 100% 46%;
+    --wild-wheat: 41 46% 75%;
   }
 
   .dark {
@@ -66,6 +70,10 @@
     --chart-8: 238 90% 70%;
     --chart-9: 242 80% 75%;
     --chart-10: 246 70% 80%;
+    --wild-primary: 157 54% 18%;
+    --wild-secondary: 351 74% 37%;
+    --wild-gold: 44 100% 46%;
+    --wild-wheat: 41 46% 75%;
   }
 
   html, body {
