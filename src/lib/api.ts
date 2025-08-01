@@ -785,6 +785,7 @@ export async function getReadingProbability(): Promise<ReadingProbabilityPoint[]
   })
 }
 
+
 // ----- Reading sessions -----
 
 export interface ReadingSession {
@@ -811,5 +812,21 @@ export function generateMockReadingSessions(count = 60): ReadingSession[] {
 export async function getReadingSessions(): Promise<ReadingSession[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockReadingSessions()), 200)
+
+// ----- Reading progress -----
+export interface ReadingProgress {
+  pagesRead: number
+  readingGoal: number
+}
+
+export const mockReadingProgress: ReadingProgress = {
+  pagesRead: 120,
+  readingGoal: 300,
+}
+
+export async function getReadingProgress(): Promise<ReadingProgress> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockReadingProgress), 200)
+
   })
 }
