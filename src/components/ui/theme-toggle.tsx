@@ -36,7 +36,7 @@ export default function ThemeToggle() {
 
   return (
     <button
-      className="px-3 py-1 rounded bg-muted hover:bg-muted-foreground"
+      className="px-3 py-1 rounded bg-background hover:bg-muted transition-colors"
       onClick={toggleTheme}
       aria-label="Toggle theme"
     >
