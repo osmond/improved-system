@@ -31,6 +31,7 @@ import PieChartDonut from "@/components/examples/PieChartDonut";
 
 import ReadingStackSplit from "@/components/dashboard/ReadingStackSplit";
 import WildNextGameCard from "@/components/dashboard/WildNextGameCard";
+import RunSoundtrackCardDemo from "@/components/examples/RunSoundtrackCardDemo";
 
 
 
@@ -77,6 +78,7 @@ export default function Examples() {
       <AreaChartLoadRatio />
 
       <WildNextGameCard />
+      <RunSoundtrackCardDemo />
 
     </div>
   );
