@@ -3,7 +3,9 @@ import GeoActivityExplorer from "../GeoActivityExplorer";
 import { vi } from "vitest";
 vi.mock("react-map-gl/maplibre", () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children, ...props }: any) => (
+    <div {...props}>{children}</div>
+  ),
   Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
@@ -81,5 +83,16 @@ describe("GeoActivityExplorer", () => {
     fireEvent.click(state);
     expect(screen.getAllByText("1d").length).toBeGreaterThan(1);
     expect(screen.getAllByText("1mi").length).toBeGreaterThan(1);
+  });
+
+  it("shows tooltip on state hover", async () => {
+    render(<GeoActivityExplorer />);
+    const map = screen.getByLabelText("state map");
+    fireEvent.mouseMove(map, {
+      features: [{ properties: { abbr: "CA" } }],
+    } as any);
+    expect(screen.getByText("1d", { exact: true })).toBeInTheDocument();
+    expect(screen.getByText("1mi", { exact: true })).toBeInTheDocument();
+    fireEvent.mouseLeave(map);
   });
 });

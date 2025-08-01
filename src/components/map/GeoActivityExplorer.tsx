@@ -30,6 +30,7 @@ export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
+  const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
 
@@ -174,6 +175,7 @@ export default function GeoActivityExplorer() {
       <div className="flex gap-12">
         <div className="w-80 h-60">
           <Map
+            aria-label="state map"
             mapLib={maplibregl}
             mapStyle="https://demotiles.maplibre.org/style.json"
             initialViewState={{ longitude: -98, latitude: 38, zoom: 3 }}
@@ -183,6 +185,12 @@ export default function GeoActivityExplorer() {
               const f = e.features?.[0] as any
               if (f?.properties?.abbr) selectState(f.properties.abbr)
             }}
+            onMouseMove={(e: MapLayerMouseEvent) => {
+              const f = e.features?.[0] as any
+              if (f?.properties?.abbr) setHoveredState(f.properties.abbr)
+              else setHoveredState(null)
+            }}
+            onMouseLeave={() => setHoveredState(null)}
             style={{ width: "100%", height: "100%" }}
           >
             <Source id="states" type="geojson" data={statesGeo as any}>
@@ -225,6 +233,20 @@ export default function GeoActivityExplorer() {
                   </button>
                 </Marker>
               )
+            )}
+            {hoveredState && stateCoords[hoveredState] && (
+              <Popup
+                longitude={stateCoords[hoveredState][0]}
+                latitude={stateCoords[hoveredState][1]}
+                closeButton={false}
+                closeOnClick={false}
+                anchor="top"
+              >
+                <span className="flex gap-2 text-xs">
+                  <Badge>{summaryMap[hoveredState]?.totalDays ?? 0}d</Badge>
+                  <Badge>{summaryMap[hoveredState]?.totalMiles ?? 0}mi</Badge>
+                </span>
+              </Popup>
             )}
             {selectedState && stateCoords[selectedState] && (
               <Popup
