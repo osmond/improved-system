@@ -90,7 +90,7 @@ export default function GeoActivityExplorer() {
     const fc = feature(
       statesTopo as any,
       (statesTopo as any).objects.states
-    ) as GeoJSON.FeatureCollection
+    ) as unknown as GeoJSON.FeatureCollection
 
     return {
       type: "FeatureCollection",
@@ -191,7 +191,7 @@ export default function GeoActivityExplorer() {
                   </Marker>
                 ) : null
               })}
-            {stateMarkers.map((m) => (
+            {stateMarkers.map((m: { abbr: string; coords: [number, number]; visited: boolean }) => (
               <Marker key={m.abbr} longitude={m.coords[0]} latitude={m.coords[1]}>
                 <button
                   className="sr-only"
