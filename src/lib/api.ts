@@ -784,3 +784,20 @@ export async function getReadingProbability(): Promise<ReadingProbabilityPoint[]
     setTimeout(() => resolve(generateMockReadingProbability()), 200)
   })
 }
+
+// ----- Reading progress -----
+export interface ReadingProgress {
+  pagesRead: number
+  readingGoal: number
+}
+
+export const mockReadingProgress: ReadingProgress = {
+  pagesRead: 120,
+  readingGoal: 300,
+}
+
+export async function getReadingProgress(): Promise<ReadingProgress> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockReadingProgress), 200)
+  })
+}
