@@ -21,19 +21,18 @@ import {
 
 export const description = 'A horizontal bar chart'
 
-// Monthly mileage totals used as mock activity data
+// Distance buckets showing how often different session lengths occur
 const chartData = [
-  { month: 'January', miles: 120 },
-  { month: 'February', miles: 150 },
-  { month: 'March', miles: 95 },
-  { month: 'April', miles: 160 },
-  { month: 'May', miles: 175 },
-  { month: 'June', miles: 140 },
+  { bucket: '0-3', count: 4 },
+  { bucket: '3-6', count: 10 },
+  { bucket: '6-9', count: 8 },
+  { bucket: '9-12', count: 5 },
+  { bucket: '12+', count: 2 },
 ]
 
 const chartConfig = {
-  miles: {
-    label: 'Miles',
+  count: {
+    label: 'Sessions',
     color: 'hsl(var(--chart-1))',
   },
 } satisfies ChartConfig
@@ -53,17 +52,16 @@ export default function ChartBarHorizontal() {
             layout='vertical'
             margin={{ left: -20 }}
           >
-            <XAxis type='number' dataKey='miles' hide />
+            <XAxis type='number' dataKey='count' hide />
             <YAxis
-              dataKey='month'
+              dataKey='bucket'
               type='category'
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Bar dataKey='miles' fill='var(--color-miles)' radius={5} />
+            <Bar dataKey='count' fill='var(--color-miles)' radius={5} />
           </BarChart>
         </ChartContainer>
       </CardContent>
