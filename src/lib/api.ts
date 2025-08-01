@@ -353,6 +353,26 @@ export async function getWeeklyVolume(): Promise<WeeklyVolumePoint[]> {
   })
 }
 
+export function generateMockWeeklyVolumeHistory(years = 20): WeeklyVolumePoint[] {
+  const weeks: WeeklyVolumePoint[] = []
+  const total = years * 52
+  for (let i = 0; i < total; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() - (total - 1 - i) * 7)
+    const week = date.toISOString().slice(0, 10)
+    weeks.push({ week, miles: Math.round(20 + Math.random() * 30) })
+  }
+  return weeks
+}
+
+export async function getWeeklyVolumeHistory(
+  years = 20,
+): Promise<WeeklyVolumePoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockWeeklyVolumeHistory(years)), 200)
+  })
+}
+
 export interface RunBikeVolumePoint {
   week: string
   runMiles: number

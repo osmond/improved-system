@@ -20,6 +20,7 @@ import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 
 
 export default function Examples() {
@@ -30,6 +31,8 @@ export default function Examples() {
       <StepsTrendWithGoal data={mockDailySteps} />
 
       <PeerBenchmarkBands />
+
+      <WeeklyVolumeHistoryChart />
 
       <BarChartInteractive />
 
