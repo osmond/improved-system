@@ -1,6 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { getSleepSessions, getRunBikeVolume, SleepSession, RunBikeVolumePoint } from "@/lib/api";
-import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from "@/components/ui/tooltip";
+import {
+  getSleepSessions,
+  getRunBikeVolume,
+  SleepSession,
+  RunBikeVolumePoint,
+} from "@/lib/api";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export interface BedToRunGaugeProps {
@@ -38,7 +48,8 @@ export default function BedToRunGauge({
 
   if (ratio === null) return <Skeleton className="h-32" />;
 
-  const normalized = Math.min(Math.max(ratio, 0), 1); // cap at 1
+  const max = safeRange[1];
+  const normalized = Math.min(Math.max(ratio, 0), max) / max; // map 0-max -> 0-1
   const radius = size / 2 - strokeWidth / 2;
   const circumference = Math.PI * radius; // half circle
   const offset = circumference - normalized * circumference;
@@ -57,7 +68,7 @@ export default function BedToRunGauge({
           <div
             className="flex flex-col items-center"
             role="img"
-            aria-label={`Bed to run ${ratio.toFixed(2)}`}
+            aria-label={`Bed-to-run ratio ${ratio.toFixed(2)}`}
           >
             <svg
               width={size}
@@ -90,7 +101,8 @@ export default function BedToRunGauge({
           </div>
         </TooltipTrigger>
         <TooltipContent>
-          Hours run or biked per hour in bed (last 7 days)
+          Hours run or biked per hour in bed; {safeRange[0]}–{safeRange[1]} is
+          ideal
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>
