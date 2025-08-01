@@ -34,7 +34,7 @@ export default function ScatterChartPaceHeartRate() {
     <Card>
       <CardHeader>
         <CardTitle>Pace vs Heart Rate</CardTitle>
-        <CardDescription>Example scatter plot</CardDescription>
+        <CardDescription>Pace vs heart rate from recent runs.</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-64'>
