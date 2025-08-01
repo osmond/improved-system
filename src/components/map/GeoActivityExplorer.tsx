@@ -1,8 +1,17 @@
 import React, { useMemo, useState } from "react";
-import { ComposableMap, Geographies, Geography } from "react-simple-maps";
+import {
+  ComposableMap,
+  Geographies,
+  Geography,
+  Marker,
+} from "react-simple-maps";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
-import { ChartContainer } from "@/components/ui/chart";
+import {
+  ChartContainer,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
   Accordion,
@@ -12,6 +21,12 @@ import {
 } from "@/components/ui/accordion";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import statesTopo from "../../../public/us-states.json";
 
@@ -69,6 +84,14 @@ const FIPS_TO_ABBR: Record<string, string> = {
   "56": "WY",
 };
 
+const CITY_COORDS: Record<string, [number, number]> = {
+  "Los Angeles": [-118.2437, 34.0522],
+  "San Francisco": [-122.4194, 37.7749],
+  "San Diego": [-117.1611, 32.7157],
+  Austin: [-97.7431, 30.2672],
+  Houston: [-95.3698, 29.7604],
+};
+
 export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
@@ -122,8 +145,25 @@ export default function GeoActivityExplorer() {
     setExpandedState((prev) => (prev === abbr ? null : abbr));
   };
 
+  const legendConfig = useMemo(() => {
+    const cfg: Record<string, { label: string; color: string }> = {}
+    for (let i = 1; i <= 10; i++) {
+      cfg[i] = { label: String(i), color: `hsl(var(--chart-${i}))` }
+    }
+    return cfg
+  }, [])
+
+  const legendPayload = useMemo(
+    () =>
+      Array.from({ length: 10 }, (_, i) => ({
+        value: String(i + 1),
+        color: `hsl(var(--chart-${i + 1}))`,
+      })),
+    []
+  )
+
   return (
-    <ChartContainer config={{}} title="State Visits" className="space-y-6">
+    <ChartContainer config={legendConfig} title="State Visits" className="space-y-6">
       <div className="flex gap-4 mb-4">
         <SimpleSelect
           label="Activity"
@@ -148,10 +188,11 @@ export default function GeoActivityExplorer() {
       </div>
       <div className="flex gap-12">
         <div className="w-80 h-60">
-          <ComposableMap projection="geoAlbersUsa">
-            <Geographies geography={statesTopo as any}>
-              {({ geographies }) =>
-                geographies.map((geo) => {
+          <TooltipProvider delayDuration={100}>
+            <ComposableMap projection="geoAlbersUsa">
+              <Geographies geography={statesTopo as any}>
+                {({ geographies }) =>
+                  geographies.map((geo) => {
                   const abbr = FIPS_TO_ABBR[geo.id as string];
                   const visited = summaryMap[abbr]?.visited;
                   const intensity = summaryMap[abbr]?.totalDays || 0;
@@ -160,28 +201,52 @@ export default function GeoActivityExplorer() {
                     ? `hsl(var(--chart-${colorIndex}))`
                     : `hsl(var(--muted))`;
                   return (
-                    <Geography
-                      key={geo.rsmKey}
-                      geography={geo}
-                      role="button"
-                      tabIndex={0}
-                      onKeyDown={(e) => {
-                        if (e.key === "Enter" || e.key === " ") toggleState(abbr);
-                      }}
-                      onClick={() => toggleState(abbr)}
-                      aria-label={abbr + (visited ? " visited" : " not visited")}
-                      title={`${abbr}: ${intensity}d`}
-                      style={{
-                        default: { fill, outline: "none" },
-                        hover: { fill, outline: "none" },
-                        pressed: { fill, outline: "none" },
-                      }}
-                    />
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Geography
+                            key={geo.rsmKey}
+                            geography={geo}
+                            role="button"
+                            tabIndex={0}
+                            onKeyDown={(e) => {
+                              if (e.key === "Enter" || e.key === " ") toggleState(abbr);
+                            }}
+                            onClick={() => toggleState(abbr)}
+                            aria-label={abbr + (visited ? " visited" : " not visited")}
+                            style={{
+                              default: {
+                                fill,
+                                outline: "none",
+                                transition: "fill 0.2s, transform 0.2s",
+                                stroke: abbr === expandedState ? "black" : undefined,
+                                strokeWidth: abbr === expandedState ? 1 : undefined,
+                              },
+                              hover: { fill, outline: "none", transform: "scale(1.03)" },
+                              pressed: { fill, outline: "none" },
+                            }}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>{`${abbr}: ${intensity}d ${summaryMap[abbr]?.totalMiles || 0}mi`}</TooltipContent>
+                    </Tooltip>
                   );
                 })
-              }
-            </Geographies>
-          </ComposableMap>
+                }
+              </Geographies>
+                {expandedState &&
+                  summaryMap[expandedState]?.cities.map((c) => {
+                    const coords = CITY_COORDS[c.name]
+                    return coords ? (
+                      <Marker key={c.name} coordinates={coords}>
+                        <circle r={3} fill="hsl(var(--primary))" />
+                      </Marker>
+                    ) : null
+                  })}
+              </ComposableMap>
+          </TooltipProvider>
+          <ChartLegend
+            payload={legendPayload}
+            content={<ChartLegendContent nameKey="value" hideIcon />}
+          />
         </div>
 
         <div className="flex-1">
