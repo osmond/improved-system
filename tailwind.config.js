@@ -32,6 +32,7 @@ module.exports = {
       },
       fontFamily: {
         sans: ["Inter", ...fontFamily.sans],
+        slab: ["var(--font-slab)", ...fontFamily.serif],
       }
     }
   },

@@ -40,6 +40,7 @@
     --wild-wheat: 41 40% 80%;
     --spotify-primary: 141 60% 50%;
     --spotify-foreground: 0 0% 0%;
+    --font-slab: "Georgia", "Times New Roman", serif;
   }
 
   .dark {
@@ -78,6 +79,7 @@
     --wild-wheat: 41 40% 80%;
     --spotify-primary: 141 65% 58%;
     --spotify-foreground: 0 0% 100%;
+    --font-slab: "Georgia", "Times New Roman", serif;
   }
 
   html, body {
