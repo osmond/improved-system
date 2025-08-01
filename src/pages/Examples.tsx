@@ -21,6 +21,9 @@ import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor"
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+
+import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
+
 import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 
 
@@ -55,7 +58,8 @@ export default function Examples() {
       <ChartBarLabelCustom />
       <ChartPieInteractive />
       <TreadmillVsOutdoorExample />
-      
+      <PerfVsEnvironmentMatrixExample />
+
       <ScatterChartPaceHeartRate />
       <AreaChartLoadRatio />
 
