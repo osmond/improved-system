@@ -21,6 +21,11 @@ export type GarminDay = {
   steps: number;
 };
 
+export type MetricDay = {
+  date: string;
+  value: number;
+};
+
 export interface SeasonalBaseline {
   /** Month number 1-12 */
   month: number
@@ -60,6 +65,22 @@ export const mockDailySteps: GarminDay[] = [
   { date: "2025-07-29", steps: 8456 },
   { date: "2025-07-30", steps: 10342 },
 ];
+
+function generateMockMetricDays(base: number, variance = 0.1): MetricDay[] {
+  return Array.from({ length: 30 }, (_, i) => {
+    const d = new Date();
+    d.setDate(d.getDate() - (29 - i));
+    const factor = 1 + (Math.random() - 0.5) * variance;
+    return {
+      date: d.toISOString().slice(0, 10),
+      value: +(base * factor).toFixed(2),
+    };
+  });
+}
+
+export const mockDailySleep: MetricDay[] = generateMockMetricDays(7.5, 0.2);
+export const mockDailyHeartRate: MetricDay[] = generateMockMetricDays(65, 0.15);
+export const mockDailyCalories: MetricDay[] = generateMockMetricDays(2200, 0.25);
 
 export const mockGarminData: GarminData = {
   steps: 10342,
@@ -105,6 +126,24 @@ export async function getActivityMinutes(): Promise<ActivityMinutes[]> {
 export async function getDailySteps(): Promise<GarminDay[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockDailySteps), 300);
+  });
+}
+
+export async function getDailySleep(): Promise<MetricDay[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockDailySleep), 300);
+  });
+}
+
+export async function getDailyHeartRate(): Promise<MetricDay[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockDailyHeartRate), 300);
+  });
+}
+
+export async function getDailyCalories(): Promise<MetricDay[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockDailyCalories), 300);
   });
 }
 
