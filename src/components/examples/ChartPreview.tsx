@@ -14,7 +14,7 @@ export default function ChartPreview({ children }: { children: React.ReactElemen
         </DialogTrigger>
         {children}
       </div>
-      <DialogContent className='w-[90vw] max-w-3xl p-4'>
+      <DialogContent className='inset-0 h-screen w-screen translate-x-0 translate-y-0 max-w-none rounded-none p-4'>
         {React.cloneElement(children)}
       </DialogContent>
     </Dialog>
