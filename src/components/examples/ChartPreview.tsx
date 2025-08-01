@@ -20,7 +20,7 @@ export default function ChartPreview({
 }) {
   return (
     <Dialog>
-      <div className={cn('relative h-64 overflow-hidden', className)}>
+      <div className={cn("relative overflow-hidden mb-6 break-inside-avoid", className)}>
         <DialogTrigger asChild>
           <button className='absolute right-2 top-2 z-40 rounded-md bg-background/80 p-1 text-muted-foreground hover:text-foreground'>
             <Eye className='h-4 w-4' />
