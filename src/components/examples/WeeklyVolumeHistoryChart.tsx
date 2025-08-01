@@ -6,9 +6,10 @@ import {
   Bar,
   XAxis,
   CartesianGrid,
-  Brush,
   Tooltip as ChartTooltip,
 } from '@/components/ui/chart'
+import Slider from '@/components/ui/slider'
+import { useState, useEffect } from 'react'
 import ChartCard from '@/components/dashboard/ChartCard'
 import type { ChartConfig } from '@/components/ui/chart'
 import useWeeklyVolumeHistory from '@/hooks/useWeeklyVolumeHistory'
@@ -16,8 +17,17 @@ import { Skeleton } from '@/components/ui/skeleton'
 
 export default function WeeklyVolumeHistoryChart() {
   const data = useWeeklyVolumeHistory()
+  const [range, setRange] = useState<[number, number]>([0, 0])
+
+  useEffect(() => {
+    if (data) {
+      setRange([Math.max(0, data.length - 52), data.length - 1])
+    }
+  }, [data])
 
   if (!data) return <Skeleton className="h-64" />
+
+  const filtered = data.slice(range[0], range[1] + 1)
 
   const config = {
     miles: { label: 'Miles', color: 'hsl(var(--chart-1))' },
@@ -29,14 +39,23 @@ export default function WeeklyVolumeHistoryChart() {
       description="Historical weekly mileage totals"
     >
       <ChartContainer config={config} className="h-64">
-        <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+        <BarChart data={filtered} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
           <ChartTooltip />
           <Bar dataKey="miles" fill="var(--color-miles)" radius={2} animationDuration={300} />
-          <Brush dataKey="week" height={20} travellerWidth={10} />
         </BarChart>
       </ChartContainer>
+      <div className="mt-4">
+        <Slider
+          numberOfThumbs={2}
+          min={0}
+          max={data.length - 1}
+          step={1}
+          value={range}
+          onValueChange={(val) => setRange(val as [number, number])}
+        />
+      </div>
     </ChartCard>
   )
 }
