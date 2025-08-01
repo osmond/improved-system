@@ -58,9 +58,17 @@ describe('RunSoundtrackCard', () => {
   it('renders now playing and top tracks', () => {
     mockHook.mockReturnValue(withNowPlaying)
     const { container } = render(<RunSoundtrackCard />)
+
     expect(screen.getByText('Now Playing')).toBeInTheDocument()
     expect(screen.getAllByText(/Song A/).length).toBeGreaterThan(0)
     expect(screen.getByText(/Song B/)).toBeInTheDocument()
+
+    const indicator = screen.getByLabelText('listening')
+    expect(indicator).toBeInTheDocument()
+    expect(indicator).toHaveClass('bg-green-600')
+
+    const content = container.querySelector('.flex.flex-col.gap-4.p-6.pt-0')
+    expect(content).toBeInTheDocument()
     expect(container.firstChild).toHaveClass('text-spotify-primary')
     expect(container.querySelector('svg')).toBeInTheDocument()
   })
