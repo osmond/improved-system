@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    @font-face {
+      font-family: 'Inter';
+      font-style: normal;
+      font-weight: 600;
+      src: url('https://fonts.gstatic.com/s/inter/v19/UcCO3FwrK3iLTeHuS_nVMrMxCp50SjIw2boKoduKmMEVuLyfMZg.ttf') format('truetype');
+    }
+    text { font-family: 'Inter', sans-serif; font-weight: 600; }
+  </style>
+  <rect width="64" height="64" fill="#000000"/>
+  <text x="32" y="44" text-anchor="middle" fill="#ffffff" font-size="36">AJO</text>
+</svg>
+
