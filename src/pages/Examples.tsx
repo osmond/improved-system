@@ -28,7 +28,7 @@ import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryC
 
 export default function Examples() {
   return (
-    <div className="grid gap-6">
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <AreaChartInteractive />
 
       <StepsTrendWithGoal data={mockDailySteps} />
