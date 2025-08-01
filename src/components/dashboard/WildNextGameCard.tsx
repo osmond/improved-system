@@ -1,7 +1,8 @@
 import { Card, CardContent } from '@/components/ui/card'
-import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Tv } from 'lucide-react'
+import { cn } from '@/lib/utils'
 import { format, parseISO, formatDistanceToNow } from 'date-fns'
 import useWildSchedule from '@/hooks/useWildSchedule'
 
@@ -43,12 +44,19 @@ export default function WildNextGameCard() {
           </div>
         </div>
         <div className="mt-5 flex gap-3">
-          <Button className="flex-1 bg-wild-secondary hover:bg-wild-secondary/90 text-white" size="sm">
-            Add to Calendar
-          </Button>
-          <Button variant="outline" className="flex-1" size="sm">
+          <a
+            href={game.watchUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={cn(
+              'flex-1 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none disabled:opacity-50',
+              'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
+              'h-8 px-3',
+            )}
+          >
+            <Tv className="w-4 h-4 mr-2" />
             Game Details
-          </Button>
+          </a>
         </div>
       </CardContent>
     </Card>
