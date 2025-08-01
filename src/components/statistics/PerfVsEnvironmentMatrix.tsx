@@ -10,20 +10,23 @@ import {
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart";
 import ChartCard from "@/components/dashboard/ChartCard";
+import { Cell } from "recharts";
 
 interface PerfPoint {
-  pace: number;
-  power: number;
-  temperature: number;
-  humidity: number;
-  wind: number;
-  elevation: number;
+  pace: number
+  power: number
+  temperature: number
+  humidity: number
+  wind: number
+  elevation: number
+  fill: string
 }
 
 function generateData(count = 50): PerfPoint[] {
   return Array.from({ length: count }, () => {
     const pace = 6 + Math.random() * 2; // 6-8 min/mi
     const power = 250 - pace * 20 + Math.random() * 10;
+    const colorIndex = Math.min(5, Math.max(0, Math.floor((power - 90) / 10)))
     return {
       pace: +pace.toFixed(2),
       power: Math.round(power),
@@ -31,7 +34,8 @@ function generateData(count = 50): PerfPoint[] {
       humidity: Math.round(40 + Math.random() * 50),
       wind: +(Math.random() * 20).toFixed(1),
       elevation: Math.round(Math.random() * 300),
-    };
+      fill: `var(--chart-${colorIndex + 5})`,
+    }
   });
 }
 
@@ -86,7 +90,11 @@ export default function PerfVsEnvironmentMatrix() {
             <XAxis dataKey="temperature" name="Temp (F)" />
             <YAxis dataKey="pace" name="Pace (min/mi)" />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
+            <Scatter data={DATA}>
+              {DATA.map((point, idx) => (
+                <Cell key={idx} fill={point.fill} />
+              ))}
+            </Scatter>
             <Line data={tempReg} stroke={config.trend.color} dot={false} />
           </ScatterChart>
         </ChartContainer>
@@ -96,7 +104,11 @@ export default function PerfVsEnvironmentMatrix() {
             <XAxis dataKey="humidity" name="Humidity (%)" />
             <YAxis dataKey="pace" name="Pace (min/mi)" />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
+            <Scatter data={DATA}>
+              {DATA.map((point, idx) => (
+                <Cell key={idx} fill={point.fill} />
+              ))}
+            </Scatter>
             <Line data={humidityReg} stroke={config.trend.color} dot={false} />
           </ScatterChart>
         </ChartContainer>
@@ -106,7 +118,11 @@ export default function PerfVsEnvironmentMatrix() {
             <XAxis dataKey="wind" name="Wind (mph)" />
             <YAxis dataKey="pace" name="Pace (min/mi)" />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
+            <Scatter data={DATA}>
+              {DATA.map((point, idx) => (
+                <Cell key={idx} fill={point.fill} />
+              ))}
+            </Scatter>
             <Line data={windReg} stroke={config.trend.color} dot={false} />
           </ScatterChart>
         </ChartContainer>
@@ -116,7 +132,11 @@ export default function PerfVsEnvironmentMatrix() {
             <XAxis dataKey="elevation" name="Elevation (ft)" />
             <YAxis dataKey="pace" name="Pace (min/mi)" />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
+            <Scatter data={DATA}>
+              {DATA.map((point, idx) => (
+                <Cell key={idx} fill={point.fill} />
+              ))}
+            </Scatter>
             <Line data={elevReg} stroke={config.trend.color} dot={false} />
           </ScatterChart>
         </ChartContainer>

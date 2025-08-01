@@ -10,11 +10,18 @@ import {
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
+import { Cell } from "recharts"
 
-const scatterData = Array.from({ length: 200 }, () => ({
-  pace: 6 + Math.random() * 2,
-  hr: 120 + Math.random() * 40,
-}))
+const scatterData = Array.from({ length: 200 }, () => {
+  const pace = 6 + Math.random() * 2
+  const hr = 120 + Math.random() * 40
+  const zone = Math.min(5, Math.max(0, Math.floor((hr - 120) / 8)))
+  return {
+    pace,
+    hr,
+    fill: `var(--chart-${zone + 5})`,
+  }
+})
 
 const config = {
   pace: { label: "Pace", color: "var(--chart-9)" },
@@ -33,7 +40,11 @@ export default function PaceVsHR() {
           <XAxis dataKey="pace" name="Pace (min/mi)" />
           <YAxis dataKey="hr" name="Heart Rate (bpm)" />
           <ChartTooltip />
-          <Scatter data={scatterData} fill="var(--chart-9)" />
+          <Scatter data={scatterData}>
+            {scatterData.map((pt, idx) => (
+              <Cell key={idx} fill={pt.fill} />
+            ))}
+          </Scatter>
         </ScatterChart>
       </ChartContainer>
     </ChartCard>
