@@ -8,12 +8,15 @@ export interface ProgressRingWithDeltaProps extends ProgressRingProps {
   previous: number;
   /** Decimal places for delta percentage */
   decimalPlaces?: number;
+  /** Optional tertiary text shown below the delta */
+  tertiary?: string;
 }
 
 export function ProgressRingWithDelta({
   current,
   previous,
   decimalPlaces = 1,
+  tertiary,
   ...ringProps
 }: ProgressRingWithDeltaProps) {
   const delta = previous === 0 ? 0 : (current - previous) / previous;
@@ -25,6 +28,11 @@ export function ProgressRingWithDelta({
       <span className="text-xs mt-1" aria-label="Change from previous">
         {formatted}
       </span>
+      {tertiary && (
+        <span className="text-xs text-muted-foreground" aria-label="Additional context">
+          {tertiary}
+        </span>
+      )}
     </div>
   );
 }

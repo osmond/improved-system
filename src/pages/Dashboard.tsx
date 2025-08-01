@@ -10,8 +10,9 @@ import { Badge } from "@/components/ui/badge";
 import {
   useGarminData,
   useMostRecentActivity,
-  useMonthlyStepsProjection,
+  useGarminDays,
 } from "@/hooks/useGarminData";
+import useStepInsights from "@/hooks/useStepInsights";
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
@@ -22,7 +23,8 @@ import { GeoActivityExplorer } from "@/components/map";
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
-  const monthly = useMonthlyStepsProjection();
+  const days = useGarminDays();
+  const stepInsights = useStepInsights(days);
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
@@ -51,12 +53,17 @@ export default function Dashboard() {
     }
   };
 
-  const previousSteps = data.steps * 0.9;
+  const previousSteps = days && days.length > 1 ? days[days.length - 2].steps : data.steps * 0.9;
   const previousSleep = data.sleep * 0.9;
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
   const sparkData: { date: string; value: number }[] = [];
   const lastSyncedMinutes = minutesSince(data.lastSync);
+
+  const monthly = stepInsights?.monthly;
+  const stepContext = stepInsights
+    ? `${stepInsights.vsYesterday >= 0 ? '+' : ''}${(stepInsights.vsYesterday * 100).toFixed(0)}% vs yesterday • ${stepInsights.vs7DayAvg >= 0 ? '+' : ''}${(stepInsights.vs7DayAvg * 100).toFixed(0)}% vs 7d avg`
+    : undefined;
 
   return (
     <div className="grid gap-4">
@@ -82,6 +89,7 @@ export default function Dashboard() {
             value={(data.steps / 10000) * 100}
             current={data.steps}
             previous={previousSteps}
+            tertiary={stepContext}
           />
           {monthly && (
             <div className="w-full mt-1" aria-label={`Projected ${Math.round(monthly.projectedTotal).toLocaleString()} steps`}>
