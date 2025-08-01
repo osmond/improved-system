@@ -1,7 +1,6 @@
 'use client'
 
 import { TrendingUp } from 'lucide-react'
-import { generateTrendMessage } from '@/lib/utils'
 import { Pie, PieChart } from 'recharts'
 
 import {
@@ -21,22 +20,22 @@ import {
 
 export const description = 'A donut chart'
 
-// Distribution of workout minutes by activity type
+// Distribution of visitors by browser
 const chartData = [
-  { activity: 'Run', minutes: 520, fill: 'var(--color-run)' },
-  { activity: 'Bike', minutes: 340, fill: 'var(--color-bike)' },
-  { activity: 'Swim', minutes: 120, fill: 'var(--color-swim)' },
-  { activity: 'Strength', minutes: 220, fill: 'var(--color-strength)' },
-  { activity: 'Other', minutes: 90, fill: 'var(--color-other)' },
+  { browser: 'chrome', visitors: 275, fill: 'var(--color-chrome)' },
+  { browser: 'safari', visitors: 200, fill: 'var(--color-safari)' },
+  { browser: 'firefox', visitors: 187, fill: 'var(--color-firefox)' },
+  { browser: 'edge', visitors: 173, fill: 'var(--color-edge)' },
+  { browser: 'other', visitors: 90, fill: 'var(--color-other)' },
 ]
 
 const chartConfig = {
-  minutes: { label: 'Minutes' },
-  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
-  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
-  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
-  strength: { label: 'Strength', color: 'hsl(var(--chart-4))' },
-  other: { label: 'Other', color: 'hsl(var(--chart-5))' },
+  visitors: { label: 'Visitors' },
+  chrome: { label: 'Chrome', color: 'var(--chart-1)' },
+  safari: { label: 'Safari', color: 'var(--chart-2)' },
+  firefox: { label: 'Firefox', color: 'var(--chart-3)' },
+  edge: { label: 'Edge', color: 'var(--chart-4)' },
+  other: { label: 'Other', color: 'var(--chart-5)' },
 } satisfies ChartConfig
 
 export default function ChartPieDonut() {
@@ -50,16 +49,16 @@ export default function ChartPieDonut() {
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px]'>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey='minutes' nameKey='activity' innerRadius={60} />
+            <Pie data={chartData} dataKey='visitors' nameKey='browser' innerRadius={60} />
           </PieChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex-col gap-2 text-sm'>
         <div className='flex items-center gap-2 leading-none font-medium'>
-          {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+          Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total workout minutes for the last 6 months
+          Showing total visitors for the last 6 months
         </div>
       </CardFooter>
     </Card>

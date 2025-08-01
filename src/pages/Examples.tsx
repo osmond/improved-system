@@ -26,8 +26,12 @@ import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironm
 
 import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 import ReadingProbabilityTimeline from "@/components/dashboard/ReadingProbabilityTimeline";
+
+import PieChartDonut from "@/components/examples/PieChartDonut";
+
 import ReadingStackSplit from "@/components/dashboard/ReadingStackSplit";
 import WildNextGameCard from "@/components/dashboard/WildNextGameCard";
+
 
 
 export default function Examples() {
@@ -41,7 +45,7 @@ export default function Examples() {
 
       <WeeklyVolumeHistoryChart />
       <ReadingProbabilityTimeline />
-      <ReadingStackSplit />
+      <PieChartDonut />
 
       <TimeInBedChart />
 
