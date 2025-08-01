@@ -11,13 +11,7 @@ vi.mock('@/hooks/useLocationEfficiency', () => ({
   ],
 }))
 
-beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any
-})
+
 
 describe('LocationEfficiencyComparison', () => {
   it('renders map and ranks locations', () => {

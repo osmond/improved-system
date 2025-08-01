@@ -19,11 +19,6 @@ vi.mock('@/hooks/useWeeklyComparison', () => ({
 }))
 
 beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any
   Object.defineProperty(HTMLElement.prototype, 'getBoundingClientRect', {
     configurable: true,
     value: () => ({ width: 400, height: 300, top: 0, left: 0, bottom: 0, right: 0 })

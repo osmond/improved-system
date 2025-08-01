@@ -11,13 +11,7 @@ vi.mock('@/hooks/useRunBikeVolume', () => ({
   ],
 }))
 
-beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any
-})
+
 
 describe('RunBikeVolumeComparison', () => {
   it('toggles metric', () => {
