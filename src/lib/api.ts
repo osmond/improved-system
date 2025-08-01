@@ -955,6 +955,28 @@ export async function getReadingProgress(): Promise<ReadingProgress> {
   })
 }
 
+// ----- Wild schedule -----
+export interface WildGame {
+  gameDate: string
+  opponent: string
+  home: boolean
+  [key: string]: any
+}
+
+export const mockWildSchedule: WildGame[] = [
+  { gameDate: '2025-10-01T00:00:00Z', opponent: 'Blues', home: true },
+  { gameDate: '2025-10-03T00:00:00Z', opponent: 'Blackhawks', home: false },
+  { gameDate: '2025-10-05T00:00:00Z', opponent: 'Avalanche', home: true },
+]
+
+export async function getWildSchedule(
+  limit = 1,
+): Promise<WildGame[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockWildSchedule.slice(0, limit)), 200)
+  })
+}
+
 // ----- Recent run window -----
 export interface RunWindow {
   start: string
