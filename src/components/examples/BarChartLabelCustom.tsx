@@ -40,8 +40,8 @@ export default function ChartBarLabelCustom() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Custom Label</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Location / Segment Breakdown</CardTitle>
+        <CardDescription>Mileage or sessions per custom category (e.g., favorite routes, segments, or surfaces)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60'>

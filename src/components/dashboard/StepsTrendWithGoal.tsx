@@ -125,8 +125,8 @@ export function StepsTrendWithGoal({
 
   return (
     <ChartCard
-      title="Pace Trend (min/mile)"
-      description="How pace varies with weather conditions"
+      title="Pace Variability"
+      description="How your pace changes over time (e.g., affected by weather or effort)"
       className="md:col-span-2"
     >
       <ChartContainer config={chartConfig} className="h-60">

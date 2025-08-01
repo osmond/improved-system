@@ -41,8 +41,8 @@ export default function ChartBarHorizontal() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Horizontal</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Distance Frequency</CardTitle>
+        <CardDescription>Distribution of run/bike session distances (e.g., how often you do short vs long efforts)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60'>

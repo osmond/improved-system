@@ -41,8 +41,8 @@ export default function ChartRadialText() {
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
-        <CardTitle>Radial Chart - Text</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Total Workout Minutes</CardTitle>
+        <CardDescription>Aggregate training time for the last 6 months</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
         <ChartContainer

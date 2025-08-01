@@ -41,8 +41,8 @@ export default function ChartRadarDots() {
   return (
     <Card>
       <CardHeader className='items-center'>
-        <CardTitle>Radar Chart - Dots</CardTitle>
-        <CardDescription>Showing monthly mileage for the last 6 months</CardDescription>
+        <CardTitle>Monthly Mileage Pattern</CardTitle>
+        <CardDescription>Mileage consistency and variation by month over the last 6 months</CardDescription>
       </CardHeader>
       <CardContent className='pb-0'>
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px]'>

@@ -54,8 +54,8 @@ export default function TreadmillVsOutdoorExample() {
     <Card className='flex flex-col'>
       <CardHeader className='flex-row items-start space-y-0 pb-0'>
         <div className='grid gap-1'>
-          <CardTitle>Treadmill vs Outdoor</CardTitle>
-          <CardDescription>January - May 2024</CardDescription>
+          <CardTitle>Indoor vs Outdoor Split</CardTitle>
+          <CardDescription>Comparison of workout volume or sessions (e.g., treadmill vs outdoor activities)</CardDescription>
         </div>
         <Select value={activeMonth} onValueChange={setActiveMonth}>
           <SelectTrigger className='ml-auto h-7 w-[130px] rounded-lg pl-2.5' aria-label='Select month'>

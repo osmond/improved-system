@@ -42,8 +42,8 @@ export default function ChartBarMixed() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Bar Chart - Mixed</CardTitle>
-        <CardDescription>January - June 2024</CardDescription>
+        <CardTitle>Activity Type Breakdown</CardTitle>
+        <CardDescription>Total sessions or volume by type (Run / Bike / Swim / Other)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60'>

@@ -137,9 +137,9 @@ export default function AreaChartInteractive() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Weekly Distance</CardTitle>
+        <CardTitle>Weekly Distance Trend</CardTitle>
         <CardDescription>
-          Last {range === '90d' ? '3 months' : range === '30d' ? '30 days' : '7 days'}
+          Run & bike mileage over the last 3 months
         </CardDescription>
         <SimpleSelect
           value={range}
