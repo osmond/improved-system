@@ -25,36 +25,36 @@ export default function WildNextGameCard() {
               <span className="text-xl font-bold text-wild-secondary">W</span>
             </div>
           </div>
-          <div className="flex-grow">
-            <div className="flex items-center justify-between">
-              <div>
+          <div className="flex-grow flex flex-col">
+            <div className="flex items-start justify-between">
+              <div className="flex flex-col">
                 <p className="text-sm text-muted-foreground">Next Game</p>
-                <h2 className="mt-1 text-2xl font-semibold text-wild-secondary">
+                <h2 className="mt-1 text-2xl font-semibold leading-tight text-wild-secondary">
                   Wild vs <span className="font-normal text-foreground">{game.opponent}</span>
                 </h2>
               </div>
-              <div className="text-right space-y-1">
+              <div className="flex flex-col items-end space-y-1 text-right">
                 <p className="text-sm text-muted-foreground">{format(date, 'PPp')}</p>
-                <Badge className="bg-wild-wheat text-wild-primary">{game.home ? 'Home' : 'Away'}</Badge>
+                <Badge className="bg-wild-wheat text-wild-primary px-3 py-1">{game.home ? 'Home' : 'Away'}</Badge>
               </div>
             </div>
-            <div className="mt-4 text-sm text-muted-foreground">
+            <div className="mt-2 text-sm text-muted-foreground">
               {formatDistanceToNow(date, { addSuffix: true })}
             </div>
           </div>
         </div>
-        <div className="mt-5 flex gap-3">
+        <div className="mt-5">
           <a
             href={game.watchUrl}
             target="_blank"
             rel="noopener noreferrer"
             className={cn(
-              'flex-1 inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none disabled:opacity-50',
+              'w-full flex items-center justify-center gap-2 rounded-md text-sm font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-ring disabled:pointer-events-none disabled:opacity-50',
               'border border-input bg-background hover:bg-accent hover:text-accent-foreground',
-              'h-8 px-3',
+              'py-2.5 px-6',
             )}
           >
-            <Tv className="w-4 h-4 mr-2" />
+            <Tv className="w-5 h-5" />
             Game Details
           </a>
         </div>
