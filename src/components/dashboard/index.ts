@@ -24,4 +24,3 @@ export { default as WildNextGameCard } from "./WildNextGameCard";
 
 export { default as MovementFingerprint } from "./MovementFingerprint";
 
-export { default as BedToRunGauge } from "./BedToRunGauge";
