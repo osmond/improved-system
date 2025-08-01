@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import Map, { Source, Layer, Marker, MapLayerMouseEvent } from "react-map-gl/maplibre";
+import Map, { Source, Layer, Marker, Popup, MapLayerMouseEvent } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import { feature } from "topojson-client";
 import { geoCentroid } from "d3-geo";
@@ -28,6 +28,7 @@ import { fipsToAbbr } from "@/lib/stateCodes";
 export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
+  const [selectedState, setSelectedState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
 
@@ -117,6 +118,14 @@ export default function GeoActivityExplorer() {
     [statesGeo, summaryMap]
   )
 
+  const stateCoords = useMemo(() => {
+    const m: Record<string, [number, number]> = {}
+    stateMarkers.forEach((s) => {
+      m[s.abbr] = s.coords
+    })
+    return m
+  }, [stateMarkers])
+
   if (!data) {
     return <Skeleton className="h-60 w-full" />;
   }
@@ -124,6 +133,11 @@ export default function GeoActivityExplorer() {
   const toggleState = (abbr: string) => {
     setExpandedState((prev) => (prev === abbr ? null : abbr));
   };
+
+  const selectState = (abbr: string) => {
+    setSelectedState((prev) => (prev === abbr ? null : abbr))
+    setExpandedState((prev) => (prev === abbr ? null : abbr))
+  }
 
   return (
     <ChartContainer
@@ -164,7 +178,7 @@ export default function GeoActivityExplorer() {
             attributionControl={false}
             onClick={(e: MapLayerMouseEvent) => {
               const f = e.features?.[0] as any
-              if (f?.properties?.abbr) toggleState(f.properties.abbr)
+              if (f?.properties?.abbr) selectState(f.properties.abbr)
             }}
             style={{ width: "100%", height: "100%" }}
           >
@@ -195,11 +209,28 @@ export default function GeoActivityExplorer() {
               <Marker key={m.abbr} longitude={m.coords[0]} latitude={m.coords[1]}>
                 <button
                   className="sr-only"
-                  onClick={() => toggleState(m.abbr)}
+                  onClick={() => selectState(m.abbr)}
                   aria-label={`${m.abbr} ${m.visited ? "visited" : "not visited"}`}
                 />
               </Marker>
             ))}
+            {selectedState && stateCoords[selectedState] && (
+              <Popup
+                longitude={stateCoords[selectedState][0]}
+                latitude={stateCoords[selectedState][1]}
+                closeButton={false}
+                closeOnClick={false}
+                anchor="bottom"
+              >
+                <div className="flex flex-col gap-1 text-xs">
+                  <span className="flex gap-2">
+                    <Badge>{summaryMap[selectedState].totalDays}d</Badge>
+                    <Badge>{summaryMap[selectedState].totalMiles}mi</Badge>
+                  </span>
+                  <button onClick={() => setSelectedState(null)}>Close</button>
+                </div>
+              </Popup>
+            )}
           </Map>
           <ChartLegend
             payload={legendPayload}

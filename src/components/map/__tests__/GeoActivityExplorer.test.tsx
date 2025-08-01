@@ -7,6 +7,7 @@ vi.mock("react-map-gl/maplibre", () => ({
   Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  Popup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }));
 import "@testing-library/jest-dom";
 
@@ -51,5 +52,13 @@ describe("GeoActivityExplorer", () => {
     fireEvent.click(trigger);
     fireEvent.click(screen.getByText("Bike"));
     expect(screen.queryByLabelText("CA visited")).not.toBeInTheDocument();
+  });
+
+  it("shows popup with summary when state clicked", () => {
+    render(<GeoActivityExplorer />);
+    const state = screen.getByLabelText("CA visited");
+    fireEvent.click(state);
+    expect(screen.getAllByText("1d").length).toBeGreaterThan(1);
+    expect(screen.getAllByText("1mi").length).toBeGreaterThan(1);
   });
 });
