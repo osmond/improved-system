@@ -6,6 +6,7 @@ import {
   MiniSparkline,
   RingDetailDialog,
 } from "@/components/dashboard";
+import { TopInsights } from "@/components/dashboard";
 import { Badge } from "@/components/ui/badge";
 import {
   useGarminData,
@@ -24,6 +25,7 @@ import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
+
 
   const [stepGoal, setStepGoalState] = useState(10000)
   const [sleepGoal, setSleepGoalState] = useState(8)
@@ -74,6 +76,7 @@ export default function Dashboard() {
   const days = useGarminDays();
   const stepInsights = useStepInsights(days, stepGoal);
 
+
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
@@ -118,6 +121,7 @@ export default function Dashboard() {
 
   return (
     <div className="grid gap-4">
+      <TopInsights />
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card
           role="button"

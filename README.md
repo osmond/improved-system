@@ -1,4 +1,4 @@
-# Garmin Dashboard
+# Dashboard
 
 ## Project structure & imports
 Use the `src/components/ui` folder for all shared, “primitive” UI bits—buttons, cards, tabs, tooltips, charts, etc. This is where the Shadcn-CLI lives, and any one-off or feature-specific code goes elsewhere (e.g. `src/components/dashboard/StepsChart.tsx`).
