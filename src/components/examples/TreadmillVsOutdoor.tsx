@@ -35,8 +35,8 @@ const monthlyData = [
 ] as const
 
 const chartConfig = {
-  Outdoor: { label: 'Outdoor', color: 'var(--chart-5)' },
-  Treadmill: { label: 'Treadmill', color: 'var(--chart-6)' },
+  Outdoor: { label: 'Outdoor', color: 'hsl(var(--chart-5))' },
+  Treadmill: { label: 'Treadmill', color: 'hsl(var(--chart-6))' },
 } satisfies Record<string, unknown>
 
 export default function TreadmillVsOutdoorExample() {
@@ -91,7 +91,7 @@ export default function TreadmillVsOutdoorExample() {
               {pieData.map((entry) => (
                 <Cell
                   key={entry.name}
-                  fill={`var(--chart-${entry.name === 'Outdoor' ? 5 : 6})`}
+                  fill={`hsl(var(--chart-${entry.name === 'Outdoor' ? 5 : 6}))`}
                 />
               ))}
             </Pie>
