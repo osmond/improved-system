@@ -1032,6 +1032,7 @@ export async function getLatestRun(): Promise<RunWindow> {
   });
 }
 
+
 // ----- Wild schedule -----
 export interface WildGame {
   gameDate: string;
@@ -1052,3 +1053,4 @@ export async function getWildSchedule(
     setTimeout(() => resolve(mockWildSchedule.slice(0, limit)), 100);
   });
 }
+
