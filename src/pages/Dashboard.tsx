@@ -140,6 +140,7 @@ export default function Dashboard() {
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList>
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="map">Map</TabsTrigger>
         <TabsTrigger value="examples">Examples</TabsTrigger>
       </TabsList>
 
@@ -461,8 +462,11 @@ export default function Dashboard() {
       </div>
 
           <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
-          <GeoActivityExplorer />
         </div>
+      </TabsContent>
+
+      <TabsContent value="map">
+        <GeoActivityExplorer />
       </TabsContent>
 
       <TabsContent value="examples">
