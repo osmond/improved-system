@@ -17,9 +17,10 @@ vi.mock('@/hooks/useRunSoundtrack', () => ({
 
 describe('RunSoundtrackCard', () => {
   it('renders now playing and top tracks', () => {
-    render(<RunSoundtrackCard />)
+    const { container } = render(<RunSoundtrackCard />)
     expect(screen.getByText('Now Playing')).toBeInTheDocument()
     expect(screen.getAllByText(/Song A/).length).toBeGreaterThan(0)
     expect(screen.getByText(/Song B/)).toBeInTheDocument()
+    expect(container.firstChild).toHaveClass('bg-spotify-primary', 'text-spotify-foreground')
   })
 })

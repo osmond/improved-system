@@ -8,7 +8,7 @@ export default function RunSoundtrackCard() {
   if (!data) return <Skeleton className="h-32" />
 
   return (
-    <Card>
+    <Card className="bg-spotify-primary text-spotify-foreground">
       <CardHeader>
         <CardTitle>Run Soundtrack</CardTitle>
       </CardHeader>

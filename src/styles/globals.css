@@ -34,10 +34,12 @@
     --chart-8: 238 90% 60%;
     --chart-9: 242 80% 65%;
     --chart-10: 246 70% 70%;
-    --wild-primary: 157 54% 18%;
-    --wild-secondary: 351 74% 37%;
-    --wild-gold: 44 100% 46%;
-    --wild-wheat: 41 46% 75%;
+    --wild-primary: 157 40% 24%;
+    --wild-secondary: 351 60% 45%;
+    --wild-gold: 44 80% 52%;
+    --wild-wheat: 41 40% 80%;
+    --spotify-primary: 141 60% 50%;
+    --spotify-foreground: 0 0% 0%;
   }
 
   .dark {
@@ -70,10 +72,12 @@
     --chart-8: 238 90% 70%;
     --chart-9: 242 80% 75%;
     --chart-10: 246 70% 80%;
-    --wild-primary: 157 54% 18%;
-    --wild-secondary: 351 74% 37%;
-    --wild-gold: 44 100% 46%;
-    --wild-wheat: 41 46% 75%;
+    --wild-primary: 157 40% 24%;
+    --wild-secondary: 351 60% 45%;
+    --wild-gold: 44 80% 52%;
+    --wild-wheat: 41 40% 80%;
+    --spotify-primary: 141 65% 58%;
+    --spotify-foreground: 0 0% 100%;
   }
 
   html, body {

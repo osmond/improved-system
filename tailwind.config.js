@@ -26,7 +26,9 @@ module.exports = {
         "wild-primary": "hsl(var(--wild-primary))",
         "wild-secondary": "hsl(var(--wild-secondary))",
         "wild-gold": "hsl(var(--wild-gold))",
-        "wild-wheat": "hsl(var(--wild-wheat))"
+        "wild-wheat": "hsl(var(--wild-wheat))",
+        "spotify-primary": "hsl(var(--spotify-primary))",
+        "spotify-foreground": "hsl(var(--spotify-foreground))"
       },
       fontFamily: {
         sans: ["Inter", ...fontFamily.sans],
