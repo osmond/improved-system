@@ -12,6 +12,7 @@ import {
   PaceVsHR,
   TrainingLoadRatio,
   EquipmentUsageTimeline,
+  RunBikeVolumeComparison,
   PerfVsEnvironmentMatrix,
   SessionSimilarityMap,
   RouteComparison,
@@ -40,6 +41,7 @@ export default function Statistics() {
           <PaceVsHR />
           <TrainingLoadRatio />
           <EquipmentUsageTimeline />
+          <RunBikeVolumeComparison />
           <PerfVsEnvironmentMatrix />
           <SessionSimilarityMap />
           <RouteComparison route="River Loop" />

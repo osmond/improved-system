@@ -353,6 +353,35 @@ export async function getWeeklyVolume(): Promise<WeeklyVolumePoint[]> {
   })
 }
 
+export interface RunBikeVolumePoint {
+  week: string
+  runMiles: number
+  bikeMiles: number
+  runTime: number
+  bikeTime: number
+}
+
+export function generateMockRunBikeVolume(): RunBikeVolumePoint[] {
+  const weeks: RunBikeVolumePoint[] = []
+  for (let i = 0; i < 26; i++) {
+    const date = new Date()
+    date.setDate(date.getDate() - (25 - i) * 7)
+    const week = date.toISOString().slice(0, 10)
+    const runMiles = Math.round(10 + Math.random() * 20)
+    const bikeMiles = Math.round(20 + Math.random() * 40)
+    const runTime = Math.round(runMiles * (8 + Math.random() * 2))
+    const bikeTime = Math.round(bikeMiles * (3 + Math.random()))
+    weeks.push({ week, runMiles, bikeMiles, runTime, bikeTime })
+  }
+  return weeks
+}
+
+export async function getRunBikeVolume(): Promise<RunBikeVolumePoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockRunBikeVolume()), 200)
+  })
+}
+
 // ----- Benchmark stats -----
 export interface BenchmarkPoint {
   date: string
