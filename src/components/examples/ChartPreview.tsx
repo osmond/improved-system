@@ -1,11 +1,20 @@
 import React from 'react'
 import { Eye } from 'lucide-react'
-import { Dialog, DialogTrigger, DialogContentFullscreen } from '@/components/ui/dialog'
 
-export default function ChartPreview({ children }: { children: React.ReactElement }) {
+import { cn } from '@/lib/utils'
+import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+
+
+export default function ChartPreview({
+  children,
+  className,
+}: {
+  children: React.ReactElement
+  className?: string
+}) {
   return (
     <Dialog>
-      <div className='relative'>
+      <div className={cn('relative h-64', className)}>
         <DialogTrigger asChild>
           <button className='absolute right-2 top-2 z-40 rounded-md bg-background/80 p-1 text-muted-foreground hover:text-foreground'>
             <Eye className='h-4 w-4' />
