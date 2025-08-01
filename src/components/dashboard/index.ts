@@ -18,4 +18,8 @@ export { default as ReadingFocusHeatmap } from "./ReadingFocusHeatmap";
 
 export { default as BooksVsCalories } from "./BooksVsCalories";
 export { default as ReadingStackSplit } from "./ReadingStackSplit";
+
+export { default as RunSoundtrackCard } from './RunSoundtrackCard'
+
 export { default as WildNextGameCard } from "./WildNextGameCard";
+
