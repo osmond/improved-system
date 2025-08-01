@@ -6,6 +6,7 @@ export * from "./ActivitiesChart";
 export * from "./StepsChart";
 export * from "./DailyStepsChart";
 export * from "./StepsTrendWithGoal";
+export { default as DashboardCharts } from "./DashboardCharts";
 export * from "./MiniSparkline";
 export * from "./RingDetailDialog";
 export * from "./AcwrGauge";
