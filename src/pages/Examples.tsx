@@ -16,7 +16,6 @@ import ChartBarMixed from "@/components/examples/BarChartMixed";
 import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
 import ShoeUsageChart from "@/components/examples/ShoeUsageChart";
 import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
-import PaceVsHeartRate from "@/components/examples/PaceVsHeartRate";
 import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison";
 import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
@@ -66,7 +65,6 @@ export default function Examples() {
 
 
       <ScatterChartPaceHeartRate />
-      <PaceVsHeartRate />
       <AreaChartLoadRatio />
 
       <SegmentSlopeComparison />
