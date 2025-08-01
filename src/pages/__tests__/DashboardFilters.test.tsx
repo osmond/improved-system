@@ -49,13 +49,6 @@ vi.mock("@/hooks/useInsights", () => ({
   default: () => null,
 }));
 
-beforeAll(() => {
-  global.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any;
-});
 
 it("updates charts when range filter changes", async () => {
   render(

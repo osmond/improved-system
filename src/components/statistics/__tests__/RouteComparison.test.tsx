@@ -11,13 +11,7 @@ vi.mock('@/hooks/useRouteSessions', () => ({
   ],
 }))
 
-beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any
-})
+
 
 describe('RouteComparison', () => {
   it('renders a chart per session', () => {

@@ -31,13 +31,6 @@ vi.mock("@/components/dashboard", async (importOriginal) => {
   };
 });
 
-beforeAll(() => {
-  global.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any
-});
 
 vi.mock("@/hooks/useStepInsights", () => ({
   __esModule: true,

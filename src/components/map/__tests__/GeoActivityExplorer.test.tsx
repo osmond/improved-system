@@ -18,13 +18,7 @@ vi.mock("@/hooks/useStateVisits", () => ({
   ],
 }));
 
-beforeAll(() => {
-  globalThis.ResizeObserver = class {
-    observe() {}
-    unobserve() {}
-    disconnect() {}
-  } as any;
-});
+
 
 describe("GeoActivityExplorer", () => {
   it("toggles state details", () => {
