@@ -15,6 +15,7 @@ import {
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
+import Examples from "@/pages/Examples";
 
 
 export default function Dashboard() {
@@ -223,6 +224,7 @@ export default function Dashboard() {
       </div>
 
       <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
+      <Examples />
     </div>
   );
 }
