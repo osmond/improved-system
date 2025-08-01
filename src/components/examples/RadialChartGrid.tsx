@@ -41,6 +41,7 @@ export default function ChartRadialGrid() {
   const labelledData = data.map((d) => ({
     ...d,
     label: labels[d.medium],
+    fill: `var(--color-${d.medium})`,
   }))
 
   const chartConfig: ChartConfig = { minutes: { label: 'Minutes' } }
@@ -54,7 +55,7 @@ export default function ChartRadialGrid() {
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
-        <CardTitle>Discipline & Time Grid</CardTitle>
+        <CardTitle>Reading Time by Device</CardTitle>
         <CardDescription>January - June 2024</CardDescription>
       </CardHeader>
       <CardContent className='flex-1 pb-0'>
