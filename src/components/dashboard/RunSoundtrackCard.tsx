@@ -55,7 +55,7 @@ export default function RunSoundtrackCard() {
         <CardTitle className="font-slab font-bold text-lg">Run Soundtrack</CardTitle>
       </CardHeader>
       <CardContent className="space-y-6 p-3 pt-0">
-        {data.nowPlaying && (
+        {data.nowPlaying ? (
           <div className="flex gap-4">
             <div className="flex-shrink-0 w-20 h-20 rounded-xl overflow-hidden shadow-sm">
               {data.nowPlaying.item?.album?.images?.[0]?.url && (
@@ -97,6 +97,10 @@ export default function RunSoundtrackCard() {
                 </div>
               </div>
             </div>
+          </div>
+        ) : (
+          <div className="flex items-center justify-center h-20 text-sm text-muted-foreground">
+            Not currently listening
           </div>
         )}
 
