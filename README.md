@@ -138,10 +138,7 @@ Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can re
 `src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.
 
 ## Theming extensions
-If you need new variants—say a “danger” button or a “success” badge—run:
-
- manually copy/edit the template in `src/components/ui/button.tsx` and register the variant in your Tailwind `theme.extend`.
-https://ui.shadcn.com/docs/components
+If you need new variants—like a "danger" button or a "success" badge—run `pnpm dlx shadcn-ui@latest add button` to scaffold the base component. Then copy or edit `src/components/ui/button.tsx` and register your variant in `tailwind.config.js` under `theme.extend`. See <https://ui.shadcn.com/docs/components> for more details.
 
 ## Documentation & testing
 Storybook (or even MDX) is great for cataloguing all `ui/` components with knobs for variant/size.
