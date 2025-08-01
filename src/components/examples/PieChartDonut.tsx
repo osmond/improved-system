@@ -3,6 +3,8 @@
 import { TrendingUp } from 'lucide-react'
 import { generateTrendMessage } from '@/lib/utils'
 import { Pie, PieChart } from 'recharts'
+import useReadingMediumTotals from '@/hooks/useReadingMediumTotals'
+import { Skeleton } from '@/components/ui/skeleton'
 
 import {
   Card,
@@ -21,25 +23,29 @@ import {
 
 export const description = 'A donut chart'
 
-// Distribution of workout minutes by activity type
-const chartData = [
-  { activity: 'Run', minutes: 520, fill: 'var(--color-run)' },
-  { activity: 'Bike', minutes: 340, fill: 'var(--color-bike)' },
-  { activity: 'Swim', minutes: 120, fill: 'var(--color-swim)' },
-  { activity: 'Strength', minutes: 220, fill: 'var(--color-strength)' },
-  { activity: 'Other', minutes: 90, fill: 'var(--color-other)' },
-]
-
-const chartConfig = {
-  minutes: { label: 'Minutes' },
-  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
-  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
-  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
-  strength: { label: 'Strength', color: 'hsl(var(--chart-4))' },
-  other: { label: 'Other', color: 'hsl(var(--chart-5))' },
-} satisfies ChartConfig
+// Distribution of reading minutes by medium
+const labels: Record<string, string> = {
+  phone: 'Phone',
+  computer: 'Computer',
+  tablet: 'Tablet',
+  kindle: 'Kindle',
+  real_book: 'Real Book',
+  other: 'Other',
+}
 
 export default function ChartPieDonut() {
+  const data = useReadingMediumTotals()
+
+  if (!data) return <Skeleton className='h-64' />
+
+  const chartConfig: ChartConfig = { minutes: { label: 'Minutes' } }
+  data.forEach((d, i) => {
+    ;(chartConfig as any)[d.medium] = {
+      label: labels[d.medium],
+      color: `hsl(var(--chart-${i + 1}))`,
+    }
+  })
+
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
@@ -50,7 +56,7 @@ export default function ChartPieDonut() {
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px]'>
           <PieChart>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
-            <Pie data={chartData} dataKey='minutes' nameKey='activity' innerRadius={60} />
+            <Pie data={data} dataKey='minutes' nameKey='medium' innerRadius={60} />
           </PieChart>
         </ChartContainer>
       </CardContent>
@@ -59,7 +65,7 @@ export default function ChartPieDonut() {
           {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
-          Showing total workout minutes for the last 6 months
+          Showing total reading minutes for the last 6 months
         </div>
       </CardFooter>
     </Card>
