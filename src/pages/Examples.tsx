@@ -2,6 +2,7 @@ import React from "react";
 import AreaChartInteractive from "@/components/examples/AreaChartInteractive";
 import LineChartInteractive from "@/components/examples/LineChartInteractive";
 import BarChartInteractive from "@/components/examples/BarChartInteractive";
+import TimeInBedChart from "@/components/examples/TimeInBedChart";
 
 import ChartRadarDefault from "@/components/examples/RadarChartDefault";
 import ChartRadialLabel from "@/components/examples/RadialChartLabel";
@@ -36,6 +37,8 @@ export default function Examples() {
       <PeerBenchmarkBands />
 
       <WeeklyVolumeHistoryChart />
+
+      <TimeInBedChart />
 
       <BarChartInteractive />
 
