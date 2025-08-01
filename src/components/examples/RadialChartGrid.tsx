@@ -2,7 +2,7 @@
 
 import { TrendingUp } from 'lucide-react'
 import { generateTrendMessage } from '@/lib/utils'
-import { PolarGrid, RadialBar, RadialBarChart } from 'recharts'
+import { LabelList, PolarGrid, RadialBar, RadialBarChart } from 'recharts'
 
 import {
   Card,
@@ -38,6 +38,11 @@ export default function ChartRadialGrid() {
 
   if (!data) return <Skeleton className='h-64' />
 
+  const labelledData = data.map((d) => ({
+    ...d,
+    label: labels[d.medium],
+  }))
+
   const chartConfig: ChartConfig = { minutes: { label: 'Minutes' } }
   data.forEach((d, i) => {
     ;(chartConfig as any)[d.medium] = {
@@ -57,10 +62,23 @@ export default function ChartRadialGrid() {
           config={chartConfig}
           className='mx-auto aspect-square max-h-[250px]'
         >
-          <RadialBarChart data={data} innerRadius={30} outerRadius={100}>
+          <RadialBarChart
+            data={labelledData}
+            startAngle={-90}
+            endAngle={380}
+            innerRadius={30}
+            outerRadius={110}
+          >
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey='medium' />} />
             <PolarGrid gridType='circle' />
-            <RadialBar dataKey='minutes' />
+            <RadialBar dataKey='minutes' background>
+              <LabelList
+                position='insideStart'
+                dataKey='label'
+                className='fill-white capitalize mix-blend-luminosity'
+                fontSize={11}
+              />
+            </RadialBar>
           </RadialBarChart>
         </ChartContainer>
       </CardContent>
