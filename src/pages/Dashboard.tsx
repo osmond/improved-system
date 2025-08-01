@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,21 +15,67 @@ import {
 } from "@/hooks/useGarminData";
 import useStepInsights from "@/hooks/useStepInsights";
 import useInsights from "@/hooks/useInsights";
-import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
+import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
-import useUserGoals from "@/hooks/useUserGoals";
 
 
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
 
-  const { dailyStepGoal, setDailyStepGoal } = useUserGoals();
+
+  const [stepGoal, setStepGoalState] = useState(10000)
+  const [sleepGoal, setSleepGoalState] = useState(8)
+  const [heartGoal, setHeartGoalState] = useState(200)
+  const [calorieGoal, setCalorieGoalState] = useState(3000)
+
+  useEffect(() => {
+    const sg = localStorage.getItem('stepGoal')
+    if (sg) {
+      const n = parseInt(sg, 10)
+      if (!Number.isNaN(n)) setStepGoalState(n)
+    }
+    const sl = localStorage.getItem('sleepGoal')
+    if (sl) {
+      const n = parseInt(sl, 10)
+      if (!Number.isNaN(n)) setSleepGoalState(n)
+    }
+    const hg = localStorage.getItem('heartGoal')
+    if (hg) {
+      const n = parseInt(hg, 10)
+      if (!Number.isNaN(n)) setHeartGoalState(n)
+    }
+    const cg = localStorage.getItem('calorieGoal')
+    if (cg) {
+      const n = parseInt(cg, 10)
+      if (!Number.isNaN(n)) setCalorieGoalState(n)
+    }
+  }, [])
+
+  const setStepGoal = (n: number) => {
+    setStepGoalState(n)
+    localStorage.setItem('stepGoal', String(n))
+  }
+  const setSleepGoal = (n: number) => {
+    setSleepGoalState(n)
+    localStorage.setItem('sleepGoal', String(n))
+  }
+  const setHeartGoal = (n: number) => {
+    setHeartGoalState(n)
+    localStorage.setItem('heartGoal', String(n))
+  }
+  const setCalorieGoal = (n: number) => {
+    setCalorieGoalState(n)
+    localStorage.setItem('calorieGoal', String(n))
+  }
+
+
   const days = useGarminDays();
-  const stepInsights = useStepInsights(days, dailyStepGoal);
+  const stepInsights = useStepInsights(days, stepGoal);
+
 
   const recentActivity = useMostRecentActivity();
   const insights = useInsights();
@@ -93,8 +139,8 @@ export default function Dashboard() {
             )}
             <Popover>
               <PopoverTrigger asChild>
-                <button className="text-xs underline text-muted-foreground" aria-label="Edit goal">
-                  Edit
+                <button aria-label="Edit steps goal" className="ml-1">
+                  <Pencil className="h-3 w-3 text-muted-foreground" />
                 </button>
               </PopoverTrigger>
               <PopoverContent className="w-40">
@@ -103,7 +149,7 @@ export default function Dashboard() {
                     e.preventDefault()
                     const fd = new FormData(e.currentTarget)
                     const val = parseInt(fd.get('goal') as string, 10)
-                    if (!Number.isNaN(val)) setDailyStepGoal(val)
+                    if (!Number.isNaN(val)) setStepGoal(val)
                   }}
                   className="grid gap-2"
                 >
@@ -112,7 +158,7 @@ export default function Dashboard() {
                     id="goal"
                     name="goal"
                     type="number"
-                    defaultValue={dailyStepGoal}
+                    defaultValue={stepGoal}
                     className="border rounded px-2 py-1 text-sm"
                   />
                   <button type="submit" className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs">
@@ -125,7 +171,7 @@ export default function Dashboard() {
             <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Steps progress"
-            value={(data.steps / dailyStepGoal) * 100}
+            value={(data.steps / stepGoal) * 100}
             current={data.steps}
             previous={previousSteps}
             tertiary={stepContext}
@@ -202,11 +248,43 @@ export default function Dashboard() {
           onKeyDown={(e) => handleKey(e, "sleep")}
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
-          <h2 className="text-sm mb-2">Sleep (hrs)</h2>
-            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
+          <h2 className="text-sm mb-2 flex items-center gap-2">
+            Sleep (hrs)
+            <Popover>
+              <PopoverTrigger asChild>
+                <button aria-label="Edit sleep goal" className="ml-1">
+                  <Pencil className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const fd = new FormData(e.currentTarget)
+                    const val = parseInt(fd.get('goal') as string, 10)
+                    if (!Number.isNaN(val)) setSleepGoal(val)
+                  }}
+                  className="grid gap-2"
+                >
+                  <label className="text-xs" htmlFor="sleepGoal">Daily goal</label>
+                  <input
+                    id="sleepGoal"
+                    name="goal"
+                    type="number"
+                    defaultValue={sleepGoal}
+                    className="border rounded px-2 py-1 text-sm"
+                  />
+                  <button type="submit" className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs">
+                    Save
+                  </button>
+                </form>
+              </PopoverContent>
+            </Popover>
+          </h2>
+          <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Sleep progress"
-            value={(data.sleep / 8) * 100}
+            value={(data.sleep / sleepGoal) * 100}
             current={data.sleep}
             previous={previousSleep}
           />
@@ -227,11 +305,43 @@ export default function Dashboard() {
           onKeyDown={(e) => handleKey(e, "heartRate")}
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
-          <h2 className="text-sm mb-2">Heart Rate</h2>
-            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
+          <h2 className="text-sm mb-2 flex items-center gap-2">
+            Heart Rate
+            <Popover>
+              <PopoverTrigger asChild>
+                <button aria-label="Edit heart rate goal" className="ml-1">
+                  <Pencil className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const fd = new FormData(e.currentTarget)
+                    const val = parseInt(fd.get('goal') as string, 10)
+                    if (!Number.isNaN(val)) setHeartGoal(val)
+                  }}
+                  className="grid gap-2"
+                >
+                  <label className="text-xs" htmlFor="hrGoal">Max HR</label>
+                  <input
+                    id="hrGoal"
+                    name="goal"
+                    type="number"
+                    defaultValue={heartGoal}
+                    className="border rounded px-2 py-1 text-sm"
+                  />
+                  <button type="submit" className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs">
+                    Save
+                  </button>
+                </form>
+              </PopoverContent>
+            </Popover>
+          </h2>
+          <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Heart rate progress"
-            value={(data.heartRate / 200) * 100}
+            value={(data.heartRate / heartGoal) * 100}
             current={data.heartRate}
             previous={previousHeartRate}
           />
@@ -252,11 +362,43 @@ export default function Dashboard() {
           onKeyDown={(e) => handleKey(e, "calories")}
           className="flex flex-col items-center cursor-pointer focus:outline-none focus:ring"
         >
-          <h2 className="text-sm mb-2">Calories</h2>
-            <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
+          <h2 className="text-sm mb-2 flex items-center gap-2">
+            Calories
+            <Popover>
+              <PopoverTrigger asChild>
+                <button aria-label="Edit calories goal" className="ml-1">
+                  <Pencil className="h-3 w-3 text-muted-foreground" />
+                </button>
+              </PopoverTrigger>
+              <PopoverContent className="w-40">
+                <form
+                  onSubmit={(e) => {
+                    e.preventDefault()
+                    const fd = new FormData(e.currentTarget)
+                    const val = parseInt(fd.get('goal') as string, 10)
+                    if (!Number.isNaN(val)) setCalorieGoal(val)
+                  }}
+                  className="grid gap-2"
+                >
+                  <label className="text-xs" htmlFor="calGoal">Daily goal</label>
+                  <input
+                    id="calGoal"
+                    name="goal"
+                    type="number"
+                    defaultValue={calorieGoal}
+                    className="border rounded px-2 py-1 text-sm"
+                  />
+                  <button type="submit" className="px-2 py-1 rounded bg-primary text-primary-foreground text-xs">
+                    Save
+                  </button>
+                </form>
+              </PopoverContent>
+            </Popover>
+          </h2>
+          <p className="text-[10px] text-muted-foreground">Last synced {lastSyncedMinutes} min ago</p>
           <ProgressRingWithDelta
             label="Calories progress"
-            value={(data.calories / 3000) * 100}
+            value={(data.calories / calorieGoal) * 100}
             current={data.calories}
             previous={previousCalories}
           />
