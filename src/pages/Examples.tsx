@@ -5,6 +5,7 @@ import BarChartInteractive from "@/components/examples/BarChartInteractive";
 import TimeInBedChart from "@/components/examples/TimeInBedChart";
 
 import ChartRadarDefault from "@/components/examples/RadarChartDefault";
+import ChartRadialLabel from "@/components/examples/RadialChartLabel";
 import ChartRadialText from "@/components/examples/RadialChartText";
 import ChartBarDefault from "@/components/examples/BarChartDefault";
 import ChartRadialGrid from "@/components/examples/RadialChartGrid";
@@ -30,75 +31,46 @@ import ReadingStackSplit from "@/components/dashboard/ReadingStackSplit";
 
 export default function Examples() {
   return (
-    <div className="space-y-8">
-      {/* Overview / Summary */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Overview / Summary
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <ChartRadialText />
-          <ChartRadialGrid />
-          <AreaChartInteractive />
-          <TimeInBedChart />
-          <ReadingProbabilityTimeline />
-          <ReadingStackSplit />
-        </div>
-      </section>
+    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <AreaChartInteractive />
 
-      {/* Performance & Efficiency */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Performance & Efficiency
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <LineChartInteractive />
-          <StepsTrendWithGoal data={mockDailySteps} />
-          <PeerBenchmarkBands />
-          <ScatterChartPaceHeartRate />
-          <AreaChartLoadRatio />
-          <PerfVsEnvironmentMatrixExample />
-        </div>
-      </section>
+      <StepsTrendWithGoal data={mockDailySteps} />
 
-      {/* Habits & Context */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Habits & Context
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <RadarChartWorkoutByTime />
-          <ChartRadarDots />
-          <ChartBarLabelCustom />
-          <TreadmillVsOutdoorExample />
-          <ChartBarHorizontal />
-          <ChartBarDefault />
-          <ChartBarMixed />
-          <ShoeUsageChart />
-        </div>
-      </section>
+      <PeerBenchmarkBands />
 
-      {/* Balance / Narrative / Novelty */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          Balance / Narrative / Novelty
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {/* Add mind+body fusion charts here when available */}
-        </div>
-      </section>
+      <WeeklyVolumeHistoryChart />
+      <ReadingProbabilityTimeline />
+      <ReadingStackSplit />
 
-      {/* History / Supporting */}
-      <section>
-        <h2 className="mb-2 text-sm font-semibold tracking-wide uppercase text-muted-foreground">
-          History / Supporting
-        </h2>
-        <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          <WeeklyVolumeHistoryChart />
-          <ChartRadarDefault />
-          <BarChartInteractive />
-        </div>
-      </section>
+      <TimeInBedChart />
+
+      <BarChartInteractive />
+
+      <LineChartInteractive />
+
+
+      <ChartRadarDefault />
+      <RadarChartWorkoutByTime />
+
+      <ChartRadialLabel />
+
+      <ChartRadialText />
+
+      <ChartBarDefault />
+      <ChartRadialGrid />
+      <ChartBarHorizontal />
+      <ChartRadarDots />
+      <ChartBarMixed />
+      <ChartBarLabelCustom />
+      <ShoeUsageChart />
+      <TreadmillVsOutdoorExample />
+
+      <PerfVsEnvironmentMatrixExample />
+
+
+      <ScatterChartPaceHeartRate />
+      <AreaChartLoadRatio />
+
     </div>
   );
 }
