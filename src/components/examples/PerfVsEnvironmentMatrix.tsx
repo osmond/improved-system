@@ -10,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import ChartCard from '@/components/dashboard/ChartCard'
 
@@ -87,7 +88,7 @@ export default function PerfVsEnvironmentMatrixExample() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='temperature' name='Temp (F)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Scatter data={DATA} fill='var(--color-pace)' />
             <Line data={tempReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
@@ -97,7 +98,7 @@ export default function PerfVsEnvironmentMatrixExample() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='humidity' name='Humidity (%)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Scatter data={DATA} fill='var(--color-pace)' />
             <Line data={humidityReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
@@ -107,7 +108,7 @@ export default function PerfVsEnvironmentMatrixExample() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='wind' name='Wind (mph)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Scatter data={DATA} fill='var(--color-pace)' />
             <Line data={windReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
@@ -117,7 +118,7 @@ export default function PerfVsEnvironmentMatrixExample() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='elevation' name='Elevation (ft)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Scatter data={DATA} fill='var(--color-pace)' />
             <Line data={elevReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
