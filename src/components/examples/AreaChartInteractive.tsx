@@ -127,12 +127,10 @@ export default function AreaChartInteractive() {
   const [range, setRange] = React.useState('90d')
 
   const filtered = React.useMemo(() => {
-    const lastDataDate = new Date(chartData[chartData.length - 1].date)
-    const now = new Date()
-    const reference = lastDataDate > now ? lastDataDate : now
+    const lastDataDate = new Date(chartData.at(-1)!.date)
     const days = range === '30d' ? 30 : range === '7d' ? 7 : 90
-    const start = new Date(reference)
-    start.setDate(start.getDate() - days)
+    const start = new Date(lastDataDate)
+    start.setDate(start.getDate() - (days - 1))
     return chartData.filter((d) => new Date(d.date) >= start)
   }, [range])
 
