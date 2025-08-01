@@ -10,6 +10,7 @@ export { default as TrainingLoadRatio } from "./TrainingLoadRatio";
 export { default as EquipmentUsageTimeline } from "./EquipmentUsageTimeline";
 
 export { default as RunBikeVolumeComparison } from "./RunBikeVolumeComparison";
+export { default as WeeklyComparisonChart } from "./WeeklyComparisonChart";
 
 
 export { default as PerfVsEnvironmentMatrix } from "./PerfVsEnvironmentMatrix";

@@ -13,6 +13,7 @@ import {
   TrainingLoadRatio,
   EquipmentUsageTimeline,
   RunBikeVolumeComparison,
+  WeeklyComparisonChart,
   PerfVsEnvironmentMatrix,
   SessionSimilarityMap,
   RouteComparison,
@@ -31,6 +32,7 @@ export default function Statistics() {
       <ChartSelectionProvider>
         <div className="grid gap-6 p-6">
           <WeeklyVolumeChart />
+          <WeeklyComparisonChart metric="steps" />
           <AnnualMileage />
           <ActivityByTime />
           <AvgDailyMileageRadar />
