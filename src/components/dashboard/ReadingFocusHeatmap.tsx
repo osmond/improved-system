@@ -2,19 +2,22 @@
 import ChartCard from "./ChartCard";
 import { ChartContainer } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import useReadingHeatmap, { HeatmapCell } from "@/hooks/useReadingHeatmap";
+import {
+  useReadingHeatmapFromActivity,
+  type HeatmapCell,
+} from "@/hooks/useReadingHeatmap";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 function labelForIntensity(intensity: number): string {
   if (intensity > 0.66) return "Deep Dive";
-  if (intensity > 0.33) return "Study";
-  if (intensity > 0) return "Skim";
+  if (intensity > 0.33) return "Skim";
+  if (intensity > 0) return "Page Turn Panic";
   return "";
 }
 
 export default function ReadingFocusHeatmap() {
-  const data = useReadingHeatmap();
+  const data = useReadingHeatmapFromActivity();
 
   if (!data) return <Skeleton className="h-64" />;
 

@@ -128,6 +128,12 @@ helpers so components can consume the values asynchronously:
 - `getRunningSessions()` and `getRouteSessions()` generate data for similarity
   maps and route profiles.
 - `getStateVisits()` lists state and city totals for the geographic explorer.
+- `getActivitySnapshots()` returns hourly step and heart-rate samples used for
+  reading focus detection.
+
+The reading focus heatmap displays one of three labels—"Deep Dive," "Skim," or
+"Page Turn Panic"—based on intensity calculated from these snapshots. It
+appears on the Map tab below the geographic explorer.
 
 Replace these stubs with real API calls when connecting to live Garmin data.
 

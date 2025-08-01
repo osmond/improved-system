@@ -18,14 +18,15 @@ vi.mock('recharts', async () => {
 
 vi.mock('@/hooks/useReadingHeatmap', () => ({
   __esModule: true,
-  default: () => [
-    { day: 0, hour: 0, intensity: 0.8 },
+  useReadingHeatmapFromActivity: () => [
+    { day: 0, hour: 0, intensity: 0.2 },
   ],
 }))
 
 describe('ReadingFocusHeatmap', () => {
-  it('renders chart title', () => {
+  it('renders chart title and intensity labels', () => {
     render(<ReadingFocusHeatmap />)
     expect(screen.getByText(/Reading Focus/)).toBeInTheDocument()
+    expect(screen.getByText('Page Turn Panic')).toBeInTheDocument()
   })
 })
