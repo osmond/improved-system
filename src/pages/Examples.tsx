@@ -25,6 +25,7 @@ import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
 import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
 
 import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
+import ReadingProbabilityTimeline from "@/components/dashboard/ReadingProbabilityTimeline";
 
 
 export default function Examples() {
@@ -37,6 +38,7 @@ export default function Examples() {
       <PeerBenchmarkBands />
 
       <WeeklyVolumeHistoryChart />
+      <ReadingProbabilityTimeline />
 
       <TimeInBedChart />
 
