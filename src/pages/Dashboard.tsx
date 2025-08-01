@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,12 +15,18 @@ import {
 } from "@/hooks/useGarminData";
 import useStepInsights from "@/hooks/useStepInsights";
 import useInsights from "@/hooks/useInsights";
+
+import useSleepInsights from "@/hooks/useSleepInsights";
+import useHeartRateInsights from "@/hooks/useHeartRateInsights";
+import useCalorieInsights from "@/hooks/useCalorieInsights";
+
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
 import { minutesSince, cn } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
+
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -32,9 +38,11 @@ import Statistics from "@/pages/Statistics";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 
 
+
 export default function Dashboard() {
   type Metric = "steps" | "sleep" | "heartRate" | "calories";
   const data = useGarminData();
+
 
 
   const [stepGoal, setStepGoalState] = useState(10000)
@@ -105,6 +113,7 @@ export default function Dashboard() {
   }
 
 
+
   const days = useGarminDays();
   const { activity, setActivity, range, setRange } = useDashboardFilters();
 
@@ -117,6 +126,9 @@ export default function Dashboard() {
   }, [days, range]);
 
   const stepInsights = useStepInsights(filteredDays, stepGoal);
+  const sleepInsights = useSleepInsights();
+  const heartRateInsights = useHeartRateInsights();
+  const calorieInsights = useCalorieInsights();
 
 
   const recentActivity = useMostRecentActivity();
@@ -160,9 +172,26 @@ export default function Dashboard() {
   const lastSyncedMinutes = minutesSince(data.lastSync);
 
   const monthly = stepInsights?.monthly;
-  const stepContext = stepInsights
-    ? `${stepInsights.vsYesterday >= 0 ? '+' : ''}${(stepInsights.vsYesterday * 100).toFixed(0)}% vs yesterday • ${stepInsights.vs7DayAvg >= 0 ? '+' : ''}${(stepInsights.vs7DayAvg * 100).toFixed(0)}% vs 7d avg`
-    : undefined;
+  const stepDeltas =
+    stepInsights && [
+      { value: stepInsights.vsYesterday, label: 'vs yesterday' },
+      { value: stepInsights.vs7DayAvg, label: 'vs 7d avg' },
+    ];
+  const sleepDeltas =
+    sleepInsights && [
+      { value: sleepInsights.vsYesterday, label: 'vs yesterday' },
+      { value: sleepInsights.vs7DayAvg, label: 'vs 7d avg' },
+    ];
+  const heartDeltas =
+    heartRateInsights && [
+      { value: heartRateInsights.vsYesterday, label: 'vs yesterday' },
+      { value: heartRateInsights.vs7DayAvg, label: 'vs 7d avg' },
+    ];
+  const calorieDeltas =
+    calorieInsights && [
+      { value: calorieInsights.vsYesterday, label: 'vs yesterday' },
+      { value: calorieInsights.vs7DayAvg, label: 'vs 7d avg' },
+    ];
 
   return (
     <>
@@ -222,7 +251,7 @@ export default function Dashboard() {
         <SimpleSelect
           label="Activity"
           value={activity}
-          onValueChange={setActivity}
+          onValueChange={(v) => setActivity(v as ActivityType)}
           options={[
             { value: 'all', label: 'All' },
             { value: 'run', label: 'Run' },
@@ -233,7 +262,7 @@ export default function Dashboard() {
         <SimpleSelect
           label="Range"
           value={range}
-          onValueChange={setRange}
+          onValueChange={(v) => setRange(v as DateRange)}
           options={[
             { value: '90d', label: 'Last 90 days' },
             { value: '30d', label: 'Last 30 days' },
@@ -293,7 +322,10 @@ export default function Dashboard() {
             value={(data.steps / stepGoal) * 100}
             current={data.steps}
             previous={previousSteps}
+
             tertiary={stepContext}
+            goal={100}
+
           />
           {monthly && (
             <div className="w-full mt-1" aria-label={`Projected ${Math.round(monthly.projectedTotal).toLocaleString()} steps`}>
@@ -406,6 +438,9 @@ export default function Dashboard() {
             value={(data.sleep / sleepGoal) * 100}
             current={data.sleep}
             previous={previousSleep}
+
+            goal={100}
+
           />
           <span className="mt-2 text-lg font-bold">{data.sleep}</span>
           <MiniSparkline data={sparkData} />
@@ -463,6 +498,9 @@ export default function Dashboard() {
             value={(data.heartRate / heartGoal) * 100}
             current={data.heartRate}
             previous={previousHeartRate}
+
+            goal={100}
+
           />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
           <MiniSparkline data={sparkData} />
@@ -520,6 +558,9 @@ export default function Dashboard() {
             value={(data.calories / calorieGoal) * 100}
             current={data.calories}
             previous={previousCalories}
+
+            goal={100}
+
           />
           <span className="mt-2 text-lg font-bold">{data.calories}</span>
           <MiniSparkline data={sparkData} />

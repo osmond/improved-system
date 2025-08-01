@@ -21,4 +21,17 @@ describe("ProgressRingWithDelta", () => {
     );
     expect(screen.getByText("0.0%")).toBeInTheDocument();
   });
+
+  it("renders additional deltas", () => {
+    render(
+      <ProgressRingWithDelta
+        value={50}
+        label="Progress"
+        current={100}
+        previous={80}
+        deltas={[{ value: 0.2, label: "vs 7d" }]}
+      />
+    );
+    expect(screen.getByText("+20.0% vs 7d")).toBeInTheDocument();
+  });
 });

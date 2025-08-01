@@ -1,6 +1,7 @@
 'use client'
 
 import { TrendingUp } from 'lucide-react'
+import { generateTrendMessage } from '@/lib/utils'
 import {
   ChartContainer,
   ScatterChart,
@@ -9,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import {
   Card,
@@ -42,13 +44,13 @@ export default function ScatterChartPaceHeartRate() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='pace' name='Pace (min/mi)' />
             <YAxis dataKey='hr' name='Heart Rate (bpm)' />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Scatter data={scatterData} fill='var(--color-pace)' />
           </ScatterChart>
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex items-center gap-2 text-sm'>
-        Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
+        {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
       </CardFooter>
     </Card>
   )

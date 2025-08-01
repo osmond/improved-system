@@ -8,15 +8,15 @@ export interface ProgressRingWithDeltaProps extends ProgressRingProps {
   previous: number;
   /** Decimal places for delta percentage */
   decimalPlaces?: number;
-  /** Optional tertiary text shown below the delta */
-  tertiary?: string;
+  /** Additional deltas rendered below the primary delta */
+  deltas?: { value: number; label: string }[];
 }
 
 export function ProgressRingWithDelta({
   current,
   previous,
   decimalPlaces = 1,
-  tertiary,
+  deltas,
   ...ringProps
 }: ProgressRingWithDeltaProps) {
   const formatted = React.useMemo(() => {
@@ -35,9 +35,11 @@ export function ProgressRingWithDelta({
       >
         {formatted}
       </span>
-      {tertiary && (
+      {deltas && deltas.length > 0 && (
         <span className="text-xs text-muted-foreground" aria-label="Additional context">
-          {tertiary}
+          {deltas
+            .map((d) => `${d.value >= 0 ? "+" : ""}${(d.value * 100).toFixed(decimalPlaces)}% ${d.label}`)
+            .join(" \u2022 ")}
         </span>
       )}
     </div>

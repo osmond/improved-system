@@ -41,8 +41,8 @@ export default function LocationEfficiencyComparison() {
         <div className="w-64 h-40" aria-label="location map">
           <ComposableMap projection="geoAlbersUsa">
             <Geographies geography={statesTopo as any}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
+              {({ geographies }: { geographies: any[] }) =>
+                geographies.map((geo: any) => (
                   <Geography
                     key={geo.rsmKey}
                     geography={geo}

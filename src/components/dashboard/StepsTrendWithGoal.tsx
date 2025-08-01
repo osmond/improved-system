@@ -94,7 +94,7 @@ export function StepsTrendWithGoal({
 
     return (
       <ChartTooltipContent
-        {...props}
+        {...(props as any)}
         nameKey="steps"
         formatter={() => (
           <div className="grid gap-0.5">

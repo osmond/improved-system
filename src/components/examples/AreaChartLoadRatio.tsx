@@ -1,6 +1,7 @@
 'use client'
 
 import { TrendingUp } from 'lucide-react'
+import { generateTrendMessage } from '@/lib/utils'
 import {
   ChartContainer,
   AreaChart,
@@ -9,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import {
   Card,
@@ -51,7 +53,13 @@ export default function AreaChartLoadRatio() {
               tickFormatter={(d) => new Date(d).toLocaleDateString()}
             />
             <YAxis domain={[0, 2]} />
-            <ChartTooltip />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(d) => new Date(d).toLocaleDateString()}
+                />
+              }
+            />
             <Area
               type='monotone'
               dataKey='ratio'
@@ -63,7 +71,7 @@ export default function AreaChartLoadRatio() {
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex items-center gap-2 text-sm'>
-        Trending up by 5.2% this month <TrendingUp className='h-4 w-4' />
+        {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
       </CardFooter>
     </Card>
   )
