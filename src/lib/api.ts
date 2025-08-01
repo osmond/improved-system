@@ -863,6 +863,7 @@ export async function getReadingSessions(): Promise<ReadingSession[]> {
   })
 }
 
+
 export interface ReadingMediumTotal {
   medium: ReadingMedium
   minutes: number
@@ -896,6 +897,7 @@ export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
     }, 200)
   })
 }
+
 
 // ----- Reading progress -----
 export interface ReadingProgress {
