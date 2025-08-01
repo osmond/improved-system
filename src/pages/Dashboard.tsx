@@ -19,6 +19,7 @@ import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
+import { DashboardCharts } from "@/components/dashboard";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
@@ -140,11 +141,16 @@ export default function Dashboard() {
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList>
         <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="rings">Rings</TabsTrigger>
         <TabsTrigger value="map">Map</TabsTrigger>
         <TabsTrigger value="examples">Examples</TabsTrigger>
       </TabsList>
 
       <TabsContent value="dashboard">
+        <DashboardCharts />
+      </TabsContent>
+
+      <TabsContent value="rings">
         <div className="grid gap-4">
           <TopInsights />
       <div className="flex gap-4">
