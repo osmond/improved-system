@@ -10,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import {
   Card,
@@ -43,7 +44,7 @@ export default function ScatterChartPaceHeartRate() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='pace' name='Pace (min/mi)' />
             <YAxis dataKey='hr' name='Heart Rate (bpm)' />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <Scatter data={scatterData} fill='var(--color-pace)' />
           </ScatterChart>
         </ChartContainer>
