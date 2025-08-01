@@ -23,8 +23,8 @@ export function computeReadingProbability(
     const intensity = b.count ? b.total / b.count : 0
     return {
       time: d.toISOString(),
-      probability: +probability.toFixed(2),
-      intensity: +intensity.toFixed(2),
+      probability,
+      intensity,
     }
   })
 }

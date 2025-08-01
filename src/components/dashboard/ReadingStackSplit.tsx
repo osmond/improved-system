@@ -1,15 +1,17 @@
-"use client"
+"use client";
 import {
   ChartContainer,
   PieChart,
   Pie,
-  Cell,
   ChartTooltip,
-} from "@/components/ui/chart"
-import type { ChartConfig } from "@/components/ui/chart"
-import ChartCard from "./ChartCard"
-import useReadingMediumTotals from "@/hooks/useReadingMediumTotals"
-import { Skeleton } from "@/components/ui/skeleton"
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import { Cell } from "recharts";
+import type { ChartConfig } from "@/components/ui/chart";
+import ChartCard from "./ChartCard";
+import useReadingMediumTotals from "@/hooks/useReadingMediumTotals";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const labels: Record<string, string> = {
   phone: "Phone",
@@ -18,28 +20,33 @@ const labels: Record<string, string> = {
   kindle: "Kindle",
   real_book: "Real Book",
   other: "Other",
-}
+};
 
 export default function ReadingStackSplit() {
-  const data = useReadingMediumTotals()
+  const data = useReadingMediumTotals();
 
-  if (!data) return <Skeleton className="h-64" />
+  if (!data) return <Skeleton className="h-64" />;
 
   const config: ChartConfig = {
     minutes: { label: "Minutes" },
-  }
+  };
   data.forEach((d, i) => {
-    ;(config as any)[d.medium] = {
+    (config as any)[d.medium] = {
       label: labels[d.medium],
       color: `hsl(var(--chart-${i + 1}))`,
-    }
-  })
+    };
+  });
 
   return (
     <ChartCard title="Reading Stack Split" description="Time by device">
       <ChartContainer config={config} className="h-64">
         <PieChart width={200} height={160}>
           <ChartTooltip />
+          <ChartLegend
+            content={<ChartLegendContent />}
+            verticalAlign="bottom"
+            height={24}
+          />
           <Pie
             data={data}
             dataKey="minutes"
@@ -57,5 +64,5 @@ export default function ReadingStackSplit() {
         </PieChart>
       </ChartContainer>
     </ChartCard>
-  )
+  );
 }

@@ -954,3 +954,18 @@ export async function getReadingProgress(): Promise<ReadingProgress> {
 
   })
 }
+
+// ----- Recent run window -----
+export interface RunWindow {
+  start: string
+  end: string
+}
+
+export async function getLatestRun(): Promise<RunWindow> {
+  return new Promise((resolve) => {
+    const end = new Date()
+    const duration = 30 + Math.floor(Math.random() * 30)
+    const start = new Date(end.getTime() - duration * 60000)
+    setTimeout(() => resolve({ start: start.toISOString(), end: end.toISOString() }), 100)
+  })
+}
