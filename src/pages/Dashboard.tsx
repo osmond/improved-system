@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -20,6 +20,8 @@ import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
+import { SimpleSelect } from "@/components/ui/select";
+import useDashboardFilters from "@/hooks/useDashboardFilters";
 
 
 export default function Dashboard() {
@@ -74,7 +76,17 @@ export default function Dashboard() {
 
 
   const days = useGarminDays();
-  const stepInsights = useStepInsights(days, stepGoal);
+  const { activity, setActivity, range, setRange } = useDashboardFilters();
+
+  const filteredDays = useMemo(() => {
+    if (!days) return null;
+    const count = range === '7d' ? 7 : range === '30d' ? 30 : 90;
+    const start = new Date();
+    start.setDate(start.getDate() - count);
+    return days.filter((d) => new Date(d.date) >= start);
+  }, [days, range]);
+
+  const stepInsights = useStepInsights(filteredDays, stepGoal);
 
 
   const recentActivity = useMostRecentActivity();
@@ -105,11 +117,14 @@ export default function Dashboard() {
     }
   };
 
-  const previousSteps = days && days.length > 1 ? days[days.length - 2].steps : data.steps * 0.9;
+  const previousSteps =
+    filteredDays && filteredDays.length > 1
+      ? filteredDays[filteredDays.length - 2].steps
+      : data.steps * 0.9;
   const previousSleep = data.sleep * 0.9;
   const previousHeartRate = data.heartRate * 0.9;
   const previousCalories = data.calories * 0.9;
-  const sparkData = (days ?? [])
+  const sparkData = (filteredDays ?? [])
     .slice(-14)
     .map((d) => ({ date: d.date, value: d.steps }));
   const lastSyncedMinutes = minutesSince(data.lastSync);
@@ -122,6 +137,29 @@ export default function Dashboard() {
   return (
     <div className="grid gap-4">
       <TopInsights />
+      <div className="flex gap-4">
+        <SimpleSelect
+          label="Activity"
+          value={activity}
+          onValueChange={setActivity}
+          options={[
+            { value: 'all', label: 'All' },
+            { value: 'run', label: 'Run' },
+            { value: 'bike', label: 'Bike' },
+            { value: 'walk', label: 'Walk' },
+          ]}
+        />
+        <SimpleSelect
+          label="Range"
+          value={range}
+          onValueChange={setRange}
+          options={[
+            { value: '90d', label: 'Last 90 days' },
+            { value: '30d', label: 'Last 30 days' },
+            { value: '7d', label: 'Last 7 days' },
+          ]}
+        />
+      </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card
           role="button"
