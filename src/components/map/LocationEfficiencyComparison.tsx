@@ -30,7 +30,7 @@ export default function LocationEfficiencyComparison() {
       feature(
         statesTopo as any,
         (statesTopo as any).objects.states
-      ) as GeoJSON.FeatureCollection,
+      ) as unknown as GeoJSON.FeatureCollection,
     []
   )
 
