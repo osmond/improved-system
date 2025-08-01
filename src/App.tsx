@@ -1,12 +1,15 @@
 import React from "react";
 import Layout from "@/components/layout/Layout";
 import Dashboard from "@/pages/Dashboard";
+import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 
 function App() {
   return (
-    <Layout>
-      <Dashboard />
-    </Layout>
+    <DashboardFiltersProvider>
+      <Layout>
+        <Dashboard />
+      </Layout>
+    </DashboardFiltersProvider>
   );
 }
 
