@@ -21,6 +21,7 @@ import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 
 
@@ -33,6 +34,7 @@ export default function Dashboard() {
   const [sleepGoal, setSleepGoalState] = useState(8)
   const [heartGoal, setHeartGoalState] = useState(200)
   const [calorieGoal, setCalorieGoalState] = useState(3000)
+  const [activeTab, setActiveTab] = useState("dashboard")
 
   useEffect(() => {
     const sg = localStorage.getItem('stepGoal')
@@ -135,8 +137,15 @@ export default function Dashboard() {
     : undefined;
 
   return (
-    <div className="grid gap-4">
-      <TopInsights />
+    <Tabs value={activeTab} onValueChange={setActiveTab}>
+      <TabsList>
+        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+        <TabsTrigger value="examples">Examples</TabsTrigger>
+      </TabsList>
+
+      <TabsContent value="dashboard">
+        <div className="grid gap-4">
+          <TopInsights />
       <div className="flex gap-4">
         <SimpleSelect
           label="Activity"
@@ -451,9 +460,14 @@ export default function Dashboard() {
         </Card>
       </div>
 
-      <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
-      <Examples />
-      <GeoActivityExplorer />
-    </div>
+          <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
+          <GeoActivityExplorer />
+        </div>
+      </TabsContent>
+
+      <TabsContent value="examples">
+        <Examples />
+      </TabsContent>
+    </Tabs>
   );
 }
