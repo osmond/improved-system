@@ -21,11 +21,11 @@ vi.mock("@/components/map", () => ({
   GeoActivityExplorer: () => React.createElement("div"),
 }));
 
-vi.mock("@/components/dashboard", async (importOriginal) => {
-  const actual = await importOriginal();
+vi.mock("@/components/dashboard", async (importOriginal: () => Promise<any>) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
   return {
     __esModule: true,
-    ...actual,
+    ...(actual as object),
     MiniSparkline: () => React.createElement("div"),
     RingDetailDialog: () => React.createElement("div"),
   };

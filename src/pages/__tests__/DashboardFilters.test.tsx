@@ -23,8 +23,8 @@ vi.mock("@/components/map", () => ({
   GeoActivityExplorer: () => React.createElement("div"),
 }));
 
-vi.mock("@/components/dashboard", async (importOriginal) => {
-  const actual = await importOriginal();
+vi.mock("@/components/dashboard", async (importOriginal: () => Promise<any>) => {
+  const actual = (await importOriginal()) as Record<string, unknown>;
   const useDashboardFilters = (await import("@/hooks/useDashboardFilters")).default;
   const StepsChartMock = () => {
     const { range } = useDashboardFilters();
@@ -32,7 +32,7 @@ vi.mock("@/components/dashboard", async (importOriginal) => {
   };
   return {
     __esModule: true,
-    ...actual,
+    ...(actual as object),
     MiniSparkline: () => React.createElement("div"),
     RingDetailDialog: () => <StepsChartMock />, // always render chart
     StepsChart: StepsChartMock,
