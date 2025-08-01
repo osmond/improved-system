@@ -2,7 +2,12 @@
 
 import * as React from "react"
 import * as SelectPrimitive from "@radix-ui/react-select"
-import { Check, ChevronDown } from "lucide-react"
+import {
+  Check,
+  ChevronsUpDown,
+  ChevronUp,
+  ChevronDown,
+} from "lucide-react"
 
 import { cn } from "@/lib/utils"
 
@@ -63,13 +68,13 @@ export function SimpleSelect({
           aria-label={label}
         >
           <SelectValue placeholder="Select an option" />
-          <SelectIcon>
-            <ChevronDown className="w-4 h-4" />
+          <SelectIcon asChild>
+            <ChevronsUpDown className="w-4 h-4 opacity-50" />
           </SelectIcon>
         </SelectTrigger>
         <SelectContent className="overflow-hidden rounded-md border bg-card">
           <SelectScrollUpButton className="flex items-center justify-center h-6">
-            ▲
+            <ChevronUp className="w-4 h-4" />
           </SelectScrollUpButton>
           <SelectGroup>
             {options.map((opt) => (
@@ -86,7 +91,7 @@ export function SimpleSelect({
             ))}
           </SelectGroup>
           <SelectScrollDownButton className="flex items-center justify-center h-6">
-            ▼
+            <ChevronDown className="w-4 h-4" />
           </SelectScrollDownButton>
         </SelectContent>
       </Select>
