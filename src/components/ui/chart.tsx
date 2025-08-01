@@ -8,6 +8,7 @@ export {
   BarChart,
   Pie,
   PieChart,
+  Cell,
   Line,
   LineChart,
   Scatter,

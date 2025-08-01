@@ -59,7 +59,7 @@ export default function ReadingProbabilityTimeline() {
       <ChartContainer config={config} className="h-64">
         <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="time" tickFormatter={(t) => new Date(t).getHours()} />
+          <XAxis dataKey="time" tickFormatter={(t) => String(new Date(t).getHours())} />
           <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} />
           {highAreas.map((a, idx) => (
             <ReferenceArea
