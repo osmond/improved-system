@@ -771,10 +771,36 @@ export function generateMockReadingProbability(): ReadingProbabilityPoint[] {
   return Array.from({ length: 24 }, (_, i) => {
     const d = new Date()
     d.setHours(i, 0, 0, 0)
+
+    let probability: number
+    // Early morning: very low probability (early run, no reading)
+    if (i < 6) {
+      probability = 0.05 + Math.random() * 0.05
+    }
+    // Morning hours after the run: still quite low
+    else if (i < 9) {
+      probability = 0.1 + Math.random() * 0.05
+    }
+    // Daytime: occasional short reading sessions
+    else if (i < 17) {
+      probability = 0.1 + Math.random() * 0.15
+    }
+    // Evening: primary reading time
+    else if (i < 22) {
+      probability = 0.6 + Math.random() * 0.3
+    }
+    // Late night wind down
+    else {
+      probability = 0.4 + Math.random() * 0.2
+    }
+
+    // Intensity loosely correlates with probability
+    const intensity = probability * (0.5 + Math.random() * 0.5)
+
     return {
       time: d.toISOString(),
-      probability: +Math.random().toFixed(2),
-      intensity: +Math.random().toFixed(2),
+      probability: +probability.toFixed(2),
+      intensity: +intensity.toFixed(2),
     }
   })
 }
