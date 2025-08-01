@@ -15,7 +15,7 @@ import {
 import { Cell } from 'recharts'
 import { Skeleton } from '@/components/ui/skeleton'
 import useLocationEfficiency from '@/hooks/useLocationEfficiency'
-import statesTopo from '../../../public/us-states.json'
+import statesTopo from '@/lib/us-states.json'
 import CITY_COORDS from '@/lib/cityCoords'
 
 

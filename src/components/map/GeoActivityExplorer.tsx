@@ -21,7 +21,7 @@ import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
 
-import statesTopo from "../../../public/us-states.json";
+import statesTopo from "@/lib/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
 
