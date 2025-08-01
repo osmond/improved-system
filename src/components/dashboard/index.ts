@@ -12,6 +12,9 @@ export { default as TopInsights } from "./TopInsights";
 export { default as TimeInBedChart } from "./TimeInBedChart";
 export { default as ReadingProbabilityTimeline } from "./ReadingProbabilityTimeline";
 
+export { default as CommuteRank } from "./CommuteRank";
+
 export { default as ReadingFocusHeatmap } from "./ReadingFocusHeatmap";
 
 export { default as BooksVsCalories } from "./BooksVsCalories";
+>
