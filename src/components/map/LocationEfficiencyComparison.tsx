@@ -1,10 +1,7 @@
-import {
-  ComposableMap,
-  Geographies,
-  Geography,
-  Marker,
-} from 'react-simple-maps'
-import ChartCard from '@/components/dashboard/ChartCard'
+import Map, { Source, Layer, Marker } from 'react-map-gl';
+import maplibregl from 'maplibre-gl';
+import { feature } from 'topojson-client';
+import ChartCard from '@/components/dashboard/ChartCard';
 import {
   ChartContainer,
   BarChart,
@@ -13,62 +10,55 @@ import {
   YAxis,
   CartesianGrid,
   ChartTooltip,
-} from '@/components/ui/chart'
-import { Cell } from 'recharts'
-import { Skeleton } from '@/components/ui/skeleton'
-import useLocationEfficiency from '@/hooks/useLocationEfficiency'
-import statesTopo from '../../../public/us-states.json'
-import CITY_COORDS from '@/lib/cityCoords'
+} from '@/components/ui/chart';
+import { Cell } from 'recharts';
+import { Skeleton } from '@/components/ui/skeleton';
+import useLocationEfficiency from '@/hooks/useLocationEfficiency';
+import statesTopo from '../../../public/us-states.json';
+import CITY_COORDS from '@/lib/cityCoords';
 
-
-const config = {
-  effort: { label: 'Effort', color: 'var(--chart-1)' },
-} as const
+const MAP_STYLE = 'https://basemaps.cartocdn.com/gl/voyager-gl-style/style.json';
 
 export default function LocationEfficiencyComparison() {
-  const data = useLocationEfficiency()
+  const data = useLocationEfficiency();
 
-  if (!data) return <Skeleton className="h-64" />
+  const statesGeo = feature(statesTopo as any, (statesTopo as any).objects.states) as GeoJSON.FeatureCollection;
 
-  const sorted = [...data].sort((a, b) => b.effort - a.effort)
+  if (!data) return <Skeleton className="h-64" />;
+
+  const sorted = [...data].sort((a, b) => b.effort - a.effort);
 
   return (
-    <ChartCard
-      title="Location Efficiency"
-      description="Relative efficiency by location"
-    >
+    <ChartCard title="Location Efficiency" description="Relative efficiency by location">
       <div className="flex gap-4">
         <div className="w-64 h-40" aria-label="location map">
-          <ComposableMap projection="geoAlbersUsa">
-            <Geographies geography={statesTopo as any}>
-              {({ geographies }) =>
-                geographies.map((geo) => (
-                  <Geography
-                    key={geo.rsmKey}
-                    geography={geo}
-                    style={{ default: { fill: 'hsl(var(--muted))', outline: 'none' } }}
-                  />
-                ))
-              }
-            </Geographies>
+          <Map
+            mapLib={maplibregl}
+            initialViewState={{ longitude: -98, latitude: 38, zoom: 3 }}
+            style={{ width: '100%', height: '100%' }}
+            mapStyle={MAP_STYLE}
+          >
+            <Source id="states" type="geojson" data={statesGeo}>
+              <Layer id="fill" type="fill" paint={{ 'fill-color': 'hsl(var(--muted))', 'fill-opacity': 1 }} />
+            </Source>
             {sorted.map((loc) => {
-              const coords = CITY_COORDS[loc.city]
+              const coords = CITY_COORDS[loc.city];
               return coords ? (
-                <Marker key={loc.city} coordinates={coords}>
+                <Marker key={loc.city} longitude={coords[0]} latitude={coords[1]} anchor="center">
                   <circle r={3} fill="hsl(var(--primary))" />
                 </Marker>
-              ) : null
+              ) : null;
             })}
-          </ComposableMap>
+          </Map>
         </div>
         <div className="flex-1">
-          <ChartContainer config={config} className="h-40">
+          <ChartContainer config={{ effort: { label: 'Effort', color: 'var(--chart-1)' } }} className="h-40">
             <BarChart data={sorted} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="city" />
               <YAxis />
               <ChartTooltip />
-              <Bar dataKey="effort" fill={config.effort.color} animationDuration={300}>
+              <Bar dataKey="effort" fill="var(--chart-1)">
                 {sorted.map((l) => (
                   <Cell key={l.city} aria-label={`Effort for ${l.city}`} />
                 ))}
@@ -83,5 +73,5 @@ export default function LocationEfficiencyComparison() {
         </div>
       </div>
     </ChartCard>
-  )
+  );
 }
