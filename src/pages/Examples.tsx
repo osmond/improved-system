@@ -41,7 +41,7 @@ import RunSoundtrackCardDemo from "@/components/examples/RunSoundtrackCardDemo";
 
 export default function Examples() {
   return (
-    <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
       <ChartPreview>
         <AreaChartInteractive />
       </ChartPreview>
