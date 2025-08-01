@@ -76,7 +76,11 @@ export default function PerfVsEnvironmentMatrixExample() {
   const elevReg = regression(DATA, 'elevation', 'pace')
 
   return (
-    <ChartCard title='Perf vs Environment' className='space-y-4'>
+    <ChartCard
+      title='Perf vs Environment'
+      description='How pace varies with weather conditions'
+      className='space-y-4'
+    >
       <div className='grid gap-4 md:grid-cols-2'>
         <ChartContainer config={config} className='h-60'>
           <ScatterChart>

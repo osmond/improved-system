@@ -34,7 +34,10 @@ export default function SessionSimilarityMap() {
   const clusters = Array.from(new Set(data.map((d) => d.cluster)))
 
   return (
-    <ChartCard title="Session Similarity">
+    <ChartCard
+      title="Session Similarity"
+      description="Similarity of recent runs"
+    >
       <ChartContainer config={config} className="h-64">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />

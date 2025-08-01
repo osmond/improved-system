@@ -30,7 +30,10 @@ const config = {
 
 export default function AnnualMileage() {
   return (
-    <ChartCard title="Annual Mileage">
+    <ChartCard
+      title="Annual Mileage"
+      description="Mileage totals by month"
+    >
       <ChartContainer config={config} className="h-64">
         <BarChart data={annualData}>
           <CartesianGrid strokeDasharray="3 3" />

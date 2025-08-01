@@ -32,7 +32,10 @@ const config = {
 
 export default function ActivityByTime() {
   return (
-    <ChartCard title="Workout Activity by Time">
+    <ChartCard
+      title="Workout Activity by Time"
+      description="Sessions by time of day"
+    >
       <ChartContainer config={config} className="h-64">
         <RadarChart data={activityByTimeData}>
           <PolarGrid />

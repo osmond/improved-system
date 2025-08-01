@@ -26,7 +26,11 @@ const chartConfig = {
 
 export function DailyStepsChart({ data }: DailyStepsChartProps) {
   return (
-    <ChartCard title="Daily Steps" className="md:col-span-2">
+    <ChartCard
+      title="Daily Steps"
+      description="Historical daily step totals"
+      className="md:col-span-2"
+    >
       <ChartContainer config={chartConfig} className="h-60">
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" />

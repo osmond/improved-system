@@ -24,7 +24,10 @@ export default function PaceDistribution() {
   if (!stats) return <Skeleton className="h-64" />
 
   return (
-    <ChartCard title="Pace Distribution">
+    <ChartCard
+      title="Pace Distribution"
+      description="Distribution of paces across runs"
+    >
       <ChartContainer config={config} className="h-64">
         <AreaChart data={stats.paceDistribution}>
           <CartesianGrid strokeDasharray="3 3" />
