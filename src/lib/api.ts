@@ -784,3 +784,32 @@ export async function getReadingProbability(): Promise<ReadingProbabilityPoint[]
     setTimeout(() => resolve(generateMockReadingProbability()), 200)
   })
 }
+
+// ----- Reading sessions -----
+
+export interface ReadingSession {
+  /** ISO timestamp when reading occurred */
+  timestamp: string
+  /** Focus intensity from 0-1 */
+  intensity: number
+}
+
+export function generateMockReadingSessions(count = 60): ReadingSession[] {
+  const sessions: ReadingSession[] = []
+  for (let i = 0; i < count; i++) {
+    const d = new Date()
+    d.setDate(d.getDate() - Math.floor(Math.random() * 30))
+    d.setHours(Math.floor(Math.random() * 24), 0, 0, 0)
+    sessions.push({
+      timestamp: d.toISOString(),
+      intensity: +Math.random().toFixed(2),
+    })
+  }
+  return sessions
+}
+
+export async function getReadingSessions(): Promise<ReadingSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockReadingSessions()), 200)
+  })
+}
