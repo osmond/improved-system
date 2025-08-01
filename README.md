@@ -153,3 +153,14 @@ npm run dev
 npm run build
 npm test
 ```
+
+## Spotify integration
+The Run Soundtrack card uses the Spotify Web API. Set the following environment variables so the helpers can obtain an access token:
+
+```
+SPOTIFY_CLIENT_ID=<your client id>
+SPOTIFY_CLIENT_SECRET=<your client secret>
+SPOTIFY_REFRESH_TOKEN=<refresh token>
+```
+
+Alternatively provide `SPOTIFY_ACCESS_TOKEN` directly if you already have one. These values are read at runtime by `src/lib/spotify.ts`.
