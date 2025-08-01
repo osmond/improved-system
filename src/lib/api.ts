@@ -161,6 +161,85 @@ export const mockStateVisits: StateVisit[] = [
     ],
   },
   {
+    stateCode: "FL",
+    visited: true,
+    totalDays: 7,
+    totalMiles: 900,
+    cities: [
+      { name: "Miami", days: 3, miles: 300 },
+      { name: "Orlando", days: 2, miles: 200 },
+      { name: "Tampa", days: 2, miles: 400 },
+    ],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 7 },
+      {
+        date: new Date(Date.now() - 14 * 86400000).toISOString().slice(0, 10),
+        type: "bike",
+        miles: 20,
+      },
+    ],
+  },
+  {
+    stateCode: "CO",
+    visited: true,
+    totalDays: 8,
+    totalMiles: 1100,
+    cities: [
+      { name: "Denver", days: 4, miles: 500 },
+      { name: "Boulder", days: 2, miles: 300 },
+      { name: "Colorado Springs", days: 2, miles: 300 },
+    ],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "bike", miles: 10 },
+      {
+        date: new Date(Date.now() - 7 * 86400000).toISOString().slice(0, 10),
+        type: "run",
+        miles: 6,
+      },
+      {
+        date: new Date(Date.now() - 35 * 86400000).toISOString().slice(0, 10),
+        type: "run",
+        miles: 9,
+      },
+    ],
+  },
+  {
+    stateCode: "WA",
+    visited: true,
+    totalDays: 6,
+    totalMiles: 800,
+    cities: [
+      { name: "Seattle", days: 3, miles: 400 },
+      { name: "Spokane", days: 2, miles: 250 },
+      { name: "Tacoma", days: 1, miles: 150 },
+    ],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 5 },
+      {
+        date: new Date(Date.now() - 21 * 86400000).toISOString().slice(0, 10),
+        type: "bike",
+        miles: 15,
+      },
+    ],
+  },
+  {
+    stateCode: "IL",
+    visited: true,
+    totalDays: 4,
+    totalMiles: 500,
+    cities: [
+      { name: "Chicago", days: 4, miles: 500 },
+    ],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 4 },
+      {
+        date: new Date(Date.now() - 20 * 86400000).toISOString().slice(0, 10),
+        type: "bike",
+        miles: 12,
+      },
+    ],
+  },
+  {
     stateCode: "NY",
     visited: false,
     totalDays: 0,
