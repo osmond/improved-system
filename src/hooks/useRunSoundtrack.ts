@@ -10,6 +10,7 @@ import {
 export interface RunTrack extends SpotifyTrack {
   playCount: number
   tempo?: number | null
+  thumbnail?: string
 }
 
 export interface RunSoundtrackState {
@@ -59,6 +60,7 @@ export default function useRunSoundtrack(): RunSoundtrackState | null {
           uri: item.track.uri,
           playCount: item.count,
           tempo,
+          thumbnail: item.track.album?.images?.[0]?.url,
         })
       }
 
