@@ -77,6 +77,13 @@ export function StepsTrendWithGoal({
       .filter(Boolean) as { x1: string; x2: string; min: number; max: number }[];
   }, [baselines, data]);
 
+  const weatherAreas = useMemo(() => {
+    if (!stats) return [];
+    return stats.dailyWeather
+      .filter((d) => d.condition === 'Rain' || d.condition === 'Snow' || d.temperature >= 85)
+      .map((d) => ({ date: d.date, temp: d.temperature, condition: d.condition }))
+  }, [stats])
+
   const chartConfig = {
     steps: { label: "Pace", color: "hsl(var(--chart-1))" },
     avg: { label: `${window}d Avg`, color: "hsl(var(--chart-2))" },
@@ -150,6 +157,16 @@ export function StepsTrendWithGoal({
               strokeOpacity={0}
               fill="var(--color-baseline)"
               fillOpacity={0.15}
+            />
+          ))}
+          {weatherAreas.map((w) => (
+            <ReferenceArea
+              key={w.date}
+              x1={w.date}
+              x2={w.date}
+              strokeOpacity={0}
+              fill="var(--color-destructive)"
+              fillOpacity={0.1}
             />
           ))}
           <ReferenceLine y={goal} stroke={chartConfig.goal.color} strokeDasharray="4 4" />

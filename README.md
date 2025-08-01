@@ -77,6 +77,8 @@ In the handoff, document what shape `useGarminData()` returns (e.g. `{ steps: nu
   byWeekday: { day: string; pct: number }[]
   distanceBuckets: { label: string; count: number }[]
   treadmillOutdoor: { outdoor: number; treadmill: number }
+  paceEnvironment: { pace: number; temperature: number; humidity: number; wind: number; elevation: number }[]
+  dailyWeather: { date: string; temperature: number; condition: string; humidity: number; wind: number }[]
 }
 ```
 

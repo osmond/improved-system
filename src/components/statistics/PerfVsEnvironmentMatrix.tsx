@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useMemo } from "react";
 import {
   ChartContainer,
   ScatterChart,
@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/chart";
 import ChartCard from "@/components/dashboard/ChartCard";
 import { Cell } from "recharts";
+import { useRunningStats } from "@/hooks/useRunningStats";
 
 interface PerfPoint {
   pace: number
@@ -22,21 +23,18 @@ interface PerfPoint {
   fill: string
 }
 
-function generateData(count = 50): PerfPoint[] {
-  return Array.from({ length: count }, () => {
-    const pace = 6 + Math.random() * 2; // 6-8 min/mi
-    const power = 250 - pace * 20 + Math.random() * 10;
-    const colorIndex = Math.min(5, Math.max(0, Math.floor((power - 90) / 10)))
-    return {
-      pace: +pace.toFixed(2),
-      power: Math.round(power),
-      temperature: Math.round(40 + pace * 5 + Math.random() * 10),
-      humidity: Math.round(40 + Math.random() * 50),
-      wind: +(Math.random() * 20).toFixed(1),
-      elevation: Math.round(Math.random() * 300),
-      fill: `var(--chart-${colorIndex + 5})`,
-    }
-  });
+function mapPoint(pace: number, temperature: number, humidity: number, wind: number, elevation: number): PerfPoint {
+  const power = 250 - pace * 20 + Math.random() * 10
+  const colorIndex = Math.min(5, Math.max(0, Math.floor((power - 90) / 10)))
+  return {
+    pace: +pace.toFixed(2),
+    power: Math.round(power),
+    temperature,
+    humidity,
+    wind,
+    elevation,
+    fill: `var(--chart-${colorIndex + 5})`,
+  }
 }
 
 function regression(
@@ -64,18 +62,24 @@ function regression(
   ];
 }
 
-const DATA = generateData();
-
-const config = {
-  pace: { label: "Pace", color: "var(--chart-8)" },
-  trend: { label: "Trend", color: "var(--chart-3)" },
-} as const;
-
 export default function PerfVsEnvironmentMatrix() {
-  const tempReg = regression(DATA, "temperature", "pace");
-  const humidityReg = regression(DATA, "humidity", "pace");
-  const windReg = regression(DATA, "wind", "pace");
-  const elevReg = regression(DATA, "elevation", "pace");
+  const stats = useRunningStats()
+  const DATA = useMemo(() => {
+    if (!stats) return []
+    return stats.paceEnvironment.map((p) =>
+      mapPoint(p.pace, p.temperature, p.humidity, p.wind, p.elevation),
+    )
+  }, [stats])
+
+  const config = {
+    pace: { label: "Pace", color: "var(--chart-8)" },
+    trend: { label: "Trend", color: "var(--chart-3)" },
+  } as const
+
+  const tempReg = regression(DATA, "temperature", "pace")
+  const humidityReg = regression(DATA, "humidity", "pace")
+  const windReg = regression(DATA, "wind", "pace")
+  const elevReg = regression(DATA, "elevation", "pace")
 
   return (
     <ChartCard

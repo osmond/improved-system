@@ -32,6 +32,7 @@ export default function GeoActivityExplorer() {
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
+  const [showWeather, setShowWeather] = useState(false);
 
   const now = new Date();
   const inRange = (d: string) => {
@@ -169,6 +170,10 @@ export default function GeoActivityExplorer() {
             { value: "all", label: "All Time" },
           ]}
         />
+        <label className="flex items-center gap-1 text-xs">
+          <input type="checkbox" checked={showWeather} onChange={() => setShowWeather(!showWeather)} />
+          Weather
+        </label>
       </div>
       <StateVisitSummary />
       <div className="flex gap-12">
@@ -195,6 +200,18 @@ export default function GeoActivityExplorer() {
                 }}
               />
             </Source>
+            {showWeather && (
+              <Source
+                id="wx"
+                type="raster"
+                tiles={[
+                  `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=YOUR_API_KEY`,
+                ]}
+                tileSize={256}
+              >
+                <Layer id="wx-layer" type="raster" />
+              </Source>
+            )}
             {expandedState &&
               summaryMap[expandedState]?.cities.map((c) => {
                 const coords = CITY_COORDS[c.name]
