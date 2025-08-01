@@ -216,7 +216,10 @@ export default function Dashboard() {
             value={(data.steps / stepGoal) * 100}
             current={data.steps}
             previous={previousSteps}
-            deltas={stepDeltas}
+
+            tertiary={stepContext}
+            goal={100}
+
           />
           {monthly && (
             <div className="w-full mt-1" aria-label={`Projected ${Math.round(monthly.projectedTotal).toLocaleString()} steps`}>
@@ -329,7 +332,9 @@ export default function Dashboard() {
             value={(data.sleep / sleepGoal) * 100}
             current={data.sleep}
             previous={previousSleep}
-            deltas={sleepDeltas}
+
+            goal={100}
+
           />
           <span className="mt-2 text-lg font-bold">{data.sleep}</span>
           <MiniSparkline data={sparkData} />
@@ -387,7 +392,9 @@ export default function Dashboard() {
             value={(data.heartRate / heartGoal) * 100}
             current={data.heartRate}
             previous={previousHeartRate}
-            deltas={heartDeltas}
+
+            goal={100}
+
           />
           <span className="mt-2 text-lg font-bold">{data.heartRate}</span>
           <MiniSparkline data={sparkData} />
@@ -445,7 +452,9 @@ export default function Dashboard() {
             value={(data.calories / calorieGoal) * 100}
             current={data.calories}
             previous={previousCalories}
-            deltas={calorieDeltas}
+
+            goal={100}
+
           />
           <span className="mt-2 text-lg font-bold">{data.calories}</span>
           <MiniSparkline data={sparkData} />
