@@ -1,6 +1,6 @@
 import React from 'react'
 import { Eye } from 'lucide-react'
-import { Dialog, DialogTrigger, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogTrigger, DialogContentFullscreen } from '@/components/ui/dialog'
 
 export default function ChartPreview({ children }: { children: React.ReactElement }) {
   return (
@@ -14,9 +14,9 @@ export default function ChartPreview({ children }: { children: React.ReactElemen
         </DialogTrigger>
         {children}
       </div>
-      <DialogContent className='inset-0 h-screen w-screen translate-x-0 translate-y-0 max-w-none rounded-none p-4'>
+      <DialogContentFullscreen>
         {React.cloneElement(children)}
-      </DialogContent>
+      </DialogContentFullscreen>
     </Dialog>
   )
 }
