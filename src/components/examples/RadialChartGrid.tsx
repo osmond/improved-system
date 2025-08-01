@@ -20,14 +20,8 @@ import {
 
 export const description = 'A radial chart with a grid'
 
-// Distribution of workout minutes by activity type
-const chartData = [
-  { activity: 'Run', minutes: 520, fill: 'var(--color-run)' },
-  { activity: 'Bike', minutes: 340, fill: 'var(--color-bike)' },
-  { activity: 'Swim', minutes: 120, fill: 'var(--color-swim)' },
-  { activity: 'Strength', minutes: 220, fill: 'var(--color-strength)' },
-  { activity: 'Other', minutes: 90, fill: 'var(--color-other)' },
-]
+import useActivityMinutes from '@/hooks/useActivityMinutes'
+import { Skeleton } from '@/components/ui/skeleton'
 
 const chartConfig = {
   minutes: { label: 'Minutes' },
@@ -39,6 +33,10 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function ChartRadialGrid() {
+  const data = useActivityMinutes()
+
+  if (!data) return <Skeleton className='h-64' />
+
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
@@ -50,7 +48,7 @@ export default function ChartRadialGrid() {
           config={chartConfig}
           className='mx-auto aspect-square max-h-[250px]'
         >
-          <RadialBarChart data={chartData} innerRadius={30} outerRadius={100}>
+          <RadialBarChart data={data} innerRadius={30} outerRadius={100}>
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel nameKey='activity' />} />
             <PolarGrid gridType='circle' />
             <RadialBar dataKey='minutes' />
