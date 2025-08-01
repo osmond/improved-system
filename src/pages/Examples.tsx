@@ -17,6 +17,7 @@ import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
 import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHeartRate";
 import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import SegmentSlopeComparison from "@/components/examples/SegmentSlopeComparison";
+import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
@@ -50,6 +51,7 @@ export default function Examples() {
       <ChartBarMixed />
       <ChartBarLabelCustom />
       <ChartPieInteractive />
+      <TreadmillVsOutdoorExample />
       
       <ScatterChartPaceHeartRate />
       <AreaChartLoadRatio />
