@@ -13,6 +13,8 @@ describe('computeStepInsights', () => {
     const result = computeStepInsights(sampleDays, 1000)
     expect(result.vsYesterday).toBeCloseTo(0.1)
     expect(result.vs7DayAvg).toBeCloseTo(0.0845, 3)
+    expect(result.vsSameDayLastWeek).toBeCloseTo(0.1)
+    expect(result.vs7DayRolling).toBeCloseTo(0.0143, 3)
     expect(result.monthly.projectedTotal).toBeCloseTo(31387.5)
     expect(result.monthly.onTrack).toBe(true)
     vi.useRealTimers()

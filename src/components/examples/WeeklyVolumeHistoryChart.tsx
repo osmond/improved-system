@@ -7,6 +7,7 @@ import {
   XAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import Slider from '@/components/ui/slider'
 import { useState, useEffect } from 'react'
@@ -42,7 +43,19 @@ export default function WeeklyVolumeHistoryChart() {
         <BarChart data={filtered} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
-          <ChartTooltip />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                labelFormatter={(d) =>
+                  new Date(d).toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric',
+                    year: 'numeric',
+                  })
+                }
+              />
+            }
+          />
           <Bar dataKey="miles" fill="var(--color-miles)" radius={2} animationDuration={300} />
         </BarChart>
       </ChartContainer>

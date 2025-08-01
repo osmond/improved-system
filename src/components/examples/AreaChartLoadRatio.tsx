@@ -10,6 +10,7 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import {
   Card,
@@ -52,7 +53,13 @@ export default function AreaChartLoadRatio() {
               tickFormatter={(d) => new Date(d).toLocaleDateString()}
             />
             <YAxis domain={[0, 2]} />
-            <ChartTooltip />
+            <ChartTooltip
+              content={
+                <ChartTooltipContent
+                  labelFormatter={(d) => new Date(d).toLocaleDateString()}
+                />
+              }
+            />
             <Area
               type='monotone'
               dataKey='ratio'
