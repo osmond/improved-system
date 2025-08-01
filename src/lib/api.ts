@@ -771,10 +771,36 @@ export function generateMockReadingProbability(): ReadingProbabilityPoint[] {
   return Array.from({ length: 24 }, (_, i) => {
     const d = new Date()
     d.setHours(i, 0, 0, 0)
+
+    let probability: number
+    // Early morning: very low probability (early run, no reading)
+    if (i < 6) {
+      probability = 0.05 + Math.random() * 0.05
+    }
+    // Morning hours after the run: still quite low
+    else if (i < 9) {
+      probability = 0.1 + Math.random() * 0.05
+    }
+    // Daytime: occasional short reading sessions
+    else if (i < 17) {
+      probability = 0.1 + Math.random() * 0.15
+    }
+    // Evening: primary reading time
+    else if (i < 22) {
+      probability = 0.6 + Math.random() * 0.3
+    }
+    // Late night wind down
+    else {
+      probability = 0.4 + Math.random() * 0.2
+    }
+
+    // Intensity loosely correlates with probability
+    const intensity = probability * (0.5 + Math.random() * 0.5)
+
     return {
       time: d.toISOString(),
-      probability: +Math.random().toFixed(2),
-      intensity: +Math.random().toFixed(2),
+      probability: +probability.toFixed(2),
+      intensity: +intensity.toFixed(2),
     }
   })
 }
@@ -782,5 +808,51 @@ export function generateMockReadingProbability(): ReadingProbabilityPoint[] {
 export async function getReadingProbability(): Promise<ReadingProbabilityPoint[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockReadingProbability()), 200)
+  })
+}
+
+
+// ----- Reading sessions -----
+
+export interface ReadingSession {
+  /** ISO timestamp when reading occurred */
+  timestamp: string
+  /** Focus intensity from 0-1 */
+  intensity: number
+}
+
+export function generateMockReadingSessions(count = 60): ReadingSession[] {
+  const sessions: ReadingSession[] = []
+  for (let i = 0; i < count; i++) {
+    const d = new Date()
+    d.setDate(d.getDate() - Math.floor(Math.random() * 30))
+    d.setHours(Math.floor(Math.random() * 24), 0, 0, 0)
+    sessions.push({
+      timestamp: d.toISOString(),
+      intensity: +Math.random().toFixed(2),
+    })
+  }
+  return sessions
+}
+
+export async function getReadingSessions(): Promise<ReadingSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockReadingSessions()), 200)
+
+// ----- Reading progress -----
+export interface ReadingProgress {
+  pagesRead: number
+  readingGoal: number
+}
+
+export const mockReadingProgress: ReadingProgress = {
+  pagesRead: 120,
+  readingGoal: 300,
+}
+
+export async function getReadingProgress(): Promise<ReadingProgress> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockReadingProgress), 200)
+
   })
 }
