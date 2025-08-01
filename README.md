@@ -1,4 +1,5 @@
 # Dashboard
+This document is intended for developers working on the project. It outlines the dashboard structure and provides guidance on contributing.
 
 ## Project structure & imports
 Use the `src/components/ui` folder for all shared, “primitive” UI bits—buttons, cards, tabs, tooltips, charts, etc. This is where the Shadcn-CLI lives, and any one-off or feature-specific code goes elsewhere (e.g. `src/components/dashboard/StepsChart.tsx`).
@@ -148,3 +149,10 @@ Storybook (or even MDX) is great for cataloguing all `ui/` components with knobs
 
 Unit tests (Vitest + Testing Library) should live alongside components in a `__tests__` subfolder, e.g. `src/components/ui/button/__tests__/Button.test.tsx`.
 
+
+## Future Enhancements
+
+The project will continue to evolve as requirements grow. Upcoming improvements include:
+- Integration with live Garmin data
+- Enhanced analytics and reporting tools
+- Additional UI components for richer customization
