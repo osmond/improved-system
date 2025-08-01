@@ -25,7 +25,7 @@ const annualData = [
 ]
 
 const config = {
-  miles: { label: "Mileage", color: "var(--chart-1)" },
+  miles: { label: "Mileage", color: "hsl(var(--chart-1))" },
 } satisfies Record<string, unknown>
 
 export default function AnnualMileage() {
@@ -36,7 +36,7 @@ export default function AnnualMileage() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" tickLine={false} axisLine={false} />
           <ChartTooltip />
-          <Bar dataKey="miles" fill="var(--chart-1)" radius={2} />
+          <Bar dataKey="miles" fill="var(--color-miles)" radius={2} />
         </BarChart>
       </ChartContainer>
     </ChartCard>

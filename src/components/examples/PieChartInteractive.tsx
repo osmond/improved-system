@@ -48,23 +48,23 @@ const chartConfig = {
   },
   january: {
     label: "January",
-    color: "var(--chart-1)",
+    color: "hsl(var(--chart-1))",
   },
   february: {
     label: "February",
-    color: "var(--chart-2)",
+    color: "hsl(var(--chart-2))",
   },
   march: {
     label: "March",
-    color: "var(--chart-3)",
+    color: "hsl(var(--chart-3))",
   },
   april: {
     label: "April",
-    color: "var(--chart-4)",
+    color: "hsl(var(--chart-4))",
   },
   may: {
     label: "May",
-    color: "var(--chart-5)",
+    color: "hsl(var(--chart-5))",
   },
 } satisfies ChartConfig
 

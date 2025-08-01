@@ -16,8 +16,8 @@ import useRunBikeVolume from '@/hooks/useRunBikeVolume'
 import { Skeleton } from '@/components/ui/skeleton'
 
 const config = {
-  run: { label: 'Run', color: 'var(--chart-1)' },
-  bike: { label: 'Bike', color: 'var(--chart-2)' },
+  run: { label: 'Run', color: 'hsl(var(--chart-1))' },
+  bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
 } as const
 
 export default function RunBikeVolumeComparison() {

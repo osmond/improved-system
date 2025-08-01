@@ -30,8 +30,8 @@ export default function WeeklyComparisonChart({
   }))
 
   const config = {
-    current: { label: 'This Week', color: 'var(--chart-1)' },
-    previous: { label: 'Last Week', color: 'var(--chart-2)' },
+    current: { label: 'This Week', color: 'hsl(var(--chart-1))' },
+    previous: { label: 'Last Week', color: 'hsl(var(--chart-2))' },
   } as const
 
   return (

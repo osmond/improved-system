@@ -27,7 +27,7 @@ const CITY_COORDS: Record<string, [number, number]> = {
 }
 
 const config = {
-  effort: { label: 'Effort', color: 'var(--chart-1)' },
+  effort: { label: 'Effort', color: 'hsl(var(--chart-1))' },
 } as const
 
 export default function LocationEfficiencyComparison() {

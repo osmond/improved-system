@@ -35,7 +35,7 @@ describe('WeeklyComparisonChart', () => {
     render(<WeeklyComparisonChart metric="steps" />)
     expect(screen.getByText('This Week')).toBeInTheDocument()
     expect(screen.getByText('Last Week')).toBeInTheDocument()
-    const lines = document.querySelectorAll('path[stroke^="var(--chart-"]')
+    const lines = document.querySelectorAll('path[stroke^="hsl(var(--chart-"]')
     expect(lines.length).toBeGreaterThanOrEqual(2)
     expect(screen.getByText('This Week')).toBeInTheDocument()
     expect(screen.getByText('Last Week')).toBeInTheDocument()
