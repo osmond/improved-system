@@ -80,6 +80,28 @@ export async function getGarminData(): Promise<GarminData> {
     }, 500)
   })
 }
+
+// ----- Activity minutes for radial chart -----
+export interface ActivityMinutes {
+  activity: string
+  minutes: number
+  /** CSS color variable string */
+  fill: string
+}
+
+export const mockActivityMinutes: ActivityMinutes[] = [
+  { activity: 'Run', minutes: 520, fill: 'var(--color-run)' },
+  { activity: 'Bike', minutes: 340, fill: 'var(--color-bike)' },
+  { activity: 'Swim', minutes: 120, fill: 'var(--color-swim)' },
+  { activity: 'Strength', minutes: 220, fill: 'var(--color-strength)' },
+  { activity: 'Other', minutes: 90, fill: 'var(--color-other)' },
+]
+
+export async function getActivityMinutes(): Promise<ActivityMinutes[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockActivityMinutes), 200)
+  })
+}
 export async function getDailySteps(): Promise<GarminDay[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockDailySteps), 300);
