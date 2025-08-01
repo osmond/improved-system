@@ -1,5 +1,9 @@
+
+import { render, screen, fireEvent, act } from "@testing-library/react";
+
 import { render, screen, fireEvent } from "@testing-library/react";
 import React from "react";
+
 import GeoActivityExplorer from "../GeoActivityExplorer";
 import { vi } from "vitest";
 vi.mock("react-map-gl/maplibre", () => ({
@@ -34,6 +38,16 @@ vi.mock("@/hooks/useStateVisits", () => ({
       totalDays: 10,
       totalMiles: 100,
       cities: [{ name: "LA", days: 4, miles: 40 }],
+      log: [
+        { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+      ],
+    },
+    {
+      stateCode: "TX",
+      visited: true,
+      totalDays: 5,
+      totalMiles: 50,
+      cities: [{ name: "Austin", days: 5, miles: 50 }],
       log: [
         { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
       ],
@@ -84,8 +98,8 @@ describe("GeoActivityExplorer", () => {
 
   it("renders summary badges", () => {
     render(<GeoActivityExplorer />);
-    expect(screen.getByText("1 states")).toBeInTheDocument();
-    expect(screen.getByText("100mi")).toBeInTheDocument();
+    expect(screen.getByText("2 states")).toBeInTheDocument();
+    expect(screen.getByText("150mi")).toBeInTheDocument();
     expect(screen.getByText("Fav: CA")).toBeInTheDocument();
     expect(screen.getByText("5d streak")).toBeInTheDocument();
   });
@@ -98,6 +112,19 @@ describe("GeoActivityExplorer", () => {
     expect(screen.getAllByText("1mi").length).toBeGreaterThan(1);
   });
 
+  it("filters states by search query", () => {
+    vi.useFakeTimers();
+    render(<GeoActivityExplorer />);
+    const input = screen.getByLabelText("Search");
+    fireEvent.change(input, { target: { value: "tx" } });
+    act(() => {
+      vi.advanceTimersByTime(300);
+    });
+    vi.runOnlyPendingTimers();
+    expect(screen.queryByLabelText("CA visited")).toBeNull();
+    expect(screen.queryAllByLabelText("TX visited").length).toBeGreaterThan(0);
+    vi.useRealTimers();
+
   it("shows tooltip on state hover", async () => {
     render(<GeoActivityExplorer />);
     const map = screen.getByLabelText("state map");
@@ -107,5 +134,6 @@ describe("GeoActivityExplorer", () => {
     expect(screen.getByText("1d", { exact: true })).toBeInTheDocument();
     expect(screen.getByText("1mi", { exact: true })).toBeInTheDocument();
     fireEvent.mouseLeave(map);
+
   });
 });

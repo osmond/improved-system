@@ -20,7 +20,11 @@ import {
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
+
+import useDebounce from "@/hooks/useDebounce";
+
 import StateVisitCallout from "./StateVisitCallout";
+
 
 import statesTopo from "@/lib/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
@@ -34,6 +38,8 @@ export default function GeoActivityExplorer() {
   const [hoveredState, setHoveredState] = useState<string | null>(null);
   const [activity, setActivity] = useState("all");
   const [range, setRange] = useState("year");
+  const [query, setQuery] = useState("");
+  const debouncedQuery = useDebounce(query, 300);
 
   const now = new Date();
   const inRange = (d: string) => {
@@ -73,6 +79,19 @@ export default function GeoActivityExplorer() {
     });
     return m;
   }, [states]);
+
+  const filteredStates = useMemo(() => {
+    if (!debouncedQuery) return states
+    const q = debouncedQuery.toLowerCase()
+    return states
+      .map((s) => ({
+        ...s,
+        cities: s.cities.filter((c) => c.name.toLowerCase().includes(q)),
+      }))
+      .filter(
+        (s) => s.stateCode.toLowerCase().includes(q) || s.cities.length > 0,
+      )
+  }, [states, debouncedQuery])
   const legendConfig = useMemo(() => {
     const cfg: Record<string, { label: string; color: string }> = {}
     for (let i = 1; i <= 10; i++) {
@@ -130,6 +149,14 @@ export default function GeoActivityExplorer() {
     return m
   }, [stateMarkers])
 
+  const displayedMarkers = useMemo(
+    () =>
+      stateMarkers.filter((m) =>
+        filteredStates.some((s) => s.stateCode === m.abbr),
+      ),
+    [stateMarkers, filteredStates],
+  )
+
   if (!data) {
     return <Skeleton className="h-60 w-full" />;
   }
@@ -171,6 +198,19 @@ export default function GeoActivityExplorer() {
             { value: "all", label: "All Time" },
           ]}
         />
+        <div className="flex flex-col gap-1 flex-1">
+          <label className="text-sm font-medium" htmlFor="state-search">
+            Search
+          </label>
+          <input
+            id="state-search"
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            aria-label="Search"
+            className="rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2"
+          />
+        </div>
       </div>
       <StateVisitSummary />
       <div className="flex gap-12">
@@ -217,7 +257,7 @@ export default function GeoActivityExplorer() {
                   </Marker>
                 ) : null
               })}
-            {stateMarkers.map(
+            {displayedMarkers.map(
               (m: {
                 abbr: string
                 coords: [number, number]
@@ -276,7 +316,7 @@ export default function GeoActivityExplorer() {
 
         <div className="flex-1">
           <Accordion value={expandedState || undefined} onValueChange={setExpandedState}>
-            {states.map((s) => (
+            {filteredStates.map((s) => (
               <AccordionItem key={s.stateCode} value={s.stateCode}>
                 <AccordionTrigger className="flex justify-between">
                   <span className="flex items-center gap-2">
