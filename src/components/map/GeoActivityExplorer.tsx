@@ -20,6 +20,7 @@ import {
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
+import StateVisitCallout from "./StateVisitCallout";
 
 import statesTopo from "../../../public/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
@@ -172,7 +173,7 @@ export default function GeoActivityExplorer() {
       </div>
       <StateVisitSummary />
       <div className="flex gap-12">
-        <div className="w-80 h-60">
+        <div className="relative w-80 h-60">
           <Map
             mapLib={maplibregl}
             mapStyle="https://demotiles.maplibre.org/style.json"
@@ -248,6 +249,7 @@ export default function GeoActivityExplorer() {
             payload={legendPayload}
             content={<ChartLegendContent nameKey="value" hideIcon />}
           />
+          <StateVisitCallout />
         </div>
 
         <div className="flex-1">
