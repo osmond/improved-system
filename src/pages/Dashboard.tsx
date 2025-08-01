@@ -16,12 +16,19 @@ import {
 import useStepInsights from "@/hooks/useStepInsights";
 import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza, Pencil } from "lucide-react";
-import { minutesSince } from "@/lib/utils";
+import { minutesSince, cn } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import {
+  NavigationMenu,
+  NavigationMenuList,
+  NavigationMenuItem,
+  NavigationMenuLink,
+  navigationMenuTriggerStyle,
+} from "@/components/ui/navigation-menu";
+import Statistics from "@/pages/Statistics";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 
 
@@ -34,7 +41,13 @@ export default function Dashboard() {
   const [sleepGoal, setSleepGoalState] = useState(8)
   const [heartGoal, setHeartGoalState] = useState(200)
   const [calorieGoal, setCalorieGoalState] = useState(3000)
-  const [activeTab, setActiveTab] = useState("dashboard")
+  const [activeView, setActiveView] = useState(() => {
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash.replace("#", "")
+      return hash || "dashboard"
+    }
+    return "dashboard"
+  })
 
   useEffect(() => {
     const sg = localStorage.getItem('stepGoal')
@@ -58,6 +71,21 @@ export default function Dashboard() {
       if (!Number.isNaN(n)) setCalorieGoalState(n)
     }
   }, [])
+
+  useEffect(() => {
+    const handler = () => {
+      const hash = window.location.hash.replace("#", "") || "dashboard"
+      setActiveView(hash)
+    }
+    window.addEventListener("hashchange", handler)
+    return () => window.removeEventListener("hashchange", handler)
+  }, [])
+
+  useEffect(() => {
+    if (window.location.hash.replace("#", "") !== activeView) {
+      window.history.replaceState(null, "", `#${activeView}`)
+    }
+  }, [activeView])
 
   const setStepGoal = (n: number) => {
     setStepGoalState(n)
@@ -137,17 +165,60 @@ export default function Dashboard() {
     : undefined;
 
   return (
-    <Tabs value={activeTab} onValueChange={setActiveTab}>
-      <TabsList>
-        <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
-        <TabsTrigger value="map">Map</TabsTrigger>
-        <TabsTrigger value="examples">Examples</TabsTrigger>
-      </TabsList>
+    <>
+      <NavigationMenu>
+        <NavigationMenuList>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "dashboard" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#dashboard" onClick={() => setActiveView("dashboard")}>Dashboard</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "map" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#map" onClick={() => setActiveView("map")}>Map</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "examples" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#examples" onClick={() => setActiveView("examples")}>Examples</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+          <NavigationMenuItem>
+            <NavigationMenuLink
+              asChild
+              className={cn(
+                navigationMenuTriggerStyle(),
+                activeView === "stats" && "bg-primary text-primary-foreground"
+              )}
+            >
+              <a href="#stats" onClick={() => setActiveView("stats")}>Stats</a>
+            </NavigationMenuLink>
+          </NavigationMenuItem>
+        </NavigationMenuList>
+      </NavigationMenu>
 
-      <TabsContent value="dashboard">
+      {activeView === "dashboard" && (
         <div className="grid gap-4">
           <TopInsights />
-      <div className="flex gap-4">
+          <div className="flex gap-4">
         <SimpleSelect
           label="Activity"
           value={activity}
@@ -463,15 +534,13 @@ export default function Dashboard() {
 
           <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
         </div>
-      </TabsContent>
+      )}
 
-      <TabsContent value="map">
-        <GeoActivityExplorer />
-      </TabsContent>
+      {activeView === "map" && <GeoActivityExplorer />}
 
-      <TabsContent value="examples">
-        <Examples />
-      </TabsContent>
-    </Tabs>
+      {activeView === "examples" && <Examples />}
+
+      {activeView === "stats" && <Statistics />}
+    </>
   );
 }
