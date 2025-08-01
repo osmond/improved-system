@@ -24,7 +24,10 @@ export default function WeeklyVolumeHistoryChart() {
   } satisfies ChartConfig
 
   return (
-    <ChartCard title="Weekly Volume (20y)">
+    <ChartCard
+      title="Weekly Volume (20y)"
+      description="Historical weekly mileage totals"
+    >
       <ChartContainer config={config} className="h-64">
         <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />

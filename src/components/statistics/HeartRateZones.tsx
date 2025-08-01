@@ -24,7 +24,10 @@ export default function HeartRateZones() {
   if (!stats) return <Skeleton className="h-60" />
 
   return (
-    <ChartCard title="Heart Rate Zones">
+    <ChartCard
+      title="Heart Rate Zones"
+      description="Percent of time per zone"
+    >
       <ChartContainer config={config} className="h-60">
         <BarChart data={stats.heartRateZones}>
           <CartesianGrid strokeDasharray="3 3" />

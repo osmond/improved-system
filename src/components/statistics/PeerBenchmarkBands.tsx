@@ -41,7 +41,10 @@ export default function PeerBenchmarkBands() {
   } satisfies ChartConfig
 
   return (
-    <ChartCard title="Pace Benchmark">
+    <ChartCard
+      title="Pace Benchmark"
+      description="Percentile bands compared to peers"
+    >
       <ChartContainer config={config} className="h-64">
         <AreaChart data={paceData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />

@@ -23,7 +23,10 @@ const config = {
 
 export default function PaceVsHR() {
   return (
-    <ChartCard title="Pace vs Heart Rate">
+    <ChartCard
+      title="Pace vs Heart Rate"
+      description="Correlation between pace and heart rate"
+    >
       <ChartContainer config={config} className="h-64">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />

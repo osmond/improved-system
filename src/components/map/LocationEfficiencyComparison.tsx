@@ -38,7 +38,10 @@ export default function LocationEfficiencyComparison() {
   const sorted = [...data].sort((a, b) => b.effort - a.effort)
 
   return (
-    <ChartCard title="Location Efficiency">
+    <ChartCard
+      title="Location Efficiency"
+      description="Relative efficiency by location"
+    >
       <div className="flex gap-4">
         <div className="w-64 h-40" aria-label="location map">
           <ComposableMap projection="geoAlbersUsa">

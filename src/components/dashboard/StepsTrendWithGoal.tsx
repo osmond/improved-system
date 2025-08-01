@@ -124,7 +124,11 @@ export function StepsTrendWithGoal({
   }
 
   return (
-    <ChartCard title="Pace Trend (min/mile)" className="md:col-span-2">
+    <ChartCard
+      title="Pace Trend (min/mile)"
+      description="How pace varies with weather conditions"
+      className="md:col-span-2"
+    >
       <ChartContainer config={chartConfig} className="h-60">
         <AreaChart data={dataWithAvg} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <defs>

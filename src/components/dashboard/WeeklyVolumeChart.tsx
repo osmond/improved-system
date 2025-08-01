@@ -32,7 +32,7 @@ export default function WeeklyVolumeChart() {
   } satisfies ChartConfig;
 
   return (
-    <ChartCard title="Weekly Volume">
+    <ChartCard title="Weekly Volume" description="Historical weekly mileage totals">
       <ChartContainer config={config} className="h-64">
         <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />

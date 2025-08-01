@@ -23,7 +23,10 @@ const config = {
 
 export default function TreadmillVsOutdoor() {
   return (
-    <ChartCard title="Treadmill vs Outdoor">
+    <ChartCard
+      title="Treadmill vs Outdoor"
+      description="Indoor vs outdoor mileage split"
+    >
       <ChartContainer config={config} className="h-60">
         <PieChart width={200} height={160}>
           <ChartTooltip />

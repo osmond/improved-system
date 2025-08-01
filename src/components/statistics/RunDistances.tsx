@@ -29,7 +29,10 @@ const config = {
 
 export default function RunDistances() {
   return (
-    <ChartCard title="Run Distances">
+    <ChartCard
+      title="Run Distances"
+      description="Popular run distance buckets"
+    >
       <ChartContainer config={config} className="h-60">
         <BarChart layout="vertical" data={runDistanceData}>
           <CartesianGrid strokeDasharray="3 3" />

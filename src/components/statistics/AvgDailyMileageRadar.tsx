@@ -27,7 +27,10 @@ const config = {
 
 export default function AvgDailyMileageRadar() {
   return (
-    <ChartCard title="Average Daily Mileage">
+    <ChartCard
+      title="Average Daily Mileage"
+      description="Average mileage by day of week"
+    >
       <ChartContainer config={config} className="h-64">
         <RadarChart data={dailyMileage}>
           <PolarGrid />

@@ -35,7 +35,10 @@ export default function WeeklyComparisonChart({
   } as const
 
   return (
-    <ChartCard title="Weekly Comparison">
+    <ChartCard
+      title="Weekly Comparison"
+      description="Compare this week to last week"
+    >
       <ChartContainer config={config} className="h-64">
         <LineChart data={merged} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />

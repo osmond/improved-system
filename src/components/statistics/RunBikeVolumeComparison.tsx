@@ -30,7 +30,10 @@ export default function RunBikeVolumeComparison() {
   const bikeKey = metric === 'distance' ? 'bikeMiles' : 'bikeTime'
 
   return (
-    <ChartCard title="Run vs Bike Volume">
+    <ChartCard
+      title="Run vs Bike Volume"
+      description="Compare running and cycling volume"
+    >
       <div className="flex justify-end gap-2 pb-2">
         <button
           data-active={metric === 'distance'}

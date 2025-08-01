@@ -30,7 +30,10 @@ const config = {
 
 export default function EquipmentUsageTimeline() {
   return (
-    <ChartCard title="Equipment Usage">
+    <ChartCard
+      title="Equipment Usage"
+      description="Bike and shoe usage over time"
+    >
       <ChartContainer config={config} className="h-64">
         <BarChart data={usageData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />

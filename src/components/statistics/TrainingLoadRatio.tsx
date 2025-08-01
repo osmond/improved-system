@@ -29,7 +29,10 @@ const config = {
 
 export default function TrainingLoadRatio() {
   return (
-    <ChartCard title="Acute vs Chronic Load Ratio">
+    <ChartCard
+      title="Acute vs Chronic Load Ratio"
+      description="Acute vs chronic training load"
+    >
       <ChartContainer config={config} className="h-64">
         <AreaChart data={loadData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
