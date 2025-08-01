@@ -22,7 +22,10 @@ import { GeoActivityExplorer } from "@/components/map";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 import { SimpleSelect } from "@/components/ui/select";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import useDashboardFilters from "@/hooks/useDashboardFilters";
+import useDashboardFilters, {
+  type ActivityType,
+  type DateRange,
+} from "@/hooks/useDashboardFilters";
 
 
 export default function Dashboard() {
@@ -151,7 +154,7 @@ export default function Dashboard() {
         <SimpleSelect
           label="Activity"
           value={activity}
-          onValueChange={setActivity}
+          onValueChange={(v) => setActivity(v as ActivityType)}
           options={[
             { value: 'all', label: 'All' },
             { value: 'run', label: 'Run' },
@@ -162,7 +165,7 @@ export default function Dashboard() {
         <SimpleSelect
           label="Range"
           value={range}
-          onValueChange={setRange}
+          onValueChange={(v) => setRange(v as DateRange)}
           options={[
             { value: '90d', label: 'Last 90 days' },
             { value: '30d', label: 'Last 30 days' },
