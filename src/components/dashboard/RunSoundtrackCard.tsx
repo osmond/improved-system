@@ -1,25 +1,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { Skeleton } from '@/components/ui/skeleton'
 import useRunSoundtrack from '@/hooks/useRunSoundtrack'
 import { minutesSince } from '@/lib/utils'
 
-function WaveformBackdrop() {
-  return (
-    <svg
-      className="absolute inset-0 w-full h-full -z-10 opacity-5"
-      viewBox="0 0 100 10"
-      preserveAspectRatio="none"
-    >
-      <polyline
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="1"
-        points="0,5 5,5 8,2 12,8 16,5 20,5 24,2 28,8 32,4 36,6 40,2 44,8 48,5 52,5 56,2 60,8 64,5 68,5 72,2 76,8 80,5 84,5 88,2 92,8 96,5 100,5"
-      />
-    </svg>
-  )
-}
 
 export default function RunSoundtrackCard() {
   const data = useRunSoundtrack()
