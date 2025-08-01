@@ -3,9 +3,9 @@ import {
   ChartContainer,
   PieChart,
   Pie,
-  Cell,
   ChartTooltip,
 } from "@/components/ui/chart"
+import { Cell } from "recharts"
 import type { ChartConfig } from "@/components/ui/chart"
 import ChartCard from "./ChartCard"
 import useReadingMediumTotals from "@/hooks/useReadingMediumTotals"

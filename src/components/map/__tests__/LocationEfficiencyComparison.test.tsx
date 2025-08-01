@@ -1,14 +1,27 @@
 import { render, screen } from '@testing-library/react'
 import LocationEfficiencyComparison from '../LocationEfficiencyComparison'
 import { vi } from 'vitest'
+import React from 'react'
 vi.mock('react-map-gl/maplibre', () => ({
   __esModule: true,
-  default: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
+  default: ({ children, ...props }: any) => <div {...props}>{children}</div>,
   Source: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
 }))
 import '@testing-library/jest-dom'
+
+vi.mock('recharts', async () => {
+  const actual: any = await vi.importActual('recharts')
+  return {
+    ...actual,
+    ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
+      <div style={{ width: 800, height: 400 }}>
+        {React.cloneElement(children, { width: 800, height: 400 })}
+      </div>
+    )
+  }
+})
 
 vi.mock('@/hooks/useLocationEfficiency', () => ({
   __esModule: true,

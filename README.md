@@ -92,7 +92,13 @@ use for reference areas.
 
 The mock implementation uses `generateMockRunningStats()` in `src/lib/api.ts` to
 create semi-random demo data each time the app loads. You can replace this
+
 function with real API calls for production data.
+`useCurrentWeather(lat, lon)` resolves to:
+```ts
+{ temperature: number; condition: string }
+```
+
 
 `useInsights()` resolves to:
 
