@@ -163,7 +163,11 @@ export default function GeoActivityExplorer() {
   )
 
   return (
-    <ChartContainer config={legendConfig} title="State Visits" className="space-y-6">
+    <ChartContainer
+      config={legendConfig}
+      title="State Visits"
+      className="h-60 space-y-6"
+    >
       <div className="flex gap-4 mb-4">
         <SimpleSelect
           label="Activity"
