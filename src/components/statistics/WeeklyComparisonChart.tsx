@@ -43,9 +43,9 @@ export default function WeeklyComparisonChart({
   const diff = totals.current - totals.lastYear
 
   const config = {
-    current: { label: 'This Week', color: 'var(--chart-1)' },
-    previous: { label: 'Last Week', color: 'var(--chart-2)' },
-    lastYear: { label: 'Same Week Last Year', color: 'var(--chart-3)' },
+    current: { label: 'This Week', color: 'hsl(var(--chart-1))' },
+    previous: { label: 'Last Week', color: 'hsl(var(--chart-2))' },
+    lastYear: { label: 'Same Week Last Year', color: 'hsl(var(--chart-3))' },
   } as const
 
   return (

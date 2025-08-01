@@ -47,7 +47,7 @@ describe('WeeklyComparisonChart', () => {
     expect(screen.getByText('This Week')).toBeInTheDocument()
     expect(screen.getByText('Last Week')).toBeInTheDocument()
     expect(screen.getByText('Same Week Last Year')).toBeInTheDocument()
-    const lines = document.querySelectorAll('path[stroke^="var(--chart-"]')
+    const lines = document.querySelectorAll('path[stroke^="hsl(var(--chart-"]')
     expect(lines.length).toBeGreaterThanOrEqual(3)
     expect(
       screen.getByText("You're 9 miles ahead of 2024-you.")
