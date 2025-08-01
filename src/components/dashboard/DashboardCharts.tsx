@@ -1,17 +1,31 @@
 import React from "react";
-import { StepsChart } from "./StepsChart";
+import StepsTrendWithGoal from "./StepsTrendWithGoal";
+import { DailyStepsChart } from "./DailyStepsChart";
 import { ActivitiesChart } from "./ActivitiesChart";
 import WeeklyVolumeChart from "./WeeklyVolumeChart";
-import { ChartSelectionProvider } from "./ChartSelectionContext";
+import { useGarminDays } from "@/hooks/useGarminData";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function DashboardCharts() {
-  return (
-    <ChartSelectionProvider>
-      <div className="grid gap-6 md:grid-cols-2">
-        <StepsChart />
-        <ActivitiesChart />
-        <WeeklyVolumeChart />
+  const days = useGarminDays();
+
+  if (!days) {
+    return (
+      <div className="grid gap-4 md:grid-cols-2">
+        <Skeleton className="h-60 md:col-span-2" />
+        <Skeleton className="h-60" />
+        <Skeleton className="h-60" />
+        <Skeleton className="h-60" />
       </div>
-    </ChartSelectionProvider>
+    );
+  }
+
+  return (
+    <div className="grid gap-4 md:grid-cols-2">
+      <StepsTrendWithGoal data={days} />
+      <DailyStepsChart data={days} />
+      <ActivitiesChart />
+      <WeeklyVolumeChart />
+    </div>
   );
 }

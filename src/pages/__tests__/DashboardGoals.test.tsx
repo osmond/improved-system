@@ -9,7 +9,6 @@ vi.mock("@/hooks/useGarminData", () => ({
   useGarminData: () => mockGarminData,
   useMostRecentActivity: () => null,
   useGarminDays: () => mockDailySteps,
-  useGarminDaysLazy: () => mockDailySteps,
 }));
 
 vi.mock("@/pages/Examples", () => ({
@@ -54,9 +53,7 @@ vi.mock("@/hooks/useInsights", () => ({
 describe("Dashboard goals", () => {
   it("updates step ring when goal changes", async () => {
     render(<Dashboard />);
-    // switch to the Rings tab where the progress rings are rendered
-    fireEvent.click(screen.getByRole("button", { name: "Rings" }));
-    const ring = await screen.findByLabelText("Steps progress");
+    const ring = screen.getByLabelText("Steps progress");
     const circle = ring.querySelectorAll("circle")[1];
     const initial = circle.getAttribute("stroke-dashoffset");
 
