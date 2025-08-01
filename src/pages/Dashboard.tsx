@@ -10,9 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import {
   useGarminData,
   useMostRecentActivity,
-
-  useMonthlyStepsProjection,
-
   useGarminDays,
 } from "@/hooks/useGarminData";
 import useStepInsights from "@/hooks/useStepInsights";
@@ -30,13 +27,10 @@ export default function Dashboard() {
   const data = useGarminData();
 
   const { dailyStepGoal, setDailyStepGoal } = useUserGoals();
-  const monthly = useMonthlyStepsProjection(dailyStepGoal);
-
   const days = useGarminDays();
-  const stepInsights = useStepInsights(days);
+  const stepInsights = useStepInsights(days, dailyStepGoal);
 
   const recentActivity = useMostRecentActivity();
-  const days = useGarminDays();
   const insights = useInsights();
   const [expanded, setExpanded] = useState<Metric | null>(null);
   const [dismissed, setDismissed] = useState<{ pace: boolean; day: boolean }>({
