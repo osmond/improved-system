@@ -15,6 +15,8 @@ const Select = SelectPrimitive.Root
 const SelectGroup = SelectPrimitive.Group
 const SelectValue = SelectPrimitive.Value
 const SelectTrigger = SelectPrimitive.Trigger
+const SelectPortal = SelectPrimitive.Portal
+const SelectViewport = SelectPrimitive.Viewport
 const SelectContent = SelectPrimitive.Content
 const SelectItem = SelectPrimitive.Item
 const SelectLabel = SelectPrimitive.Label
@@ -33,6 +35,8 @@ export {
   SelectValue,
   SelectTrigger,
   SelectContent,
+  SelectPortal,
+  SelectViewport,
   SelectItem,
   SelectLabel,
   SelectSeparator,
@@ -72,28 +76,32 @@ export function SimpleSelect({
             <ChevronsUpDown className="w-4 h-4 opacity-50" />
           </SelectIcon>
         </SelectTrigger>
-        <SelectContent className="overflow-hidden rounded-md border bg-card">
-          <SelectScrollUpButton className="flex items-center justify-center h-6">
-            <ChevronUp className="w-4 h-4" />
-          </SelectScrollUpButton>
-          <SelectGroup>
-            {options.map((opt) => (
-              <SelectItem
-                key={opt.value}
-                value={opt.value}
-                className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1 text-sm outline-none focus:bg-muted"
-              >
-                <SelectItemText>{opt.label}</SelectItemText>
-                <SelectItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">
-                  <Check className="w-4 h-4" />
-                </SelectItemIndicator>
-              </SelectItem>
-            ))}
-          </SelectGroup>
-          <SelectScrollDownButton className="flex items-center justify-center h-6">
-            <ChevronDown className="w-4 h-4" />
-          </SelectScrollDownButton>
-        </SelectContent>
+        <SelectPortal>
+          <SelectContent className="overflow-hidden rounded-md border bg-card">
+            <SelectScrollUpButton className="flex items-center justify-center h-6">
+              <ChevronUp className="w-4 h-4" />
+            </SelectScrollUpButton>
+            <SelectViewport>
+              <SelectGroup>
+                {options.map((opt) => (
+                  <SelectItem
+                    key={opt.value}
+                    value={opt.value}
+                    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1 text-sm outline-none focus:bg-muted"
+                  >
+                    <SelectItemText>{opt.label}</SelectItemText>
+                    <SelectItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">
+                      <Check className="w-4 h-4" />
+                    </SelectItemIndicator>
+                  </SelectItem>
+                ))}
+              </SelectGroup>
+            </SelectViewport>
+            <SelectScrollDownButton className="flex items-center justify-center h-6">
+              <ChevronDown className="w-4 h-4" />
+            </SelectScrollDownButton>
+          </SelectContent>
+        </SelectPortal>
       </Select>
     </div>
   )
