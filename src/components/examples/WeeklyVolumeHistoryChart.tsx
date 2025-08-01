@@ -20,7 +20,7 @@ export default function WeeklyVolumeHistoryChart() {
   if (!data) return <Skeleton className="h-64" />
 
   const config = {
-    miles: { label: 'Miles', color: 'var(--chart-1)' },
+    miles: { label: 'Miles', color: 'hsl(var(--chart-1))' },
   } satisfies ChartConfig
 
   return (
@@ -30,7 +30,7 @@ export default function WeeklyVolumeHistoryChart() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
           <ChartTooltip />
-          <Bar dataKey="miles" fill="var(--chart-1)" radius={2} animationDuration={300} />
+          <Bar dataKey="miles" fill="var(--color-miles)" radius={2} animationDuration={300} />
           <Brush dataKey="week" height={20} travellerWidth={10} />
         </BarChart>
       </ChartContainer>

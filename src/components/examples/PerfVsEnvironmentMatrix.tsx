@@ -65,8 +65,8 @@ function regression(
 const DATA = generateData()
 
 const config = {
-  pace: { label: 'Pace', color: 'var(--chart-8)' },
-  trend: { label: 'Trend', color: 'var(--chart-3)' },
+  pace: { label: 'Pace', color: 'hsl(var(--chart-1))' },
+  trend: { label: 'Trend', color: 'hsl(var(--chart-2))' },
 } as const
 
 export default function PerfVsEnvironmentMatrixExample() {
@@ -84,8 +84,8 @@ export default function PerfVsEnvironmentMatrixExample() {
             <XAxis dataKey='temperature' name='Temp (F)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
-            <Line data={tempReg} stroke={config.trend.color} dot={false} />
+            <Scatter data={DATA} fill='var(--color-pace)' />
+            <Line data={tempReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
         </ChartContainer>
         <ChartContainer config={config} className='h-60'>
@@ -94,8 +94,8 @@ export default function PerfVsEnvironmentMatrixExample() {
             <XAxis dataKey='humidity' name='Humidity (%)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
-            <Line data={humidityReg} stroke={config.trend.color} dot={false} />
+            <Scatter data={DATA} fill='var(--color-pace)' />
+            <Line data={humidityReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
         </ChartContainer>
         <ChartContainer config={config} className='h-60'>
@@ -104,8 +104,8 @@ export default function PerfVsEnvironmentMatrixExample() {
             <XAxis dataKey='wind' name='Wind (mph)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
-            <Line data={windReg} stroke={config.trend.color} dot={false} />
+            <Scatter data={DATA} fill='var(--color-pace)' />
+            <Line data={windReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
         </ChartContainer>
         <ChartContainer config={config} className='h-60'>
@@ -114,8 +114,8 @@ export default function PerfVsEnvironmentMatrixExample() {
             <XAxis dataKey='elevation' name='Elevation (ft)' />
             <YAxis dataKey='pace' name='Pace (min/mi)' />
             <ChartTooltip />
-            <Scatter data={DATA} fill={config.pace.color} />
-            <Line data={elevReg} stroke={config.trend.color} dot={false} />
+            <Scatter data={DATA} fill='var(--color-pace)' />
+            <Line data={elevReg} stroke='var(--color-trend)' dot={false} />
           </ScatterChart>
         </ChartContainer>
       </div>
