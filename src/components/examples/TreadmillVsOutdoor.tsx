@@ -11,6 +11,7 @@ import {
   ChartLegend,
   ChartLegendContent,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import {
   Card,
@@ -53,7 +54,7 @@ export default function TreadmillVsOutdoorExample() {
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='month' tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(v) => v.slice(0, 3)} />
             <YAxis />
-            <ChartTooltip />
+            <ChartTooltip content={<ChartTooltipContent />} />
             <ChartLegend content={<ChartLegendContent />} />
             <Bar dataKey='outdoor' fill={chartConfig.outdoor.color} />
             <Bar dataKey='treadmill' fill={chartConfig.treadmill.color} />
