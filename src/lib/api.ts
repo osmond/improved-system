@@ -336,6 +336,11 @@ export interface WeeklyVolumePoint {
   miles: number
 }
 
+export interface WeeklyMetricPoint {
+  date: string
+  value: number
+}
+
 export function generateMockWeeklyVolume(): WeeklyVolumePoint[] {
   const weeks: WeeklyVolumePoint[] = []
   for (let i = 0; i < 26; i++) {
@@ -399,6 +404,55 @@ export function generateMockRunBikeVolume(): RunBikeVolumePoint[] {
 export async function getRunBikeVolume(): Promise<RunBikeVolumePoint[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(generateMockRunBikeVolume()), 200)
+  })
+}
+
+// ----- Weekly comparison metrics -----
+function startOfWeek(date: Date): Date {
+  const d = new Date(date)
+  const day = d.getDay()
+  d.setDate(d.getDate() - day)
+  d.setHours(0, 0, 0, 0)
+  return d
+}
+
+function generateWeek(start: Date): WeeklyMetricPoint[] {
+  return Array.from({ length: 7 }, (_, i) => {
+    const d = new Date(start)
+    d.setDate(start.getDate() + i)
+    return {
+      date: d.toISOString().slice(0, 10),
+      value: Math.round(50 + Math.random() * 50),
+    }
+  })
+}
+
+export async function getCurrentWeek(
+  _metric: string,
+): Promise<WeeklyMetricPoint[]> {
+  return new Promise((resolve) => {
+    const start = startOfWeek(new Date())
+    setTimeout(() => resolve(generateWeek(start)), 150)
+  })
+}
+
+export async function getPreviousWeek(
+  _metric: string,
+): Promise<WeeklyMetricPoint[]> {
+  return new Promise((resolve) => {
+    const start = startOfWeek(new Date())
+    start.setDate(start.getDate() - 7)
+    setTimeout(() => resolve(generateWeek(start)), 150)
+  })
+}
+
+export async function getSameWeekLastYear(
+  _metric: string,
+): Promise<WeeklyMetricPoint[]> {
+  return new Promise((resolve) => {
+    const start = startOfWeek(new Date())
+    start.setFullYear(start.getFullYear() - 1)
+    setTimeout(() => resolve(generateWeek(start)), 150)
   })
 }
 
