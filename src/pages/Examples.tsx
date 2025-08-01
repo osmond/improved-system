@@ -9,7 +9,6 @@ import ChartRadialText from "@/components/examples/RadialChartText";
 import ChartBarDefault from "@/components/examples/BarChartDefault";
 import ChartRadialGrid from "@/components/examples/RadialChartGrid";
 import ChartBarHorizontal from "@/components/examples/BarChartHorizontal";
-import ChartPieInteractive from "@/components/examples/PieChartInteractive";
 import ChartRadarDots from "@/components/examples/RadarChartDots";
 import RadarChartWorkoutByTime from "@/components/examples/RadarChartWorkoutByTime";
 import ChartBarMixed from "@/components/examples/BarChartMixed";
@@ -56,7 +55,6 @@ export default function Examples() {
       <ChartRadarDots />
       <ChartBarMixed />
       <ChartBarLabelCustom />
-      <ChartPieInteractive />
       <ShoeUsageChart />
       <TreadmillVsOutdoorExample />
 
