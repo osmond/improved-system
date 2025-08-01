@@ -16,6 +16,7 @@ import useInsights from "@/hooks/useInsights";
 import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
+import { GeoActivityExplorer } from "@/components/map";
 
 
 export default function Dashboard() {
@@ -225,6 +226,7 @@ export default function Dashboard() {
 
       <RingDetailDialog metric={expanded} onClose={() => setExpanded(null)} />
       <Examples />
+      <GeoActivityExplorer />
     </div>
   );
 }
