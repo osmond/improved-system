@@ -61,6 +61,7 @@ vi.mock("@/hooks/useInsights", () => ({
     highHeartRate: false,
     lowSleep: false,
     calorieSurplus: false,
+    quietDay: false,
     bestPaceThisMonth: null,
     mostConsistentDay: null,
   }),

@@ -2,7 +2,7 @@ import React from "react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { Flame, HeartPulse, Moon, Pizza } from "lucide-react";
+import { Flame, HeartPulse, Moon, Pizza, BookOpen } from "lucide-react";
 import useInsights from "@/hooks/useInsights";
 
 export default function TopInsights() {
@@ -41,6 +41,14 @@ export default function TopInsights() {
       <Badge key="calories" className="flex items-center gap-1">
         <Pizza className="w-3 h-3 text-amber-600" />
         Calorie surplus
+      </Badge>
+    );
+  }
+  if (insights.quietDay) {
+    items.push(
+      <Badge key="quiet" className="flex items-center gap-1">
+        <BookOpen className="w-3 h-3" />
+        Quiet day
       </Badge>
     );
   }

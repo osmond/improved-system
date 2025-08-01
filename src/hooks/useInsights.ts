@@ -16,6 +16,8 @@ export interface Insights {
   bestPaceThisMonth: number | null
   /** Day of week with most runs this month */
   mostConsistentDay: string | null
+  /** Steps and heart rate indicate low-activity day */
+  quietDay: boolean
 }
 
 export function useInsights(): Insights | null {
@@ -64,6 +66,9 @@ export function useInsights(): Insights | null {
     ]
     const consistentDay = maxCount > 0 ? dayNames[dayIndex] : null
 
+    const todaySteps = days.at(-1)?.steps ?? 0
+    const quietDay = todaySteps < 2000 && data.heartRate < 60
+
     return {
       activeStreak: streak,
       highHeartRate: data.heartRate > 100,
@@ -71,6 +76,7 @@ export function useInsights(): Insights | null {
       calorieSurplus: data.calories > 2500,
       bestPaceThisMonth: bestPace,
       mostConsistentDay: consistentDay,
+      quietDay,
     }
   }, [days, data, sessions, dailyStepGoal])
 }

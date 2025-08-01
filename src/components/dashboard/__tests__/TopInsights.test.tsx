@@ -10,6 +10,7 @@ vi.mock("@/hooks/useInsights", () => ({
     highHeartRate: true,
     lowSleep: true,
     calorieSurplus: true,
+    quietDay: true,
     bestPaceThisMonth: null,
     mostConsistentDay: null,
   }),
@@ -22,5 +23,6 @@ describe("TopInsights", () => {
     expect(screen.getByText(/High heart rate/)).toBeInTheDocument();
     expect(screen.getByText(/Low sleep/)).toBeInTheDocument();
     expect(screen.getByText(/Calorie surplus/)).toBeInTheDocument();
+    expect(screen.getByText(/Quiet day/)).toBeInTheDocument();
   });
 });
