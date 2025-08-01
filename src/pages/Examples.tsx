@@ -24,6 +24,8 @@ import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
 
 import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
 
+import GhostSelfRivalChart from "@/components/examples/GhostSelfRivalChart";
+
 import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 import ReadingProbabilityTimeline from "@/components/dashboard/ReadingProbabilityTimeline";
 import BedToRunGauge from "@/components/dashboard/BedToRunGauge";
@@ -43,6 +45,8 @@ export default function Examples() {
       <StepsTrendWithGoal data={mockDailySteps} />
 
       <PeerBenchmarkBands />
+
+      <GhostSelfRivalChart />
 
       <WeeklyVolumeHistoryChart />
       <ReadingProbabilityTimeline />
