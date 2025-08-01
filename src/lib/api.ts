@@ -125,6 +125,36 @@ export async function getActivityMinutes(): Promise<ActivityMinutes[]> {
     setTimeout(() => resolve(mockActivityMinutes), 200)
   })
 }
+
+// ----- Hourly activity snapshots -----
+export interface ActivitySnapshot {
+  timestamp: string
+  heartRate: number
+  steps: number
+}
+
+export function generateMockActivitySnapshots(days = 7): ActivitySnapshot[] {
+  const snaps: ActivitySnapshot[] = []
+  const now = new Date()
+  for (let i = 0; i < days * 24; i++) {
+    const d = new Date(now)
+    d.setHours(d.getHours() - (days * 24 - 1 - i), 0, 0, 0)
+    snaps.push({
+      timestamp: d.toISOString(),
+      heartRate: 55 + Math.round(Math.random() * 30),
+      steps: Math.round(Math.random() * 500),
+    })
+  }
+  return snaps
+}
+
+export async function getActivitySnapshots(
+  days = 7,
+): Promise<ActivitySnapshot[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockActivitySnapshots(days)), 200)
+  })
+}
 export async function getDailySteps(): Promise<GarminDay[]> {
   return new Promise((resolve) => {
     setTimeout(() => resolve(mockDailySteps), 300);
@@ -989,24 +1019,5 @@ export async function getLatestRun(): Promise<RunWindow> {
     const duration = 30 + Math.floor(Math.random() * 30)
     const start = new Date(end.getTime() - duration * 60000)
     setTimeout(() => resolve({ start: start.toISOString(), end: end.toISOString() }), 100)
-  })
-}
-
-// ----- Wild schedule -----
-export interface WildGame {
-  gameDate: string
-  opponent: string
-  home: boolean
-}
-
-const mockWildSchedule: WildGame[] = [
-  { gameDate: '2025-10-01T00:00:00Z', opponent: 'Blues', home: true },
-  { gameDate: '2025-10-04T00:00:00Z', opponent: 'Stars', home: false },
-  { gameDate: '2025-10-07T00:00:00Z', opponent: 'Jets', home: true },
-]
-
-export async function getWildSchedule(limit = mockWildSchedule.length): Promise<WildGame[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockWildSchedule.slice(0, limit)), 100)
   })
 }
