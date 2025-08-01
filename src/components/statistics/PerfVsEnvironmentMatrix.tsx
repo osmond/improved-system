@@ -10,23 +10,26 @@ import {
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart";
 import ChartCard from "@/components/dashboard/ChartCard";
-import { Cell } from "recharts";
 import { useRunningStats } from "@/hooks/useRunningStats";
 import { SimpleSelect } from "@/components/ui/select";
 
 interface PerfPoint {
-  pace: number
-  power: number
-  temperature: number
-  humidity: number
-  wind: number
-  elevation: number
-  fill: string
+  pace: number;
+  power: number;
+  temperature: number;
+  humidity: number;
+  wind: number;
+  elevation: number;
 }
 
-function mapPoint(pace: number, temperature: number, humidity: number, wind: number, elevation: number): PerfPoint {
-  const power = 250 - pace * 20 + Math.random() * 10
-  const colorIndex = Math.min(5, Math.max(0, Math.floor((power - 90) / 10)))
+function mapPoint(
+  pace: number,
+  temperature: number,
+  humidity: number,
+  wind: number,
+  elevation: number,
+): PerfPoint {
+  const power = 250 - pace * 20 + Math.random() * 10;
   return {
     pace: +pace.toFixed(2),
     power: Math.round(power),
@@ -34,14 +37,13 @@ function mapPoint(pace: number, temperature: number, humidity: number, wind: num
     humidity,
     wind,
     elevation,
-    fill: `hsl(var(--chart-${colorIndex + 5}))`,
-  }
+  };
 }
 
 function regression(
   data: PerfPoint[],
   xKey: keyof PerfPoint,
-  yKey: keyof PerfPoint
+  yKey: keyof PerfPoint,
 ): { [k in keyof PerfPoint]?: number }[] {
   const xs = data.map((d) => d[xKey] as number);
   const ys = data.map((d) => d[yKey] as number);
@@ -64,30 +66,34 @@ function regression(
 }
 
 export default function PerfVsEnvironmentMatrix() {
-  const stats = useRunningStats()
+  const stats = useRunningStats();
   const [variable, setVariable] = useState(
     "temperature" as "temperature" | "humidity" | "wind" | "elevation",
-  )
+  );
   const DATA = useMemo(() => {
-    if (!stats) return []
+    if (!stats) return [];
     return stats.paceEnvironment.map((p) =>
       mapPoint(p.pace, p.temperature, p.humidity, p.wind, p.elevation),
-    )
-  }, [stats])
+    );
+  }, [stats]);
 
   const config = {
-    pace: { label: "Pace", color: "hsl(var(--chart-8))" },
+    points: { color: "hsl(var(--chart-4))" },
+    pace: { label: "Pace" },
     trend: { label: "Trend", color: "hsl(var(--chart-3))" },
-  } as const
+  } as const;
 
   const axisLabels = {
     temperature: "Temp (F)",
     humidity: "Humidity (%)",
     wind: "Wind (mph)",
     elevation: "Elevation (ft)",
-  }
+  };
 
-  const trend = useMemo(() => regression(DATA, variable, "pace"), [DATA, variable])
+  const trend = useMemo(
+    () => regression(DATA, variable, "pace"),
+    [DATA, variable],
+  );
 
   return (
     <ChartCard
@@ -111,11 +117,7 @@ export default function PerfVsEnvironmentMatrix() {
           <XAxis dataKey={variable} name={axisLabels[variable]} />
           <YAxis dataKey="pace" name="Pace (min/mi)" />
           <ChartTooltip />
-          <Scatter data={DATA}>
-            {DATA.map((point, idx) => (
-              <Cell key={idx} fill={point.fill} />
-            ))}
-          </Scatter>
+          <Scatter data={DATA} fill="var(--color-points)" />
           <Line data={trend} stroke={config.trend.color} dot={false} />
         </ScatterChart>
       </ChartContainer>
