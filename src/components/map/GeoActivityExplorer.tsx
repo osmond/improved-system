@@ -136,15 +136,6 @@ export default function GeoActivityExplorer() {
     });
     return m;
   }, [states]);
-
-  if (!data) {
-    return <Skeleton className="h-60 w-full" />;
-  }
-
-  const toggleState = (abbr: string) => {
-    setExpandedState((prev) => (prev === abbr ? null : abbr));
-  };
-
   const legendConfig = useMemo(() => {
     const cfg: Record<string, { label: string; color: string }> = {}
     for (let i = 1; i <= 10; i++) {
@@ -161,6 +152,14 @@ export default function GeoActivityExplorer() {
       })),
     []
   )
+
+  if (!data) {
+    return <Skeleton className="h-60 w-full" />;
+  }
+
+  const toggleState = (abbr: string) => {
+    setExpandedState((prev) => (prev === abbr ? null : abbr));
+  };
 
   return (
     <ChartContainer
