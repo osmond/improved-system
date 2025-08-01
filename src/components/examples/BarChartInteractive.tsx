@@ -20,6 +20,7 @@ import {
 export const description = 'An interactive bar chart'
 
 const chartData = [
+
   { date: '2024-04-01', bike: 2, run: 3 },
   { date: '2024-04-08', bike: 1, run: 4 },
   { date: '2024-04-15', bike: 2, run: 2 },
@@ -32,6 +33,7 @@ const chartData = [
   { date: '2024-06-03', bike: 4, run: 3 },
   { date: '2024-06-10', bike: 2, run: 5 },
   { date: '2024-06-17', bike: 3, run: 2 },
+
 ]
 
 const chartConfig = {
