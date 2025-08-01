@@ -26,8 +26,8 @@ export default function Dashboard() {
   return (
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList>
-        <TabsTrigger value="map">Map</TabsTrigger>
-        <TabsTrigger value="examples">Examples</TabsTrigger>
+        <TabsTrigger value="map">Map playground</TabsTrigger>
+        <TabsTrigger value="examples">Analytics fun</TabsTrigger>
       </TabsList>
       <TabsContent value="map">
         <div className="grid gap-4 md:grid-cols-2">
