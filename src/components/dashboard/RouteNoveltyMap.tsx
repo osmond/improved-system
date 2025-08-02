@@ -22,6 +22,7 @@ interface Run extends Route {
 export default function RouteNoveltyMap() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [trend, setTrend] = useState<Array<{ index: number; novelty: number }>>([]);
+  const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
 
   useEffect(() => {
     getMockRoutes().then((baseRoutes) => {
@@ -61,13 +62,13 @@ export default function RouteNoveltyMap() {
   const routeFeatures = useMemo(
     () => ({
       type: "FeatureCollection",
-      features: runs.map((r) => ({
+      features: runs.map((r, i) => ({
         type: "Feature",
         geometry: {
           type: "LineString",
           coordinates: r.points.map((p) => [p.lon, p.lat]),
         },
-        properties: { novelty: r.novelty },
+        properties: { novelty: r.novelty, index: i },
       })),
     }),
     [runs],
@@ -106,15 +107,25 @@ export default function RouteNoveltyMap() {
               type="line"
               paint={{
                 "line-color": [
-                  "interpolate",
-                  ["linear"],
-                  ["get", "novelty"],
-                  0,
-                  "#888",
-                  1,
-                  "#f00",
+                  "case",
+                  ["==", ["get", "index"], hoveredIndex ?? -1],
+                  "#00f",
+                  [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "novelty"],
+                    0,
+                    "#888",
+                    1,
+                    "#f00",
+                  ],
                 ],
-                "line-width": 3,
+                "line-width": [
+                  "case",
+                  ["==", ["get", "index"], hoveredIndex ?? -1],
+                  5,
+                  3,
+                ],
               }}
             />
           </Source>
@@ -168,7 +179,16 @@ export default function RouteNoveltyMap() {
         <ChartContainer
           config={{ novelty: { label: "Novelty", color: "hsl(var(--chart-1))" } }}
         >
-          <LineChart data={trend} margin={{ top: 0, right: 20, bottom: 0, left: 0 }}>
+          <LineChart
+            data={trend}
+            margin={{ top: 0, right: 20, bottom: 0, left: 0 }}
+            onMouseMove={(e: any) =>
+              typeof e.activeTooltipIndex === "number"
+                ? setHoveredIndex(e.activeTooltipIndex)
+                : setHoveredIndex(null)
+            }
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <XAxis dataKey="index" hide />
             <YAxis domain={[0, 1]} hide />
             <ChartTooltip />
