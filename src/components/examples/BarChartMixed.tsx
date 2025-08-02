@@ -25,7 +25,7 @@ export const description = 'A mixed bar chart'
 const chartData = [
   { activity: 'run', sessions: 45, fill: 'var(--color-run)' },
   { activity: 'bike', sessions: 30, fill: 'var(--color-bike)' },
-  { activity: 'swim', sessions: 12, fill: 'var(--color-swim)' },
+  { activity: 'walk', sessions: 12, fill: 'var(--color-walk)' },
   { activity: 'hike', sessions: 8, fill: 'var(--color-hike)' },
   { activity: 'other', sessions: 6, fill: 'var(--color-other)' },
 ]
@@ -34,7 +34,7 @@ const chartConfig = {
   sessions: { label: 'Sessions' },
   run: { label: 'Run', color: 'hsl(var(--chart-1))' },
   bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
-  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
+  walk: { label: 'Walk', color: 'hsl(var(--chart-3))' },
   hike: { label: 'Hike', color: 'hsl(var(--chart-4))' },
   other: { label: 'Other', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
@@ -44,7 +44,7 @@ export default function ChartBarMixed() {
     <Card>
       <CardHeader>
         <CardTitle>Activity Type Breakdown</CardTitle>
-        <CardDescription>Total sessions or volume by type (Run / Bike / Swim / Other)</CardDescription>
+        <CardDescription>Total sessions or volume by type (Run / Bike / Walk / Other)</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60'>

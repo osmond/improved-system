@@ -25,7 +25,7 @@ export const description = 'A radial chart with a label'
 const chartData = [
   { activity: 'Run', minutes: 520, fill: 'var(--color-run)' },
   { activity: 'Bike', minutes: 340, fill: 'var(--color-bike)' },
-  { activity: 'Swim', minutes: 120, fill: 'var(--color-swim)' },
+  { activity: 'Walk', minutes: 120, fill: 'var(--color-walk)' },
   { activity: 'Strength', minutes: 220, fill: 'var(--color-strength)' },
   { activity: 'Other', minutes: 90, fill: 'var(--color-other)' },
 ]
@@ -34,7 +34,7 @@ const chartConfig = {
   minutes: { label: 'Minutes' },
   run: { label: 'Run', color: 'hsl(var(--chart-1))' },
   bike: { label: 'Bike', color: 'hsl(var(--chart-2))' },
-  swim: { label: 'Swim', color: 'hsl(var(--chart-3))' },
+  walk: { label: 'Walk', color: 'hsl(var(--chart-3))' },
   strength: { label: 'Strength', color: 'hsl(var(--chart-4))' },
   other: { label: 'Other', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
