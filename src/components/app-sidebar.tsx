@@ -21,6 +21,12 @@ import * as Collapsible from "@radix-ui/react-collapsible";
 import { chartRouteGroups, mapRoutes } from "@/routes";
 import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipTrigger,
+  TooltipProvider,
+} from "@/components/ui/tooltip";
 
 export default function AppSidebar() {
   const { pathname } = useLocation();
@@ -135,9 +141,10 @@ export default function AppSidebar() {
   }, [debouncedQuery]);
 
   return (
-    <Sidebar>
-      <SidebarHeader />
-      <SidebarContent>
+    <TooltipProvider>
+      <Sidebar>
+        <SidebarHeader />
+        <SidebarContent>
         <SidebarInput
           placeholder="Search..."
           value={query}
@@ -151,23 +158,35 @@ export default function AppSidebar() {
               <SidebarMenu>
                 {favoriteRoutes.map((route) => (
                   <SidebarMenuItem key={route.to}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === route.to}
-                      className="justify-start"
-                    >
-                      <NavLink to={route.to} className="flex w-full items-center">
-                        <span className="flex-1">{highlight(route.label)}</span>
-                        <Star
-                          className="ml-auto h-4 w-4 fill-yellow-400 text-yellow-400"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(route.to);
-                          }}
-                        />
-                      </NavLink>
-                    </SidebarMenuButton>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === route.to}
+                          className="justify-start"
+                        >
+                          <NavLink
+                            to={route.to}
+                            className="flex w-full items-center"
+                          >
+                            <span className="flex-1">{highlight(route.label)}</span>
+                            <Star
+                              className="ml-auto h-4 w-4 fill-yellow-400 text-yellow-400"
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(route.to);
+                              }}
+                            />
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {route.description && (
+                        <TooltipContent side="right">
+                          {route.description}
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -199,33 +218,42 @@ export default function AppSidebar() {
                           <SidebarMenuSub>
                             {group.items.map((route) => (
                               <SidebarMenuSubItem key={route.to}>
-                                <SidebarMenuSubButton
-                                  asChild
-                                  isActive={pathname === route.to}
-                                  className="justify-start"
-                                >
-                                  <NavLink
-                                    to={route.to}
-                                    className="flex w-full items-center"
-                                  >
-                                    <span className="flex-1">
-                                      {highlight(route.label)}
-                                    </span>
-                                    <Star
-                                      className={cn(
-                                        "ml-auto h-4 w-4",
-                                        favorites.includes(route.to)
-                                          ? "fill-yellow-400 text-yellow-400"
-                                          : "text-muted-foreground"
-                                      )}
-                                      onClick={(e) => {
-                                        e.preventDefault();
-                                        e.stopPropagation();
-                                        toggleFavorite(route.to);
-                                      }}
-                                    />
-                                  </NavLink>
-                                </SidebarMenuSubButton>
+                                <Tooltip>
+                                  <TooltipTrigger asChild>
+                                    <SidebarMenuSubButton
+                                      asChild
+                                      isActive={pathname === route.to}
+                                      className="justify-start"
+                                    >
+                                      <NavLink
+                                        to={route.to}
+                                        className="flex w-full items-center"
+                                      >
+                                        <span className="flex-1">
+                                          {highlight(route.label)}
+                                        </span>
+                                        <Star
+                                          className={cn(
+                                            "ml-auto h-4 w-4",
+                                            favorites.includes(route.to)
+                                              ? "fill-yellow-400 text-yellow-400"
+                                              : "text-muted-foreground"
+                                          )}
+                                          onClick={(e) => {
+                                            e.preventDefault();
+                                            e.stopPropagation();
+                                            toggleFavorite(route.to);
+                                          }}
+                                        />
+                                      </NavLink>
+                                    </SidebarMenuSubButton>
+                                  </TooltipTrigger>
+                                  {route.description && (
+                                    <TooltipContent side="right">
+                                      {route.description}
+                                    </TooltipContent>
+                                  )}
+                                </Tooltip>
                               </SidebarMenuSubItem>
                             ))}
                           </SidebarMenuSub>
@@ -245,29 +273,41 @@ export default function AppSidebar() {
               <SidebarMenu>
                 {filteredMapRoutes.map((route) => (
                   <SidebarMenuItem key={route.to}>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === route.to}
-                      className="justify-start"
-                    >
-                      <NavLink to={route.to} className="flex w-full items-center">
-                        <MapIcon className="mr-2" />
-                        <span className="flex-1">{highlight(route.label)}</span>
-                        <Star
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            favorites.includes(route.to)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground"
-                          )}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(route.to);
-                          }}
-                        />
-                      </NavLink>
-                    </SidebarMenuButton>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === route.to}
+                          className="justify-start"
+                        >
+                          <NavLink
+                            to={route.to}
+                            className="flex w-full items-center"
+                          >
+                            <MapIcon className="mr-2" />
+                            <span className="flex-1">{highlight(route.label)}</span>
+                            <Star
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                favorites.includes(route.to)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-muted-foreground"
+                              )}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(route.to);
+                              }}
+                            />
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {route.description && (
+                        <TooltipContent side="right">
+                          {route.description}
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
                   </SidebarMenuItem>
                 ))}
               </SidebarMenu>
@@ -277,5 +317,6 @@ export default function AppSidebar() {
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
+    </TooltipProvider>
   );
 }
