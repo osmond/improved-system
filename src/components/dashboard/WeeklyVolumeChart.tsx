@@ -34,9 +34,23 @@ export default function WeeklyVolumeChart() {
   return (
     <ChartCard title="Weekly Volume" description="Historical weekly mileage totals">
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
-        <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+        <BarChart
+          data={data}
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
+          <XAxis
+            dataKey="week"
+            interval="preserveStartEnd"
+            tickFormatter={(d) => {
+              const date = new Date(d)
+              return (
+                date.toLocaleString('en-US', { month: 'short' }) +
+                " '" +
+                date.toLocaleString('en-US', { year: '2-digit' })
+              )
+            }}
+          />
           <ChartTooltip />
           <Bar dataKey="miles" fill="var(--chart-1)" radius={2} animationDuration={300} />
           <Brush

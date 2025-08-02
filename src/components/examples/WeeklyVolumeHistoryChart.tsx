@@ -40,9 +40,23 @@ export default function WeeklyVolumeHistoryChart() {
       description="Historical weekly mileage totals (run + bike)"
     >
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
-        <BarChart data={filtered} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+        <BarChart
+          data={filtered}
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
+          <XAxis
+            dataKey="week"
+            interval="preserveStartEnd"
+            tickFormatter={(d) => {
+              const date = new Date(d)
+              return (
+                date.toLocaleString('en-US', { month: 'short' }) +
+                " '" +
+                date.toLocaleString('en-US', { year: '2-digit' })
+              )
+            }}
+          />
           <ChartTooltip
             content={
               <ChartTooltipContent
