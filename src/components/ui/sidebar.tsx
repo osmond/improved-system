@@ -103,6 +103,14 @@ const SidebarItem = React.forwardRef<HTMLLIElement, React.HTMLAttributes<HTMLLIE
 );
 SidebarItem.displayName = "SidebarItem";
 
+const SidebarInset = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("flex flex-1 flex-col", className)} {...props} />
+));
+SidebarInset.displayName = "SidebarInset";
+
 const SidebarFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
@@ -142,6 +150,7 @@ export {
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarItem,
+  SidebarInset,
   SidebarFooter,
   SidebarProvider,
   SidebarTrigger,
