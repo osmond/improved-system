@@ -769,16 +769,42 @@ export interface RunningSession {
   duration: number;
   heartRate: number;
   date: string;
+
+  /** ISO timestamp for session start */
+  start: string;
+  weather: {
+    temperature: number;
+    humidity: number;
+    wind: number;
+    condition: string;
+  };
 }
 
 export function generateMockRunningSessions(): RunningSession[] {
-  return Array.from({ length: 30 }, (_, i) => ({
-    id: i + 1,
-    pace: +(5 + Math.random() * 3).toFixed(2),
-    duration: Math.round(25 + Math.random() * 35),
-    heartRate: Math.round(120 + Math.random() * 40),
-    date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10),
-  }));
+  return Array.from({ length: 30 }, (_, i) => {
+    const pace = +(5 + Math.random() * 3).toFixed(2);
+    const base = new Date();
+    base.setDate(base.getDate() - i);
+    const startHour = 5 + Math.round(Math.random() * 14); // 5 AM - 7 PM
+    base.setHours(startHour, 0, 0, 0);
+    return {
+      id: i + 1,
+      pace,
+      duration: Math.round(25 + Math.random() * 35),
+      heartRate: Math.round(120 + Math.random() * 40),
+      date: base.toISOString().slice(0, 10),
+      start: base.toISOString(),
+      weather: {
+        temperature: Math.round(40 + pace * 5 + Math.random() * 10),
+        humidity: Math.round(40 + Math.random() * 50),
+        wind: +(Math.random() * 20).toFixed(1),
+        condition: ["Sunny", "Cloudy", "Rain", "Snow"][
+          Math.floor(Math.random() * 4)
+        ],
+      },
+    };
+  });
+
 }
 
 export async function getRunningSessions(): Promise<RunningSession[]> {
