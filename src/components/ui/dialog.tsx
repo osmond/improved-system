@@ -48,9 +48,7 @@ const DialogContentFullscreen = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content>
 >(({ className, children, ...props }, ref) => (
   <DialogPortal>
-    <DialogClose asChild>
-      <DialogOverlay />
-    </DialogClose>
+    <DialogOverlay />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(
