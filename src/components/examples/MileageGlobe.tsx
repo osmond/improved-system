@@ -8,21 +8,14 @@ import { zoom } from 'd3-zoom'
 import { drag } from 'd3-drag'
 import { feature, mesh } from 'topojson-client'
 
-interface GlobePoint {
-  date: string
-  miles: number
-  coordinates: [number, number][]
-}
-
 function GlobeRenderer({
-  points,
-  onSelect,
+  path,
+  totalMiles,
 }: {
-  points: GlobePoint[]
-  onSelect: (point: GlobePoint) => void
+  path: [number, number][]
+  totalMiles: number
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null)
-  const tooltipRef = useRef<HTMLDivElement | null>(null)
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
 
   useEffect(() => {
@@ -49,7 +42,6 @@ function GlobeRenderer({
       return
 
     const svg = select(svgRef.current)
-    const tooltip = select(tooltipRef.current)
     const { width, height } = dimensions
 
     svg.attr('viewBox', `0 0 ${width} ${height}`)
@@ -59,7 +51,7 @@ function GlobeRenderer({
       .translate([width / 2, height / 2])
       .scale(Math.min(width, height) / 2 - 10)
 
-    const path = geoPath(projection)
+    const geo = geoPath(projection)
 
     const sphere = svg
       .append('path')
@@ -69,13 +61,13 @@ function GlobeRenderer({
 
     let landPath: any
     let boundaryPath: any
-    const linePaths: any[] = []
+    let linePath: any
 
     const render = () => {
-      sphere.attr('d', path as any)
-      landPath?.attr('d', path as any)
-      boundaryPath?.attr('d', path as any)
-      linePaths.forEach((line) => line.attr('d', path as any))
+      sphere.attr('d', geo as any)
+      landPath?.attr('d', geo as any)
+      boundaryPath?.attr('d', geo as any)
+      linePath?.attr('d', geo as any)
     }
 
     fetch('/world-110m.json')
@@ -102,38 +94,13 @@ function GlobeRenderer({
           .attr('stroke', '#94a3b8')
           .attr('stroke-width', 0.5)
 
-        points.forEach((p) => {
-          const line = svg
-            .append('path')
-            .datum({ type: 'LineString', coordinates: p.coordinates } as any)
-            .attr('fill', 'none')
-            .attr('stroke', 'var(--primary)')
-            .attr('stroke-width', 1.5)
-            .attr('opacity', 0.8)
-            .on('mouseenter', (event) => {
-              select(event.currentTarget)
-                .attr('stroke-width', 3)
-                .attr('opacity', 1)
-              tooltip
-                .style('display', 'block')
-                .style('left', `${event.offsetX + 10}px`)
-                .style('top', `${event.offsetY + 10}px`)
-                .text(`${p.date}: ${p.miles} miles`)
-            })
-            .on('mousemove', (event) => {
-              tooltip
-                .style('left', `${event.offsetX + 10}px`)
-                .style('top', `${event.offsetY + 10}px`)
-            })
-            .on('mouseleave', (event) => {
-              select(event.currentTarget)
-                .attr('stroke-width', 1.5)
-                .attr('opacity', 0.8)
-              tooltip.style('display', 'none')
-            })
-            .on('click', () => onSelect(p))
-          linePaths.push(line)
-        })
+        linePath = svg
+          .append('path')
+          .datum({ type: 'LineString', coordinates: path } as any)
+          .attr('fill', 'none')
+          .attr('stroke', 'var(--primary)')
+          .attr('stroke-width', Math.min(10, 1 + totalMiles / 50))
+          .attr('opacity', 0.8)
 
         render()
       })
@@ -159,7 +126,7 @@ function GlobeRenderer({
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-  }, [points, onSelect, dimensions])
+  }, [path, totalMiles, dimensions])
 
   return (
     <div className='relative aspect-square w-full'>
@@ -167,10 +134,6 @@ function GlobeRenderer({
         ref={svgRef}
         className='h-full w-full rounded'
         preserveAspectRatio='xMidYMid meet'
-      />
-      <div
-        ref={tooltipRef}
-        className='pointer-events-none absolute hidden rounded bg-black/80 px-2 py-1 text-xs text-white'
       />
     </div>
   )
@@ -187,10 +150,6 @@ export default function MileageGlobe({
       ? { startWeek: weekRange[0], endWeek: weekRange[1] }
       : undefined,
   )
-  const [selected, setSelected] = useState<GlobePoint | null>(null)
-  useEffect(() => {
-    setSelected(null)
-  }, [weekRange])
 
   if (!data) {
     return (
@@ -200,20 +159,15 @@ export default function MileageGlobe({
     )
   }
 
-  const points: GlobePoint[] = data.map((p) => ({
-    date: p.date,
-    miles: p.miles,
-    coordinates: p.coordinates,
-  }))
+  const totalMiles = data.reduce((sum, p) => sum + p.miles, 0)
+  const path = data.flatMap((p) => p.coordinates) as [number, number][]
 
   return (
     <div className='space-y-2'>
-      <GlobeRenderer points={points} onSelect={setSelected} />
-      {selected && (
-        <div className='rounded bg-muted p-2 text-sm'>
-          {selected.date}: {selected.miles} miles
-        </div>
-      )}
+      <GlobeRenderer path={path} totalMiles={totalMiles} />
+      <div className='rounded bg-muted p-2 text-sm'>
+        Total: {totalMiles} miles
+      </div>
     </div>
   )
 }

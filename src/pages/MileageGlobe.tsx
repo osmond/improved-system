@@ -18,7 +18,8 @@ export default function MileageGlobePage() {
       <h2 className="text-xl font-semibold">Mileage Globe</h2>
       <p className="text-sm text-muted-foreground">
         Explore your activities on an interactive 3D globe. Drag to rotate, and use your
-        mouse wheel or touchpad to zoom. Click on a path to inspect mileage.
+        mouse wheel or touchpad to zoom. Total mileage for the selected period is shown
+        below the globe.
       </p>
       {weekly && range && (
         <div className="space-y-2">
