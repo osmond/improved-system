@@ -30,8 +30,10 @@ import statesTopo from "@/lib/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
 
-
-const weatherKey = import.meta.env.VITE_WEATHER_KEY;
+// OpenWeatherMap API key for precipitation tiles. This key is specific to the
+// app and can be replaced by setting VITE_WEATHER_KEY if needed.
+const weatherKey =
+  import.meta.env.VITE_WEATHER_KEY || "37744b6f778e02303a56b9cf3c6da8e0";
 
 export default function GeoActivityExplorer() {
   const data = useStateVisits();

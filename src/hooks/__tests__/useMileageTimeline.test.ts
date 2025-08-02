@@ -9,19 +9,19 @@ vi.mock("@/lib/api", () => ({
 }));
 
 describe("useMileageTimeline", () => {
-  it("accumulates weekly mileage", async () => {
-    const weeks = [
-      { week: "2025-W30", miles: 10, path: "a" },
-      { week: "2025-W31", miles: 20, path: "b" },
-      { week: "2025-W32", miles: 15, path: "c" },
+  it("accumulates activity mileage", async () => {
+    const activities = [
+      { date: "2025-07-20", miles: 10, coordinates: [[0, 0]] },
+      { date: "2025-07-27", miles: 20, coordinates: [[1, 1]] },
+      { date: "2025-08-03", miles: 15, coordinates: [[2, 2]] },
     ];
-    (getMileageTimeline as any).mockResolvedValue(weeks);
+    (getMileageTimeline as any).mockResolvedValue(activities);
     const { result } = renderHook(() => useMileageTimeline());
     await waitFor(() => result.current !== null);
     expect(result.current).toEqual([
-      { week: "2025-W30", cumulativeMiles: 10, path: "a" },
-      { week: "2025-W31", cumulativeMiles: 30, path: "b" },
-      { week: "2025-W32", cumulativeMiles: 45, path: "c" },
+      { date: "2025-07-20", cumulativeMiles: 10, coordinates: [[0, 0]] },
+      { date: "2025-07-27", cumulativeMiles: 30, coordinates: [[1, 1]] },
+      { date: "2025-08-03", cumulativeMiles: 45, coordinates: [[2, 2]] },
     ]);
   });
 });

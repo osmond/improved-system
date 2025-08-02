@@ -3,7 +3,7 @@ export interface CurrentWeather {
   condition: string
 }
 
-function mapWeatherCode(code: number): string {
+export function mapWeatherCode(code: number): string {
   if (code === 0) return 'Clear'
   if (code >= 1 && code <= 3) return 'Cloudy'
   if (code === 45 || code === 48) return 'Fog'
@@ -26,8 +26,10 @@ export async function getCurrentWeather(
   }
   const data = await res.json()
   const cw = data.current_weather
+  // Open-Meteo returns temperatures in Celsius. Convert to Fahrenheit for
+  // consistency with the rest of the app.
   return {
-    temperature: cw.temperature,
+    temperature: (cw.temperature * 9) / 5 + 32,
     condition: mapWeatherCode(cw.weathercode),
   }
 }
