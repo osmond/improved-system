@@ -60,9 +60,20 @@ export function useRunningSessions(): SessionPoint[] | null {
       const hour = new Date(s.start).getHours()
       const tempAdj = (s.weather.temperature - 55) * 0.02
       const humidAdj = (s.weather.humidity - 50) * 0.01
+      const windAdj = s.weather.wind * 0.01
+      const conditionAdjMap: Record<string, number> = {
+        Clear: -0.05,
+        Cloudy: 0.02,
+        Fog: 0.05,
+        Drizzle: 0.07,
+        Rain: 0.1,
+        Snow: 0.15,
+        Storm: 0.2,
+      }
+      const conditionAdj = conditionAdjMap[s.weather.condition] ?? 0
       const timeAdj = Math.abs(hour - 8) * 0.03
       const hrAdj = (s.heartRate - 140) * 0.015
-      return 6.5 + tempAdj + humidAdj + timeAdj + hrAdj
+      return 6.5 + tempAdj + humidAdj + windAdj + conditionAdj + timeAdj + hrAdj
     }
 
     getRunningSessions().then((sessions: RunningSession[]) => {
