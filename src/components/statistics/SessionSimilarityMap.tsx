@@ -10,7 +10,7 @@ import {
   Tooltip as ChartTooltip,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
-import { useRunningSessions } from "@/hooks/useRunningSessions"
+import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
 
 const colors = [
@@ -27,9 +27,13 @@ const config = {
   good: { label: "Good Day", color: "hsl(var(--chart-6))" },
 } satisfies Record<string, unknown>
 
-export default function SessionSimilarityMap() {
-  const data = useRunningSessions()
+interface SessionSimilarityMapProps {
+  data: SessionPoint[] | null
+}
 
+export default function SessionSimilarityMap({
+  data,
+}: SessionSimilarityMapProps) {
   if (!data) return <Skeleton className="h-64" />
 
   const clusters = Array.from(new Set(data.map((d) => d.cluster)))
@@ -60,6 +64,34 @@ export default function SessionSimilarityMap() {
           />
         </ScatterChart>
       </ChartContainer>
+      <div className="mt-4 grid grid-cols-3 gap-4">
+        {clusters.map((c) => {
+          const clusterData = data.filter((d) => d.cluster === c)
+          const avgTemp =
+            clusterData.reduce((sum, d) => sum + d.temperature, 0) /
+            clusterData.length
+          const avgStart =
+            clusterData.reduce((sum, d) => sum + d.startHour, 0) /
+            clusterData.length
+          return (
+            <div key={c} className="flex flex-col items-center">
+              <ChartContainer className="h-32 w-full" config={{}}>
+                <ScatterChart>
+                  <XAxis type="number" dataKey="x" hide />
+                  <YAxis type="number" dataKey="y" hide />
+                  <Scatter
+                    data={clusterData}
+                    fill={colors[c % colors.length]}
+                  />
+                </ScatterChart>
+              </ChartContainer>
+              <p className="mt-2 text-xs text-muted-foreground text-center">
+                Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h
+              </p>
+            </div>
+          )
+        })}
+      </div>
     </ChartCard>
   )
 }

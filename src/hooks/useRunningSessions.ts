@@ -7,6 +7,8 @@ export interface SessionPoint {
   y: number
   cluster: number
   good: boolean
+  temperature: number
+  startHour: number
 }
 
 function kMeans(data: number[][], k: number, iterations = 10): number[] {
@@ -84,6 +86,8 @@ export function useRunningSessions(): SessionPoint[] | null {
           y,
           cluster: labels[idx],
           good: sessions[idx].pace < expectedPace(sessions[idx]) - 0.2,
+          temperature: sessions[idx].weather.temperature,
+          startHour: new Date(sessions[idx].start).getHours(),
         }),
       )
       setPoints(data)
