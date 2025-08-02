@@ -25,7 +25,7 @@ describe("DialogContentFullscreen", () => {
 
     expect(screen.getByText("content")).toBeInTheDocument();
 
-    const overlay = document.querySelector('div[type="button"]') as HTMLElement;
+    const overlay = document.querySelector('[data-state="open"]') as HTMLElement;
 
     await user.click(overlay);
 
