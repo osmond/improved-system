@@ -182,3 +182,10 @@ SPOTIFY_REFRESH_TOKEN=<refresh token>
 ```
 
 Alternatively provide `SPOTIFY_ACCESS_TOKEN` directly if you already have one. These values are read at runtime by `src/lib/spotify.ts`.
+
+## Weather overlay
+The geographic explorer can display precipitation tiles from OpenWeatherMap. Provide an API key to enable this overlay:
+
+```
+VITE_WEATHER_KEY=<your OpenWeatherMap API key>
+```

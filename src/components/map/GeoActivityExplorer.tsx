@@ -31,6 +31,8 @@ import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
 
 
+const weatherKey = import.meta.env.VITE_WEATHER_KEY;
+
 export default function GeoActivityExplorer() {
   const data = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
@@ -206,7 +208,12 @@ export default function GeoActivityExplorer() {
         />
 
         <label className="flex items-center gap-1 text-xs">
-          <input type="checkbox" checked={showWeather} onChange={() => setShowWeather(!showWeather)} />
+          <input
+            type="checkbox"
+            checked={showWeather}
+            onChange={() => setShowWeather(!showWeather)}
+            disabled={!weatherKey}
+          />
           Weather
         </label>
 
@@ -257,12 +264,12 @@ export default function GeoActivityExplorer() {
                 }}
               />
             </Source>
-            {showWeather && (
+            {showWeather && weatherKey && (
               <Source
                 id="wx"
                 type="raster"
                 tiles={[
-                  `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=YOUR_API_KEY`,
+                  `https://tile.openweathermap.org/map/precipitation_new/{z}/{x}/{y}.png?appid=${weatherKey}`,
                 ]}
                 tileSize={256}
               >
