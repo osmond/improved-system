@@ -3,7 +3,7 @@ import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
-import { Dialog, DialogContentFullscreen } from "../dialog";
+import { Dialog, DialogContentFullscreen, DialogTrigger } from "../dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 
 function TestDialog() {
@@ -62,5 +62,29 @@ describe("DialogContentFullscreen", () => {
     await user.click(button);
 
     expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
+  });
+});
+
+function UncontrolledDialog() {
+  return (
+    <Dialog>
+      <DialogTrigger>open</DialogTrigger>
+      <DialogContentFullscreen>
+        <div>content</div>
+      </DialogContentFullscreen>
+    </Dialog>
+  );
+}
+
+describe("Dialog", () => {
+  it("opens uncontrolled dialog with trigger", async () => {
+    const user = userEvent.setup();
+    render(<UncontrolledDialog />);
+
+    expect(screen.queryByText("content")).not.toBeInTheDocument();
+
+    await user.click(screen.getByText("open"));
+
+    expect(screen.getByText("content")).toBeInTheDocument();
   });
 });

@@ -2,7 +2,27 @@ import * as React from "react";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
 import { cn } from "@/lib/utils";
 
-const Dialog = DialogPrimitive.Root;
+interface DialogProps
+  extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root> {}
+
+function Dialog({ open, onOpenChange, ...props }: DialogProps) {
+  const [internalOpen, setInternalOpen] = React.useState(false);
+
+  const handleOpenChange = (next: boolean) => {
+    if (open === undefined) {
+      setInternalOpen(next);
+    }
+    onOpenChange?.(next);
+  };
+
+  return (
+    <DialogPrimitive.Root
+      open={open === undefined ? internalOpen : open}
+      onOpenChange={handleOpenChange}
+      {...props}
+    />
+  );
+}
 const DialogTrigger = DialogPrimitive.Trigger;
 const DialogClose = DialogPrimitive.Close;
 
