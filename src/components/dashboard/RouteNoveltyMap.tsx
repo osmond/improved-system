@@ -22,6 +22,7 @@ import ChartCard from "./ChartCard";
 import { Alert } from "@/components/ui/alert";
 import useRouteNovelty from "@/hooks/useRouteNovelty";
 import RouteNoveltyLegend from "./RouteNoveltyLegend";
+import { Card } from "@/components/ui/card";
 
 export default function RouteNoveltyMap() {
   const [runs, trend, prolongedLow] = useRouteNovelty();
@@ -73,6 +74,11 @@ export default function RouteNoveltyMap() {
         ? runs.find((r) => r.id === selectedRunId) ?? null
         : null,
     [runs, selectedRunId],
+  );
+
+  const numberFormatter = useMemo(
+    () => new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }),
+    [],
   );
 
   const handleClick = (e: MapLayerMouseEvent) => {
@@ -187,11 +193,23 @@ export default function RouteNoveltyMap() {
                 setPopupLocation(null);
               }}
             >
-              <div>
-                <div>{selectedRun.name}</div>
-                <div>{selectedRun.timestamp.slice(0, 10)}</div>
-                <div>Novelty: {selectedRun.novelty}</div>
-              </div>
+              <Card className="p-2 space-y-1">
+                <div className="font-medium">{selectedRun.name}</div>
+                <div className="text-sm text-muted-foreground">
+                  {new Date(selectedRun.timestamp).toLocaleDateString()}
+                </div>
+                <div className="text-sm">
+                  Novelty: {numberFormatter.format(selectedRun.novelty)}
+                </div>
+                <div className="text-sm">
+                  DTW similarity: {numberFormatter.format(selectedRun.dtwSimilarity)}
+                </div>
+                <div className="text-sm">
+                  Overlap similarity: {numberFormatter.format(
+                    selectedRun.overlapSimilarity,
+                  )}
+                </div>
+              </Card>
             </Popup>
           )}
           <NavigationControl position="top-left" />
