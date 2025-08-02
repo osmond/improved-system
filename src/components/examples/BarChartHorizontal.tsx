@@ -45,7 +45,7 @@ export default function ChartBarHorizontal() {
         <CardDescription>Distribution of run/bike session distances (e.g., how often you do short vs long efforts)</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-60'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
           <BarChart
             accessibilityLayer
             data={chartData}

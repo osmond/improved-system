@@ -36,7 +36,7 @@ export default function ActivityByTime() {
       title="Workout Activity by Time"
       description="Sessions by time of day"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <RadarChart data={activityByTimeData}>
           <PolarGrid />
           <PolarAngleAxis dataKey="time" />

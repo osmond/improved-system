@@ -49,7 +49,7 @@ export default function TreadmillVsOutdoorExample() {
         </CardDescription>
       </CardHeader>
       <CardContent className='flex flex-1 items-center pb-0'>
-        <ChartContainer config={chartConfig} className='h-60 w-full'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96 w-full'>
           <BarChart data={monthlyData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis dataKey='month' tickLine={false} tickMargin={10} axisLine={false} tickFormatter={(v) => v.slice(0, 3)} />

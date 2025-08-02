@@ -111,7 +111,7 @@ export default function PerfVsEnvironmentMatrix() {
           { value: "elevation", label: "Elevation" },
         ]}
       />
-      <ChartContainer config={config} className="h-60">
+      <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey={variable} name={axisLabels[variable]} />

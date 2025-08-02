@@ -45,7 +45,7 @@ export default function ChartBarLabelCustom() {
         <CardDescription>Mileage or sessions per custom category (e.g., favorite routes, segments, or surfaces)</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-60'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
           <BarChart accessibilityLayer data={chartData} layout='vertical' margin={{ right: 16 }}>
             <CartesianGrid horizontal={false} />
             <YAxis

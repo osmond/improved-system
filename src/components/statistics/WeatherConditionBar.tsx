@@ -21,7 +21,7 @@ export default function WeatherConditionBar() {
   if (!stats) return <Skeleton className="h-60" />
   return (
     <ChartCard title="Runs by Weather" description="Frequency by condition">
-      <ChartContainer config={config} className="h-60">
+      <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
         <BarChart data={stats.weatherConditions}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="label" />

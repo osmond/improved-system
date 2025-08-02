@@ -39,7 +39,7 @@ export default function ReadingStackSplit() {
 
   return (
     <ChartCard title="Reading Stack Split" description="Time by device">
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <PieChart width={200} height={160}>
           <ChartTooltip />
           <ChartLegend

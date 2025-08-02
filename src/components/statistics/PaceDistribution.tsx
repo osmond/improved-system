@@ -28,7 +28,7 @@ export default function PaceDistribution() {
       title="Pace Distribution"
       description="Distribution of paces across runs"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <AreaChart data={stats.paceDistribution}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="pace" tickLine={false} axisLine={false} />

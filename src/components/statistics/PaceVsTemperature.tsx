@@ -26,7 +26,7 @@ export default function PaceVsTemperature() {
   }))
   return (
     <ChartCard title="Pace vs Temperature" description="Average pace per day">
-      <ChartContainer config={config} className="h-60">
+      <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
         <LineChart data={data}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="temperature" name="Temp (F)" />

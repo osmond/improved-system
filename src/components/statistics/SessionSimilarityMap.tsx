@@ -39,7 +39,7 @@ export default function SessionSimilarityMap() {
       title="Session Similarity"
       description="Similarity of recent runs"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" dataKey="x" name="X" />

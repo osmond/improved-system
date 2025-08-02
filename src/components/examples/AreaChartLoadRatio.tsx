@@ -47,7 +47,7 @@ export default function AreaChartLoadRatio() {
         <CardDescription>Short-term load compared to longer-term training baseline (last 4 weeks)</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-64'>
+        <ChartContainer config={chartConfig} className='h-64 md:h-80 lg:h-96'>
           <AreaChart data={loadData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
             <CartesianGrid strokeDasharray='3 3' />
             <XAxis

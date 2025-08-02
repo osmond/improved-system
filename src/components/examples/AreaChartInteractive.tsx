@@ -155,7 +155,7 @@ export default function AreaChartInteractive() {
         />
       </CardHeader>
       <CardContent className="pt-0">
-        <ChartContainer config={chartConfig} className="h-60">
+        <ChartContainer config={chartConfig} className="h-60 md:h-80 lg:h-96">
           <AreaChart data={filtered}>
             <defs>
             <linearGradient id={fillRunId} x1="0" y1="0" x2="0" y2="1">

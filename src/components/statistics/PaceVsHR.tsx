@@ -83,7 +83,7 @@ export default function PaceVsHR() {
       title="Pace vs Heart Rate"
       description="Correlation between pace and heart rate"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="pace" name="Pace (min/mi)" />

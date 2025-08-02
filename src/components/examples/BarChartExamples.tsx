@@ -77,7 +77,7 @@ const negativeConfig = {
 export default function BarChartExamples() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-      <ChartContainer config={simpleConfig} className="h-60" title="Simple Bar">
+      <ChartContainer config={simpleConfig} className="h-60 md:h-80 lg:h-96" title="Simple Bar">
         <BarChart data={simpleData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="name" />
@@ -89,7 +89,7 @@ export default function BarChartExamples() {
 
       <ChartContainer
         config={stackedConfig}
-        className="h-60"
+        className="h-60 md:h-80 lg:h-96"
         title="Stacked Bar"
       >
         <BarChart data={stackedData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -106,7 +106,7 @@ export default function BarChartExamples() {
 
       <ChartContainer
         config={groupedConfig}
-        className="h-60"
+        className="h-60 md:h-80 lg:h-96"
         title="Grouped Bar"
       >
         <BarChart data={groupedData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
@@ -123,7 +123,7 @@ export default function BarChartExamples() {
 
       <ChartContainer
         config={horizontalConfig}
-        className="h-60"
+        className="h-60 md:h-80 lg:h-96"
         title="Horizontal Bar"
       >
         <BarChart
@@ -141,7 +141,7 @@ export default function BarChartExamples() {
 
       <ChartContainer
         config={negativeConfig}
-        className="h-60"
+        className="h-60 md:h-80 lg:h-96"
         title="Negative Bar"
       >
         <BarChart data={negativeData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

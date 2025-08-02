@@ -47,7 +47,7 @@ export default function ChartBarMixed() {
         <CardDescription>Total sessions or volume by type (Run / Bike / Walk / Other)</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-60'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
           <BarChart accessibilityLayer data={chartData} layout='vertical' margin={{ left: 0 }}>
             <YAxis
               dataKey='activity'

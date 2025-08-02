@@ -57,7 +57,7 @@ export default function TimeInBedChart() {
         <CardDescription>Nightly sleep duration with 7‑day average</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-60'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
           <AreaChart data={dataWithAvg} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
             <defs>
               <linearGradient id={fillHoursId} x1='0' y1='0' x2='0' y2='1'>

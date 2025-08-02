@@ -33,7 +33,7 @@ export default function TrainingLoadRatio() {
       title="Acute vs Chronic Load Ratio"
       description="Acute vs chronic training load"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <AreaChart data={loadData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis

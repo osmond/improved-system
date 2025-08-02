@@ -34,7 +34,7 @@ export default function EquipmentUsageTimeline() {
       title="Equipment Usage"
       description="Bike and shoe usage over time"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <BarChart data={usageData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" tickLine={false} axisLine={false} />

@@ -47,7 +47,7 @@ export default function ChartRadarDefault() {
       <CardContent className='pb-0'>
         <ChartContainer
           config={chartConfig}
-          className='mx-auto aspect-square max-h-[250px]'
+          className='mx-auto aspect-square max-h-[250px] md:max-h-[300px] lg:max-h-[350px]'
         >
           <RadarChart data={chartData}>
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />

@@ -132,7 +132,7 @@ export default function LineChartInteractive() {
   )
 
   return (
-    <Card className="py-4 sm:py-0">
+    <Card className="flex h-full flex-col py-4 sm:py-0">
       <CardHeader className="flex flex-col items-stretch border-b !p-0 sm:flex-row">
         <div className="flex flex-1 flex-col justify-center gap-1 px-6 pb-3 sm:pb-0">
           <CardTitle>Average Pace / Speed</CardTitle>
@@ -154,8 +154,8 @@ export default function LineChartInteractive() {
           ))}
         </div>
       </CardHeader>
-      <CardContent className="px-2 sm:p-6">
-        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] w-full">
+      <CardContent className="flex-1 px-2 sm:p-6">
+        <ChartContainer config={chartConfig} className="aspect-auto h-[250px] md:h-[300px] lg:h-[350px] w-full">
           <LineChart accessibilityLayer data={chartData} margin={{ left: 12, right: 12 }}>
             <CartesianGrid vertical={false} />
             <XAxis
