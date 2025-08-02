@@ -48,7 +48,7 @@ export default function ScatterChartPaceHeartRate() {
         </CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className="h-64">
+        <ChartContainer config={chartConfig} className="h-64 md:h-80 lg:h-96">
           <ScatterChart>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="pace" name="Pace (min/mi)" />

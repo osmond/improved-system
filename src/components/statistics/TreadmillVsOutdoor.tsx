@@ -27,7 +27,7 @@ export default function TreadmillVsOutdoor() {
       title="Treadmill vs Outdoor"
       description="Indoor vs outdoor mileage split"
     >
-      <ChartContainer config={config} className="h-60">
+      <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
         <PieChart width={200} height={160}>
           <ChartTooltip />
 

@@ -13,7 +13,7 @@ export default function MovementFingerprint() {
 
   return (
     <ChartCard title="Movement Fingerprint" description="Average steps by hour">
-      <ChartContainer config={{}} className="h-24">
+      <ChartContainer config={{}} className="h-24 md:h-32 lg:h-40">
         <div
           className="grid gap-px h-full text-[10px]"
           style={{ gridTemplateColumns: "repeat(24, minmax(0, 1fr))" }}

@@ -55,7 +55,7 @@ export default function ReadingProbabilityTimeline() {
 
   return (
     <ChartCard title="Reading Probability" description="Likelihood of reading throughout the day">
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <AreaChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" tickFormatter={(t) => String(new Date(t).getHours())} />

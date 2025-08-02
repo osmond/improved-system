@@ -73,7 +73,7 @@ export default function LocationEfficiencyComparison() {
           </Map>
         </div>
         <div className="flex-1">
-          <ChartContainer config={config} className="h-40">
+          <ChartContainer config={config} className="h-40 md:h-56 lg:h-72">
             <BarChart data={sorted} margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="city" />

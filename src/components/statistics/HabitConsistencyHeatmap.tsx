@@ -26,7 +26,7 @@ export default function HabitConsistencyHeatmap() {
       title="Habit Consistency"
       description="Session count by weekday and hour"
     >
-      <ChartContainer config={{}} className="h-64">
+      <ChartContainer config={{}} className="h-64 md:h-80 lg:h-96">
         <div className="grid gap-px text-center text-[10px]">
           <div className="grid grid-cols-7 text-xs font-medium">
             {dayLabels.map((d) => (

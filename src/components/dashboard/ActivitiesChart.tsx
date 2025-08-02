@@ -53,7 +53,7 @@ export function ActivitiesChart() {
       className="md:col-span-2"
       lastSync={data.lastSync}
     >
-      <ChartContainer config={chartConfig} className="h-60">
+      <ChartContainer config={chartConfig} className="h-60 md:h-80 lg:h-96">
         <LineChart data={activities} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />

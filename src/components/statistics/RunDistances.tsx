@@ -33,7 +33,7 @@ export default function RunDistances() {
       title="Run Distances"
       description="Popular run distance buckets"
     >
-      <ChartContainer config={config} className="h-60">
+      <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
         <BarChart layout="vertical" data={runDistanceData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" tickLine={false} axisLine={false} />

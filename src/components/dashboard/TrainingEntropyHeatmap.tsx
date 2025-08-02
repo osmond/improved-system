@@ -28,7 +28,7 @@ export default function TrainingEntropyHeatmap() {
       title="Training Consistency"
       description="Low entropy + steady volume indicates a robust routine; spikes signal schedule disruption."
     >
-      <ChartContainer config={{}} className="h-64">
+      <ChartContainer config={{}} className="h-64 md:h-80 lg:h-96">
         <div className="grid gap-2 h-full" style={{ gridTemplateRows: "1fr auto" }}>
           <div className="grid gap-px text-center text-[10px] overflow-y-auto">
             <div className="grid grid-cols-7 text-xs font-medium">
@@ -48,7 +48,7 @@ export default function TrainingEntropyHeatmap() {
               </div>
             ))}
           </div>
-          <div className="h-24 w-full">
+          <div className="h-24 md:h-32 lg:h-40 w-full">
             <LineChart data={entropySeries} margin={{ top: 0, right: 20, bottom: 0, left: 0 }}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="week" tick={{ fontSize: 10 }} />

@@ -182,7 +182,7 @@ export default function GeoActivityExplorer() {
       <ChartContainer
         config={legendConfig}
         title="State Visits"
-        className="h-60 space-y-6"
+        className="h-60 md:h-80 lg:h-96 space-y-6"
       >
       <>
       <div className="flex gap-4 mb-4">

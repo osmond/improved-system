@@ -31,7 +31,7 @@ export default function AvgDailyMileageRadar() {
       title="Average Daily Mileage"
       description="Average mileage by day of week"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <RadarChart data={dailyMileage}>
           <PolarGrid />
           <PolarAngleAxis dataKey="day" />

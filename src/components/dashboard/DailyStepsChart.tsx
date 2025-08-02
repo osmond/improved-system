@@ -31,7 +31,7 @@ export function DailyStepsChart({ data }: DailyStepsChartProps) {
       description="Historical daily step totals"
       className="md:col-span-2"
     >
-      <ChartContainer config={chartConfig} className="h-60">
+      <ChartContainer config={chartConfig} className="h-60 md:h-80 lg:h-96">
       <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
         <CartesianGrid strokeDasharray="3 3" />
         <XAxis

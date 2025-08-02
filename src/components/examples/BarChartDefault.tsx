@@ -46,7 +46,7 @@ export default function ChartBarDefault() {
         <CardDescription>Total mileage per month (January – June 2024)</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-60'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis

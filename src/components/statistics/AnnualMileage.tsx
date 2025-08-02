@@ -34,7 +34,7 @@ export default function AnnualMileage() {
       title="Annual Mileage"
       description="Mileage totals by month"
     >
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <BarChart data={annualData}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="month" tickLine={false} axisLine={false} />

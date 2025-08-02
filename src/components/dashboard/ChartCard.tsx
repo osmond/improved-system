@@ -12,7 +12,7 @@ export interface ChartCardProps {
 
 export function ChartCard({ title, description, className, children, lastSync }: ChartCardProps) {
   return (
-    <Card className={cn(className)}>
+    <Card className={cn("flex h-full flex-col", className)}>
       {(title || description) && (
         <CardHeader>
           {title && <CardTitle>{title}</CardTitle>}
@@ -22,7 +22,7 @@ export function ChartCard({ title, description, className, children, lastSync }:
           )}
         </CardHeader>
         )}
-      <CardContent className="pt-0">{children}</CardContent>
+      <CardContent className="flex-1 pt-0">{children}</CardContent>
     </Card>
   );
 }

@@ -50,7 +50,7 @@ export default function RunBikeVolumeComparison() {
           Time
         </button>
       </div>
-      <ChartContainer config={config} className="h-64">
+      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="week" tickFormatter={(d) => new Date(d).toLocaleDateString()} />

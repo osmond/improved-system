@@ -103,7 +103,7 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
 
       <ChartContainer
         config={chartConfig}
-        className="h-60 md:col-span-2"
+        className="h-60 md:h-80 lg:h-96 md:col-span-2"
         title="Daily Steps"
       >
 
@@ -119,7 +119,7 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
 
     <ChartContainer
       config={chartConfig}
-      className="h-60 md:col-span-2"
+      className="h-60 md:h-80 lg:h-96 md:col-span-2"
       title="Daily Steps"
     >
       <BarChart data={enriched} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>

@@ -28,7 +28,7 @@ export default function HeartRateZones() {
       title="Heart Rate Zones"
       description="Percent of time per zone"
     >
-      <ChartContainer config={config} className="h-60">
+      <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
         <BarChart data={stats.heartRateZones}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="zone" tickLine={false} axisLine={false} />

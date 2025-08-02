@@ -39,7 +39,7 @@ export default function ShoeUsageChart() {
         <CardDescription>Miles logged per shoe model (wear tracking)</CardDescription>
       </CardHeader>
       <CardContent>
-        <ChartContainer config={chartConfig} className='h-60'>
+        <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <XAxis dataKey='model' tickLine={false} tickMargin={10} axisLine={false} />
