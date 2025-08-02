@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import useMileageTimeline from '@/hooks/useMileageTimeline'
 import { select } from 'd3-selection'
 import { geoOrthographic, geoPath } from 'd3-geo'
@@ -13,13 +13,21 @@ interface GlobePoint {
   coordinates: [number, number][]
 }
 
-function GlobeRenderer({ points }: { points: GlobePoint[] }) {
+function GlobeRenderer({
+  points,
+  onSelect,
+}: {
+  points: GlobePoint[]
+  onSelect: (point: GlobePoint) => void
+}) {
   const svgRef = useRef<SVGSVGElement | null>(null)
+  const tooltipRef = useRef<HTMLDivElement | null>(null)
 
   useEffect(() => {
     if (!svgRef.current) return
 
     const svg = select(svgRef.current)
+    const tooltip = select(tooltipRef.current)
     const width = 400
     const height = 400
 
@@ -39,8 +47,8 @@ function GlobeRenderer({ points }: { points: GlobePoint[] }) {
       .attr('fill', '#1e3a8a')
       .attr('stroke', '#94a3b8')
 
-    const linePaths = points.map((p) =>
-      svg
+    const linePaths = points.map((p) => {
+      const line = svg
         .append('path')
         .datum({ type: 'LineString', coordinates: p.coordinates })
         .attr('d', path as any)
@@ -48,7 +56,30 @@ function GlobeRenderer({ points }: { points: GlobePoint[] }) {
         .attr('stroke', 'var(--primary)')
         .attr('stroke-width', 1.5)
         .attr('opacity', 0.8)
-    )
+        .on('mouseenter', (event) => {
+          select(event.currentTarget)
+            .attr('stroke-width', 3)
+            .attr('opacity', 1)
+          tooltip
+            .style('display', 'block')
+            .style('left', `${event.offsetX + 10}px`)
+            .style('top', `${event.offsetY + 10}px`)
+            .text(`${p.date}: ${p.miles} miles`)
+        })
+        .on('mousemove', (event) => {
+          tooltip
+            .style('left', `${event.offsetX + 10}px`)
+            .style('top', `${event.offsetY + 10}px`)
+        })
+        .on('mouseleave', (event) => {
+          select(event.currentTarget)
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.8)
+          tooltip.style('display', 'none')
+        })
+        .on('click', () => onSelect(p))
+      return line
+    })
 
     const render = () => {
       sphere.attr('d', path as any)
@@ -77,13 +108,22 @@ function GlobeRenderer({ points }: { points: GlobePoint[] }) {
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-  }, [points])
+  }, [points, onSelect])
 
-  return <svg ref={svgRef} className='h-96 w-full rounded' />
+  return (
+    <div className='relative'>
+      <svg ref={svgRef} className='h-96 w-full rounded' />
+      <div
+        ref={tooltipRef}
+        className='pointer-events-none absolute hidden rounded bg-black/80 px-2 py-1 text-xs text-white'
+      />
+    </div>
+  )
 }
 
 export default function MileageGlobe() {
   const data = useMileageTimeline()
+  const [selected, setSelected] = useState<GlobePoint | null>(null)
 
   if (!data) {
     return (
@@ -99,6 +139,15 @@ export default function MileageGlobe() {
     coordinates: p.coordinates,
   }))
 
-  return <GlobeRenderer points={points} />
+  return (
+    <div className='space-y-2'>
+      <GlobeRenderer points={points} onSelect={setSelected} />
+      {selected && (
+        <div className='rounded bg-muted p-2 text-sm'>
+          {selected.date}: {selected.miles} miles
+        </div>
+      )}
+    </div>
+  )
 }
 
