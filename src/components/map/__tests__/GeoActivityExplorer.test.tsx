@@ -138,4 +138,15 @@ describe("GeoActivityExplorer", () => {
     fireEvent.mouseLeave(map);
 
   });
+
+  it("allows keyboard navigation through state list", () => {
+    render(<GeoActivityExplorer />)
+    const caBtn = screen.getByText("CA").closest("button") as HTMLElement
+    const txBtn = screen.getByText("TX").closest("button") as HTMLElement
+    caBtn.focus()
+    fireEvent.keyDown(caBtn, { key: "ArrowDown" })
+    expect(document.activeElement).toBe(txBtn)
+    fireEvent.keyDown(txBtn, { key: "ArrowUp" })
+    expect(document.activeElement).toBe(caBtn)
+  })
 });

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import Map, { Source, Layer, Marker, Popup, MapLayerMouseEvent } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import { feature } from "topojson-client";
@@ -11,12 +11,6 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
@@ -164,6 +158,38 @@ export default function GeoActivityExplorer() {
       ),
     [stateMarkers, filteredStates],
   )
+
+  const stateButtonRefs = useRef<Array<HTMLButtonElement | null>>([])
+
+  const focusButton = (idx: number) => {
+    const btn = stateButtonRefs.current[idx]
+    if (btn) btn.focus()
+  }
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLButtonElement>,
+    idx: number,
+  ) => {
+    const last = filteredStates.length - 1
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault()
+        focusButton(idx === last ? 0 : idx + 1)
+        break
+      case "ArrowUp":
+        e.preventDefault()
+        focusButton(idx === 0 ? last : idx - 1)
+        break
+      case "Home":
+        e.preventDefault()
+        focusButton(0)
+        break
+      case "End":
+        e.preventDefault()
+        focusButton(last)
+        break
+    }
+  }
 
   if (!data) {
     return <Skeleton className="h-60 w-full" />;
@@ -349,35 +375,44 @@ export default function GeoActivityExplorer() {
         </div>
 
         <div className="flex-1">
-          <Accordion value={expandedState || undefined} onValueChange={setExpandedState}>
-            {filteredStates.map((s) => (
-              <AccordionItem key={s.stateCode} value={s.stateCode}>
-                <AccordionTrigger className="flex justify-between">
-                  <span className="flex items-center gap-2">
-                    <span className="text-xs font-medium">{s.stateCode}</span>
-                    <Badge>{s.cities.length}</Badge>
-                  </span>
-                  <span className="flex gap-2">
-                    <Badge>{s.totalDays}d</Badge>
-                    <Badge>{s.totalMiles}mi</Badge>
-                  </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="text-sm space-y-1">
-                    {s.cities.map((c) => (
-                      <li key={c.name} className="flex justify-between px-2">
-                        <span>{c.name}</span>
-                        <span className="flex gap-2">
-                          <Badge>{c.days}d</Badge>
-                          <Badge>{c.miles}mi</Badge>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
-            ))}
-          </Accordion>
+          <ul className="space-y-2">
+            {filteredStates.map((s, i) => {
+              const isExpanded = expandedState === s.stateCode
+              return (
+                <li key={s.stateCode}>
+                  <button
+                    className="flex w-full justify-between"
+                    onClick={() => toggleState(s.stateCode)}
+                    aria-expanded={isExpanded}
+                    ref={(el) => (stateButtonRefs.current[i] = el)}
+                    onKeyDown={(e) => handleKeyDown(e, i)}
+                  >
+                    <span className="flex items-center gap-2">
+                      <span className="text-xs font-medium">{s.stateCode}</span>
+                      <Badge>{s.cities.length}</Badge>
+                    </span>
+                    <span className="flex gap-2">
+                      <Badge>{s.totalDays}d</Badge>
+                      <Badge>{s.totalMiles}mi</Badge>
+                    </span>
+                  </button>
+                  {isExpanded && (
+                    <ul className="mt-1 text-sm space-y-1">
+                      {s.cities.map((c) => (
+                        <li key={c.name} className="flex justify-between px-2">
+                          <span>{c.name}</span>
+                          <span className="flex gap-2">
+                            <Badge>{c.days}d</Badge>
+                            <Badge>{c.miles}mi</Badge>
+                          </span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              )
+            })}
+          </ul>
         </div>
       </div>
       </>
