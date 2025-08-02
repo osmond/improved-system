@@ -650,6 +650,18 @@ export async function getRunBikeVolume(): Promise<RunBikeVolumePoint[]> {
   });
 }
 
+export interface MileageTimelinePoint {
+  week: string;
+  miles: number;
+  path: string;
+}
+
+export async function getMileageTimeline(): Promise<MileageTimelinePoint[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve([]), 200);
+  });
+}
+
 // ----- Weekly comparison metrics -----
 function startOfWeek(date: Date): Date {
   const d = new Date(date);
