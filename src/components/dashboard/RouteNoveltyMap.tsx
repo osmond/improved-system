@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { RouteRun } from "@/lib/api";
 import Map, {
   Layer,
@@ -33,6 +33,29 @@ export default function RouteNoveltyMap() {
     lat: number;
   } | null>(null);
   const mapRef = useRef<MapRef | null>(null);
+
+  // Animate the selected run using feature-state
+  useEffect(() => {
+    const map = mapRef.current?.getMap();
+    if (!map) return;
+
+    let frame: number;
+    if (selectedRunId != null) {
+      const animate = () => {
+        const pulse = (Math.sin(performance.now() / 300) + 1) / 2;
+        map.setFeatureState({ source: "routes", id: selectedRunId }, { pulse });
+        frame = requestAnimationFrame(animate);
+      };
+      animate();
+    }
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      if (selectedRunId != null) {
+        map.setFeatureState({ source: "routes", id: selectedRunId }, { pulse: 0 });
+      }
+    };
+  }, [selectedRunId]);
 
   const routeFeatures = useMemo(
     () => ({
@@ -113,11 +136,66 @@ export default function RouteNoveltyMap() {
               id="route-lines"
               type="line"
               paint={{
-                "line-color": [
+                "line-gradient": [
+                  "interpolate",
+                  ["linear"],
+                  ["line-progress"],
+                  0,
+                  [
+                    "case",
+                    ["==", ["id"], selectedRunId ?? -1],
+                    "#00f",
+                    [
+                      "interpolate",
+                      ["linear"],
+                      ["get", "novelty"],
+                      0,
+                      "#888",
+                      1,
+                      "#f00",
+                    ],
+                  ],
+                  1,
+                  [
+                    "case",
+                    ["==", ["id"], selectedRunId ?? -1],
+                    "#0000ff00",
+                    [
+                      "interpolate",
+                      ["linear"],
+                      ["get", "novelty"],
+                      0,
+                      "#88888800",
+                      1,
+                      "#ff000000",
+                    ],
+                  ],
+                ],
+                "line-width": [
                   "case",
-
                   ["==", ["id"], selectedRunId ?? -1],
-
+                  [
+                    "+",
+                    5,
+                    ["*", 2, ["coalesce", ["feature-state", "pulse"], 0]],
+                  ],
+                  3,
+                ],
+              }}
+            />
+            <Layer
+              id="route-arrows"
+              type="symbol"
+              layout={{
+                "symbol-placement": "line",
+                "symbol-spacing": 50,
+                "icon-image": "triangle-15",
+                "icon-size": 0.5,
+              }}
+              paint={{
+                "icon-color": [
+                  "case",
+                  ["==", ["id"], selectedRunId ?? -1],
                   "#00f",
                   [
                     "interpolate",
@@ -128,14 +206,6 @@ export default function RouteNoveltyMap() {
                     1,
                     "#f00",
                   ],
-                ],
-                "line-width": [
-                  "case",
-
-                  ["==", ["id"], selectedRunId ?? -1],
-
-                  5,
-                  3,
                 ],
               }}
             />
