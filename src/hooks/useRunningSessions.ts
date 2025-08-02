@@ -65,7 +65,7 @@ export function useRunningSessions(): SessionPoint[] | null {
 
   useEffect(() => {
     function expectedPace(s: RunningSession): number {
-      const hour = new Date(s.start).getHours()
+      const hour = new Date(s.start ?? s.date).getHours()
       const tempAdj = (s.weather.temperature - 55) * 0.02
       const humidAdj = (s.weather.humidity - 50) * 0.01
       const windAdj = s.weather.wind * 0.01
@@ -89,7 +89,7 @@ export function useRunningSessions(): SessionPoint[] | null {
       const input = sessions.map((s) => [
         s.weather.temperature,
         s.weather.humidity,
-        new Date(s.start).getHours(),
+        new Date(s.start ?? s.date).getHours(),
         s.heartRate,
         s.pace,
       ])
@@ -110,7 +110,7 @@ export function useRunningSessions(): SessionPoint[] | null {
           temperature: sessions[idx].weather.temperature,
           humidity: sessions[idx].weather.humidity,
           wind: sessions[idx].weather.wind,
-          startHour: new Date(sessions[idx].start).getHours(),
+          startHour: new Date(sessions[idx].start ?? sessions[idx].date).getHours(),
           duration: sessions[idx].duration,
           lat: sessions[idx].lat,
           lon: sessions[idx].lon,

@@ -16,7 +16,7 @@ export interface TrainingConsistency {
 function computeHeatmap(sessions: RunningSession[]): TrainingHeatmapCell[] {
   const bins = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0))
   sessions.forEach((s) => {
-    const d = new Date((s as any).start || s.date)
+    const d = new Date(s.start ?? s.date)
     const day = d.getDay()
     const hour = d.getHours()
     bins[day][hour] += 1
@@ -43,7 +43,7 @@ function shannonEntropy(counts: number[]): number {
 function computeWeeklyEntropy(sessions: RunningSession[]): number[] {
   const weeks: Record<string, number[]> = {}
   sessions.forEach((s) => {
-    const d = new Date((s as any).start || s.date)
+    const d = new Date(s.start ?? s.date)
     const weekStart = new Date(d)
     weekStart.setDate(d.getDate() - d.getDay())
     weekStart.setHours(0, 0, 0, 0)

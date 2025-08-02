@@ -904,7 +904,7 @@ export interface RunningSession {
   date: string;
 
   /** ISO timestamp for session start */
-  start: string;
+  start?: string;
   lat: number;
   lon: number;
   weather: {
