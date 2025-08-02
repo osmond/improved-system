@@ -39,7 +39,9 @@ export default function MileageGlobePage() {
           />
         </div>
       )}
-      <MileageGlobe weekRange={range ?? undefined} />
+      <div className="mx-auto max-w-md">
+        <MileageGlobe weekRange={range ?? undefined} />
+      </div>
     </div>
   );
 }
