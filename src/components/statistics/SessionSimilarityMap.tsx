@@ -24,6 +24,7 @@ const config = {
   0: { label: "Cluster 1", color: colors[0] },
   1: { label: "Cluster 2", color: colors[1] },
   2: { label: "Cluster 3", color: colors[2] },
+  good: { label: "Good Day", color: "hsl(var(--chart-6))" },
 } satisfies Record<string, unknown>
 
 export default function SessionSimilarityMap() {
@@ -52,6 +53,11 @@ export default function SessionSimilarityMap() {
               animationDuration={300}
             />
           ))}
+          <Scatter
+            data={data.filter((d) => d.good)}
+            fill="hsl(var(--chart-6))"
+            shape="star"
+          />
         </ScatterChart>
       </ChartContainer>
     </ChartCard>
