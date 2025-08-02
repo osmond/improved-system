@@ -24,6 +24,11 @@ export default function SocialEngagementCard() {
   } = data;
   const chartData = [
     {
+      metric: "Overall",
+      current: index,
+      baseline: baseline.index,
+    },
+    {
       metric: "Entropy",
       current: locationEntropy,
       baseline: baseline.locationEntropy,
