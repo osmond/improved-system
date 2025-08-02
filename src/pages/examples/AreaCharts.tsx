@@ -6,29 +6,28 @@ import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
 import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 import GhostSelfRivalChart from "@/components/examples/GhostSelfRivalChart";
-import ChartPreview from "@/components/examples/ChartPreview";
 
 export default function AreaCharts() {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-      <ChartPreview>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <AreaChartInteractive />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <StepsTrendWithGoal data={mockDailySteps} />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <AreaChartLoadRatio />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <TreadmillVsOutdoorExample />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <WeeklyVolumeHistoryChart />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <GhostSelfRivalChart />
-      </ChartPreview>
+      </div>
     </div>
   );
 }

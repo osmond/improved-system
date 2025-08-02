@@ -3,23 +3,22 @@ import TrainingEntropyHeatmap from "@/components/dashboard/TrainingEntropyHeatma
 import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
 import ActivityByTime from "@/components/statistics/ActivityByTime";
 import ReadingProbabilityTimeline from "@/components/dashboard/ReadingProbabilityTimeline";
-import ChartPreview from "@/components/examples/ChartPreview";
 
 export default function Heatmaps() {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-      <ChartPreview>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <TrainingEntropyHeatmap />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <PerfVsEnvironmentMatrixExample />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ActivityByTime />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ReadingProbabilityTimeline />
-      </ChartPreview>
+      </div>
     </div>
   );
 }
