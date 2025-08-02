@@ -24,8 +24,8 @@ export default function AppSidebar() {
                   cn(
                     "block rounded-md px-3 py-2 text-sm",
                     isActive
-                      ? "bg-accent text-accent-foreground"
-                      : "hover:bg-muted",
+                      ? "bg-sidebar-primary text-sidebar-primary-foreground"
+                      : "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
                   )
                 }
               >
