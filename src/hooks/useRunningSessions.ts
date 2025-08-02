@@ -8,6 +8,7 @@ export interface SessionPoint {
   cluster: number
   good: boolean
   pace: number
+  paceDelta: number
   heartRate: number
   temperature: number
   humidity: number
@@ -100,22 +101,27 @@ export function useRunningSessions(): SessionPoint[] | null {
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
       const data = output.map(
-        ([x, y]: [number, number], idx: number) => ({
-          x,
-          y,
-          cluster: labels[idx],
-          good: sessions[idx].pace < expectedPace(sessions[idx]) - 0.2,
-          pace: sessions[idx].pace,
-          heartRate: sessions[idx].heartRate,
-          temperature: sessions[idx].weather.temperature,
-          humidity: sessions[idx].weather.humidity,
-          wind: sessions[idx].weather.wind,
-          startHour: new Date(sessions[idx].start ?? sessions[idx].date).getHours(),
-          duration: sessions[idx].duration,
-          lat: sessions[idx].lat,
-          lon: sessions[idx].lon,
-          condition: sessions[idx].weather.condition,
-        }),
+        ([x, y]: [number, number], idx: number) => {
+          const expected = expectedPace(sessions[idx])
+          const paceDelta = expected - sessions[idx].pace
+          return {
+            x,
+            y,
+            cluster: labels[idx],
+            good: sessions[idx].pace < expected - 0.2,
+            pace: sessions[idx].pace,
+            paceDelta,
+            heartRate: sessions[idx].heartRate,
+            temperature: sessions[idx].weather.temperature,
+            humidity: sessions[idx].weather.humidity,
+            wind: sessions[idx].weather.wind,
+            startHour: new Date(sessions[idx].start ?? sessions[idx].date).getHours(),
+            duration: sessions[idx].duration,
+            lat: sessions[idx].lat,
+            lon: sessions[idx].lon,
+            condition: sessions[idx].weather.condition,
+          }
+        },
       )
       setPoints(data)
     })
