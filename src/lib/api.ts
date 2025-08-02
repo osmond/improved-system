@@ -651,14 +651,53 @@ export async function getRunBikeVolume(): Promise<RunBikeVolumePoint[]> {
 }
 
 export interface MileageTimelinePoint {
-  week: string;
+  /** ISO date for the activity */
+  date: string;
+  /** Distance covered in miles */
   miles: number;
-  path: string;
+  /** Array of [lng, lat] coordinates representing the path */
+  coordinates: [number, number][];
 }
 
-export async function getMileageTimeline(): Promise<MileageTimelinePoint[]> {
+export function generateMockMileageTimeline(
+  years = 20,
+): MileageTimelinePoint[] {
+  const points: MileageTimelinePoint[] = [];
+  const now = new Date();
+  const start = new Date();
+  start.setFullYear(start.getFullYear() - years);
+
+  // Generate a handful of activities per year within the allowed range
+  for (let y = 0; y < years; y++) {
+    for (let i = 0; i < 5; i++) {
+      const d = new Date(now);
+      d.setFullYear(now.getFullYear() - y);
+      d.setMonth(Math.floor(Math.random() * 12));
+      d.setDate(1 + Math.floor(Math.random() * 28));
+      const miles = +(3 + Math.random() * 10).toFixed(2);
+      const coordinates: [number, number][] = [
+        [-122.5 + Math.random() * 0.1, 37.7 + Math.random() * 0.1],
+        [-122.4 + Math.random() * 0.1, 37.8 + Math.random() * 0.1],
+      ];
+      points.push({
+        date: d.toISOString().slice(0, 10),
+        miles,
+        coordinates,
+      });
+    }
+  }
+
+  // Only keep activities within the requested time range
+  return points
+    .filter((p) => new Date(p.date) >= start)
+    .sort((a, b) => a.date.localeCompare(b.date));
+}
+
+export async function getMileageTimeline(
+  years = 20,
+): Promise<MileageTimelinePoint[]> {
   return new Promise((resolve) => {
-    setTimeout(() => resolve([]), 200);
+    setTimeout(() => resolve(generateMockMileageTimeline(years)), 200);
   });
 }
 
