@@ -118,7 +118,7 @@ export interface ActivityMinutes {
 export const mockActivityMinutes: ActivityMinutes[] = [
   { activity: "Run", minutes: 520, fill: "var(--color-run)" },
   { activity: "Bike", minutes: 340, fill: "var(--color-bike)" },
-  { activity: "Swim", minutes: 120, fill: "var(--color-swim)" },
+  { activity: "Walk", minutes: 120, fill: "var(--color-walk)" },
   { activity: "Strength", minutes: 220, fill: "var(--color-strength)" },
   { activity: "Other", minutes: 90, fill: "var(--color-other)" },
 ];
