@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useState } from "react";
-import { getLocationVisits, type LocationVisit } from "@/lib/api";
+import {
+  getActivityVisits,
+  type ActivityVisit,
+} from "@/lib/activityContext";
 
-function computeLocationEntropy(visits: LocationVisit[]): number {
+function computeLocationEntropy(visits: ActivityVisit[]): number {
+  const active = visits.filter((v) => v.activity !== "sedentary");
   const counts: Record<string, number> = {};
-  visits.forEach((v) => {
+  active.forEach((v) => {
     counts[v.placeId] = (counts[v.placeId] || 0) + 1;
   });
-  const total = visits.length;
+  const total = active.length;
   if (total === 0) return 0;
   let entropy = 0;
   Object.values(counts).forEach((c) => {
@@ -17,9 +21,10 @@ function computeLocationEntropy(visits: LocationVisit[]): number {
   return maxEntropy === 0 ? 0 : entropy / maxEntropy;
 }
 
-function computeOutOfHomeFrequency(visits: LocationVisit[]): number {
-  const byDate: Record<string, LocationVisit[]> = {};
-  visits.forEach((v) => {
+function computeOutOfHomeFrequency(visits: ActivityVisit[]): number {
+  const active = visits.filter((v) => v.activity !== "sedentary");
+  const byDate: Record<string, ActivityVisit[]> = {};
+  active.forEach((v) => {
     if (!byDate[v.date]) byDate[v.date] = [];
     byDate[v.date].push(v);
   });
@@ -32,9 +37,10 @@ function computeOutOfHomeFrequency(visits: LocationVisit[]): number {
   return outDays / days.length;
 }
 
-function computeConsecutiveHomeDays(visits: LocationVisit[]): number {
-  const byDate: Record<string, LocationVisit[]> = {};
-  visits.forEach((v) => {
+function computeConsecutiveHomeDays(visits: ActivityVisit[]): number {
+  const active = visits.filter((v) => v.activity !== "sedentary");
+  const byDate: Record<string, ActivityVisit[]> = {};
+  active.forEach((v) => {
     if (!byDate[v.date]) byDate[v.date] = [];
     byDate[v.date].push(v);
   });
@@ -49,7 +55,7 @@ function computeConsecutiveHomeDays(visits: LocationVisit[]): number {
   return count;
 }
 
-export function computeSocialEngagementIndex(visits: LocationVisit[]): {
+export function computeSocialEngagementIndex(visits: ActivityVisit[]): {
   index: number;
   locationEntropy: number;
   outOfHomeFrequency: number;
@@ -63,10 +69,10 @@ export function computeSocialEngagementIndex(visits: LocationVisit[]): {
 }
 
 export default function useSocialEngagement() {
-  const [visits, setVisits] = useState<LocationVisit[] | null>(null);
+  const [visits, setVisits] = useState<ActivityVisit[] | null>(null);
 
   useEffect(() => {
-    getLocationVisits().then(setVisits);
+    getActivityVisits().then(setVisits);
   }, []);
 
   return useMemo(() => {
