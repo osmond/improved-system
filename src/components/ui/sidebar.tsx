@@ -78,6 +78,14 @@ const SidebarItem = React.forwardRef<HTMLLIElement, React.HTMLAttributes<HTMLLIE
 );
 SidebarItem.displayName = "SidebarItem";
 
+const SidebarFooter = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => (
+  <div ref={ref} className={cn("mt-auto", className)} {...props} />
+));
+SidebarFooter.displayName = "SidebarFooter";
+
 export const SidebarTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
@@ -104,6 +112,7 @@ export {
   SidebarContent,
   SidebarGroup,
   SidebarItem,
+  SidebarFooter,
   SidebarProvider,
   SidebarTrigger,
 };
