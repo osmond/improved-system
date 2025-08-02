@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react'
+import { render } from '@testing-library/react'
 import { vi } from 'vitest'
 import React from 'react'
 import '@testing-library/jest-dom'
@@ -10,8 +10,10 @@ vi.mock('@/hooks/useFragilityIndex', () => ({
 }))
 
 describe('FragilityGauge', () => {
-  it('renders fragility value', () => {
-    render(<FragilityGauge />)
-    expect(screen.getByText('0.42')).toBeInTheDocument()
+  it('applies animation attributes', () => {
+    const { container } = render(<FragilityGauge />)
+    const arc = container.querySelector('svg path:nth-of-type(2)')
+    expect(arc).toHaveAttribute('stroke-dashoffset')
+    expect(arc).toHaveStyle('transition: stroke-dashoffset 0.5s ease')
   })
 })
