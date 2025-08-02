@@ -59,8 +59,8 @@ describe('computeNoveltyTrend', () => {
         points: [],
         novelty: i < 7 ? 0.9 : 0.1,
 
-        dtwSim: 0,
-        overlapSim: 0,
+        dtwSimilarity: 0,
+        overlapSimilarity: 0,
 
       }
     })
