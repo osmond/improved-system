@@ -7,7 +7,8 @@ import {
   Radar,
   PolarGrid,
   PolarAngleAxis,
-  Legend,
+  ChartLegend,
+  ChartLegendContent,
   type ChartConfig,
 } from "@/components/ui/chart";
 
@@ -66,7 +67,7 @@ export default function SocialEngagementCard() {
               fill="var(--color-baseline)"
               fillOpacity={0.3}
             />
-            <Legend />
+            <ChartLegend content={<ChartLegendContent />} />
           </RadarChart>
         </ChartContainer>
         {message && <p className="text-sm text-muted-foreground">{message}</p>}
