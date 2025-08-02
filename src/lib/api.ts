@@ -6,6 +6,8 @@ import {
   type LocationVisit,
 } from "./locationStore";
 import { trackRouteRun, fetchRouteRunHistory } from "./telemetry";
+import { computeRouteMetrics } from "./routeMetrics";
+export { calculateRouteSimilarity } from "./routeMetrics";
 export type { LocationVisit } from "./locationStore";
 
 export type Activity = {
@@ -1059,20 +1061,6 @@ export async function getMockRoutes(): Promise<Route[]> {
   });
 }
 
-export function calculateRouteSimilarity(
-  a: LatLon[],
-  b: LatLon[],
-  precision = 3,
-): number {
-  const toKey = ({ lat, lon }: LatLon) =>
-    `${lat.toFixed(precision)},${lon.toFixed(precision)}`;
-  const setA = new Set(a.map(toKey));
-  const setB = new Set(b.map(toKey));
-  const intersection = [...setA].filter((p) => setB.has(p));
-  const union = new Set([...setA, ...setB]);
-  return union.size === 0 ? 0 : intersection.length / union.size;
-}
-
 export interface RouteRun {
   id: number;
   name: string;
@@ -1081,26 +1069,6 @@ export interface RouteRun {
   novelty: number;
   dtwSimilarity: number;
   overlapSimilarity: number;
-}
-
-
-function dtwDistance(a: LatLon[], b: LatLon[]): number {
-  const n = a.length;
-  const m = b.length;
-  const dp = Array.from({ length: n + 1 }, () =>
-    Array(m + 1).fill(Infinity),
-  );
-  dp[0][0] = 0;
-  for (let i = 1; i <= n; i++) {
-    for (let j = 1; j <= m; j++) {
-      const cost = Math.hypot(
-        a[i - 1].lat - b[j - 1].lat,
-        a[i - 1].lon - b[j - 1].lon,
-      );
-      dp[i][j] = cost + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
-    }
-  }
-  return dp[n][m] / (n + m);
 }
 
 export function computeRouteNovelty(
@@ -1114,13 +1082,12 @@ export function computeRouteNovelty(
   let bestDtw = 0;
   let bestOverlap = 0;
   for (const h of history) {
-    const dtwSim = 1 / (1 + dtwDistance(route, h));
-    const overlapSim = calculateRouteSimilarity(route, h);
-    const sim = Math.max(dtwSim, overlapSim);
-    if (sim > maxSim) {
-      maxSim = sim;
-      bestDtw = dtwSim;
-      bestOverlap = overlapSim;
+    const { overlapSimilarity, dtwSimilarity, maxSimilarity } =
+      computeRouteMetrics(route, h);
+    if (maxSimilarity > maxSim) {
+      maxSim = maxSimilarity;
+      bestDtw = dtwSimilarity;
+      bestOverlap = overlapSimilarity;
     }
   }
   return {

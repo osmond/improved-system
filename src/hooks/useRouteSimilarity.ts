@@ -1,5 +1,6 @@
 import { useMemo } from 'react'
-import { calculateRouteSimilarity, Route } from '@/lib/api'
+import { Route } from '@/lib/api'
+import { computeRouteMetrics } from '@/lib/routeMetrics'
 
 /**
  * React hook to compute the Jaccard similarity between two routes.
@@ -13,7 +14,12 @@ export function useRouteSimilarity(
 ): number | null {
   return useMemo(() => {
     if (!routeA || !routeB) return null
-    return calculateRouteSimilarity(routeA.points, routeB.points, precision)
+    const { overlapSimilarity } = computeRouteMetrics(
+      routeA.points,
+      routeB.points,
+      precision,
+    )
+    return overlapSimilarity
   }, [routeA, routeB, precision])
 }
 
