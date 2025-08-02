@@ -24,5 +24,8 @@ export { default as CompactNextGameCard } from "./CompactNextGameCard";
 
 export { default as MovementFingerprint } from "./MovementFingerprint";
 
+export { default as FragilityGauge } from "./FragilityGauge";
+
 export { default as TrainingEntropyHeatmap } from "./TrainingEntropyHeatmap";
+
 
