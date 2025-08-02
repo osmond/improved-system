@@ -1,4 +1,5 @@
 import type { DailyWeather } from "./weatherApi";
+import { getWeatherForRuns } from "./weatherApi";
 
 export type Activity = {
   id: number;
@@ -567,9 +568,58 @@ export async function getRunningStats(_range?: {
   start?: string | null;
   end?: string | null;
 }): Promise<RunningStats> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(generateMockRunningStats()), 300);
+  const base = generateMockRunningStats();
+  const sessions = await getRunningSessions();
+
+  const dailyWeather: DailyWeather[] = sessions.map((s) => ({
+    date: s.date,
+    temperature: s.weather.temperature,
+    condition: s.weather.condition,
+    humidity: s.weather.humidity,
+    wind: s.weather.wind,
+  }));
+
+  const conditionCounts: Record<string, number> = {};
+  dailyWeather.forEach((w) => {
+    conditionCounts[w.condition] = (conditionCounts[w.condition] || 0) + 1;
   });
+  const weatherConditions = Object.entries(conditionCounts).map(([label, count]) => ({
+    label,
+    count,
+  }));
+
+  const bucketDefs = [
+    { label: "40-50", min: 40, max: 50 },
+    { label: "50-60", min: 50, max: 60 },
+    { label: "60-70", min: 60, max: 70 },
+    { label: "70-80", min: 70, max: 80 },
+    { label: "80-90", min: 80, max: 90 },
+  ];
+  const temperatureBuckets = bucketDefs.map((b) => ({ label: b.label, count: 0 }));
+  dailyWeather.forEach((w) => {
+    for (let i = 0; i < bucketDefs.length; i++) {
+      const b = bucketDefs[i];
+      if (w.temperature >= b.min && w.temperature < b.max) {
+        temperatureBuckets[i].count++;
+        break;
+      }
+    }
+  });
+
+  const paceEnvironment: RunEnvironmentPoint[] = sessions.map((s) => ({
+    pace: s.pace,
+    temperature: s.weather.temperature,
+    humidity: s.weather.humidity,
+    wind: s.weather.wind,
+    elevation: 0,
+  }));
+
+  base.paceEnvironment = paceEnvironment;
+  base.dailyWeather = dailyWeather;
+  base.weatherConditions = weatherConditions;
+  base.temperature = temperatureBuckets;
+
+  return base;
 }
 
 export interface WeeklyVolumePoint {
@@ -784,6 +834,8 @@ export interface RunningSession {
 
   /** ISO timestamp for session start */
   start: string;
+  lat: number;
+  lon: number;
   weather: {
     temperature: number;
     humidity: number;
@@ -793,12 +845,21 @@ export interface RunningSession {
 }
 
 export function generateMockRunningSessions(): RunningSession[] {
+  const coords = [
+    { lat: 40.7128, lon: -74.006 }, // New York
+    { lat: 34.0522, lon: -118.2437 }, // Los Angeles
+    { lat: 41.8781, lon: -87.6298 }, // Chicago
+    { lat: 47.6062, lon: -122.3321 }, // Seattle
+    { lat: 29.7604, lon: -95.3698 }, // Houston
+  ]
+
   return Array.from({ length: 30 }, (_, i) => {
     const pace = +(5 + Math.random() * 3).toFixed(2);
     const base = new Date();
     base.setDate(base.getDate() - i);
     const startHour = 5 + Math.round(Math.random() * 14); // 5 AM - 7 PM
     base.setHours(startHour, 0, 0, 0);
+    const { lat, lon } = coords[i % coords.length]
     return {
       id: i + 1,
       pace,
@@ -806,23 +867,48 @@ export function generateMockRunningSessions(): RunningSession[] {
       heartRate: Math.round(120 + Math.random() * 40),
       date: base.toISOString().slice(0, 10),
       start: base.toISOString(),
+      lat,
+      lon,
       weather: {
-        temperature: Math.round(40 + pace * 5 + Math.random() * 10),
-        humidity: Math.round(40 + Math.random() * 50),
-        wind: +(Math.random() * 20).toFixed(1),
-        condition: ["Sunny", "Cloudy", "Rain", "Snow"][
-          Math.floor(Math.random() * 4)
-        ],
+        temperature: 0,
+        humidity: 0,
+        wind: 0,
+        condition: "Unknown",
       },
     };
   });
 
 }
 
+let sessionCache: RunningSession[] | null = null;
+
 export async function getRunningSessions(): Promise<RunningSession[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(generateMockRunningSessions()), 200);
-  });
+  if (sessionCache) return sessionCache;
+  const sessions = generateMockRunningSessions();
+  try {
+    const weather = await getWeatherForRuns(
+      sessions.map((s) => ({ date: s.date, lat: s.lat, lon: s.lon })),
+    );
+    const map: Record<string, DailyWeather> = {};
+    weather.forEach((w) => {
+      map[w.date] = w;
+    });
+    sessions.forEach((s) => {
+      const w = map[s.date];
+      if (w) {
+        s.weather = {
+          temperature: w.temperature,
+          humidity: w.humidity,
+          wind: w.wind,
+          condition: w.condition,
+        };
+      }
+    });
+  } catch {
+    // ignore errors so dashboards still load
+  }
+  sessionCache = sessions;
+  return sessions;
 }
 
 export interface RouteProfilePoint {

@@ -1,3 +1,5 @@
+import { mapWeatherCode } from './weather'
+
 export interface DailyWeather {
   date: string
   temperature: number
@@ -22,12 +24,15 @@ export async function getDailyWeather(
   const codes = json.hourly?.weathercode || []
   const avg = (arr: number[]) => (arr.length ? arr.reduce((a, b) => a + b, 0) / arr.length : 0)
   const condition = codes[0] ?? 0
+  // Convert units: temperature (C→F) and wind speed (km/h→mph)
+  const tempF = (avg(temps) * 9) / 5 + 32
+  const windMph = +(avg(winds) / 1.609).toFixed(1)
   return {
     date,
-    temperature: avg(temps),
+    temperature: tempF,
     humidity: avg(hums),
-    wind: avg(winds),
-    condition: String(condition),
+    wind: windMph,
+    condition: mapWeatherCode(condition),
   }
 }
 
