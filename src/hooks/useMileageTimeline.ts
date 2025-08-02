@@ -2,22 +2,24 @@ import { useState, useEffect } from "react";
 import { getMileageTimeline, MileageTimelinePoint } from "@/lib/api";
 
 export interface CumulativeMileagePoint {
-  week: string;
+  date: string;
   cumulativeMiles: number;
-  path: string;
+  coordinates: [number, number][];
 }
 
-export default function useMileageTimeline(): CumulativeMileagePoint[] | null {
+export default function useMileageTimeline(
+  years?: number,
+): CumulativeMileagePoint[] | null {
   const [data, setData] = useState<CumulativeMileagePoint[] | null>(null);
   useEffect(() => {
-    getMileageTimeline().then((points: MileageTimelinePoint[]) => {
+    getMileageTimeline(years).then((points: MileageTimelinePoint[]) => {
       let total = 0;
       const cumulative = points.map((p) => {
         total += p.miles;
-        return { week: p.week, cumulativeMiles: total, path: p.path };
+        return { date: p.date, cumulativeMiles: total, coordinates: p.coordinates };
       });
       setData(cumulative);
     });
-  }, []);
+  }, [years]);
   return data;
 }
