@@ -121,8 +121,8 @@ function GlobeRenderer({
   )
 }
 
-export default function MileageGlobe() {
-  const data = useMileageTimeline()
+export default function MileageGlobe({ years = 1 }: { years?: number }) {
+  const data = useMileageTimeline(years)
   const [selected, setSelected] = useState<GlobePoint | null>(null)
 
   if (!data) {
