@@ -9,6 +9,10 @@ vi.mock("@/hooks/useGarminData", () => ({
   __esModule: true,
   useGarminData: () => ({ lastSync: new Date().toISOString() }),
 }));
+vi.mock("@/hooks/useRunningSessions", () => ({
+  __esModule: true,
+  useRunningSessions: () => null,
+}));
 
 describe("Dashboard", () => {
   it("shows fragility description", async () => {
