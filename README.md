@@ -185,8 +185,10 @@ frequency and a weekly entropy trendline.
 - **Movement Fingerprint** – fingerprint‑style visualization of route patterns.
 - **Fragility Gauge** – injury risk based on training variability.
 - **Training Entropy Heatmap** – consistency of training start times.
-- **Route Similarity** – scatter view comparing route likeness.
-- **Route Novelty Map** – map highlighting novel versus repeated routes.
+- **Route Similarity** – scatter view comparing route likeness via pairwise Jaccard comparison.
+- **Route Novelty Map** – map highlighting novel versus repeated routes using a historical uniqueness score that blends Jaccard overlap with dynamic time‑warping.
+
+Route Similarity measures overlap by comparing each route's segments against others with a pairwise Jaccard metric. Route Novelty builds on that by scoring how historically unique a path is, combining Jaccard overlap with dynamic time‑warping of the full trajectory.
 
 ### Statistics
 - **Annual Mileage** – yearly mileage totals.
