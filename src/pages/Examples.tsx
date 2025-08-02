@@ -29,6 +29,7 @@ import GhostSelfRivalChart from "@/components/examples/GhostSelfRivalChart";
 
 import WeeklyVolumeHistoryChart from "@/components/examples/WeeklyVolumeHistoryChart";
 import ReadingProbabilityTimeline from "@/components/dashboard/ReadingProbabilityTimeline";
+import TrainingEntropyHeatmap from "@/components/dashboard/TrainingEntropyHeatmap";
 
 
 import ReadingStackSplit from "@/components/dashboard/ReadingStackSplit";
@@ -61,6 +62,9 @@ export default function Examples() {
       </ChartPreview>
       <ChartPreview>
         <ReadingProbabilityTimeline />
+      </ChartPreview>
+      <ChartPreview>
+        <TrainingEntropyHeatmap />
       </ChartPreview>
 
       <ChartPreview>
