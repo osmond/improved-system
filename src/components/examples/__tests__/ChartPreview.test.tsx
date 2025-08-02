@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 
@@ -14,6 +14,9 @@ describe("ChartPreview", () => {
     );
 
     await user.click(screen.getByRole("button", { name: /view larger/i }));
+
+    const dialog = await screen.findByRole("dialog");
+    fireEvent.pointerMove(dialog, { clientX: 10, clientY: 10 });
     const closeButton = await screen.findByRole("button", { name: /close/i });
 
     await user.tab();
