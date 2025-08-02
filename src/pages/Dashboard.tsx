@@ -4,6 +4,7 @@ import { useGarminData } from "@/hooks/useGarminData";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import Statistics from "@/pages/Statistics";
+import MileageGlobePage from "@/pages/MileageGlobe";
 import {
   FragilityGauge,
   RouteNoveltyMap,
@@ -21,6 +22,7 @@ export default function Dashboard() {
     | "novelty"
     | "examples"
     | "statistics"
+    | "globe"
     | "fragility"
     | "sessions"
   >("map");
@@ -45,6 +47,7 @@ export default function Dashboard() {
         <TabsTrigger value="novelty">Route Novelty</TabsTrigger>
         <TabsTrigger value="examples">Analytics fun</TabsTrigger>
         <TabsTrigger value="statistics">Statistics</TabsTrigger>
+        <TabsTrigger value="globe">Mileage Globe</TabsTrigger>
         <TabsTrigger value="fragility">Fragility</TabsTrigger>
         <TabsTrigger value="sessions">Session Similarity</TabsTrigger>
       </TabsList>
@@ -64,6 +67,9 @@ export default function Dashboard() {
       </TabsContent>
       <TabsContent value="statistics">
         <Statistics />
+      </TabsContent>
+      <TabsContent value="globe">
+        <MileageGlobePage />
       </TabsContent>
       <TabsContent value="fragility">
         <div className="space-y-4 p-4">
