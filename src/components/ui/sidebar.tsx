@@ -1,15 +1,53 @@
 import * as React from "react";
+import { Menu } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
 
-const Sidebar = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
-  ({ className, ...props }, ref) => (
+interface SidebarContextValue {
+  open: boolean;
+  toggle: () => void;
+}
+
+const SidebarContext = React.createContext<SidebarContextValue | undefined>(
+  undefined,
+);
+
+function useSidebar() {
+  const context = React.useContext(SidebarContext);
+  if (!context) {
+    throw new Error("useSidebar must be used within a SidebarProvider");
+  }
+  return context;
+}
+
+export function SidebarProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const [open, setOpen] = React.useState(true);
+  const toggle = React.useCallback(() => setOpen((o) => !o), []);
+
+  return (
+    <SidebarContext.Provider value={{ open, toggle }}>
+      <div className="flex min-h-screen w-full">{children}</div>
+    </SidebarContext.Provider>
+  );
+}
+
+const Sidebar = React.forwardRef<
+  HTMLDivElement,
+  React.HTMLAttributes<HTMLDivElement>
+>(({ className, ...props }, ref) => {
+  const { open } = useSidebar();
+  return (
     <aside
       ref={ref}
-      className={cn("w-56 border-r p-4", className)}
+      className={cn("w-56 border-r p-4", !open && "hidden", className)}
       {...props}
     />
-  )
-);
+  );
+});
 Sidebar.displayName = "Sidebar";
 
 const SidebarHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
@@ -40,5 +78,33 @@ const SidebarItem = React.forwardRef<HTMLLIElement, React.HTMLAttributes<HTMLLIE
 );
 SidebarItem.displayName = "SidebarItem";
 
-export { Sidebar, SidebarHeader, SidebarContent, SidebarGroup, SidebarItem };
+export const SidebarTrigger = React.forwardRef<
+  HTMLButtonElement,
+  React.ButtonHTMLAttributes<HTMLButtonElement>
+>(({ className, ...props }, ref) => {
+  const { toggle } = useSidebar();
+  return (
+    <Button
+      ref={ref}
+      variant="outline"
+      size="sm"
+      className={cn("mb-4", className)}
+      onClick={toggle}
+      {...props}
+    >
+      <Menu className="h-4 w-4" />
+    </Button>
+  );
+});
+SidebarTrigger.displayName = "SidebarTrigger";
+
+export {
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarGroup,
+  SidebarItem,
+  SidebarProvider,
+  SidebarTrigger,
+};
 
