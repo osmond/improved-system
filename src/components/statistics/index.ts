@@ -9,6 +9,7 @@ export { default as PaceVsHR } from "./PaceVsHR";
 export { default as TrainingLoadRatio } from "./TrainingLoadRatio";
 export { default as EquipmentUsageTimeline } from "./EquipmentUsageTimeline";
 export { default as HabitConsistencyHeatmap } from "./HabitConsistencyHeatmap";
+export { default as SessionStartEntropy } from "./SessionStartEntropy";
 
 export { default as RunBikeVolumeComparison } from "./RunBikeVolumeComparison";
 export { default as WeeklyComparisonChart } from "./WeeklyComparisonChart";
