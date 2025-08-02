@@ -27,7 +27,7 @@ export default function Layout({ children }: LayoutProps) {
     <SidebarProvider>
       <AppSidebar />
       <CommandPalette open={open} setOpen={setOpen} />
-      <SidebarInset className="bg-gradient">
+      <SidebarInset>
         <header className="flex items-center justify-between p-4">
           <SidebarTrigger />
           <div className="flex items-center gap-2">

@@ -48,7 +48,6 @@
     --wild-wheat: 41 40% 80%;
     --spotify-primary: 141 60% 50%;
     --spotify-foreground: 0 0% 0%;
-    --gradient: linear-gradient(to top left, #72C6EF, #004E8F);
     --font-slab: "Georgia", "Times New Roman", serif;
   }
 
@@ -96,17 +95,10 @@
     --wild-wheat: 41 40% 80%;
     --spotify-primary: 141 65% 58%;
     --spotify-foreground: 0 0% 100%;
-    --gradient: linear-gradient(to top left, #004E8F, #001B36);
     --font-slab: "Georgia", "Times New Roman", serif;
   }
 
   html, body {
     @apply bg-background text-foreground;
-  }
-}
-
-@layer utilities {
-  .bg-gradient {
-    background: var(--gradient);
   }
 }
