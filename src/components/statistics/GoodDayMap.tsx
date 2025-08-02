@@ -4,7 +4,6 @@ import {
   ChartContainer,
   ScatterChart,
   Scatter,
-  Cell,
   XAxis,
   YAxis,
   CartesianGrid,
@@ -14,12 +13,15 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import type { TooltipProps } from "recharts"
+import { Polygon } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
 import { scaleLinear } from "d3-scale"
 import type { ChartConfig } from "@/components/ui/chart"
-import { useState } from "react"
+import { useEffect, useState } from "react"
+import { motion } from "framer-motion"
+import { symbol, symbolStar } from "d3-shape"
 import SessionDetailDrawer from "./SessionDetailDrawer"
 
 interface GoodDayMapProps {
@@ -63,6 +65,67 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
   const colorScale = scaleLinear<string>().domain([minDelta, maxDelta]).range([start, end])
   const colored = goodSessions.map((s) => ({ ...s, fill: colorScale(s.paceDelta) }))
   const [active, setActive] = useState<SessionPoint | null>(null)
+  const [animKey, setAnimKey] = useState(0)
+
+  useEffect(() => {
+    setAnimKey((k) => k + 1)
+  }, [condition, hourRange])
+
+  const clusters = Array.from(new Set(colored.map((d) => d.cluster)))
+
+  function convexHull(points: { x: number; y: number }[]) {
+    if (points.length < 3) return points
+    const pts = points
+      .slice()
+      .sort((a, b) => (a.x - b.x === 0 ? a.y - b.y : a.x - b.x))
+    const cross = (o: { x: number; y: number }, a: { x: number; y: number }, b: {
+      x: number
+      y: number
+    }) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x)
+    const lower: { x: number; y: number }[] = []
+    for (const p of pts) {
+      while (lower.length >= 2 && cross(lower[lower.length - 2], lower[lower.length - 1], p) <= 0)
+        lower.pop()
+      lower.push(p)
+    }
+    const upper: { x: number; y: number }[] = []
+    for (let i = pts.length - 1; i >= 0; i--) {
+      const p = pts[i]
+      while (upper.length >= 2 && cross(upper[upper.length - 2], upper[upper.length - 1], p) <= 0)
+        upper.pop()
+      upper.push(p)
+    }
+    upper.pop()
+    lower.pop()
+    return lower.concat(upper)
+  }
+
+  const hulls = clusters
+    .map((c) => ({
+      cluster: c,
+      hull: convexHull(colored.filter((d) => d.cluster === c).map((d) => ({ x: d.x, y: d.y }))),
+    }))
+    .filter((h) => h.hull.length >= 3)
+
+  const clusterColors = [
+    "hsl(var(--chart-1))",
+    "hsl(var(--chart-2))",
+    "hsl(var(--chart-3))",
+    "hsl(var(--chart-4))",
+  ]
+
+  const star = symbol().type(symbolStar).size(80)
+
+  const AnimatedStar = ({ cx, cy, fill }: { cx?: number; cy?: number; fill?: string }) => (
+    <motion.g
+      transform={`translate(${cx}, ${cy})`}
+      initial={{ scale: 0, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
+      <path d={star()} fill={fill} />
+    </motion.g>
+  )
 
   return (
     <ChartCard
@@ -82,17 +145,24 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
             ]}
             content={<ChartLegendContent />}
           />
+          {hulls.map(({ cluster, hull }) => (
+            <Polygon
+              key={cluster}
+              points={hull}
+              fill={clusterColors[cluster % clusterColors.length]}
+              fillOpacity={0.1}
+              stroke={clusterColors[cluster % clusterColors.length]}
+              strokeOpacity={0.4}
+            />
+          ))}
           <Scatter
+            key={animKey}
             data={colored}
-            shape="star"
-            animationDuration={300}
+            shape={AnimatedStar}
+            isAnimationActive={false}
             onClick={(data) => setActive(data as SessionPoint)}
             cursor="pointer"
-          >
-            {colored.map((entry, idx) => (
-              <Cell key={`cell-${idx}`} fill={entry.fill} />
-            ))}
-          </Scatter>
+          />
         </ScatterChart>
       </ChartContainer>
       <SessionDetailDrawer session={active} onClose={() => setActive(null)} />
