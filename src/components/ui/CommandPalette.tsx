@@ -19,7 +19,8 @@ export default function CommandPalette() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const filtered = dashboardRoutes.filter((route) =>
+  const allRoutes = dashboardRoutes.flatMap((group) => group.items);
+  const filtered = allRoutes.filter((route) =>
     route.label.toLowerCase().includes(query.toLowerCase())
   );
 

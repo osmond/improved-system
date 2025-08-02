@@ -1,6 +1,11 @@
 import type { DailyWeather } from "./weatherApi";
 import { getWeatherForRuns } from "./weatherApi";
 import { Geolocation } from "@capacitor/geolocation";
+import {
+  getLocationVisits as deriveLocationVisits,
+  type LocationVisit,
+} from "./locationStore";
+export type { LocationVisit } from "./locationStore";
 
 export type Activity = {
   id: number;
@@ -370,34 +375,8 @@ export async function getStateVisits(): Promise<StateVisit[]> {
 
 // ----- Location visits -----
 
-export interface LocationVisit {
-  /** ISO date of the visit */
-  date: string;
-  /** Identifier for the place or cluster */
-  placeId: string;
-  /** Basic category to distinguish home/work/other */
-  category: "home" | "work" | "other";
-}
-
-const today = new Date();
-function daysAgo(day: number) {
-  return new Date(today.getTime() - day * 86400000).toISOString().slice(0, 10);
-}
-
-const mockLocationVisits: LocationVisit[] = [
-  { date: daysAgo(0), placeId: "home", category: "home" },
-  { date: daysAgo(1), placeId: "home", category: "home" },
-  { date: daysAgo(2), placeId: "home", category: "home" },
-  { date: daysAgo(3), placeId: "home", category: "home" },
-  { date: daysAgo(4), placeId: "cafe", category: "other" },
-  { date: daysAgo(5), placeId: "home", category: "home" },
-  { date: daysAgo(5), placeId: "office", category: "work" },
-];
-
 export async function getLocationVisits(): Promise<LocationVisit[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(mockLocationVisits), 200);
-  });
+  return deriveLocationVisits();
 }
 
 // ----- Device location -----
