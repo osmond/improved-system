@@ -1,25 +1,21 @@
-import { useEffect, useState } from 'react'
-import { getMockRoutes, calculateRouteSimilarity, Route } from '@/lib/api'
+import { useMemo } from 'react'
+import { calculateRouteSimilarity, Route } from '@/lib/api'
 
-export interface RouteSimilarityResult {
-  routeA: Route
-  routeB: Route
-  similarity: number
-}
-
-export function useRouteSimilarity(): RouteSimilarityResult | null {
-  const [result, setResult] = useState<RouteSimilarityResult | null>(null)
-
-  useEffect(() => {
-    getMockRoutes().then((routes) => {
-      if (routes.length < 2) return
-      const [routeA, routeB] = routes
-      const similarity = calculateRouteSimilarity(routeA.points, routeB.points)
-      setResult({ routeA, routeB, similarity })
-    })
-  }, [])
-
-  return result
+/**
+ * React hook to compute the Jaccard similarity between two routes.
+ * The result is memoized and recomputed whenever either route or the
+ * rounding precision changes.
+ */
+export function useRouteSimilarity(
+  routeA?: Route,
+  routeB?: Route,
+  precision = 3,
+): number | null {
+  return useMemo(() => {
+    if (!routeA || !routeB) return null
+    return calculateRouteSimilarity(routeA.points, routeB.points, precision)
+  }, [routeA, routeB, precision])
 }
 
 export default useRouteSimilarity
+
