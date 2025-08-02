@@ -769,6 +769,8 @@ export interface RunningSession {
   duration: number;
   heartRate: number;
   date: string;
+  /** ISO timestamp when the session started */
+  start: string;
 }
 
 export function generateMockRunningSessions(): RunningSession[] {
@@ -777,7 +779,15 @@ export function generateMockRunningSessions(): RunningSession[] {
     pace: +(5 + Math.random() * 3).toFixed(2),
     duration: Math.round(25 + Math.random() * 35),
     heartRate: Math.round(120 + Math.random() * 40),
-    date: new Date(Date.now() - i * 86400000).toISOString().slice(0, 10),
+    ...(() => {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      d.setHours(Math.floor(Math.random() * 24), 0, 0, 0);
+      return {
+        date: d.toISOString().slice(0, 10),
+        start: d.toISOString(),
+      };
+    })(),
   }));
 }
 
