@@ -39,6 +39,8 @@ const chartConfig = {
 } satisfies ChartConfig
 
 export default function TimeInBedChart() {
+  const uid = React.useId().replace(/:/g, '')
+  const fillHoursId = `fillHours-${uid}`
   const dataWithAvg = React.useMemo(() => {
     return sleepData.map((d, idx) => {
       const start = Math.max(0, idx - 6)
@@ -58,7 +60,7 @@ export default function TimeInBedChart() {
         <ChartContainer config={chartConfig} className='h-60'>
           <AreaChart data={dataWithAvg} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
             <defs>
-              <linearGradient id='fillHours' x1='0' y1='0' x2='0' y2='1'>
+              <linearGradient id={fillHoursId} x1='0' y1='0' x2='0' y2='1'>
                 <stop offset='5%' stopColor='hsl(var(--chart-1))' stopOpacity={0.8} />
                 <stop offset='95%' stopColor='hsl(var(--chart-1))' stopOpacity={0.1} />
               </linearGradient>
@@ -83,7 +85,7 @@ export default function TimeInBedChart() {
                 />
               }
             />
-            <Area type='monotone' dataKey='hours' stroke={chartConfig.hours.color} fill='url(#fillHours)' />
+            <Area type='monotone' dataKey='hours' stroke={chartConfig.hours.color} fill={`url(#${fillHoursId})`} />
             <Line type='monotone' dataKey='avg' stroke={chartConfig.avg.color} dot={false} />
           </AreaChart>
         </ChartContainer>
