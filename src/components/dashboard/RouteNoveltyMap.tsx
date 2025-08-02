@@ -6,6 +6,8 @@ import Map, {
   Popup,
   MapLayerMouseEvent,
   MapRef,
+  NavigationControl,
+  ScaleControl,
 } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import {
@@ -19,6 +21,7 @@ import {
 import ChartCard from "./ChartCard";
 import { Alert } from "@/components/ui/alert";
 import useRouteNovelty from "@/hooks/useRouteNovelty";
+import RouteNoveltyLegend from "./RouteNoveltyLegend";
 
 export default function RouteNoveltyMap() {
   const [runs, trend, prolongedLow] = useRouteNovelty();
@@ -90,7 +93,7 @@ export default function RouteNoveltyMap() {
 
   return (
     <ChartCard title="Route Novelty" description="Explore how unique your routes are">
-      <div className="h-64 mb-4">
+      <div className="relative h-64 mb-4">
         <Map
           mapLib={maplibregl}
           ref={mapRef}
@@ -191,7 +194,12 @@ export default function RouteNoveltyMap() {
               </div>
             </Popup>
           )}
+          <NavigationControl position="top-left" />
+          <ScaleControl position="bottom-left" />
         </Map>
+        <div className="absolute top-2 right-2 z-10">
+          <RouteNoveltyLegend />
+        </div>
       </div>
       <p className="text-sm text-muted-foreground mt-2">
         Routes are colored by novelty—gray for familiar paths, red for unique ones.
