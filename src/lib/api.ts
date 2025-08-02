@@ -1079,10 +1079,8 @@ export interface RouteRun {
   timestamp: string;
   points: LatLon[];
   novelty: number;
-
-  dtwSim: number;
-  overlapSim: number;
-
+  dtwSimilarity: number;
+  overlapSimilarity: number;
 }
 
 
@@ -1108,9 +1106,9 @@ function dtwDistance(a: LatLon[], b: LatLon[]): number {
 export function computeRouteNovelty(
   route: LatLon[],
   history: LatLon[][],
-): { novelty: number; dtwSim: number; overlapSim: number } {
+): { novelty: number; dtwSimilarity: number; overlapSimilarity: number } {
   if (history.length === 0) {
-    return { novelty: 1, dtwSim: 0, overlapSim: 0 };
+    return { novelty: 1, dtwSimilarity: 0, overlapSimilarity: 0 };
   }
   let maxSim = 0;
   let bestDtw = 0;
@@ -1125,12 +1123,19 @@ export function computeRouteNovelty(
       bestOverlap = overlapSim;
     }
   }
-  return { novelty: 1 - maxSim, dtwSim: bestDtw, overlapSim: bestOverlap };
+  return {
+    novelty: 1 - maxSim,
+    dtwSimilarity: bestDtw,
+    overlapSimilarity: bestOverlap,
+  };
 }
 
 
-export function recordRouteRun(points: LatLon[]): RouteRun {
-  const { novelty, dtwSim, overlapSim } = computeRouteNovelty(
+let nextRouteRunId = 1;
+const routeHistory: RouteRun[] = [];
+
+export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
+  const { novelty, dtwSimilarity, overlapSimilarity } = computeRouteNovelty(
     points,
     routeHistory.map((r) => r.points),
   );
@@ -1142,10 +1147,13 @@ export function recordRouteRun(points: LatLon[]): RouteRun {
     points,
     novelty,
 
-    dtwSim,
-    overlapSim,
+    dtwSimilarity,
+    overlapSimilarity,
 
   };
+
+  nextRouteRunId++;
+  routeHistory.push(run);
 
   await trackRouteRun(run);
 
