@@ -12,11 +12,18 @@ function computeAcwr(loads: number[]): number {
   return recent7 / recent28
 }
 
+export interface FragilityIndexResult {
+  index: number
+  acwr: number
+  disruption: number
+}
+
 export function computeFragilityIndex(
   weekly: WeeklyVolumePoint[],
   hours: HourlySteps[],
-): number {
-  if (!weekly.length || !hours.length) return 0
+): FragilityIndexResult {
+  if (!weekly.length || !hours.length)
+    return { index: 0, acwr: 0, disruption: 0 }
 
   const loads = weekly.map((w) => w.miles)
   const acwr = computeAcwr(loads)
@@ -28,7 +35,8 @@ export function computeFragilityIndex(
     byDay[day].push(h)
   })
   const dates = Object.keys(byDay).sort()
-  if (dates.length < 2) return 0
+  if (dates.length < 2)
+    return { index: 0, acwr, disruption: 0 }
   const baselineData = dates.slice(0, -1).flatMap((d) => byDay[d])
   const todayData = byDay[dates[dates.length - 1]]
 
@@ -44,10 +52,11 @@ export function computeFragilityIndex(
   const disruption = total === 0 ? 0 : diff / total
 
   const index = (disruption + Math.max(0, acwr - 1)) / 2
-  return Math.min(Math.max(index, 0), 1)
+  const bounded = Math.min(Math.max(index, 0), 1)
+  return { index: bounded, acwr, disruption }
 }
 
-export default function useFragilityIndex(): number | null {
+export default function useFragilityIndex(): FragilityIndexResult | null {
   const [weekly, setWeekly] = useState<WeeklyVolumePoint[] | null>(null)
   const [hours, setHours] = useState<HourlySteps[] | null>(null)
 

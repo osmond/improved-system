@@ -19,8 +19,10 @@ const todayDay: HourlySteps[] = Array.from({ length: 24 }, (_, h) => ({
 const hours = [...baselineDay, ...todayDay]
 
 describe('computeFragilityIndex', () => {
-  it('combines disruption and acwr', () => {
-    const idx = computeFragilityIndex(weekly, hours)
-    expect(idx).toBeCloseTo(0.55, 1)
+  it('returns index with components', () => {
+    const { index, acwr, disruption } = computeFragilityIndex(weekly, hours)
+    expect(index).toBeCloseTo(0.55, 2)
+    expect(acwr).toBeCloseTo(1.1, 1)
+    expect(disruption).toBeCloseTo(1, 2)
   })
 })
