@@ -1,5 +1,10 @@
 import { useEffect, useMemo, useState } from 'react'
-import { getHourlySteps, getWeeklyVolume, type HourlySteps, type WeeklyVolumePoint } from '@/lib/api'
+import {
+  getHourlySteps,
+  getWeeklyVolume,
+  type HourlySteps,
+  type WeeklyVolumePoint,
+} from '@/lib/api'
 import { computeMovementFingerprint } from './useMovementFingerprint'
 
 function computeAcwr(loads: number[]): number {
@@ -16,17 +21,29 @@ export interface FragilityIndexResult {
   index: number
   acwr: number
   disruption: number
+  monotony: number
 }
 
 export function computeFragilityIndex(
   weekly: WeeklyVolumePoint[],
   hours: HourlySteps[],
+  weights: {
+    disruptionWeight?: number
+    acwrWeight?: number
+    monotonyWeight?: number
+  } = {},
 ): FragilityIndexResult {
   if (!weekly.length || !hours.length)
-    return { index: 0, acwr: 0, disruption: 0 }
+    return { index: 0, acwr: 0, disruption: 0, monotony: 0 }
 
   const loads = weekly.map((w) => w.miles)
   const acwr = computeAcwr(loads)
+
+  const mean = loads.reduce((s, v) => s + v, 0) / loads.length
+  const variance =
+    loads.reduce((s, v) => s + Math.pow(v - mean, 2), 0) / loads.length
+  const sd = Math.sqrt(variance)
+  const monotony = mean === 0 ? 0 : 1 / (1 + sd / mean)
 
   const byDay: Record<string, HourlySteps[]> = {}
   hours.forEach((h) => {
@@ -51,9 +68,23 @@ export function computeFragilityIndex(
   }
   const disruption = total === 0 ? 0 : diff / total
 
-  const index = (disruption + Math.max(0, acwr - 1)) / 2
+  const {
+    disruptionWeight = 1,
+    acwrWeight = 1,
+    monotonyWeight = 0,
+  } = weights
+  const totalWeight = disruptionWeight + acwrWeight + monotonyWeight
+  const acwrComponent = Math.max(0, acwr - 1)
+  const index =
+    totalWeight === 0
+      ? 0
+      :
+        (disruptionWeight * disruption +
+          acwrWeight * acwrComponent +
+          monotonyWeight * monotony) /
+        totalWeight
   const bounded = Math.min(Math.max(index, 0), 1)
-  return { index: bounded, acwr, disruption }
+  return { index: bounded, acwr, disruption, monotony }
 }
 
 export default function useFragilityIndex(): FragilityIndexResult | null {
