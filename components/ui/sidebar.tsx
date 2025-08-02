@@ -25,6 +25,13 @@ import {
   TooltipTrigger,
 } from "@/registry/default/ui/tooltip"
 
+/**
+ * Sidebar configuration constants and behaviors.
+ * - `SIDEBAR_WIDTH` and `SIDEBAR_WIDTH_MOBILE` define desktop and mobile sizes.
+ * - `SIDEBAR_KEYBOARD_SHORTCUT` toggles the sidebar with Cmd/Ctrl + key.
+ * - The open state persists in `SIDEBAR_COOKIE_NAME`; `SidebarProvider`'s
+ *   `defaultOpen` prop sets the initial state.
+ */
 const SIDEBAR_COOKIE_NAME = "sidebar_state"
 const SIDEBAR_COOKIE_MAX_AGE = 60 * 60 * 24 * 7
 const SIDEBAR_WIDTH = "16rem"
