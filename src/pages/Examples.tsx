@@ -20,7 +20,7 @@ import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
-import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+import { PeerBenchmarkBands } from "@/components/statistics";
 import ChartPreview from "@/components/examples/ChartPreview";
 
 import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
