@@ -10,10 +10,13 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
-import { BarChart2, Map as MapIcon } from "lucide-react";
-import { chartRoutes, mapRoutes } from "@/routes";
+import { Map as MapIcon } from "lucide-react";
+import { chartRouteGroups, mapRoutes } from "@/routes";
 
 export default function AppSidebar() {
   const { pathname } = useLocation();
@@ -26,18 +29,24 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Charts</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {chartRoutes.map((route) => (
-                <SidebarMenuItem key={route.to}>
-                  <SidebarMenuButton
-                    asChild
-                    isActive={pathname === route.to}
-                    className="justify-start"
-                  >
-                    <NavLink to={route.to}>
-                      <BarChart2 className="mr-2" />
-                      <span>{route.label}</span>
-                    </NavLink>
+              {chartRouteGroups.map((group) => (
+                <SidebarMenuItem key={group.label}>
+                  <SidebarMenuButton className="justify-start">
+                    {group.label}
                   </SidebarMenuButton>
+                  <SidebarMenuSub>
+                    {group.items.map((route) => (
+                      <SidebarMenuSubItem key={route.to}>
+                        <SidebarMenuSubButton
+                          asChild
+                          isActive={pathname === route.to}
+                          className="justify-start"
+                        >
+                          <NavLink to={route.to}>{route.label}</NavLink>
+                        </SidebarMenuSubButton>
+                      </SidebarMenuSubItem>
+                    ))}
+                  </SidebarMenuSub>
                 </SidebarMenuItem>
               ))}
             </SidebarMenu>
