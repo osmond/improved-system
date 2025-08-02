@@ -41,8 +41,8 @@ describe('recordRouteRun', () => {
     expect(run3.novelty).toBeGreaterThan(0.8)
     const history = await getRouteRunHistory()
     expect(history).toHaveLength(3)
-    expect(run2).toHaveProperty('dtwSimilarity')
-    expect(run2).toHaveProperty('overlapSimilarity')
+    expect(run2).toHaveProperty('dtwSim')
+    expect(run2).toHaveProperty('overlapSim')
   })
 })
 

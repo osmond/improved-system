@@ -18,6 +18,7 @@ import {
 import ChartCard from "./ChartCard";
 import { Alert } from "@/components/ui/alert";
 import useRouteNovelty from "@/hooks/useRouteNovelty";
+import type { RouteRun } from "@/lib/api";
 
 export default function RouteNoveltyMap() {
   const [runs, trend, prolongedLow] = useRouteNovelty();
@@ -63,7 +64,7 @@ export default function RouteNoveltyMap() {
 
   const showSuggestion = prolongedLow;
 
-  const selectedRun = useMemo(
+  const selectedRun = useMemo<RouteRun | null>(
     () =>
       selectedRunId != null
         ? runs.find((r) => r.id === selectedRunId) ?? null

@@ -6,6 +6,8 @@ import {
   type LocationVisit,
 } from "./locationStore";
 import { trackRouteRun, fetchRouteRunHistory } from "./telemetry";
+
+let nextRouteRunId = 1;
 export type { LocationVisit } from "./locationStore";
 
 export type Activity = {
@@ -1129,10 +1131,11 @@ export function computeRouteNovelty(
 }
 
 
-export function recordRouteRun(points: LatLon[]): RouteRun {
+export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
+  const history = await fetchRouteRunHistory();
   const { novelty, dtwSim, overlapSim } = computeRouteNovelty(
     points,
-    routeHistory.map((r) => r.points),
+    history.map((r) => r.points),
   );
 
   const run: RouteRun = {
@@ -1146,7 +1149,7 @@ export function recordRouteRun(points: LatLon[]): RouteRun {
     overlapSim,
 
   };
-
+  nextRouteRunId++;
   await trackRouteRun(run);
 
   return run;
