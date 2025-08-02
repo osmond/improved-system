@@ -15,7 +15,7 @@ describe('computeRouteNovelty', () => {
 })
 
 describe('recordRouteRun', () => {
-  it('stores runs and calculates novelty', () => {
+  it('stores runs and calculates novelty', async () => {
     const a: LatLon[] = [
       { lat: 0, lon: 0 },
       { lat: 1, lon: 1 },
@@ -26,9 +26,9 @@ describe('recordRouteRun', () => {
     ]
     const c: LatLon[] = [{ lat: 10, lon: 10 }]
 
-    const run1 = recordRouteRun(a)
-    const run2 = recordRouteRun(b)
-    const run3 = recordRouteRun(c)
+    const run1 = await recordRouteRun(a)
+    const run2 = await recordRouteRun(b)
+    const run3 = await recordRouteRun(c)
 
     expect(run1.id).toBe(1)
     expect(run1.name).toBe('Run 1')
@@ -39,7 +39,10 @@ describe('recordRouteRun', () => {
     expect(run1.novelty).toBe(1)
     expect(run2.novelty).toBeLessThan(0.05)
     expect(run3.novelty).toBeGreaterThan(0.8)
-    expect(getRouteRunHistory()).toHaveLength(3)
+    const history = await getRouteRunHistory()
+    expect(history).toHaveLength(3)
+    expect(run2).toHaveProperty('dtwSimilarity')
+    expect(run2).toHaveProperty('overlapSimilarity')
   })
 })
 
@@ -55,6 +58,8 @@ describe('computeNoveltyTrend', () => {
         timestamp: d.toISOString(),
         points: [],
         novelty: i < 7 ? 0.9 : 0.1,
+        dtwSimilarity: 0,
+        overlapSimilarity: 0,
       }
     })
     const { trend, prolongedLow } = computeNoveltyTrend(runs, 7, 0.2)

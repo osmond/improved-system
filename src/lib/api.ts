@@ -5,6 +5,7 @@ import {
   getLocationVisits as deriveLocationVisits,
   type LocationVisit,
 } from "./locationStore";
+import { trackRouteRun, fetchRouteRunHistory } from "./telemetry";
 export type { LocationVisit } from "./locationStore";
 
 export type Activity = {
@@ -1078,10 +1079,10 @@ export interface RouteRun {
   timestamp: string;
   points: LatLon[];
   novelty: number;
+  dtwSimilarity: number;
+  overlapSimilarity: number;
 }
 
-let nextRouteRunId = 1;
-const routeHistory: RouteRun[] = [];
 
 function dtwDistance(a: LatLon[], b: LatLon[]): number {
   const n = a.length;
@@ -1117,22 +1118,34 @@ export function computeRouteNovelty(
   return 1 - maxSim;
 }
 
-export function recordRouteRun(points: LatLon[]): RouteRun {
-  const novelty = computeRouteNovelty(points, routeHistory.map((r) => r.points));
+export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
+  const history = await fetchRouteRunHistory();
+  let maxDtw = 0;
+  let maxOverlap = 0;
+  for (const h of history) {
+    const dtwSim = 1 / (1 + dtwDistance(points, h.points));
+    const overlapSim = calculateRouteSimilarity(points, h.points);
+    if (dtwSim > maxDtw) maxDtw = dtwSim;
+    if (overlapSim > maxOverlap) maxOverlap = overlapSim;
+  }
+  const novelty = 1 - Math.max(maxDtw, maxOverlap);
   const run: RouteRun = {
     id: nextRouteRunId,
     name: `Run ${nextRouteRunId}`,
     timestamp: new Date().toISOString(),
     points,
     novelty,
+    dtwSimilarity: maxDtw,
+    overlapSimilarity: maxOverlap,
   };
-  routeHistory.push(run);
-  nextRouteRunId++;
+
+  await trackRouteRun(run);
+
   return run;
 }
 
-export function getRouteRunHistory(): RouteRun[] {
-  return routeHistory;
+export async function getRouteRunHistory(): Promise<RouteRun[]> {
+  return fetchRouteRunHistory();
 }
 
 // ----- Sleep sessions -----
