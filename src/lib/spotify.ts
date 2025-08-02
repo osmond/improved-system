@@ -9,15 +9,16 @@ let accessToken: string | null = null
 let tokenExpiry = 0
 
 async function refreshAccessToken(): Promise<string> {
-  if (process.env.SPOTIFY_ACCESS_TOKEN) {
-    accessToken = process.env.SPOTIFY_ACCESS_TOKEN
+  const access = import.meta.env.VITE_SPOTIFY_ACCESS_TOKEN
+  if (access) {
+    accessToken = access
     tokenExpiry = Date.now() + 3600_000
     return accessToken
   }
 
-  const refresh = process.env.SPOTIFY_REFRESH_TOKEN
-  const id = process.env.SPOTIFY_CLIENT_ID
-  const secret = process.env.SPOTIFY_CLIENT_SECRET
+  const refresh = import.meta.env.VITE_SPOTIFY_REFRESH_TOKEN
+  const id = import.meta.env.VITE_SPOTIFY_CLIENT_ID
+  const secret = import.meta.env.VITE_SPOTIFY_CLIENT_SECRET
 
   if (!refresh || !id || !secret) {
     accessToken = 'mock-token'
@@ -28,8 +29,7 @@ async function refreshAccessToken(): Promise<string> {
   const res = await fetch('https://accounts.spotify.com/api/token', {
     method: 'POST',
     headers: {
-      Authorization:
-        'Basic ' + Buffer.from(`${id}:${secret}`).toString('base64'),
+      Authorization: 'Basic ' + btoa(`${id}:${secret}`),
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: new URLSearchParams({

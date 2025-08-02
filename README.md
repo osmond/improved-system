@@ -234,12 +234,12 @@ npm test
 The Run Soundtrack card uses the Spotify Web API. Set the following environment variables so the helpers can obtain an access token:
 
 ```
-SPOTIFY_CLIENT_ID=<your client id>
-SPOTIFY_CLIENT_SECRET=<your client secret>
-SPOTIFY_REFRESH_TOKEN=<refresh token>
+VITE_SPOTIFY_CLIENT_ID=<your client id>
+VITE_SPOTIFY_CLIENT_SECRET=<your client secret>
+VITE_SPOTIFY_REFRESH_TOKEN=<refresh token>
 ```
 
-Alternatively provide `SPOTIFY_ACCESS_TOKEN` directly if you already have one. These values are read at runtime by `src/lib/spotify.ts`.
+Alternatively provide `VITE_SPOTIFY_ACCESS_TOKEN` directly if you already have one. These values are read at runtime by `src/lib/spotify.ts`.
 
 ## Weather overlay
 The geographic explorer can display precipitation tiles from OpenWeatherMap. A
