@@ -19,6 +19,7 @@ vi.mock('recharts', async () => {
 vi.mock('@/hooks/useTrainingConsistency', () => ({
   __esModule: true,
   default: () => ({
+    sessions: [],
     heatmap: [{ day: 0, hour: 0, count: 1 }],
     weeklyEntropy: [0.2],
   }),

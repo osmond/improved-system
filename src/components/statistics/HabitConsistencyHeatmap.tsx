@@ -12,11 +12,13 @@ export default function HabitConsistencyHeatmap() {
 
   if (!data) return <Skeleton className="h-64" />
 
+  const { heatmap } = data
+
   const grid = Array.from({ length: 24 }, () =>
     Array.from({ length: 7 }, () => ({ count: 0 })),
   )
   let max = 0
-  data.heatmap.forEach((c) => {
+  heatmap.forEach((c) => {
     grid[c.hour][c.day] = c
     if (c.count > max) max = c.count
   })

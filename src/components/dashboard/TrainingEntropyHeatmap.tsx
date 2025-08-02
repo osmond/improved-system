@@ -11,16 +11,18 @@ export default function TrainingEntropyHeatmap() {
 
   if (!data) return <Skeleton className="h-64" />;
 
+  const { heatmap, weeklyEntropy } = data;
+
   const grid = Array.from({ length: 24 }, () =>
     Array.from({ length: 7 }, () => ({ count: 0 }))
   );
   let max = 0;
-  data.heatmap.forEach((c) => {
+  heatmap.forEach((c) => {
     grid[c.hour][c.day] = c;
     if (c.count > max) max = c.count;
   });
 
-  const entropySeries = data.weeklyEntropy.map((e, i) => ({ week: i + 1, entropy: e }));
+  const entropySeries = weeklyEntropy.map((e, i) => ({ week: i + 1, entropy: e }));
   const entropyMax = Math.log2(168);
 
   return (

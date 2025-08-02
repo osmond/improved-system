@@ -8,6 +8,7 @@ export interface TrainingHeatmapCell {
 }
 
 export interface TrainingConsistency {
+  sessions: RunningSession[]
   heatmap: TrainingHeatmapCell[]
   weeklyEntropy: number[]
 }
@@ -66,6 +67,7 @@ export default function useTrainingConsistency(): TrainingConsistency | null {
   return useMemo(() => {
     if (!sessions) return null
     return {
+      sessions,
       heatmap: computeHeatmap(sessions),
       weeklyEntropy: computeWeeklyEntropy(sessions),
     }
