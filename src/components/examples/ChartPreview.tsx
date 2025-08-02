@@ -1,5 +1,5 @@
 import React from 'react'
-import { Eye, X } from 'lucide-react'
+import { Eye, XCircle } from 'lucide-react'
 
 import { cn } from '@/lib/utils'
 import {
@@ -31,9 +31,11 @@ export default function ChartPreview({
       </div>
       <DialogContentFullscreen>
         <DialogClose asChild>
-          <button className="absolute right-4 top-4 z-50 rounded-md bg-background/80 p-1 text-muted-foreground hover:text-foreground">
-            <X className="h-4 w-4" />
-            <span className="sr-only">Close</span>
+          <button
+            className='absolute right-4 top-4 z-50 rounded-full bg-background/80 p-2 text-muted-foreground shadow transition-transform duration-150 hover:rotate-90 hover:scale-110 hover:text-foreground focus:outline-none focus:ring-2'
+          >
+            <XCircle className='h-4 w-4' />
+            <span className='sr-only'>Close</span>
           </button>
         </DialogClose>
         {
