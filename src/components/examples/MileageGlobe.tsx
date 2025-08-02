@@ -65,7 +65,7 @@ export default function MileageGlobe() {
 
   const points: GlobePoint[] = data.map((p) => ({
     date: p.date,
-    miles: p.cumulativeMiles,
+    miles: p.miles,
     coordinates: p.coordinates,
   }))
 
