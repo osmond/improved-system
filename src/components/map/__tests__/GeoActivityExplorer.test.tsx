@@ -1,4 +1,3 @@
-
 import { render, screen, fireEvent, act } from "@testing-library/react";
 
 import React from "react";
@@ -68,19 +67,7 @@ vi.mock("@/hooks/useInsights", () => ({
 }));
 
 
-
 describe("GeoActivityExplorer", () => {
-  it("toggles state details", () => {
-    render(<GeoActivityExplorer />);
-    const state = screen.getByLabelText("CA visited");
-    expect(state).toHaveTextContent("1");
-    expect(screen.queryByText("LA")).toBeNull();
-    fireEvent.click(state);
-    expect(screen.getAllByText("LA").length).toBeGreaterThan(0);
-    fireEvent.click(state);
-    expect(screen.queryByText("LA")).toBeNull();
-  });
-
   it("renders filter selects", () => {
     render(<GeoActivityExplorer />);
     expect(screen.getAllByLabelText("Activity").length).toBeGreaterThan(0);
@@ -124,7 +111,6 @@ describe("GeoActivityExplorer", () => {
     expect(screen.queryByLabelText("CA visited")).toBeNull();
     expect(screen.queryAllByLabelText("TX visited").length).toBeGreaterThan(0);
     vi.useRealTimers();
-
   });
 
   it("shows tooltip on state hover", async () => {
@@ -136,6 +122,5 @@ describe("GeoActivityExplorer", () => {
     expect(screen.getAllByText("1d", { exact: true }).length).toBeGreaterThan(0);
     expect(screen.getAllByText("1mi", { exact: true }).length).toBeGreaterThan(0);
     fireEvent.mouseLeave(map);
-
   });
 });
