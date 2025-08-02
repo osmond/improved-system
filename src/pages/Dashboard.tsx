@@ -11,10 +11,19 @@ import {
 } from "@/components/dashboard";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { SessionSimilarityMap } from "@/components/statistics";
 
 export default function Dashboard() {
   const data = useGarminData();
-  const [activeTab, setActiveTab] = useState("map");
+  const [activeTab, setActiveTab] = useState<
+    | "map"
+    | "route"
+    | "novelty"
+    | "examples"
+    | "statistics"
+    | "fragility"
+    | "sessions"
+  >("map");
 
   if (!data) {
     return (
@@ -37,6 +46,7 @@ export default function Dashboard() {
         <TabsTrigger value="examples">Analytics fun</TabsTrigger>
         <TabsTrigger value="statistics">Statistics</TabsTrigger>
         <TabsTrigger value="fragility">Fragility</TabsTrigger>
+        <TabsTrigger value="sessions">Session Similarity</TabsTrigger>
       </TabsList>
       <TabsContent value="map">
         <div className="p-6 text-muted-foreground">
@@ -57,6 +67,9 @@ export default function Dashboard() {
       </TabsContent>
       <TabsContent value="fragility">
         <FragilityGauge />
+      </TabsContent>
+      <TabsContent value="sessions">
+        <SessionSimilarityMap />
       </TabsContent>
     </Tabs>
   );
