@@ -4,14 +4,17 @@ import { useGarminData } from "@/hooks/useGarminData";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
 import Statistics from "@/pages/Statistics";
-import RouteSimilarity from "@/components/dashboard/RouteSimilarity";
-import { FragilityGauge } from "@/components/dashboard";
+import {
+  FragilityGauge,
+  RouteNoveltyMap,
+  RouteSimilarity,
+} from "@/components/dashboard";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
 export default function Dashboard() {
   const data = useGarminData();
-  const [activeTab, setActiveTab] = useState("fragility");
+  const [activeTab, setActiveTab] = useState("map");
 
   if (!data) {
     return (
@@ -30,6 +33,7 @@ export default function Dashboard() {
       <TabsList>
         <TabsTrigger value="map">Map playground</TabsTrigger>
         <TabsTrigger value="route">Route similarity</TabsTrigger>
+        <TabsTrigger value="novelty">Route Novelty</TabsTrigger>
         <TabsTrigger value="examples">Analytics fun</TabsTrigger>
         <TabsTrigger value="statistics">Statistics</TabsTrigger>
         <TabsTrigger value="fragility">Fragility</TabsTrigger>
@@ -41,6 +45,9 @@ export default function Dashboard() {
       </TabsContent>
       <TabsContent value="route">
         <RouteSimilarity />
+      </TabsContent>
+      <TabsContent value="novelty">
+        <RouteNoveltyMap />
       </TabsContent>
       <TabsContent value="examples">
         <Examples />
