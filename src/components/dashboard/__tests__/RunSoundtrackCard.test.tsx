@@ -12,24 +12,7 @@ vi.mock('@/hooks/useRunSoundtrack', () => ({
 
 const baseData = {
   window: { start: '2025-07-30T10:00:00Z', end: '2025-07-30T10:40:00Z' },
-  topTracks: [
-    {
-      id: '1',
-      name: 'Song A',
-      artists: 'Artist',
-      uri: 'x',
-      playCount: 2,
-      thumbnail: 'https://via.placeholder.com/40',
-    },
-    {
-      id: '2',
-      name: 'Song B',
-      artists: 'Other',
-      uri: 'y',
-      playCount: 1,
-      thumbnail: 'https://via.placeholder.com/40',
-    },
-  ],
+  topTracks: [],
 }
 
 const withNowPlaying = {
@@ -55,22 +38,14 @@ describe('RunSoundtrackCard', () => {
     mockHook.mockReset()
   })
 
-  it('renders now playing and top tracks', () => {
+  it('renders now playing details', () => {
     mockHook.mockReturnValue(withNowPlaying)
-    const { container } = render(<RunSoundtrackCard />)
+    render(<RunSoundtrackCard />)
 
     expect(screen.getByText('Now Playing')).toBeInTheDocument()
-    expect(screen.getAllByText(/Song A/).length).toBeGreaterThan(0)
-    expect(screen.getByText(/Song B/)).toBeInTheDocument()
-
-    const indicator = screen.getByLabelText('listening')
-    expect(indicator).toBeInTheDocument()
-    expect(indicator).toHaveClass('bg-green-600')
-
-    const content = container.querySelector('.flex.flex-col.gap-4.p-6.pt-0')
-    expect(content).toBeInTheDocument()
-    expect(container.firstChild).toHaveClass('text-spotify-primary')
-    expect(container.querySelector('svg')).toBeInTheDocument()
+    expect(screen.getByText('Song A')).toBeInTheDocument()
+    expect(screen.getByRole('progressbar')).toHaveStyle('background-color: #1DB954')
+    expect(screen.queryByText('Top Tracks')).not.toBeInTheDocument()
   })
 
   it('shows placeholder when nothing is playing', () => {

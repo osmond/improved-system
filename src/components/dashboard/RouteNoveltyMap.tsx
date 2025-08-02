@@ -28,12 +28,14 @@ interface Run extends Route {
 export default function RouteNoveltyMap() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [trend, setTrend] = useState<Array<{ index: number; novelty: number }>>([]);
+
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [popupLocation, setPopupLocation] = useState<{
     lng: number;
     lat: number;
   } | null>(null);
   const mapRef = useRef<MapRef | null>(null);
+
 
   useEffect(() => {
     getMockRoutes().then((baseRoutes) => {
@@ -73,14 +75,14 @@ export default function RouteNoveltyMap() {
   const routeFeatures = useMemo(
     () => ({
       type: "FeatureCollection",
-      features: runs.map((r) => ({
+      features: runs.map((r, i) => ({
         type: "Feature",
         id: r.id,
         geometry: {
           type: "LineString",
           coordinates: r.points.map((p) => [p.lon, p.lat]),
         },
-        properties: { novelty: r.novelty },
+        properties: { novelty: r.novelty, index: i },
       })),
     }),
     [runs],
@@ -143,7 +145,9 @@ export default function RouteNoveltyMap() {
               paint={{
                 "line-color": [
                   "case",
+
                   ["==", ["id"], selectedRunId ?? -1],
+
                   "#00f",
                   [
                     "interpolate",
@@ -157,7 +161,9 @@ export default function RouteNoveltyMap() {
                 ],
                 "line-width": [
                   "case",
+
                   ["==", ["id"], selectedRunId ?? -1],
+
                   5,
                   3,
                 ],
@@ -229,7 +235,16 @@ export default function RouteNoveltyMap() {
         <ChartContainer
           config={{ novelty: { label: "Novelty", color: "hsl(var(--chart-1))" } }}
         >
-          <LineChart data={trend} margin={{ top: 0, right: 20, bottom: 0, left: 0 }}>
+          <LineChart
+            data={trend}
+            margin={{ top: 0, right: 20, bottom: 0, left: 0 }}
+            onMouseMove={(e: any) =>
+              typeof e.activeTooltipIndex === "number"
+                ? setHoveredIndex(e.activeTooltipIndex)
+                : setHoveredIndex(null)
+            }
+            onMouseLeave={() => setHoveredIndex(null)}
+          >
             <XAxis dataKey="index" hide />
             <YAxis domain={[0, 1]} hide />
             <ChartTooltip />

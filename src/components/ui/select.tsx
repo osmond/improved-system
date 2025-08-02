@@ -77,7 +77,7 @@ export function SimpleSelect({
           </SelectIcon>
         </SelectTrigger>
         <SelectPortal>
-          <SelectContent className="overflow-hidden rounded-md border bg-card">
+          <SelectContent className="overflow-hidden rounded-md border bg-card z-[60]">
             <SelectScrollUpButton className="flex items-center justify-center h-6">
               <ChevronUp className="w-4 h-4" />
             </SelectScrollUpButton>

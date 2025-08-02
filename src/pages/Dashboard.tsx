@@ -11,10 +11,19 @@ import {
 } from "@/components/dashboard";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { SessionSimilarityMap } from "@/components/statistics";
 
 export default function Dashboard() {
   const data = useGarminData();
-  const [activeTab, setActiveTab] = useState("map");
+  const [activeTab, setActiveTab] = useState<
+    | "map"
+    | "route"
+    | "novelty"
+    | "examples"
+    | "statistics"
+    | "fragility"
+    | "sessions"
+  >("map");
 
   if (!data) {
     return (
@@ -37,6 +46,7 @@ export default function Dashboard() {
         <TabsTrigger value="examples">Analytics fun</TabsTrigger>
         <TabsTrigger value="statistics">Statistics</TabsTrigger>
         <TabsTrigger value="fragility">Fragility</TabsTrigger>
+        <TabsTrigger value="sessions">Session Similarity</TabsTrigger>
       </TabsList>
       <TabsContent value="map">
         <div className="p-6 text-muted-foreground">
@@ -56,7 +66,29 @@ export default function Dashboard() {
         <Statistics />
       </TabsContent>
       <TabsContent value="fragility">
-        <FragilityGauge />
+        <div className="space-y-4 p-4">
+          <h3 className="text-lg font-semibold">Fragility index</h3>
+          <p className="text-sm text-muted-foreground">
+            The fragility index blends training consistency with load spikes to
+            estimate injury risk. Lower scores signal resilience, while higher
+            scores call for caution.
+          </p>
+          <ul className="text-sm text-muted-foreground list-disc pl-4">
+            <li>
+              <span className="text-green-600">0–0.33</span>: stable
+            </li>
+            <li>
+              <span className="text-yellow-600">0.34–0.66</span>: monitor
+            </li>
+            <li>
+              <span className="text-red-600">0.67–1.00</span>: high risk
+            </li>
+          </ul>
+          <FragilityGauge />
+        </div>
+      </TabsContent>
+      <TabsContent value="sessions">
+        <SessionSimilarityMap />
       </TabsContent>
     </Tabs>
   );
