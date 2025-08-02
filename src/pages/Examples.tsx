@@ -1,5 +1,4 @@
 import React from "react";
-import { Link } from "react-router-dom";
 import AreaChartInteractive from "@/components/examples/AreaChartInteractive";
 import LineChartInteractive from "@/components/examples/LineChartInteractive";
 import BarChartInteractive from "@/components/examples/BarChartInteractive";
@@ -42,11 +41,6 @@ import RunSoundtrackCardDemo from "@/components/examples/RunSoundtrackCardDemo";
 export default function Examples() {
   return (
     <div>
-      <div className="mb-6">
-        <Link to="/mileage-globe" className="text-blue-600 hover:underline">
-          View Mileage Globe visualization
-        </Link>
-      </div>
       <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
         <ChartPreview>
           <AreaChartInteractive />

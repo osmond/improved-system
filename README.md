@@ -154,6 +154,64 @@ frequency and a weekly entropy trendline.
 ### Analytics fun page
 `src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.
 
+## Charts & Apps Overview
+
+### Dashboard
+- **Activities Chart** – compare distance and duration for recent activities.
+- **Steps Chart** – daily step totals with change from the previous day and remaining gap to the goal.
+- **Daily Steps Chart** – quick view of daily step counts for the selected range.
+- **Steps Trend with Goal** – running step trend line against a configurable goal.
+- **Weekly Volume Chart** – weekly running mileage totals.
+- **ACWR Gauge** – acute‑to‑chronic workload ratio indicator.
+- **Bed‑to‑Run Gauge** – hours of training per hour spent in bed.
+- **Top Insights** – highlights streaks, best pace and other key summaries.
+- **Time in Bed Chart** – nightly time in bed versus target.
+- **Reading Probability Timeline** – likelihood of reading throughout the day.
+- **Commute Rank** – ranking of commute times against peers.
+- **Reading Focus Heatmap** – intensity of reading focus by time.
+- **Books vs Calories** – correlation between reading time and calories burned.
+- **Reading Stack Split** – breakdown of reading categories.
+- **Run Soundtrack Card** – Spotify powered soundtrack for the next run.
+- **Compact Next Game Card** – quick view of the upcoming game.
+- **Movement Fingerprint** – fingerprint‑style visualization of route patterns.
+- **Fragility Gauge** – injury risk based on training variability.
+- **Training Entropy Heatmap** – consistency of training start times.
+- **Route Similarity** – scatter view comparing route likeness.
+- **Route Novelty Map** – map highlighting novel versus repeated routes.
+
+### Statistics
+- **Annual Mileage** – yearly mileage totals.
+- **Activity by Time** – activity counts across hours of the day.
+- **Avg Daily Mileage Radar** – average mileage by weekday.
+- **Run Distances** – distribution of run distance buckets.
+- **Treadmill vs Outdoor** – ratio of treadmill to outdoor sessions.
+- **Pace Distribution** – histogram of running pace.
+- **Heart Rate Zones** – time spent in each heart‑rate zone.
+- **Pace vs HR** – correlation between pace and heart rate.
+- **Training Load Ratio** – balance of recent versus chronic load.
+- **Equipment Usage Timeline** – gear mileage accumulation over time.
+- **Habit Consistency Heatmap** – frequency of workouts across the calendar.
+- **Session Start Entropy** – variability of session start times.
+- **Run/Bike Volume Comparison** – weekly running versus cycling volume.
+- **Weekly Comparison Chart** – side‑by‑side comparison of weekly metrics.
+- **Perf vs Environment Matrix** – performance versus temperature, humidity, wind and elevation.
+- **Session Similarity Map** – t‑SNE map of session similarity clusters.
+- **Weather Condition Bar** – runs grouped by weather conditions.
+- **Pace vs Temperature** – pace plotted against ambient temperature.
+- **Route Comparison** – compare metrics for two selected routes.
+- **Route Similarity Index** – numeric similarity score for route pairs.
+
+### Geospatial
+- **Geo Activity Explorer** – interactive map of activities by location.
+- **Location Efficiency Comparison** – route efficiency comparison across regions.
+- **State Visit Summary** – choropleth summary of state visits.
+- **State Visit Callout** – detailed callout for the selected state.
+
+### Apps
+- **Dashboard** – tabbed hub combining map playground, route tools, statistics and session similarity.
+- **Statistics Page** – dedicated view for deep‑dive running metrics.
+- **Mileage Globe** – 3D globe app visualising annual mileage paths.
+- **Analytics Fun Page** – sandbox showcasing interactive chart demos.
 
 ## Theming extensions
 If you need new variants—like a "danger" button or a "success" badge—run `pnpm dlx shadcn-ui@latest add button` to scaffold the base component. Then copy or edit `src/components/ui/button.tsx` and register your variant in `tailwind.config.js` under `theme.extend`. See <https://ui.shadcn.com/docs/components> for more details.
