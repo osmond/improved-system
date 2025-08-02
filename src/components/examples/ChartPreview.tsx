@@ -29,7 +29,7 @@ export default function ChartPreview({
         </DialogTrigger>
         {children}
       </div>
-      <DialogContentFullscreen className="relative">
+      <DialogContentFullscreen>
         <DialogClose asChild>
           <button className="absolute right-4 top-4 z-50 rounded-md bg-background/80 p-1 text-muted-foreground hover:text-foreground">
             <X className="h-4 w-4" />
