@@ -10,7 +10,7 @@ import { computeNoveltyTrend } from '../utils'
 describe('computeRouteNovelty', () => {
   it('returns 1 when no history', () => {
     const route: LatLon[] = [{ lat: 0, lon: 0 }]
-    expect(computeRouteNovelty(route, [])).toBe(1)
+    expect(computeRouteNovelty(route, []).novelty).toBe(1)
   })
 })
 
@@ -47,6 +47,8 @@ describe('computeNoveltyTrend', () => {
         timestamp: d.toISOString(),
         points: [],
         novelty: i < 7 ? 0.9 : 0.1,
+        dtwSim: 0,
+        overlapSim: 0,
       }
     })
     const { trend, prolongedLow } = computeNoveltyTrend(runs, 7, 0.2)
