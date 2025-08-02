@@ -1,5 +1,6 @@
 import React from "react";
 import { CircularFragilityRing, FragilityIndexSparkline, FragilityBreakdown } from "@/components/dashboard";
+import { FRAGILITY_LEVELS } from "@/lib/fragility";
 
 export default function FragilityPage() {
   return (
@@ -11,9 +12,13 @@ export default function FragilityPage() {
         scores call for caution.
       </p>
       <ul className="text-sm text-muted-foreground list-disc pl-4">
-        <li><span className="text-green-600">0–0.33</span>: stable</li>
-        <li><span className="text-yellow-600">0.34–0.66</span>: monitor</li>
-        <li><span className="text-red-600">0.67–1.00</span>: high risk</li>
+        {Object.values(FRAGILITY_LEVELS).map((level) => (
+          <li key={level.key}>
+            <span className={level.textClass}>
+              {level.displayMin.toFixed(2).replace(/\.00$/, '')}–{level.displayMax.toFixed(2)}
+            </span>: {level.description}
+          </li>
+        ))}
       </ul>
       <div className="flex flex-col items-center space-y-2">
         <div className="flex items-center space-x-4">

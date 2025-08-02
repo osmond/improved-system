@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import useFragilityIndex from '@/hooks/useFragilityIndex'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
+import { getFragilityLevel } from '@/lib/fragility'
 
 export interface FragilityGaugeProps {
   /** Diameter of the gauge in pixels */
@@ -41,12 +42,7 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
   const circumference = Math.PI * radius
   const offset = circumference - displayIndex * circumference
 
-  let color = 'hsl(var(--chart-3))'
-  if (index > 0.66) {
-    color = 'hsl(var(--destructive))'
-  } else if (index > 0.33) {
-    color = 'hsl(var(--chart-8))'
-  }
+  const { color } = getFragilityLevel(index)
 
   return (
     <TooltipProvider delayDuration={100}>
