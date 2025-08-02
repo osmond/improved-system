@@ -19,12 +19,18 @@ const data: DemoData = {
   window: { start: new Date(Date.now() - 5 * 60000).toISOString() },
   nowPlaying: {
     item: {
-      name: 'Song A',
-      artists: [{ name: 'Artist' }],
-      duration_ms: 200000,
-      album: { images: [{ url: 'https://via.placeholder.com/80' }] },
+      name: 'Unsilent Death',
+      artists: [{ name: 'Nails' }],
+      duration_ms: 72000,
+      album: {
+        images: [
+          {
+            url: 'https://i.scdn.co/image/ab67616d0000b27320c1bdd03b2726f2694cf4f1',
+          },
+        ],
+      },
     },
-    progress_ms: 80000,
+    progress_ms: 30000,
   },
 }
 
