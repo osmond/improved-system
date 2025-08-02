@@ -1079,8 +1079,10 @@ export interface RouteRun {
   timestamp: string;
   points: LatLon[];
   novelty: number;
-  dtwSimilarity: number;
-  overlapSimilarity: number;
+
+  dtwSim: number;
+  overlapSim: number;
+
 }
 
 
@@ -1106,37 +1108,43 @@ function dtwDistance(a: LatLon[], b: LatLon[]): number {
 export function computeRouteNovelty(
   route: LatLon[],
   history: LatLon[][],
-): number {
-  if (history.length === 0) return 1;
+): { novelty: number; dtwSim: number; overlapSim: number } {
+  if (history.length === 0) {
+    return { novelty: 1, dtwSim: 0, overlapSim: 0 };
+  }
   let maxSim = 0;
+  let bestDtw = 0;
+  let bestOverlap = 0;
   for (const h of history) {
     const dtwSim = 1 / (1 + dtwDistance(route, h));
     const overlapSim = calculateRouteSimilarity(route, h);
     const sim = Math.max(dtwSim, overlapSim);
-    if (sim > maxSim) maxSim = sim;
+    if (sim > maxSim) {
+      maxSim = sim;
+      bestDtw = dtwSim;
+      bestOverlap = overlapSim;
+    }
   }
-  return 1 - maxSim;
+  return { novelty: 1 - maxSim, dtwSim: bestDtw, overlapSim: bestOverlap };
 }
 
-export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
-  const history = await fetchRouteRunHistory();
-  let maxDtw = 0;
-  let maxOverlap = 0;
-  for (const h of history) {
-    const dtwSim = 1 / (1 + dtwDistance(points, h.points));
-    const overlapSim = calculateRouteSimilarity(points, h.points);
-    if (dtwSim > maxDtw) maxDtw = dtwSim;
-    if (overlapSim > maxOverlap) maxOverlap = overlapSim;
-  }
-  const novelty = 1 - Math.max(maxDtw, maxOverlap);
+
+export function recordRouteRun(points: LatLon[]): RouteRun {
+  const { novelty, dtwSim, overlapSim } = computeRouteNovelty(
+    points,
+    routeHistory.map((r) => r.points),
+  );
+
   const run: RouteRun = {
     id: nextRouteRunId,
     name: `Run ${nextRouteRunId}`,
     timestamp: new Date().toISOString(),
     points,
     novelty,
-    dtwSimilarity: maxDtw,
-    overlapSimilarity: maxOverlap,
+
+    dtwSim,
+    overlapSim,
+
   };
 
   await trackRouteRun(run);
