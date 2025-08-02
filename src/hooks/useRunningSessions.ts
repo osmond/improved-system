@@ -7,7 +7,11 @@ export interface SessionPoint {
   y: number
   cluster: number
   good: boolean
+  pace: number
+  heartRate: number
   temperature: number
+  humidity: number
+  wind: number
   startHour: number
   pace: number
   heartRate: number
@@ -105,7 +109,11 @@ export function useRunningSessions(): SessionPoint[] | null {
           y,
           cluster: labels[idx],
           good: sessions[idx].pace < expectedPace(sessions[idx]) - 0.2,
+          pace: sessions[idx].pace,
+          heartRate: sessions[idx].heartRate,
           temperature: sessions[idx].weather.temperature,
+          humidity: sessions[idx].weather.humidity,
+          wind: sessions[idx].weather.wind,
           startHour: new Date(sessions[idx].start).getHours(),
           pace: sessions[idx].pace,
           heartRate: sessions[idx].heartRate,

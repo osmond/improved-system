@@ -30,6 +30,12 @@ describe('recordRouteRun', () => {
     const run2 = await recordRouteRun(b)
     const run3 = await recordRouteRun(c)
 
+    expect(run1.id).toBe(1)
+    expect(run1.name).toBe('Run 1')
+    expect(run2.id).toBe(2)
+    expect(run2.name).toBe('Run 2')
+    expect(run3.id).toBe(3)
+    expect(run3.name).toBe('Run 3')
     expect(run1.novelty).toBe(1)
     expect(run2.novelty).toBeLessThan(0.05)
     expect(run3.novelty).toBeGreaterThan(0.8)
@@ -47,6 +53,8 @@ describe('computeNoveltyTrend', () => {
       const d = new Date(today)
       d.setDate(d.getDate() - (19 - i))
       return {
+        id: i + 1,
+        name: `Run ${i + 1}`,
         timestamp: d.toISOString(),
         points: [],
         novelty: i < 7 ? 0.9 : 0.1,

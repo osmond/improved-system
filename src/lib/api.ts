@@ -1074,12 +1074,15 @@ export function calculateRouteSimilarity(
 }
 
 export interface RouteRun {
+  id: number;
+  name: string;
   timestamp: string;
   points: LatLon[];
   novelty: number;
   dtwSimilarity: number;
   overlapSimilarity: number;
 }
+
 
 function dtwDistance(a: LatLon[], b: LatLon[]): number {
   const n = a.length;
@@ -1127,13 +1130,17 @@ export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
   }
   const novelty = 1 - Math.max(maxDtw, maxOverlap);
   const run: RouteRun = {
+    id: nextRouteRunId,
+    name: `Run ${nextRouteRunId}`,
     timestamp: new Date().toISOString(),
     points,
     novelty,
     dtwSimilarity: maxDtw,
     overlapSimilarity: maxOverlap,
   };
+
   await trackRouteRun(run);
+
   return run;
 }
 

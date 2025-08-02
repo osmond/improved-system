@@ -8,7 +8,9 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart"
+import type { TooltipProps } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -36,7 +38,7 @@ export default function GoodDayMap({ data }: GoodDayMapProps) {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" dataKey="x" name="X" />
           <YAxis type="number" dataKey="y" name="Y" />
-          <ChartTooltip />
+          <ChartTooltip content={<GoodDayTooltip />} />
           <Scatter
             data={goodSessions}
             fill="hsl(var(--chart-6))"
@@ -46,6 +48,30 @@ export default function GoodDayMap({ data }: GoodDayMapProps) {
         </ScatterChart>
       </ChartContainer>
     </ChartCard>
+  )
+}
+
+function GoodDayTooltip(props: TooltipProps<number, string>) {
+  const { active, payload } = props
+  if (!(active && payload && payload.length)) return null
+
+  const session = payload[0].payload as SessionPoint
+  return (
+    <ChartTooltipContent
+      active={active}
+      payload={payload}
+      hideLabel
+      hideIndicator
+      formatter={() => (
+        <div className="grid gap-1">
+          <span>Pace: {session.pace.toFixed(2)} min/mi</span>
+          <span>Heart Rate: {session.heartRate} bpm</span>
+          <span>Temp: {session.temperature}°F</span>
+          <span>Humidity: {session.humidity}%</span>
+          <span>Wind: {session.wind} mph</span>
+        </div>
+      )}
+    />
   )
 }
 
