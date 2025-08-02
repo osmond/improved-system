@@ -3,7 +3,13 @@
 
 import { ChartSelectionProvider } from "@/components/dashboard"
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters"
-import { HabitConsistencyHeatmap, SessionSimilarityMap, RouteSimilarityIndex } from "@/components/statistics"
+
+import {
+  HabitConsistencyHeatmap,
+  SessionSimilarityMap,
+  SessionStartEntropy,
+} from "@/components/statistics"
+
 import { useRunningSessions } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -15,6 +21,7 @@ export default function Statistics() {
       <ChartSelectionProvider>
         <div className="p-6 space-y-6">
           <HabitConsistencyHeatmap />
+          <SessionStartEntropy />
           {sessions ? (
             <SessionSimilarityMap data={sessions} />
           ) : (
