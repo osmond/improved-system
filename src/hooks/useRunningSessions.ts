@@ -13,13 +13,9 @@ export interface SessionPoint {
   humidity: number
   wind: number
   startHour: number
-  pace: number
-  heartRate: number
   duration: number
   lat: number
   lon: number
-  humidity: number
-  wind: number
   condition: string
 }
 
@@ -115,13 +111,9 @@ export function useRunningSessions(): SessionPoint[] | null {
           humidity: sessions[idx].weather.humidity,
           wind: sessions[idx].weather.wind,
           startHour: new Date(sessions[idx].start).getHours(),
-          pace: sessions[idx].pace,
-          heartRate: sessions[idx].heartRate,
           duration: sessions[idx].duration,
           lat: sessions[idx].lat,
           lon: sessions[idx].lon,
-          humidity: sessions[idx].weather.humidity,
-          wind: sessions[idx].weather.wind,
           condition: sessions[idx].weather.condition,
         }),
       )
