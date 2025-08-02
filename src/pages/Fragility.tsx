@@ -1,5 +1,5 @@
 import React from "react";
-import { FragilityGauge } from "@/components/dashboard";
+import { CircularFragilityRing } from "@/components/dashboard";
 
 export default function FragilityPage() {
   return (
@@ -15,7 +15,7 @@ export default function FragilityPage() {
         <li><span className="text-yellow-600">0.34–0.66</span>: monitor</li>
         <li><span className="text-red-600">0.67–1.00</span>: high risk</li>
       </ul>
-      <FragilityGauge />
+      <CircularFragilityRing />
     </div>
   );
 }
