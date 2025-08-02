@@ -30,4 +30,6 @@ export { default as TrainingEntropyHeatmap } from "./TrainingEntropyHeatmap";
 
 export { default as RouteSimilarity } from "./RouteSimilarity";
 
+export { default as RouteNoveltyMap } from "./RouteNoveltyMap";
+
 
