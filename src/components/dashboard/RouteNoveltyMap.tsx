@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useRef, useState } from "react";
 import Map, {
   Layer,
   Source,
@@ -17,17 +17,10 @@ import {
 } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import { Alert } from "@/components/ui/alert";
-import { calculateRouteSimilarity, getMockRoutes, Route } from "@/lib/api";
-
-interface Run extends Route {
-  id: number;
-  date: string;
-  novelty: number;
-}
+import useRouteNovelty from "@/hooks/useRouteNovelty";
 
 export default function RouteNoveltyMap() {
-  const [runs, setRuns] = useState<Run[]>([]);
-  const [trend, setTrend] = useState<Array<{ index: number; novelty: number }>>([]);
+  const [runs, trend, prolongedLow] = useRouteNovelty();
 
   const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
   const [popupLocation, setPopupLocation] = useState<{
@@ -36,48 +29,12 @@ export default function RouteNoveltyMap() {
   } | null>(null);
   const mapRef = useRef<MapRef | null>(null);
 
-
-  useEffect(() => {
-    getMockRoutes().then((baseRoutes) => {
-      const generated: Run[] = Array.from({ length: 10 }, (_, i) => {
-        const base = baseRoutes[i % baseRoutes.length];
-        const points = base.points.map((p) => ({
-          lat: p.lat + (Math.random() - 0.5) * 0.01,
-          lon: p.lon + (Math.random() - 0.5) * 0.01,
-        }));
-        const d = new Date();
-        d.setDate(d.getDate() - (10 - i));
-        return {
-          id: i + 1,
-          name: base.name,
-          points,
-          date: d.toISOString().slice(0, 10),
-          novelty: 0,
-        };
-      });
-      const withNovelty = generated.map((run, i) => {
-        if (i === 0) return { ...run, novelty: 1 };
-        const sim = calculateRouteSimilarity(run.points, generated[i - 1].points);
-        return { ...run, novelty: +(1 - sim).toFixed(2) };
-      });
-      setRuns(withNovelty);
-      const windowSize = 5;
-      const rolling = withNovelty.map((r, i) => {
-        const start = Math.max(0, i - windowSize + 1);
-        const slice = withNovelty.slice(start, i + 1);
-        const avg = slice.reduce((acc, s) => acc + s.novelty, 0) / slice.length;
-        return { index: i + 1, novelty: +avg.toFixed(2) };
-      });
-      setTrend(rolling);
-    });
-  }, []);
-
   const routeFeatures = useMemo(
     () => ({
       type: "FeatureCollection",
       features: runs.map((r, i) => ({
         type: "Feature",
-        id: r.id,
+        id: i,
         geometry: {
           type: "LineString",
           coordinates: r.points.map((p) => [p.lon, p.lat]),
@@ -103,11 +60,13 @@ export default function RouteNoveltyMap() {
     [runs],
   );
 
-  const showSuggestion =
-    trend.length > 0 && trend[trend.length - 1].novelty < 0.3;
+  const showSuggestion = prolongedLow;
 
   const selectedRun = useMemo(
-    () => runs.find((r) => r.id === selectedRunId) || null,
+    () =>
+      selectedRunId != null && runs[selectedRunId]
+        ? runs[selectedRunId]
+        : null,
     [runs, selectedRunId],
   );
 
@@ -224,7 +183,7 @@ export default function RouteNoveltyMap() {
               }}
             >
               <div>
-                <div>{selectedRun.date}</div>
+                <div>{selectedRun.timestamp.slice(0, 10)}</div>
                 <div>Novelty: {selectedRun.novelty}</div>
               </div>
             </Popup>
@@ -237,25 +196,16 @@ export default function RouteNoveltyMap() {
       </p>
       <div className="h-40">
         <ChartContainer
-          config={{ novelty: { label: "Novelty", color: "hsl(var(--chart-1))" } }}
+          config={{ value: { label: "Novelty", color: "hsl(var(--chart-1))" } }}
         >
-          <LineChart
-            data={trend}
-            margin={{ top: 0, right: 20, bottom: 0, left: 0 }}
-            onMouseMove={(e: any) =>
-              typeof e.activeTooltipIndex === "number"
-                ? setHoveredIndex(e.activeTooltipIndex)
-                : setHoveredIndex(null)
-            }
-            onMouseLeave={() => setHoveredIndex(null)}
-          >
-            <XAxis dataKey="index" hide />
+          <LineChart data={trend} margin={{ top: 0, right: 20, bottom: 0, left: 0 }}>
+            <XAxis dataKey="date" hide />
             <YAxis domain={[0, 1]} hide />
             <ChartTooltip />
             <Line
               type="monotone"
-              dataKey="novelty"
-              stroke="var(--color-novelty)"
+              dataKey="value"
+              stroke="var(--color-value)"
               strokeWidth={2}
               dot={false}
             />
