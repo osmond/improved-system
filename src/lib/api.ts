@@ -904,6 +904,63 @@ export function calculateRouteSimilarity(
   return union.size === 0 ? 0 : intersection.length / union.size;
 }
 
+export interface RouteRun {
+  timestamp: string;
+  points: LatLon[];
+  novelty: number;
+}
+
+const routeHistory: RouteRun[] = [];
+
+function dtwDistance(a: LatLon[], b: LatLon[]): number {
+  const n = a.length;
+  const m = b.length;
+  const dp = Array.from({ length: n + 1 }, () =>
+    Array(m + 1).fill(Infinity),
+  );
+  dp[0][0] = 0;
+  for (let i = 1; i <= n; i++) {
+    for (let j = 1; j <= m; j++) {
+      const cost = Math.hypot(
+        a[i - 1].lat - b[j - 1].lat,
+        a[i - 1].lon - b[j - 1].lon,
+      );
+      dp[i][j] = cost + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1]);
+    }
+  }
+  return dp[n][m] / (n + m);
+}
+
+export function computeRouteNovelty(
+  route: LatLon[],
+  history: LatLon[][],
+): number {
+  if (history.length === 0) return 1;
+  let maxSim = 0;
+  for (const h of history) {
+    const dtwSim = 1 / (1 + dtwDistance(route, h));
+    const overlapSim = calculateRouteSimilarity(route, h);
+    const sim = Math.max(dtwSim, overlapSim);
+    if (sim > maxSim) maxSim = sim;
+  }
+  return 1 - maxSim;
+}
+
+export function recordRouteRun(points: LatLon[]): RouteRun {
+  const novelty = computeRouteNovelty(points, routeHistory.map((r) => r.points));
+  const run: RouteRun = {
+    timestamp: new Date().toISOString(),
+    points,
+    novelty,
+  };
+  routeHistory.push(run);
+  return run;
+}
+
+export function getRouteRunHistory(): RouteRun[] {
+  return routeHistory;
+}
+
 // ----- Sleep sessions -----
 
 export interface SleepSession {
