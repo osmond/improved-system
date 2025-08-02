@@ -18,7 +18,28 @@ function TestDialog() {
   );
 }
 
+function TestDialogWithButton() {
+  const [open, setOpen] = React.useState(true);
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogContentFullscreen>
+        <button onClick={() => setOpen(false)}>close</button>
+      </DialogContentFullscreen>
+    </Dialog>
+  );
+}
+
 describe("DialogContentFullscreen", () => {
+  it("renders content above the overlay", () => {
+    render(<TestDialog />);
+
+    const overlay = document.querySelector('[data-state="open"]') as HTMLElement;
+    const content = screen.getByRole("dialog");
+
+    expect(overlay.className).toMatch(/z-40/);
+    expect(content.className).toMatch(/z-50/);
+  });
+
   it("closes when clicking the overlay", async () => {
     const user = userEvent.setup();
     render(<TestDialog />);
@@ -30,5 +51,16 @@ describe("DialogContentFullscreen", () => {
     await user.click(overlay);
 
     expect(screen.queryByText("content")).not.toBeInTheDocument();
+  });
+
+  it("allows interaction with content above the overlay", async () => {
+    const user = userEvent.setup();
+    render(<TestDialogWithButton />);
+
+    const button = screen.getByRole("button", { name: /close/i });
+
+    await user.click(button);
+
+    expect(screen.queryByRole("dialog")).not.toBeInTheDocument();
   });
 });
