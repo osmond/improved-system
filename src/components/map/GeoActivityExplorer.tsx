@@ -11,12 +11,6 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Accordion,
-  AccordionItem,
-  AccordionTrigger,
-  AccordionContent,
-} from "@/components/ui/accordion";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
@@ -349,10 +343,16 @@ export default function GeoActivityExplorer() {
         </div>
 
         <div className="flex-1">
-          <Accordion value={expandedState || undefined} onValueChange={setExpandedState}>
+          <div className="space-y-2">
             {filteredStates.map((s) => (
-              <AccordionItem key={s.stateCode} value={s.stateCode}>
-                <AccordionTrigger className="flex justify-between">
+              <details
+                key={s.stateCode}
+                open={expandedState === s.stateCode}
+                onToggle={(e) =>
+                  setExpandedState(e.currentTarget.open ? s.stateCode : null)
+                }
+              >
+                <summary className="flex justify-between cursor-pointer">
                   <span className="flex items-center gap-2">
                     <span className="text-xs font-medium">{s.stateCode}</span>
                     <Badge>{s.cities.length}</Badge>
@@ -361,23 +361,21 @@ export default function GeoActivityExplorer() {
                     <Badge>{s.totalDays}d</Badge>
                     <Badge>{s.totalMiles}mi</Badge>
                   </span>
-                </AccordionTrigger>
-                <AccordionContent>
-                  <ul className="text-sm space-y-1">
-                    {s.cities.map((c) => (
-                      <li key={c.name} className="flex justify-between px-2">
-                        <span>{c.name}</span>
-                        <span className="flex gap-2">
-                          <Badge>{c.days}d</Badge>
-                          <Badge>{c.miles}mi</Badge>
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                </AccordionContent>
-              </AccordionItem>
+                </summary>
+                <ul className="text-sm space-y-1 mt-2">
+                  {s.cities.map((c) => (
+                    <li key={c.name} className="flex justify-between px-2">
+                      <span>{c.name}</span>
+                      <span className="flex gap-2">
+                        <Badge>{c.days}d</Badge>
+                        <Badge>{c.miles}mi</Badge>
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </details>
             ))}
-          </Accordion>
+          </div>
         </div>
       </div>
       </>
