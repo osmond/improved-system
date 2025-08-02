@@ -30,7 +30,6 @@ export default function Layout({ children }: LayoutProps) {
       <SidebarInset>
         <header className="flex items-center justify-between p-4">
           <SidebarTrigger />
-          <h1 className="text-xl font-bold">Dashboard</h1>
           <div className="flex items-center gap-2">
             <TooltipProvider delayDuration={100}>
               <Tooltip>
