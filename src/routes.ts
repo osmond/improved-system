@@ -32,3 +32,23 @@ export const dashboardRoutes = [
 
 export type DashboardRouteGroup = (typeof dashboardRoutes)[number];
 export type DashboardRoute = DashboardRouteGroup["items"][number];
+
+export const chartRoutes: DashboardRoute[] = [
+  { to: "/dashboard/fragility", label: "Fragility" },
+  { to: "/dashboard/session-similarity", label: "Session Similarity" },
+  { to: "/dashboard/good-day", label: "Good Day" },
+  { to: "/dashboard/habit-consistency", label: "Habit consistency" },
+  { to: "/dashboard/examples/area-charts", label: "Area charts" },
+  { to: "/dashboard/examples/bar-charts", label: "Bar charts" },
+  { to: "/dashboard/examples/radar-charts", label: "Radar charts" },
+  { to: "/dashboard/examples/radial-charts", label: "Radial charts" },
+  { to: "/dashboard/examples/heatmaps", label: "Heatmaps" },
+  { to: "/dashboard/examples/misc-charts", label: "Misc charts" },
+];
+
+export const mapRoutes: DashboardRoute[] = [
+  { to: "/dashboard/map", label: "Map playground" },
+  { to: "/dashboard/route-similarity", label: "Route similarity" },
+  { to: "/dashboard/route-novelty", label: "Route novelty" },
+  { to: "/dashboard/mileage-globe", label: "Mileage Globe" },
+];
