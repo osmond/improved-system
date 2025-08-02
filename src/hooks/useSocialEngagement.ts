@@ -71,7 +71,16 @@ export default function useSocialEngagement() {
 
   return useMemo(() => {
     if (!visits) return null;
-    return computeSocialEngagementIndex(visits);
+
+    const cutoff = new Date();
+    cutoff.setDate(cutoff.getDate() - 7);
+    const recent = visits.filter((v) => new Date(v.date) >= cutoff);
+    const baselineVisits = visits.filter((v) => new Date(v.date) < cutoff);
+
+    const current = computeSocialEngagementIndex(recent);
+    const baseline = computeSocialEngagementIndex(baselineVisits);
+
+    return { ...current, baseline };
   }, [visits]);
 }
 

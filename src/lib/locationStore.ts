@@ -1,4 +1,6 @@
 
+import { groupConsecutivePoints, placeIdFor, type LocationPoint } from './locationProcessing';
+
 export interface LocationFix {
   timestamp: number;
   lat: number;
@@ -41,9 +43,7 @@ export async function getFixes(): Promise<LocationFix[]> {
     req.onsuccess = () => resolve(req.result as LocationFix[]);
     req.onerror = () => reject(req.error);
   });
-=======
-import { groupConsecutivePoints, placeIdFor, type LocationPoint } from './locationProcessing';
-
+}
 export type LocationCategory = 'home' | 'work' | 'other';
 
 export interface LocationCluster {
