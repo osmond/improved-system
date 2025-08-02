@@ -5,6 +5,7 @@ import {
   getLocationVisits as deriveLocationVisits,
   type LocationVisit,
 } from "./locationStore";
+import { trackRouteRun, fetchRouteRunHistory } from "./telemetry";
 export type { LocationVisit } from "./locationStore";
 
 export type Activity = {
@@ -1073,14 +1074,17 @@ export function calculateRouteSimilarity(
 }
 
 export interface RouteRun {
+  id: number;
+  name: string;
   timestamp: string;
   points: LatLon[];
   novelty: number;
+
   dtwSim: number;
   overlapSim: number;
+
 }
 
-const routeHistory: RouteRun[] = [];
 
 function dtwDistance(a: LatLon[], b: LatLon[]): number {
   const n = a.length;
@@ -1124,24 +1128,32 @@ export function computeRouteNovelty(
   return { novelty: 1 - maxSim, dtwSim: bestDtw, overlapSim: bestOverlap };
 }
 
+
 export function recordRouteRun(points: LatLon[]): RouteRun {
   const { novelty, dtwSim, overlapSim } = computeRouteNovelty(
     points,
     routeHistory.map((r) => r.points),
   );
+
   const run: RouteRun = {
+    id: nextRouteRunId,
+    name: `Run ${nextRouteRunId}`,
     timestamp: new Date().toISOString(),
     points,
     novelty,
+
     dtwSim,
     overlapSim,
+
   };
-  routeHistory.push(run);
+
+  await trackRouteRun(run);
+
   return run;
 }
 
-export function getRouteRunHistory(): RouteRun[] {
-  return routeHistory;
+export async function getRouteRunHistory(): Promise<RouteRun[]> {
+  return fetchRouteRunHistory();
 }
 
 // ----- Sleep sessions -----
