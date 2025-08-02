@@ -2,20 +2,19 @@ import React from "react";
 import ChartRadialLabel from "@/components/examples/RadialChartLabel";
 import ChartRadialText from "@/components/examples/RadialChartText";
 import ChartRadialGrid from "@/components/examples/RadialChartGrid";
-import ChartPreview from "@/components/examples/ChartPreview";
 
 export default function RadialCharts() {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-      <ChartPreview>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartRadialLabel />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartRadialText />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartRadialGrid />
-      </ChartPreview>
+      </div>
     </div>
   );
 }

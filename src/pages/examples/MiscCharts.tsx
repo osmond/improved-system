@@ -5,24 +5,23 @@ import ScatterChartPaceHeartRate from "@/components/examples/ScatterChartPaceHea
 import ReadingStackSplit from "@/components/dashboard/ReadingStackSplit";
 import CompactNextGameCard from "@/components/dashboard/CompactNextGameCard";
 import RunSoundtrackCardDemo from "@/components/examples/RunSoundtrackCardDemo";
-import ChartPreview from "@/components/examples/ChartPreview";
 
 export default function MiscCharts() {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-      <ChartPreview>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <LineChartInteractive />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <TimeInBedChart />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ScatterChartPaceHeartRate />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ReadingStackSplit />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <CompactNextGameCard
           homeTeam="Wild"
           awayTeam="Blues"
@@ -32,10 +31,10 @@ export default function MiscCharts() {
           countdown="in 2 months"
           accentColor="#006847"
         />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <RunSoundtrackCardDemo />
-      </ChartPreview>
+      </div>
     </div>
   );
 }

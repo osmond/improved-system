@@ -7,35 +7,34 @@ import ChartBarLabelCustom from "@/components/examples/BarChartLabelCustom";
 import ShoeUsageChart from "@/components/examples/ShoeUsageChart";
 import EquipmentUsageTimeline from "@/components/statistics/EquipmentUsageTimeline";
 import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
-import ChartPreview from "@/components/examples/ChartPreview";
 
 export default function BarCharts() {
   return (
     <div className="columns-1 sm:columns-2 lg:columns-3 gap-6">
-      <ChartPreview>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <BarChartInteractive />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartBarDefault />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartBarHorizontal />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartBarMixed />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ChartBarLabelCustom />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <ShoeUsageChart />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <EquipmentUsageTimeline />
-      </ChartPreview>
-      <ChartPreview>
+      </div>
+      <div className="relative overflow-hidden mb-6 break-inside-avoid">
         <PeerBenchmarkBands />
-      </ChartPreview>
+      </div>
     </div>
   );
 }
