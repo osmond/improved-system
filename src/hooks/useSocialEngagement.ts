@@ -3,6 +3,11 @@ import {
   getActivityVisits,
   type ActivityVisit,
 } from "@/lib/activityContext";
+import {
+  getSocialBaseline,
+  setSocialBaseline,
+  type SocialBaseline,
+} from "@/lib/locationStore";
 
 function computeLocationEntropy(visits: ActivityVisit[]): number {
   const active = visits.filter((v) => v.activity !== "sedentary");
@@ -61,7 +66,18 @@ export function computeSocialEngagementIndex(visits: ActivityVisit[]): {
   outOfHomeFrequency: number;
   consecutiveHomeDays: number;
 } {
-  const locationEntropy = computeLocationEntropy(visits);
+  const active = visits.filter((v) => v.activity !== "sedentary");
+  const byDate: Record<string, ActivityVisit[]> = {};
+  active.forEach((v) => {
+    if (!byDate[v.date]) byDate[v.date] = [];
+    byDate[v.date].push(v);
+  });
+  const dailyEntropies = Object.values(byDate).map((day) =>
+    computeLocationEntropy(day),
+  );
+  const avg = (arr: number[]) =>
+    arr.length === 0 ? 0 : arr.reduce((a, b) => a + b, 0) / arr.length;
+  const locationEntropy = avg(dailyEntropies);
   const outOfHomeFrequency = computeOutOfHomeFrequency(visits);
   const consecutiveHomeDays = computeConsecutiveHomeDays(visits);
   const index = (locationEntropy + outOfHomeFrequency) / 2;
@@ -81,12 +97,43 @@ export default function useSocialEngagement() {
     const cutoff = new Date();
     cutoff.setDate(cutoff.getDate() - 7);
     const recent = visits.filter((v) => new Date(v.date) >= cutoff);
-    const baselineVisits = visits.filter((v) => new Date(v.date) < cutoff);
+    let baseline: SocialBaseline | null = getSocialBaseline();
+
+    if (!baseline) {
+      const baselineVisits = visits.filter((v) => new Date(v.date) < cutoff);
+      const computed = computeSocialEngagementIndex(baselineVisits);
+      baseline = {
+        locationEntropy: computed.locationEntropy,
+        outOfHomeFrequency: computed.outOfHomeFrequency,
+      };
+      setSocialBaseline(baseline);
+    }
 
     const current = computeSocialEngagementIndex(recent);
-    const baseline = computeSocialEngagementIndex(baselineVisits);
 
-    return { ...current, baseline };
+    const deviationFlags: string[] = [];
+    if (baseline) {
+      if (baseline.locationEntropy > 0) {
+        const change =
+          (current.locationEntropy - baseline.locationEntropy) /
+          baseline.locationEntropy;
+        if (change <= -0.3)
+          deviationFlags.push(
+            `entropy down ${Math.round(Math.abs(change) * 100)}%`,
+          );
+      }
+      if (baseline.outOfHomeFrequency > 0) {
+        const change =
+          (current.outOfHomeFrequency - baseline.outOfHomeFrequency) /
+          baseline.outOfHomeFrequency;
+        if (change <= -0.3)
+          deviationFlags.push(
+            `out-of-home down ${Math.round(Math.abs(change) * 100)}%`,
+          );
+      }
+    }
+
+    return { ...current, baseline, deviationFlags };
   }, [visits]);
 }
 

@@ -13,7 +13,7 @@ const visits: ActivityVisit[] = [
 describe('computeSocialEngagementIndex', () => {
   it('calculates index and home streak', () => {
     const { index, consecutiveHomeDays } = computeSocialEngagementIndex(visits)
-    expect(index).toBeCloseTo(0.75, 2)
+    expect(index).toBeCloseTo(0.5, 2)
     expect(consecutiveHomeDays).toBe(0)
   })
 })
