@@ -1,10 +1,10 @@
 import React from "react";
 import {
-  Sidebar as SidebarRoot,
+  Sidebar,
   SidebarHeader,
   SidebarContent,
   SidebarGroup,
-  SidebarItem,
+  SidebarFooter,
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
@@ -12,12 +12,12 @@ import { dashboardRoutes } from "@/routes";
 
 export default function AppSidebar() {
   return (
-    <SidebarRoot>
+    <Sidebar>
       <SidebarHeader />
       <SidebarContent>
         <SidebarGroup>
           {dashboardRoutes.map((link) => (
-            <SidebarItem key={link.to}>
+            <li key={link.to}>
               <NavLink
                 to={link.to}
                 className={({ isActive }) =>
@@ -31,10 +31,11 @@ export default function AppSidebar() {
               >
                 {link.label}
               </NavLink>
-            </SidebarItem>
+            </li>
           ))}
         </SidebarGroup>
       </SidebarContent>
-    </SidebarRoot>
+      <SidebarFooter />
+    </Sidebar>
   );
 }
