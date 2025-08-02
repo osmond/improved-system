@@ -1,7 +1,7 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
-import { dashboardRoutes } from "@/routes";
+import { dashboardRoutes, DashboardRoute } from "@/routes";
 
 export default function CommandPalette() {
   const [open, setOpen] = React.useState(false);
@@ -19,8 +19,13 @@ export default function CommandPalette() {
     return () => document.removeEventListener("keydown", down);
   }, []);
 
-  const filtered = dashboardRoutes.filter((route) =>
-    route.label.toLowerCase().includes(query.toLowerCase())
+  const routes = React.useMemo(
+    () => dashboardRoutes.flatMap((group) => group.items),
+    [],
+  );
+
+  const filtered = routes.filter((route: DashboardRoute) =>
+    route.label.toLowerCase().includes(query.toLowerCase()),
   );
 
   const handleSelect = (path: string) => {

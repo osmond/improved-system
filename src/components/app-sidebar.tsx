@@ -15,25 +15,30 @@ export default function AppSidebar() {
     <Sidebar>
       <SidebarHeader />
       <SidebarContent>
-        <SidebarGroup>
-          {dashboardRoutes.map((link) => (
-            <li key={link.to}>
-              <NavLink
-                to={link.to}
-                className={({ isActive }) =>
-                  cn(
-                    "block rounded-md px-3 py-2 text-sm",
-                    isActive
-                      ? "bg-accent text-accent-foreground"
-                      : "hover:bg-muted",
-                  )
-                }
-              >
-                {link.label}
-              </NavLink>
+        {dashboardRoutes.map((group) => (
+          <SidebarGroup key={group.label}>
+            <li className="px-3 py-2 text-xs font-semibold text-muted-foreground">
+              {group.label}
             </li>
-          ))}
-        </SidebarGroup>
+            {group.items.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
+                  className={({ isActive }) =>
+                    cn(
+                      "block rounded-md px-3 py-2 text-sm",
+                      isActive
+                        ? "bg-accent text-accent-foreground"
+                        : "hover:bg-muted",
+                    )
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              </li>
+            ))}
+          </SidebarGroup>
+        ))}
       </SidebarContent>
       <SidebarFooter />
     </Sidebar>
