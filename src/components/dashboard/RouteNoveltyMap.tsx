@@ -17,6 +17,9 @@ import {
   XAxis,
   YAxis,
   Tooltip as ChartTooltip,
+  Area,
+  ReferenceLine,
+  ReferenceArea,
 } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import { Alert } from "@/components/ui/alert";
@@ -98,6 +101,16 @@ export default function RouteNoveltyMap() {
         : null,
     [runs, selectedRunId],
   );
+
+  const WINDOW_DAYS = 7;
+  const THRESHOLD = 0.3;
+  const lowSpan = useMemo(() => {
+    if (!prolongedLow || trend.length < WINDOW_DAYS) return null;
+    return {
+      start: trend[trend.length - WINDOW_DAYS].date,
+      end: trend[trend.length - 1].date,
+    };
+  }, [prolongedLow, trend]);
 
   const numberFormatter = useMemo(
     () => new Intl.NumberFormat(undefined, { maximumFractionDigits: 2 }),
@@ -298,9 +311,35 @@ export default function RouteNoveltyMap() {
           config={{ value: { label: "Novelty", color: "hsl(var(--chart-1))" } }}
         >
           <LineChart data={trend} margin={{ top: 0, right: 20, bottom: 0, left: 0 }}>
+            <defs>
+              <linearGradient id="novelty-gradient" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="5%" stopColor="var(--color-value)" stopOpacity={0.4} />
+                <stop offset="95%" stopColor="var(--color-value)" stopOpacity={0} />
+              </linearGradient>
+            </defs>
             <XAxis dataKey="date" hide />
             <YAxis domain={[0, 1]} hide />
             <ChartTooltip />
+            {lowSpan && (
+              <ReferenceArea
+                x1={lowSpan.start}
+                x2={lowSpan.end}
+                stroke={false}
+                fill="var(--color-value)"
+                fillOpacity={0.1}
+              />
+            )}
+            <ReferenceLine
+              y={THRESHOLD}
+              stroke="var(--muted-foreground)"
+              strokeDasharray="3 3"
+            />
+            <Area
+              type="monotone"
+              dataKey="value"
+              stroke="none"
+              fill="url(#novelty-gradient)"
+            />
             <Line
               type="monotone"
               dataKey="value"
