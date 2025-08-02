@@ -231,6 +231,10 @@ export default function RouteNoveltyMap() {
           )}
         </Map>
       </div>
+      <p className="text-sm text-muted-foreground mt-2">
+        Routes are colored by novelty—gray for familiar paths, red for unique ones.
+        Clustered labels show novelty at starting points.
+      </p>
       <div className="h-40">
         <ChartContainer
           config={{ novelty: { label: "Novelty", color: "hsl(var(--chart-1))" } }}
