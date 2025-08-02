@@ -40,12 +40,26 @@ describe('RunSoundtrackCard', () => {
 
   it('renders now playing details', () => {
     mockHook.mockReturnValue(withNowPlaying)
-    render(<RunSoundtrackCard />)
+    const { container } = render(<RunSoundtrackCard />)
 
+    // container has simplified styling classes
+    expect(container.firstChild).toHaveClass(
+      'max-w-sm',
+      'rounded-xl',
+      'bg-white',
+      'border',
+      'flex',
+    )
+
+    // displays now playing info
     expect(screen.getByText('Now Playing')).toBeInTheDocument()
     expect(screen.getByText('Song A')).toBeInTheDocument()
-    expect(screen.getByRole('progressbar')).toHaveStyle('background-color: #1DB954')
-    expect(screen.queryByText('Top Tracks')).not.toBeInTheDocument()
+
+    // progress bar renders with spotify color and width
+    expect(screen.getByRole('progressbar')).toHaveStyle({
+      backgroundColor: '#1DB954',
+      width: '38%',
+    })
   })
 
   it('shows placeholder when nothing is playing', () => {
