@@ -3,6 +3,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGarminData } from "@/hooks/useGarminData";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
+import RouteSimilarity from "@/components/dashboard/RouteSimilarity";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 
@@ -26,6 +27,7 @@ export default function Dashboard() {
     <Tabs value={activeTab} onValueChange={setActiveTab}>
       <TabsList>
         <TabsTrigger value="map">Map playground</TabsTrigger>
+        <TabsTrigger value="route">Route similarity</TabsTrigger>
         <TabsTrigger value="examples">Analytics fun</TabsTrigger>
       </TabsList>
       <TabsContent value="map">
@@ -58,6 +60,9 @@ export default function Dashboard() {
             quantify novelty.
           </p>
         </div>
+      </TabsContent>
+      <TabsContent value="route">
+        <RouteSimilarity />
       </TabsContent>
       <TabsContent value="examples">
         <Examples />
