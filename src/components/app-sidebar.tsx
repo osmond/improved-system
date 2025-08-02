@@ -10,17 +10,9 @@ import {
   SidebarMenu,
   SidebarMenuItem,
   SidebarMenuButton,
-  SidebarMenuSub,
-  SidebarMenuSubItem,
-  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from "@radix-ui/react-collapsible";
 import { NavLink, useLocation } from "react-router-dom";
-import { BarChart2, ChevronDown, Map as MapIcon } from "lucide-react";
+import { BarChart2, Map as MapIcon } from "lucide-react";
 import { chartRoutes, mapRoutes } from "@/routes";
 
 export default function AppSidebar() {
@@ -34,31 +26,20 @@ export default function AppSidebar() {
           <SidebarGroupLabel>Charts</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              <SidebarMenuItem>
-                <Collapsible>
-                  <CollapsibleTrigger asChild>
-                    <SidebarMenuButton className="group w-full justify-start">
+              {chartRoutes.map((route) => (
+                <SidebarMenuItem key={route.to}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === route.to}
+                    className="justify-start"
+                  >
+                    <NavLink to={route.to}>
                       <BarChart2 className="mr-2" />
-                      <span>All charts</span>
-                      <ChevronDown className="ml-auto transition-transform group-data-[state=open]:rotate-180" />
-                    </SidebarMenuButton>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent>
-                    <SidebarMenuSub>
-                      {chartRoutes.map((route) => (
-                        <SidebarMenuSubItem key={route.to}>
-                          <SidebarMenuSubButton
-                            asChild
-                            isActive={pathname === route.to}
-                          >
-                            <NavLink to={route.to}>{route.label}</NavLink>
-                          </SidebarMenuSubButton>
-                        </SidebarMenuSubItem>
-                      ))}
-                    </SidebarMenuSub>
-                  </CollapsibleContent>
-                </Collapsible>
-              </SidebarMenuItem>
+                      <span>{route.label}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
