@@ -6,6 +6,7 @@ import { select } from 'd3-selection'
 import { geoOrthographic, geoPath } from 'd3-geo'
 import { zoom } from 'd3-zoom'
 import { drag } from 'd3-drag'
+import { feature, mesh } from 'topojson-client'
 
 interface GlobePoint {
   date: string
@@ -43,48 +44,79 @@ function GlobeRenderer({
     const sphere = svg
       .append('path')
       .datum({ type: 'Sphere' })
-      .attr('d', path as any)
       .attr('fill', '#1e3a8a')
       .attr('stroke', '#94a3b8')
 
-    const linePaths = points.map((p) => {
-      const line = svg
-        .append('path')
-        .datum({ type: 'LineString', coordinates: p.coordinates })
-        .attr('d', path as any)
-        .attr('fill', 'none')
-        .attr('stroke', 'var(--primary)')
-        .attr('stroke-width', 1.5)
-        .attr('opacity', 0.8)
-        .on('mouseenter', (event) => {
-          select(event.currentTarget)
-            .attr('stroke-width', 3)
-            .attr('opacity', 1)
-          tooltip
-            .style('display', 'block')
-            .style('left', `${event.offsetX + 10}px`)
-            .style('top', `${event.offsetY + 10}px`)
-            .text(`${p.date}: ${p.miles} miles`)
-        })
-        .on('mousemove', (event) => {
-          tooltip
-            .style('left', `${event.offsetX + 10}px`)
-            .style('top', `${event.offsetY + 10}px`)
-        })
-        .on('mouseleave', (event) => {
-          select(event.currentTarget)
-            .attr('stroke-width', 1.5)
-            .attr('opacity', 0.8)
-          tooltip.style('display', 'none')
-        })
-        .on('click', () => onSelect(p))
-      return line
-    })
+    let landPath: any
+    let boundaryPath: any
+    const linePaths: any[] = []
 
     const render = () => {
       sphere.attr('d', path as any)
+      landPath?.attr('d', path as any)
+      boundaryPath?.attr('d', path as any)
       linePaths.forEach((line) => line.attr('d', path as any))
     }
+
+    fetch('/world-110m.json')
+      .then((res) => res.json())
+      .then((world) => {
+        const land = feature(world, world.objects.countries)
+        const boundaries = mesh(
+          world,
+          world.objects.countries,
+          (a, b) => a !== b
+        )
+
+        landPath = svg
+          .append('path')
+          .datum(land as any)
+          .attr('fill', '#334155')
+          .attr('stroke', '#1e293b')
+          .attr('stroke-width', 0.5)
+
+        boundaryPath = svg
+          .append('path')
+          .datum(boundaries as any)
+          .attr('fill', 'none')
+          .attr('stroke', '#94a3b8')
+          .attr('stroke-width', 0.5)
+
+        points.forEach((p) => {
+          const line = svg
+            .append('path')
+            .datum({ type: 'LineString', coordinates: p.coordinates } as any)
+            .attr('fill', 'none')
+            .attr('stroke', 'var(--primary)')
+            .attr('stroke-width', 1.5)
+            .attr('opacity', 0.8)
+            .on('mouseenter', (event) => {
+              select(event.currentTarget)
+                .attr('stroke-width', 3)
+                .attr('opacity', 1)
+              tooltip
+                .style('display', 'block')
+                .style('left', `${event.offsetX + 10}px`)
+                .style('top', `${event.offsetY + 10}px`)
+                .text(`${p.date}: ${p.miles} miles`)
+            })
+            .on('mousemove', (event) => {
+              tooltip
+                .style('left', `${event.offsetX + 10}px`)
+                .style('top', `${event.offsetY + 10}px`)
+            })
+            .on('mouseleave', (event) => {
+              select(event.currentTarget)
+                .attr('stroke-width', 1.5)
+                .attr('opacity', 0.8)
+              tooltip.style('display', 'none')
+            })
+            .on('click', () => onSelect(p))
+          linePaths.push(line)
+        })
+
+        render()
+      })
 
     const initialScale = projection.scale()
 
@@ -98,13 +130,12 @@ function GlobeRenderer({
         render()
       })
 
-    const dragBehavior = drag<SVGSVGElement, unknown>()
-      .on('drag', (event) => {
-        const rotate = projection.rotate()
-        const k = 1 / projection.scale()
-        projection.rotate([rotate[0] + event.dx * k, rotate[1] - event.dy * k])
-        render()
-      })
+    const dragBehavior = drag<SVGSVGElement, unknown>().on('drag', (event) => {
+      const rotate = projection.rotate()
+      const k = 1 / projection.scale()
+      projection.rotate([rotate[0] + event.dx * k, rotate[1] - event.dy * k])
+      render()
+    })
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
