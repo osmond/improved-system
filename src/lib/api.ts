@@ -769,6 +769,7 @@ export interface RunningSession {
   duration: number;
   heartRate: number;
   date: string;
+
   /** ISO timestamp for session start */
   start: string;
   weather: {
@@ -803,6 +804,7 @@ export function generateMockRunningSessions(): RunningSession[] {
       },
     };
   });
+
 }
 
 export async function getRunningSessions(): Promise<RunningSession[]> {
