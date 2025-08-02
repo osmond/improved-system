@@ -48,10 +48,11 @@ describe("MileageGlobe", () => {
 
     await waitFor(() => {
       const path = container.querySelector(
-        "path[stroke='var(--primary)']",
+        "path[stroke='var(--primary-foreground)']",
       ) as SVGPathElement | null;
       expect(path).toBeTruthy();
-      expect(path?.getAttribute("stroke-width")).toBe("1.1");
+      expect(path?.getAttribute("stroke-width")).toBe("2");
+      expect(path?.getAttribute("stroke-linecap")).toBe("round");
     });
   });
 

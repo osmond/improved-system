@@ -101,8 +101,12 @@ function GlobeRenderer({
           .append('path')
           .datum({ type: 'LineString', coordinates: path } as any)
           .attr('fill', 'none')
-          .attr('stroke', 'var(--primary)')
-          .attr('stroke-width', Math.min(10, 1 + totalMiles / 50))
+          .attr('stroke', 'var(--primary-foreground)')
+          .attr(
+            'stroke-width',
+            Math.max(2, Math.min(10, 1 + totalMiles / 50))
+          )
+          .attr('stroke-linecap', 'round')
           .attr('opacity', 0.8)
 
         render()
