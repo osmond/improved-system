@@ -20,7 +20,7 @@ function useSidebar() {
   return context;
 }
 
-export function SidebarProvider({
+function SidebarProvider({
   children,
 }: {
   children: React.ReactNode;
@@ -86,7 +86,7 @@ const SidebarFooter = React.forwardRef<
 ));
 SidebarFooter.displayName = "SidebarFooter";
 
-export const SidebarTrigger = React.forwardRef<
+const SidebarTrigger = React.forwardRef<
   HTMLButtonElement,
   React.ButtonHTMLAttributes<HTMLButtonElement>
 >(({ className, ...props }, ref) => {
