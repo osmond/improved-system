@@ -23,14 +23,34 @@ function GlobeRenderer({
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const tooltipRef = useRef<HTMLDivElement | null>(null)
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
 
   useEffect(() => {
-    if (!svgRef.current) return
+    const svg = svgRef.current
+    if (!svg) return
+
+    const update = () =>
+      setDimensions({ width: svg.clientWidth, height: svg.clientHeight })
+
+    update()
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(update)
+      observer.observe(svg)
+      return () => observer.disconnect()
+    } else {
+      window.addEventListener('resize', update)
+      return () => window.removeEventListener('resize', update)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0)
+      return
 
     const svg = select(svgRef.current)
     const tooltip = select(tooltipRef.current)
-    const width = 400
-    const height = 400
+    const { width, height } = dimensions
 
     svg.attr('viewBox', `0 0 ${width} ${height}`)
     svg.selectAll('*').remove()
@@ -139,11 +159,15 @@ function GlobeRenderer({
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-  }, [points, onSelect])
+  }, [points, onSelect, dimensions])
 
   return (
-    <div className='relative'>
-      <svg ref={svgRef} className='h-96 w-full rounded' />
+    <div className='relative aspect-square w-full'>
+      <svg
+        ref={svgRef}
+        className='h-full w-full rounded'
+        preserveAspectRatio='xMidYMid meet'
+      />
       <div
         ref={tooltipRef}
         className='pointer-events-none absolute hidden rounded bg-black/80 px-2 py-1 text-xs text-white'
