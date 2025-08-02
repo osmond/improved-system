@@ -3,6 +3,7 @@ import { getMileageTimeline, MileageTimelinePoint } from "@/lib/api";
 
 export interface CumulativeMileagePoint {
   date: string;
+  miles: number;
   cumulativeMiles: number;
   coordinates: [number, number][];
 }
@@ -16,7 +17,12 @@ export default function useMileageTimeline(
       let total = 0;
       const cumulative = points.map((p) => {
         total += p.miles;
-        return { date: p.date, cumulativeMiles: total, coordinates: p.coordinates };
+        return {
+          date: p.date,
+          miles: p.miles,
+          cumulativeMiles: total,
+          coordinates: p.coordinates,
+        };
       });
       setData(cumulative);
     });
