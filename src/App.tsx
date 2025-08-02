@@ -10,12 +10,37 @@ import FragilityPage from "@/pages/Fragility";
 import SessionSimilarityPage from "@/pages/SessionSimilarity";
 import GoodDayPage from "@/pages/GoodDay";
 import HabitConsistencyPage from "@/pages/HabitConsistency";
-import AreaCharts from "@/pages/examples/AreaCharts";
-import BarCharts from "@/pages/examples/BarCharts";
-import RadarCharts from "@/pages/examples/RadarCharts";
-import RadialCharts from "@/pages/examples/RadialCharts";
-import Heatmaps from "@/pages/examples/Heatmaps";
-import MiscCharts from "@/pages/examples/MiscCharts";
+import AreaChartInteractivePage from "@/pages/charts/AreaChartInteractive";
+import StepsTrendWithGoalPage from "@/pages/charts/StepsTrendWithGoal";
+import AreaChartLoadRatioPage from "@/pages/charts/AreaChartLoadRatio";
+import TreadmillVsOutdoorPage from "@/pages/charts/TreadmillVsOutdoor";
+import WeeklyVolumeHistoryChartPage from "@/pages/charts/WeeklyVolumeHistoryChart";
+import GhostSelfRivalChartPage from "@/pages/charts/GhostSelfRivalChart";
+import BarChartInteractivePage from "@/pages/charts/BarChartInteractive";
+import BarChartDefaultPage from "@/pages/charts/BarChartDefault";
+import BarChartHorizontalPage from "@/pages/charts/BarChartHorizontal";
+import BarChartMixedPage from "@/pages/charts/BarChartMixed";
+import BarChartLabelCustomPage from "@/pages/charts/BarChartLabelCustom";
+import ShoeUsageChartPage from "@/pages/charts/ShoeUsageChart";
+import EquipmentUsageTimelinePage from "@/pages/charts/EquipmentUsageTimeline";
+import PeerBenchmarkBandsPage from "@/pages/charts/PeerBenchmarkBands";
+import TrainingEntropyHeatmapPage from "@/pages/charts/TrainingEntropyHeatmap";
+import PerfVsEnvironmentMatrixPage from "@/pages/charts/PerfVsEnvironmentMatrix";
+import ActivityByTimePage from "@/pages/charts/ActivityByTime";
+import ReadingProbabilityTimelinePage from "@/pages/charts/ReadingProbabilityTimeline";
+import LineChartInteractivePage from "@/pages/charts/LineChartInteractive";
+import TimeInBedChartPage from "@/pages/charts/TimeInBedChart";
+import ScatterChartPaceHeartRatePage from "@/pages/charts/ScatterChartPaceHeartRate";
+import ReadingStackSplitPage from "@/pages/charts/ReadingStackSplit";
+import CompactNextGameCardPage from "@/pages/charts/CompactNextGameCard";
+import RunSoundtrackCardDemoPage from "@/pages/charts/RunSoundtrackCardDemo";
+import RadarChartDefaultPage from "@/pages/charts/RadarChartDefault";
+import RadarChartWorkoutByTimePage from "@/pages/charts/RadarChartWorkoutByTime";
+import RadarChartDotsPage from "@/pages/charts/RadarChartDots";
+import AvgDailyMileageRadarPage from "@/pages/charts/AvgDailyMileageRadar";
+import RadialChartLabelPage from "@/pages/charts/RadialChartLabel";
+import RadialChartTextPage from "@/pages/charts/RadialChartText";
+import RadialChartGridPage from "@/pages/charts/RadialChartGrid";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 
@@ -36,12 +61,37 @@ function App() {
               <Route path="session-similarity" element={<SessionSimilarityPage />} />
               <Route path="good-day" element={<GoodDayPage />} />
               <Route path="habit-consistency" element={<HabitConsistencyPage />} />
-              <Route path="examples/area-charts" element={<AreaCharts />} />
-              <Route path="examples/bar-charts" element={<BarCharts />} />
-              <Route path="examples/radar-charts" element={<RadarCharts />} />
-              <Route path="examples/radial-charts" element={<RadialCharts />} />
-              <Route path="examples/heatmaps" element={<Heatmaps />} />
-              <Route path="examples/misc-charts" element={<MiscCharts />} />
+              <Route path="charts/area-chart-interactive" element={<AreaChartInteractivePage />} />
+              <Route path="charts/steps-trend-with-goal" element={<StepsTrendWithGoalPage />} />
+              <Route path="charts/area-chart-load-ratio" element={<AreaChartLoadRatioPage />} />
+              <Route path="charts/treadmill-vs-outdoor" element={<TreadmillVsOutdoorPage />} />
+              <Route path="charts/weekly-volume-history-chart" element={<WeeklyVolumeHistoryChartPage />} />
+              <Route path="charts/ghost-self-rival-chart" element={<GhostSelfRivalChartPage />} />
+              <Route path="charts/bar-chart-interactive" element={<BarChartInteractivePage />} />
+              <Route path="charts/bar-chart-default" element={<BarChartDefaultPage />} />
+              <Route path="charts/bar-chart-horizontal" element={<BarChartHorizontalPage />} />
+              <Route path="charts/bar-chart-mixed" element={<BarChartMixedPage />} />
+              <Route path="charts/bar-chart-label-custom" element={<BarChartLabelCustomPage />} />
+              <Route path="charts/shoe-usage-chart" element={<ShoeUsageChartPage />} />
+              <Route path="charts/equipment-usage-timeline" element={<EquipmentUsageTimelinePage />} />
+              <Route path="charts/peer-benchmark-bands" element={<PeerBenchmarkBandsPage />} />
+              <Route path="charts/training-entropy-heatmap" element={<TrainingEntropyHeatmapPage />} />
+              <Route path="charts/perf-vs-environment-matrix" element={<PerfVsEnvironmentMatrixPage />} />
+              <Route path="charts/activity-by-time" element={<ActivityByTimePage />} />
+              <Route path="charts/reading-probability-timeline" element={<ReadingProbabilityTimelinePage />} />
+              <Route path="charts/line-chart-interactive" element={<LineChartInteractivePage />} />
+              <Route path="charts/time-in-bed-chart" element={<TimeInBedChartPage />} />
+              <Route path="charts/scatter-chart-pace-heart-rate" element={<ScatterChartPaceHeartRatePage />} />
+              <Route path="charts/reading-stack-split" element={<ReadingStackSplitPage />} />
+              <Route path="charts/compact-next-game-card" element={<CompactNextGameCardPage />} />
+              <Route path="charts/run-soundtrack-card-demo" element={<RunSoundtrackCardDemoPage />} />
+              <Route path="charts/radar-chart-default" element={<RadarChartDefaultPage />} />
+              <Route path="charts/radar-chart-workout-by-time" element={<RadarChartWorkoutByTimePage />} />
+              <Route path="charts/radar-chart-dots" element={<RadarChartDotsPage />} />
+              <Route path="charts/avg-daily-mileage-radar" element={<AvgDailyMileageRadarPage />} />
+              <Route path="charts/radial-chart-label" element={<RadialChartLabelPage />} />
+              <Route path="charts/radial-chart-text" element={<RadialChartTextPage />} />
+              <Route path="charts/radial-chart-grid" element={<RadialChartGridPage />} />
             </Route>
           </Routes>
         </Layout>
