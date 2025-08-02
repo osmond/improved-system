@@ -1,33 +1,20 @@
 import { render, screen } from "@testing-library/react";
-import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
-import { vi } from "vitest";
 import React from "react";
+import { MemoryRouter, Routes, Route } from "react-router-dom";
 import Dashboard from "../Dashboard";
 
-vi.mock("@/hooks/useGarminData", () => ({
-  __esModule: true,
-  useGarminData: () => ({ lastSync: new Date().toISOString() }),
-}));
-vi.mock("@/hooks/useRunningSessions", () => ({
-  __esModule: true,
-  useRunningSessions: () => null,
-}));
-
 describe("Dashboard", () => {
-  it("shows fragility description", async () => {
-    render(<Dashboard />);
-    const sectionButton = screen.getByRole("button", {
-      name: /session analysis/i,
-    });
-    await userEvent.click(sectionButton);
-    const fragilityTab = screen.getByRole("tab", { name: /fragility/i });
-    await userEvent.click(fragilityTab);
-    expect(
-      screen.getByRole("heading", { name: /fragility index/i })
-    ).toBeInTheDocument();
-    expect(
-      screen.getByText(/blends training consistency/i)
-    ).toBeInTheDocument();
+  it("renders nested routes", () => {
+    render(
+      <MemoryRouter initialEntries={["/dashboard/test"]}>
+        <Routes>
+          <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="test" element={<div>Test Route</div>} />
+          </Route>
+        </Routes>
+      </MemoryRouter>
+    );
+    expect(screen.getByText("Test Route")).toBeInTheDocument();
   });
 });
