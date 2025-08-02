@@ -3,8 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent } from "@/components/ui/dialog";
 import { dashboardRoutes } from "@/routes";
 
-export default function CommandPalette() {
-  const [open, setOpen] = React.useState(false);
+interface CommandPaletteProps {
+  open?: boolean;
+  setOpen?: React.Dispatch<React.SetStateAction<boolean>>;
+}
+
+export default function CommandPalette({
+  open: openProp,
+  setOpen: setOpenProp,
+}: CommandPaletteProps = {}) {
+  const [internalOpen, setInternalOpen] = React.useState(false);
+  const open = openProp ?? internalOpen;
+  const setOpen = setOpenProp ?? setInternalOpen;
   const [query, setQuery] = React.useState("");
   const navigate = useNavigate();
 
@@ -17,7 +27,7 @@ export default function CommandPalette() {
     };
     document.addEventListener("keydown", down);
     return () => document.removeEventListener("keydown", down);
-  }, []);
+  }, [setOpen]);
 
   const allRoutes = dashboardRoutes.flatMap((group) => group.items);
   const filtered = allRoutes.filter((route) =>
