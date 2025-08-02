@@ -24,6 +24,23 @@ export default function MapView() {
     return { type: "FeatureCollection" as const, features };
   }, [visits]);
 
+  const center = useMemo(() => {
+    if (!visits || visits.length === 0)
+      return { longitude: -93, latitude: 44, zoom: 12 };
+    let latSum = 0;
+    let lonSum = 0;
+    visits.forEach((v) => {
+      const [lat, lon] = v.placeId.split(",").map(Number);
+      latSum += lat;
+      lonSum += lon;
+    });
+    return {
+      longitude: lonSum / visits.length,
+      latitude: latSum / visits.length,
+      zoom: 12,
+    };
+  }, [visits]);
+
   if (!geojson) return <Skeleton className="h-64" />;
 
   return (
@@ -31,7 +48,7 @@ export default function MapView() {
       <Map
         mapLib={maplibregl}
         mapStyle="https://demotiles.maplibre.org/style.json"
-        initialViewState={{ longitude: -93, latitude: 44, zoom: 12 }}
+        initialViewState={center}
         style={{ width: "100%", height: "100%" }}
       >
         <Source id="visits" type="geojson" data={geojson} cluster clusterRadius={40}>
