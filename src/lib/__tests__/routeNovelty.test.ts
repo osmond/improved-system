@@ -4,6 +4,7 @@ import {
   recordRouteRun,
   getRouteRunHistory,
   LatLon,
+  type RouteRun,
 } from '../api'
 import { computeNoveltyTrend } from '../utils'
 
@@ -49,7 +50,7 @@ describe('recordRouteRun', () => {
 describe('computeNoveltyTrend', () => {
   it('flags prolonged low novelty', () => {
     const today = new Date()
-    const runs = Array.from({ length: 20 }, (_, i) => {
+    const runs: RouteRun[] = Array.from({ length: 20 }, (_, i) => {
       const d = new Date(today)
       d.setDate(d.getDate() - (19 - i))
       return {

@@ -1,4 +1,5 @@
 import { useMemo, useRef, useState } from "react";
+import type { RouteRun } from "@/lib/api";
 import Map, {
   Layer,
   Source,
@@ -63,7 +64,7 @@ export default function RouteNoveltyMap() {
 
   const showSuggestion = prolongedLow;
 
-  const selectedRun = useMemo(
+  const selectedRun = useMemo<RouteRun | null>(
     () =>
       selectedRunId != null
         ? runs.find((r) => r.id === selectedRunId) ?? null
