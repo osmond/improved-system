@@ -4,6 +4,8 @@ import { useEffect, useRef } from 'react'
 import useMileageTimeline from '@/hooks/useMileageTimeline'
 import { select } from 'd3-selection'
 import { geoOrthographic, geoPath } from 'd3-geo'
+import { zoom } from 'd3-zoom'
+import { drag } from 'd3-drag'
 
 interface GlobePoint {
   date: string
@@ -30,14 +32,14 @@ function GlobeRenderer({ points }: { points: GlobePoint[] }) {
 
     const path = geoPath(projection)
 
-    svg
+    const sphere = svg
       .append('path')
       .datum({ type: 'Sphere' })
       .attr('d', path as any)
       .attr('fill', '#1e3a8a')
       .attr('stroke', '#94a3b8')
 
-    points.forEach((p) => {
+    const linePaths = points.map((p) =>
       svg
         .append('path')
         .datum({ type: 'LineString', coordinates: p.coordinates })
@@ -46,7 +48,35 @@ function GlobeRenderer({ points }: { points: GlobePoint[] }) {
         .attr('stroke', 'var(--primary)')
         .attr('stroke-width', 1.5)
         .attr('opacity', 0.8)
-    })
+    )
+
+    const render = () => {
+      sphere.attr('d', path as any)
+      linePaths.forEach((line) => line.attr('d', path as any))
+    }
+
+    const initialScale = projection.scale()
+
+    const zoomBehavior = zoom<SVGSVGElement, unknown>()
+      .scaleExtent([initialScale / 2, initialScale * 8])
+      .on('zoom', (event) => {
+        const { k, x, y } = event.transform
+        projection
+          .scale(initialScale * k)
+          .translate([width / 2 + x, height / 2 + y])
+        render()
+      })
+
+    const dragBehavior = drag<SVGSVGElement, unknown>()
+      .on('drag', (event) => {
+        const rotate = projection.rotate()
+        const k = 1 / projection.scale()
+        projection.rotate([rotate[0] + event.dx * k, rotate[1] - event.dy * k])
+        render()
+      })
+
+    svg.call(zoomBehavior as any)
+    svg.call(dragBehavior as any)
   }, [points])
 
   return <svg ref={svgRef} className='h-96 w-full rounded' />
