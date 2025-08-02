@@ -13,13 +13,14 @@ import {
 } from "@/components/dashboard";
 
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import {
-  SessionSimilarityMap,
-  HabitConsistencyHeatmap,
-} from "@/components/statistics";
+
+import { SessionSimilarityMap, GoodDayMap } from "@/components/statistics";
+import { useRunningSessions } from "@/hooks/useRunningSessions";
+
 
 export default function Dashboard() {
   const data = useGarminData();
+  const sessions = useRunningSessions();
   const [activeTab, setActiveTab] = useState<
     | "map"
     | "route"
@@ -28,7 +29,11 @@ export default function Dashboard() {
     | "globe"
     | "fragility"
     | "sessions"
+
+    | "goodday"
+
     | "consistency"
+
   >("map");
 
   if (!data) {
@@ -55,7 +60,11 @@ export default function Dashboard() {
 
         <TabsTrigger value="fragility">Fragility</TabsTrigger>
         <TabsTrigger value="sessions">Session Similarity</TabsTrigger>
+
+        <TabsTrigger value="goodday">Good Day</TabsTrigger>
+
         <TabsTrigger value="consistency">Habit consistency</TabsTrigger>
+
       </TabsList>
       <TabsContent value="map">
         <div className="p-6 text-muted-foreground">
@@ -99,7 +108,10 @@ export default function Dashboard() {
         </div>
       </TabsContent>
       <TabsContent value="sessions">
-        <SessionSimilarityMap />
+        <SessionSimilarityMap data={sessions} />
+      </TabsContent>
+      <TabsContent value="goodday">
+        <GoodDayMap data={sessions} />
       </TabsContent>
       <TabsContent value="consistency">
         <HabitConsistencyHeatmap />

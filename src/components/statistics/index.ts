@@ -17,6 +17,7 @@ export { default as WeeklyComparisonChart } from "./WeeklyComparisonChart";
 
 export { default as PerfVsEnvironmentMatrix } from "./PerfVsEnvironmentMatrix";
 export { default as SessionSimilarityMap } from "./SessionSimilarityMap";
+export { default as GoodDayMap } from "./GoodDayMap";
 
 export { default as WeatherConditionBar } from "./WeatherConditionBar";
 export { default as PaceVsTemperature } from "./PaceVsTemperature";
