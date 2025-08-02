@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
 import { vi } from "vitest";
 import React from "react";
@@ -10,8 +11,9 @@ vi.mock("@/hooks/useGarminData", () => ({
 }));
 
 describe("Dashboard", () => {
-  it("shows fragility description", () => {
+  it("shows fragility description", async () => {
     render(<Dashboard />);
+    await userEvent.click(screen.getByRole("button", { name: /fragility/i }));
     expect(
       screen.getByRole("heading", { name: /fragility index/i })
     ).toBeInTheDocument();
