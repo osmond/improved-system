@@ -36,7 +36,14 @@ export default function ChartPreview({
             <span className="sr-only">Close</span>
           </button>
         </DialogClose>
-        {React.cloneElement(children)}
+        {
+          React.isValidElement(children)
+            ? React.createElement(children.type, {
+                ...children.props,
+                key: 'dialog',
+              })
+            : children
+        }
       </DialogContentFullscreen>
     </Dialog>
   )

@@ -125,6 +125,9 @@ const chartConfig = {
 
 export default function AreaChartInteractive() {
   const [range, setRange] = React.useState('90d')
+  const uid = React.useId().replace(/:/g, '')
+  const fillRunId = `fillRun-${uid}`
+  const fillBikeId = `fillBike-${uid}`
 
   const filtered = React.useMemo(() => {
     const lastDataDate = new Date(chartData.at(-1)!.date)
@@ -155,11 +158,11 @@ export default function AreaChartInteractive() {
         <ChartContainer config={chartConfig} className="h-60">
           <AreaChart data={filtered}>
             <defs>
-            <linearGradient id="fillRun" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={fillRunId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
               <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
             </linearGradient>
-            <linearGradient id="fillBike" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={fillBikeId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(var(--chart-2))" stopOpacity={1} />
               <stop offset="95%" stopColor="hsl(var(--chart-2))" stopOpacity={0.1} />
             </linearGradient>
@@ -186,8 +189,8 @@ export default function AreaChartInteractive() {
               }
             />
             <ChartLegend content={<ChartLegendContent />} />
-            <Area dataKey="run" type="natural" fill="url(#fillRun)" stroke="hsl(var(--chart-1))" stackId="a" />
-            <Area dataKey="bike" type="natural" fill="url(#fillBike)" stroke="hsl(var(--chart-2))" stackId="a" />
+            <Area dataKey="run" type="natural" fill={`url(#${fillRunId})`} stroke="hsl(var(--chart-1))" stackId="a" />
+            <Area dataKey="bike" type="natural" fill={`url(#${fillBikeId})`} stroke="hsl(var(--chart-2))" stackId="a" />
           </AreaChart>
         </ChartContainer>
       </CardContent>

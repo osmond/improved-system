@@ -14,7 +14,7 @@ import {
 import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/components/ui/chart";
 import type { GarminDay } from "@/lib/api";
-import { useMemo } from "react";
+import React, { useMemo } from "react";
 import { useSeasonalBaseline } from "@/hooks/useGarminData";
 import { useRunningStats } from "@/hooks/useRunningStats";
 import { Info } from "lucide-react";
@@ -34,6 +34,8 @@ export function StepsTrendWithGoal({
   goal = 10000,
   window = 7,
 }: StepsTrendWithGoalProps) {
+  const uid = React.useId().replace(/:/g, '')
+  const fillStepsId = `fillSteps-${uid}`
   const dataWithAvg = useMemo(() => {
     return data.map((d, idx) => {
       const start = Math.max(0, idx - window + 1)
@@ -139,7 +141,7 @@ export function StepsTrendWithGoal({
       <ChartContainer config={chartConfig} className="h-60">
         <AreaChart data={dataWithAvg} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <defs>
-            <linearGradient id="fillSteps" x1="0" y1="0" x2="0" y2="1">
+            <linearGradient id={fillStepsId} x1="0" y1="0" x2="0" y2="1">
               <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
               <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0.1} />
             </linearGradient>
@@ -175,7 +177,7 @@ export function StepsTrendWithGoal({
             dataKey="steps"
             type="monotone"
             stroke={chartConfig.steps.color}
-            fill="url(#fillSteps)"
+            fill={`url(#${fillStepsId})`}
             animationDuration={300}
           />
         <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} animationDuration={300} />
