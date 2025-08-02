@@ -1,5 +1,5 @@
 import React from "react";
-import { CircularFragilityRing, FragilityIndexSparkline } from "@/components/dashboard";
+import { CircularFragilityRing, FragilityIndexSparkline, FragilityBreakdown } from "@/components/dashboard";
 
 export default function FragilityPage() {
   return (
@@ -16,7 +16,10 @@ export default function FragilityPage() {
         <li><span className="text-red-600">0.67–1.00</span>: high risk</li>
       </ul>
       <div className="flex flex-col items-center space-y-2">
-        <CircularFragilityRing />
+        <div className="flex items-center space-x-4">
+          <CircularFragilityRing />
+          <FragilityBreakdown />
+        </div>
         <div className="w-full max-w-sm">
           <FragilityIndexSparkline />
         </div>

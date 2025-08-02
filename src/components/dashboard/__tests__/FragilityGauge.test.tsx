@@ -6,7 +6,7 @@ import FragilityGauge from '../FragilityGauge'
 
 vi.mock('@/hooks/useFragilityIndex', () => ({
   __esModule: true,
-  default: () => 0.42,
+  default: () => ({ index: 0.42, acwr: 1, disruption: 0.2 }),
 }))
 
 describe('FragilityGauge', () => {

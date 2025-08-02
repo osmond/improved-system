@@ -14,11 +14,12 @@ export interface FragilityGaugeProps {
  * Semicircular gauge displaying the behavioral fragility index.
  */
 export default function FragilityGauge({ size = 160, strokeWidth = 12 }: FragilityGaugeProps) {
-  const index = useFragilityIndex()
+  const fragility = useFragilityIndex()
   const [displayIndex, setDisplayIndex] = useState(0)
 
   useEffect(() => {
-    if (index === null) return
+    if (!fragility) return
+    const { index } = fragility
     setDisplayIndex(0)
     let start: number | null = null
     const duration = 500
@@ -31,9 +32,10 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
     }
     frame = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(frame)
-  }, [index])
+  }, [fragility])
 
-  if (index === null) return <Skeleton className="h-32" />
+  if (!fragility) return <Skeleton className="h-32" />
+  const { index } = fragility
 
   const radius = size / 2 - strokeWidth / 2
   const circumference = Math.PI * radius

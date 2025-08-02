@@ -35,8 +35,8 @@ export default function useFragilityHistory(days = 14): FragilityPoint[] | null 
       const date = dates[i]
       const weeklyUpTo = weekly.filter((w) => w.week <= date)
       const hoursUpTo = dates.slice(0, i + 1).flatMap((d) => byDay[d])
-      const value = computeFragilityIndex(weeklyUpTo, hoursUpTo)
-      history.push({ date, value })
+      const { index } = computeFragilityIndex(weeklyUpTo, hoursUpTo)
+      history.push({ date, value: index })
     }
     return history.slice(-days)
   }, [weekly, hours, days])

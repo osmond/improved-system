@@ -27,6 +27,7 @@ export { default as MovementFingerprint } from "./MovementFingerprint";
 export { default as FragilityGauge } from "./FragilityGauge";
 export { default as CircularFragilityRing } from "./CircularFragilityRing";
 export { default as FragilityIndexSparkline } from "./FragilityIndexSparkline";
+export { default as FragilityBreakdown } from "./FragilityBreakdown";
 
 export { default as TrainingEntropyHeatmap } from "./TrainingEntropyHeatmap";
 
