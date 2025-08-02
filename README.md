@@ -44,6 +44,15 @@ Forward refs & `cn()` wrappers: every `ui/...` component should use the `cn()` h
 
 Types first: Prop-type definitions should be explicit (e.g. `interface StepsChartProps { data: GarminDay[] }`).
 
+## Sidebar features
+The UI sidebar includes configurable behaviour:
+
+- `SIDEBAR_WIDTH` and `SIDEBAR_WIDTH_MOBILE` control its width on desktop and mobile.
+- `SIDEBAR_KEYBOARD_SHORTCUT` toggles the sidebar via a Cmd/Ctrl + key shortcut.
+- The open state persists in the `SIDEBAR_COOKIE_NAME` cookie; the `SidebarProvider` `defaultOpen` prop sets the initial state.
+
+See [`components/ui/sidebar.tsx`](components/ui/sidebar.tsx) for implementation details.
+
 ## State & data hooks
 Keep all API-specific logic (auth, fetch, shape/normalize) inside `src/hooks/useGarminData.ts`. That way components stay pure/presentational.
 
