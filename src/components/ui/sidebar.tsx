@@ -43,7 +43,11 @@ const Sidebar = React.forwardRef<
   return (
     <aside
       ref={ref}
-      className={cn("w-56 border-r p-4", !open && "hidden", className)}
+      className={cn(
+        "bg-sidebar text-sidebar-foreground w-56 border-r border-sidebar-border p-4",
+        !open && "hidden",
+        className,
+      )}
       {...props}
     />
   );
@@ -96,7 +100,10 @@ const SidebarTrigger = React.forwardRef<
       ref={ref}
       variant="outline"
       size="sm"
-      className={cn("mb-4", className)}
+      className={cn(
+        "mb-4 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:ring-sidebar-ring",
+        className,
+      )}
       onClick={toggle}
       {...props}
     >

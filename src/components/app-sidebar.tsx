@@ -12,6 +12,7 @@ import { dashboardRoutes } from "@/routes";
 
 export default function AppSidebar() {
   return (
+
       <Sidebar>
         <SidebarHeader />
         <SidebarContent>
@@ -38,6 +39,7 @@ export default function AppSidebar() {
                 ))}
               </ul>
             </SidebarGroup>
+
           ))}
         </SidebarContent>
         <SidebarFooter />
