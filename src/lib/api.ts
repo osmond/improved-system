@@ -851,6 +851,59 @@ export async function getRouteSessions(route: string): Promise<RouteSession[]> {
   });
 }
 
+// ----- Route similarity -----
+
+export interface LatLon {
+  lat: number;
+  lon: number;
+}
+
+export interface Route {
+  name: string;
+  points: LatLon[];
+}
+
+const mockMadisonRoutes: Route[] = [
+  {
+    name: "Lake Mendota Loop",
+    points: [
+      { lat: 43.079, lon: -89.4 },
+      { lat: 43.083, lon: -89.392 },
+      { lat: 43.079, lon: -89.392 },
+      { lat: 43.075, lon: -89.398 },
+    ],
+  },
+  {
+    name: "Capitol Square Loop",
+    points: [
+      { lat: 43.074, lon: -89.384 },
+      { lat: 43.079, lon: -89.392 },
+      { lat: 43.076, lon: -89.399 },
+      { lat: 43.072, lon: -89.391 },
+    ],
+  },
+];
+
+export async function getMockRoutes(): Promise<Route[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(mockMadisonRoutes), 200);
+  });
+}
+
+export function calculateRouteSimilarity(
+  a: LatLon[],
+  b: LatLon[],
+  precision = 3,
+): number {
+  const toKey = ({ lat, lon }: LatLon) =>
+    `${lat.toFixed(precision)},${lon.toFixed(precision)}`;
+  const setA = new Set(a.map(toKey));
+  const setB = new Set(b.map(toKey));
+  const intersection = [...setA].filter((p) => setB.has(p));
+  const union = new Set([...setA, ...setB]);
+  return union.size === 0 ? 0 : intersection.length / union.size;
+}
+
 // ----- Sleep sessions -----
 
 export interface SleepSession {

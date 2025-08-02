@@ -28,4 +28,6 @@ export { default as FragilityGauge } from "./FragilityGauge";
 
 export { default as TrainingEntropyHeatmap } from "./TrainingEntropyHeatmap";
 
+export { default as RouteSimilarity } from "./RouteSimilarity";
+
 
