@@ -22,3 +22,4 @@ export { default as WeatherConditionBar } from "./WeatherConditionBar";
 export { default as PaceVsTemperature } from "./PaceVsTemperature";
 
 export { default as RouteComparison } from './RouteComparison'
+export { default as RouteSimilarityIndex } from "./RouteSimilarityIndex";

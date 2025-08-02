@@ -3,11 +3,13 @@
 
 import { ChartSelectionProvider } from "@/components/dashboard"
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters"
+
 import {
   HabitConsistencyHeatmap,
   SessionSimilarityMap,
   SessionStartEntropy,
 } from "@/components/statistics"
+
 import { useRunningSessions } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
 
@@ -25,6 +27,7 @@ export default function Statistics() {
           ) : (
             <Skeleton className="h-64" />
           )}
+          <RouteSimilarityIndex />
         </div>
       </ChartSelectionProvider>
     </DashboardFiltersProvider>
