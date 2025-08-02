@@ -1073,11 +1073,14 @@ export function calculateRouteSimilarity(
 }
 
 export interface RouteRun {
+  id: number;
+  name: string;
   timestamp: string;
   points: LatLon[];
   novelty: number;
 }
 
+let nextRouteRunId = 1;
 const routeHistory: RouteRun[] = [];
 
 function dtwDistance(a: LatLon[], b: LatLon[]): number {
@@ -1117,11 +1120,14 @@ export function computeRouteNovelty(
 export function recordRouteRun(points: LatLon[]): RouteRun {
   const novelty = computeRouteNovelty(points, routeHistory.map((r) => r.points));
   const run: RouteRun = {
+    id: nextRouteRunId,
+    name: `Run ${nextRouteRunId}`,
     timestamp: new Date().toISOString(),
     points,
     novelty,
   };
   routeHistory.push(run);
+  nextRouteRunId++;
   return run;
 }
 
