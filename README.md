@@ -122,7 +122,7 @@ helpers so components can consume the values asynchronously:
 - `getGarminData()` and `getDailySteps()` drive the dashboard metrics and daily
   step charts.
 - `getSeasonalBaselines()` provides monthly ranges used for goal overlays.
-- `getRunningStats()` supplies the detailed stats on the Statistics page.
+- `getRunningStats()` supplies the detailed stats used by various analysis components.
 - `getWeeklyVolume()` feeds the weekly mileage chart.
 - `getBenchmarkStats()` returns peer comparison bands for pace and load.
 - `getRunningSessions()` and `getRouteSessions()` generate data for similarity

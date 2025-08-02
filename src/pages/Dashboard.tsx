@@ -3,7 +3,6 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useGarminData } from "@/hooks/useGarminData";
 import { minutesSince } from "@/lib/utils";
 import Examples from "@/pages/Examples";
-import Statistics from "@/pages/Statistics";
 import {
   FragilityGauge,
   RouteNoveltyMap,
@@ -20,7 +19,6 @@ export default function Dashboard() {
     | "route"
     | "novelty"
     | "examples"
-    | "statistics"
     | "fragility"
     | "sessions"
   >("map");
@@ -44,7 +42,6 @@ export default function Dashboard() {
         <TabsTrigger value="route">Route similarity</TabsTrigger>
         <TabsTrigger value="novelty">Route Novelty</TabsTrigger>
         <TabsTrigger value="examples">Analytics fun</TabsTrigger>
-        <TabsTrigger value="statistics">Statistics</TabsTrigger>
         <TabsTrigger value="fragility">Fragility</TabsTrigger>
         <TabsTrigger value="sessions">Session Similarity</TabsTrigger>
       </TabsList>
@@ -61,9 +58,6 @@ export default function Dashboard() {
       </TabsContent>
       <TabsContent value="examples">
         <Examples />
-      </TabsContent>
-      <TabsContent value="statistics">
-        <Statistics />
       </TabsContent>
       <TabsContent value="fragility">
         <div className="space-y-4 p-4">
