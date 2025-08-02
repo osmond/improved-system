@@ -32,14 +32,14 @@ export default function RouteNoveltyMap() {
   const routeFeatures = useMemo(
     () => ({
       type: "FeatureCollection",
-      features: runs.map((r, i) => ({
+      features: runs.map((r) => ({
         type: "Feature",
-        id: i,
+        id: r.id,
         geometry: {
           type: "LineString",
           coordinates: r.points.map((p) => [p.lon, p.lat]),
         },
-        properties: { novelty: r.novelty, index: i },
+        properties: { novelty: r.novelty },
       })),
     }),
     [runs],
@@ -50,6 +50,7 @@ export default function RouteNoveltyMap() {
       type: "FeatureCollection",
       features: runs.map((r) => ({
         type: "Feature",
+        id: r.id,
         geometry: {
           type: "Point",
           coordinates: [r.points[0].lon, r.points[0].lat],
@@ -64,8 +65,8 @@ export default function RouteNoveltyMap() {
 
   const selectedRun = useMemo(
     () =>
-      selectedRunId != null && runs[selectedRunId]
-        ? runs[selectedRunId]
+      selectedRunId != null
+        ? runs.find((r) => r.id === selectedRunId) ?? null
         : null,
     [runs, selectedRunId],
   );
@@ -183,6 +184,7 @@ export default function RouteNoveltyMap() {
               }}
             >
               <div>
+                <div>{selectedRun.name}</div>
                 <div>{selectedRun.timestamp.slice(0, 10)}</div>
                 <div>Novelty: {selectedRun.novelty}</div>
               </div>
