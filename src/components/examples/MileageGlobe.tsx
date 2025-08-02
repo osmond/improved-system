@@ -11,9 +11,11 @@ import { feature, mesh } from 'topojson-client'
 function GlobeRenderer({
   path,
   totalMiles,
+  centroid,
 }: {
   path: [number, number][]
   totalMiles: number
+  centroid: [number, number]
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
@@ -50,6 +52,7 @@ function GlobeRenderer({
     const projection = geoOrthographic()
       .translate([width / 2, height / 2])
       .scale(Math.min(width, height) / 2 - 10)
+      .rotate([-centroid[0], -centroid[1]])
 
     const geo = geoPath(projection)
 
@@ -126,7 +129,7 @@ function GlobeRenderer({
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-  }, [path, totalMiles, dimensions])
+  }, [path, totalMiles, dimensions, centroid])
 
   return (
     <div className='relative aspect-square w-full'>
@@ -162,9 +165,18 @@ export default function MileageGlobe({
   const totalMiles = data.reduce((sum, p) => sum + p.miles, 0)
   const path = data.flatMap((p) => p.coordinates) as [number, number][]
 
+  let centroid: [number, number] = [0, 0]
+  if (path.length) {
+    const [sumLng, sumLat] = path.reduce(
+      (acc, [lng, lat]) => [acc[0] + lng, acc[1] + lat],
+      [0, 0],
+    )
+    centroid = [sumLng / path.length, sumLat / path.length]
+  }
+
   return (
     <div className='space-y-2'>
-      <GlobeRenderer path={path} totalMiles={totalMiles} />
+      <GlobeRenderer path={path} totalMiles={totalMiles} centroid={centroid} />
       <div className='rounded bg-muted p-2 text-sm'>
         Total: {totalMiles} miles
       </div>
