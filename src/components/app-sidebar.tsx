@@ -22,6 +22,31 @@ import { chartRouteGroups, mapRoutes } from "@/routes";
 export default function AppSidebar() {
   const { pathname } = useLocation();
 
+  const SIDEBAR_STATE_KEY = "sidebar_group_state";
+  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(() => {
+    if (typeof window === "undefined") return {};
+    try {
+      const stored = localStorage.getItem(SIDEBAR_STATE_KEY);
+      return stored ? JSON.parse(stored) : {};
+    } catch {
+      return {};
+    }
+  });
+
+  const handleOpenChange = (label: string) => (open: boolean) => {
+    setOpenGroups((prev) => {
+      const next = { ...prev, [label]: open };
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(SIDEBAR_STATE_KEY, JSON.stringify(next));
+        }
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
   return (
     <Sidebar>
       <SidebarHeader />
@@ -33,7 +58,8 @@ export default function AppSidebar() {
               {chartRouteGroups.map((group, index) => (
                 <Collapsible.Root
                   key={group.label}
-                  defaultOpen={index === 0}
+                  open={openGroups[group.label] ?? index === 0}
+                  onOpenChange={handleOpenChange(group.label)}
                 >
                   <SidebarMenuItem>
                     <Collapsible.Trigger asChild>
