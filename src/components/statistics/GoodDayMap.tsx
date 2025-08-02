@@ -22,12 +22,32 @@ import type { ChartConfig } from "@/components/ui/chart"
 
 interface GoodDayMapProps {
   data: SessionPoint[] | null
+  condition?: string | null
+  hourRange?: [number, number]
 }
 
-export default function GoodDayMap({ data }: GoodDayMapProps) {
+export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: GoodDayMapProps) {
   if (!data) return <Skeleton className="h-64" />
 
-  const goodSessions = data.filter((d) => d.good)
+  const goodSessions = data.filter(
+    (d) =>
+      d.good &&
+      (!condition || d.condition === condition) &&
+      d.startHour >= hourRange[0] &&
+      d.startHour <= hourRange[1],
+  )
+
+  if (!goodSessions.length)
+    return (
+      <ChartCard
+        title="Good Day Sessions"
+        description="Sessions exceeding expectations"
+      >
+        <div className="flex items-center justify-center h-64 md:h-80 lg:h-96 text-sm text-muted-foreground">
+          No sessions match the selected filters.
+        </div>
+      </ChartCard>
+    )
   const style = getComputedStyle(document.documentElement)
   const start = `hsl(${style.getPropertyValue("--chart-4")})`
   const end = `hsl(${style.getPropertyValue("--chart-6")})`
