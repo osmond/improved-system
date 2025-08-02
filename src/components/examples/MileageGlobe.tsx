@@ -23,7 +23,7 @@ function GlobeRenderer({
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const tooltipRef = useRef<HTMLDivElement | null>(null)
-  const [dimensions, setDimensions] = useState({ width: 0, height: 0 })
+  const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
 
   useEffect(() => {
     const svg = svgRef.current
@@ -176,9 +176,21 @@ function GlobeRenderer({
   )
 }
 
-export default function MileageGlobe({ years = 1 }: { years?: number }) {
-  const data = useMileageTimeline(years)
+export default function MileageGlobe({
+  weekRange,
+}: {
+  weekRange?: [number, number]
+}) {
+  const data = useMileageTimeline(
+    undefined,
+    weekRange
+      ? { startWeek: weekRange[0], endWeek: weekRange[1] }
+      : undefined,
+  )
   const [selected, setSelected] = useState<GlobePoint | null>(null)
+  useEffect(() => {
+    setSelected(null)
+  }, [weekRange])
 
   if (!data) {
     return (
