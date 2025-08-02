@@ -1,5 +1,11 @@
-import { useEffect, useMemo, useState } from "react";
-import Map, { Layer, Source } from "react-map-gl/maplibre";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Map, {
+  Layer,
+  Source,
+  Popup,
+  MapLayerMouseEvent,
+  MapRef,
+} from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import {
   ChartContainer,
@@ -22,6 +28,12 @@ interface Run extends Route {
 export default function RouteNoveltyMap() {
   const [runs, setRuns] = useState<Run[]>([]);
   const [trend, setTrend] = useState<Array<{ index: number; novelty: number }>>([]);
+  const [selectedRunId, setSelectedRunId] = useState<number | null>(null);
+  const [popupLocation, setPopupLocation] = useState<{
+    lng: number;
+    lat: number;
+  } | null>(null);
+  const mapRef = useRef<MapRef | null>(null);
 
   useEffect(() => {
     getMockRoutes().then((baseRoutes) => {
@@ -63,6 +75,7 @@ export default function RouteNoveltyMap() {
       type: "FeatureCollection",
       features: runs.map((r) => ({
         type: "Feature",
+        id: r.id,
         geometry: {
           type: "LineString",
           coordinates: r.points.map((p) => [p.lon, p.lat]),
@@ -91,14 +104,37 @@ export default function RouteNoveltyMap() {
   const showSuggestion =
     trend.length > 0 && trend[trend.length - 1].novelty < 0.3;
 
+  const selectedRun = useMemo(
+    () => runs.find((r) => r.id === selectedRunId) || null,
+    [runs, selectedRunId],
+  );
+
+  const handleClick = (e: MapLayerMouseEvent) => {
+    const map = mapRef.current;
+    if (!map) return;
+    const features = map.queryRenderedFeatures(e.point, {
+      layers: ["route-lines"],
+    });
+    const feature = features[0];
+    if (feature && feature.id != null) {
+      setSelectedRunId(feature.id as number);
+      setPopupLocation({ lng: e.lngLat.lng, lat: e.lngLat.lat });
+    } else {
+      setSelectedRunId(null);
+      setPopupLocation(null);
+    }
+  };
+
   return (
     <ChartCard title="Route Novelty" description="Explore how unique your routes are">
       <div className="h-64 mb-4">
         <Map
           mapLib={maplibregl}
+          ref={mapRef}
           initialViewState={{ latitude: 43.079, longitude: -89.4, zoom: 11 }}
           style={{ width: "100%", height: "100%" }}
           mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
+          onClick={handleClick}
         >
           <Source id="routes" type="geojson" data={routeFeatures}>
             <Layer
@@ -106,15 +142,25 @@ export default function RouteNoveltyMap() {
               type="line"
               paint={{
                 "line-color": [
-                  "interpolate",
-                  ["linear"],
-                  ["get", "novelty"],
-                  0,
-                  "#888",
-                  1,
-                  "#f00",
+                  "case",
+                  ["==", ["id"], selectedRunId ?? -1],
+                  "#00f",
+                  [
+                    "interpolate",
+                    ["linear"],
+                    ["get", "novelty"],
+                    0,
+                    "#888",
+                    1,
+                    "#f00",
+                  ],
                 ],
-                "line-width": 3,
+                "line-width": [
+                  "case",
+                  ["==", ["id"], selectedRunId ?? -1],
+                  5,
+                  3,
+                ],
               }}
             />
           </Source>
@@ -162,6 +208,21 @@ export default function RouteNoveltyMap() {
               }}
             />
           </Source>
+          {selectedRun && popupLocation && (
+            <Popup
+              longitude={popupLocation.lng}
+              latitude={popupLocation.lat}
+              onClose={() => {
+                setSelectedRunId(null);
+                setPopupLocation(null);
+              }}
+            >
+              <div>
+                <div>{selectedRun.date}</div>
+                <div>Novelty: {selectedRun.novelty}</div>
+              </div>
+            </Popup>
+          )}
         </Map>
       </div>
       <div className="h-40">
