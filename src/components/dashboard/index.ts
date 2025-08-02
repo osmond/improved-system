@@ -33,5 +33,6 @@ export { default as RouteSimilarity } from "./RouteSimilarity";
 export { default as RouteNoveltyMap } from "./RouteNoveltyMap";
 
 export { default as SocialEngagementCard } from "./SocialEngagementCard";
+export { default as MapView } from "./MapView";
 
 
