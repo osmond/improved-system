@@ -1,6 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import useSocialEngagement from "@/hooks/useSocialEngagement";
+import useEngagementNudges from "@/hooks/useEngagementNudges";
 import {
   ChartContainer,
   RadarChart,
@@ -15,13 +16,8 @@ import {
 export default function SocialEngagementCard() {
   const data = useSocialEngagement();
   if (!data) return <Skeleton className="h-64" />;
-  const {
-    index,
-    consecutiveHomeDays,
-    locationEntropy,
-    outOfHomeFrequency,
-    baseline,
-  } = data;
+  const { index, locationEntropy, outOfHomeFrequency, baseline } = data;
+  const nudges = useEngagementNudges();
   const chartData = [
     {
       metric: "Overall",
@@ -43,10 +39,6 @@ export default function SocialEngagementCard() {
     current: { label: "Current", color: "hsl(var(--chart-1))" },
     baseline: { label: "Baseline", color: "hsl(var(--chart-2))" },
   } satisfies ChartConfig;
-  const message =
-    consecutiveHomeDays >= 5
-      ? "You've been mostly at home for 5 days—maybe schedule a quick meetup or change of scenery."
-      : null;
   return (
     <Card>
       <CardHeader>
@@ -75,7 +67,11 @@ export default function SocialEngagementCard() {
             <ChartLegend content={<ChartLegendContent />} />
           </RadarChart>
         </ChartContainer>
-        {message && <p className="text-sm text-muted-foreground">{message}</p>}
+        {nudges.map((msg) => (
+          <p key={msg} className="text-sm text-muted-foreground">
+            {msg}
+          </p>
+        ))}
       </CardContent>
     </Card>
   );
