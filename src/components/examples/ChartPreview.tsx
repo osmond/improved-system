@@ -23,7 +23,7 @@ export default function ChartPreview({
     <Dialog open={open} onOpenChange={setOpen}>
       <div className={cn("relative overflow-hidden mb-6 break-inside-avoid", className)}>
         <DialogTrigger asChild>
-          <button className='absolute right-2 top-2 z-40 rounded-md bg-background/80 p-1 text-muted-foreground hover:text-foreground hover:animate-blink'>
+          <button className='absolute right-2 top-2 z-40 rounded-md bg-background/80 p-1 text-muted-foreground transition-transform hover:scale-110 hover:text-foreground'>
             <Eye className='h-4 w-4' />
             <span className='sr-only'>View larger</span>
           </button>
