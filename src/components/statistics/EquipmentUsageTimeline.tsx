@@ -35,9 +35,25 @@ export default function EquipmentUsageTimeline() {
       description="Bike and shoe usage over time"
     >
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
-        <BarChart data={usageData} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+        <BarChart
+          data={usageData}
+          margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+        >
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" tickLine={false} axisLine={false} />
+          <XAxis
+            dataKey="month"
+            tickLine={false}
+            axisLine={false}
+            interval={1}
+            tickFormatter={(d) => {
+              const date = new Date(`${d} 1, 2024`)
+              return (
+                date.toLocaleString('en-US', { month: 'short' }) +
+                " '" +
+                date.toLocaleString('en-US', { year: '2-digit' })
+              )
+            }}
+          />
           <ReferenceLine y={REPLACEMENT_MILES} stroke={config.replacement.color} strokeDasharray="4 4" />
           <ChartTooltip />
           <Bar dataKey="shoe" stackId="usage" fill={config.shoe.color} />

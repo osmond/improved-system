@@ -47,14 +47,26 @@ export default function ChartBarDefault() {
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
-          <BarChart accessibilityLayer data={chartData}>
+          <BarChart
+            accessibilityLayer
+            data={chartData}
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+          >
             <CartesianGrid vertical={false} />
             <XAxis
               dataKey='month'
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              interval={1}
+              tickFormatter={(value) => {
+                const date = new Date(`${value} 1, 2024`)
+                return (
+                  date.toLocaleString('en-US', { month: 'short' }) +
+                  " '" +
+                  date.toLocaleString('en-US', { year: '2-digit' })
+                )
+              }}
             />
             <ChartTooltip cursor={false} content={<ChartTooltipContent hideLabel />} />
             <Bar dataKey='miles' fill='var(--color-miles)' radius={8} />
