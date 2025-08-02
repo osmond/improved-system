@@ -10,12 +10,16 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
-import { Command } from "lucide-react";
+import { Command, Download, Info, Save, Share2 } from "lucide-react";
 import {
   SidebarProvider,
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
+import {
+  ChartActionsProvider,
+  useChartActions,
+} from "@/hooks/useChartActions";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -59,40 +63,102 @@ function Breadcrumbs() {
   );
 }
 
+function ActionMenu() {
+  const { actions } = useChartActions();
+  const { onSaveView, onShare, onExport, info } = actions;
+
+  return (
+    <>
+      {onSaveView && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onSaveView}
+          aria-label="Save view"
+        >
+          <Save className="h-4 w-4" />
+          <span className="sr-only">Save View</span>
+        </Button>
+      )}
+      {onShare && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onShare}
+          aria-label="Share"
+        >
+          <Share2 className="h-4 w-4" />
+          <span className="sr-only">Share</span>
+        </Button>
+      )}
+      {onExport && (
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={onExport}
+          aria-label="Export"
+        >
+          <Download className="h-4 w-4" />
+          <span className="sr-only">Export</span>
+        </Button>
+      )}
+      {info && (
+        <TooltipProvider delayDuration={100}>
+          <Tooltip>
+            <TooltipTrigger asChild>
+              <Button
+                variant="outline"
+                size="sm"
+                aria-label="Chart info"
+              >
+                <Info className="h-4 w-4" />
+              </Button>
+            </TooltipTrigger>
+            <TooltipContent>{info}</TooltipContent>
+          </Tooltip>
+        </TooltipProvider>
+      )}
+    </>
+  );
+}
+
 export default function Layout({ children }: LayoutProps) {
   const [open, setOpen] = React.useState(false);
 
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <CommandPalette open={open} setOpen={setOpen} />
-      <SidebarInset>
-        <header className="flex items-center justify-between p-4">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger />
-            <Breadcrumbs />
-          </div>
-          <div className="flex items-center gap-2">
-            <TooltipProvider delayDuration={100}>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setOpen(true)}
-                  >
-                    <Command className="h-4 w-4" />
-                    <span className="sr-only">Open command palette</span>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>Ctrl/⌘+K</TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-            <ThemeToggle />
-          </div>
-        </header>
-        <main className="flex-1 p-4 pt-0">{children}</main>
-      </SidebarInset>
-    </SidebarProvider>
+    <ChartActionsProvider>
+      <SidebarProvider>
+        <AppSidebar />
+        <CommandPalette open={open} setOpen={setOpen} />
+        <SidebarInset>
+          <header className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger />
+              <Breadcrumbs />
+            </div>
+            <div className="flex items-center gap-2">
+              <ActionMenu />
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setOpen(true)}
+                    >
+                      <Command className="h-4 w-4" />
+                      <span className="sr-only">Open command palette</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Ctrl/⌘+K</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <ThemeToggle />
+            </div>
+          </header>
+          <main className="flex-1 p-4 pt-0">{children}</main>
+        </SidebarInset>
+      </SidebarProvider>
+    </ChartActionsProvider>
   );
 }
