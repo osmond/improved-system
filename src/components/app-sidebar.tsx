@@ -8,7 +8,7 @@ import {
 } from "@/components/ui/sidebar";
 import { NavLink } from "react-router-dom";
 import { cn } from "@/lib/utils";
-import { dashboardRoutes } from "@/routes";
+import { dashboardRoutes, type DashboardRouteGroup } from "@/routes";
 
 export default function AppSidebar() {
   return (
@@ -16,7 +16,7 @@ export default function AppSidebar() {
       <Sidebar>
         <SidebarHeader />
         <SidebarContent>
-          {dashboardRoutes.map((group) => (
+          {dashboardRoutes.map((group: DashboardRouteGroup) => (
             <SidebarGroup key={group.label}>
               <h4 className="mb-2 text-xs font-semibold">{group.label}</h4>
               <ul>
