@@ -64,6 +64,35 @@ export interface LocationVisit {
 
 const POINTS_KEY = 'loc:points';
 const CLUSTERS_KEY = 'loc:clusters';
+const BASELINE_KEY = 'loc:baseline';
+
+export interface SocialBaseline {
+  locationEntropy: number;
+  outOfHomeFrequency: number;
+}
+
+function readBaseline(): SocialBaseline | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(BASELINE_KEY);
+    return raw ? (JSON.parse(raw) as SocialBaseline) : null;
+  } catch {
+    return null;
+  }
+}
+
+function writeBaseline(baseline: SocialBaseline): void {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(BASELINE_KEY, JSON.stringify(baseline));
+}
+
+export function getSocialBaseline(): SocialBaseline | null {
+  return readBaseline();
+}
+
+export function setSocialBaseline(baseline: SocialBaseline): void {
+  writeBaseline(baseline);
+}
 
 function daysAgo(day: number, hour = 8): string {
   const d = new Date();
