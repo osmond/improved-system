@@ -16,10 +16,11 @@ import {
   SidebarInput,
 } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
-import { Map as MapIcon, ChevronRight } from "lucide-react";
+import { Map as MapIcon, ChevronRight, Star } from "lucide-react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { chartRouteGroups, mapRoutes } from "@/routes";
 import useDebounce from "@/hooks/useDebounce";
+import { cn } from "@/lib/utils";
 
 export default function AppSidebar() {
   const { pathname } = useLocation();
@@ -51,6 +52,45 @@ export default function AppSidebar() {
 
   const [query, setQuery] = React.useState("");
   const debouncedQuery = useDebounce(query, 300);
+
+  const FAVORITES_KEY = "favorites";
+  const [favorites, setFavorites] = React.useState<string[]>(() => {
+    if (typeof window === "undefined") return [];
+    try {
+      const stored = localStorage.getItem(FAVORITES_KEY);
+      return stored ? JSON.parse(stored) : [];
+    } catch {
+      return [];
+    }
+  });
+
+  const toggleFavorite = (to: string) => {
+    setFavorites((prev) => {
+      const next = prev.includes(to)
+        ? prev.filter((r) => r !== to)
+        : [...prev, to];
+      try {
+        if (typeof window !== "undefined") {
+          localStorage.setItem(FAVORITES_KEY, JSON.stringify(next));
+        }
+      } catch {
+        // ignore
+      }
+      return next;
+    });
+  };
+
+  const allRoutes = React.useMemo(
+    () => [...mapRoutes, ...chartRouteGroups.flatMap((g) => g.items)],
+    []
+  );
+  const favoriteRoutes = React.useMemo(
+    () =>
+      favorites
+        .map((to) => allRoutes.find((r) => r.to === to))
+        .filter(Boolean) as typeof allRoutes,
+    [favorites, allRoutes]
+  );
 
   const highlight = React.useCallback(
     (text: string) => {
@@ -104,6 +144,36 @@ export default function AppSidebar() {
           onChange={(e) => setQuery(e.target.value)}
           className="mb-2"
         />
+        {favoriteRoutes.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Favorites</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {favoriteRoutes.map((route) => (
+                  <SidebarMenuItem key={route.to}>
+                    <SidebarMenuButton
+                      asChild
+                      isActive={pathname === route.to}
+                      className="justify-start"
+                    >
+                      <NavLink to={route.to} className="flex w-full items-center">
+                        <span className="flex-1">{highlight(route.label)}</span>
+                        <Star
+                          className="ml-auto h-4 w-4 fill-yellow-400 text-yellow-400"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(route.to);
+                          }}
+                        />
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
         {filteredChartGroups.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>Charts</SidebarGroupLabel>
@@ -134,7 +204,27 @@ export default function AppSidebar() {
                                   isActive={pathname === route.to}
                                   className="justify-start"
                                 >
-                                  <NavLink to={route.to}>{highlight(route.label)}</NavLink>
+                                  <NavLink
+                                    to={route.to}
+                                    className="flex w-full items-center"
+                                  >
+                                    <span className="flex-1">
+                                      {highlight(route.label)}
+                                    </span>
+                                    <Star
+                                      className={cn(
+                                        "ml-auto h-4 w-4",
+                                        favorites.includes(route.to)
+                                          ? "fill-yellow-400 text-yellow-400"
+                                          : "text-muted-foreground"
+                                      )}
+                                      onClick={(e) => {
+                                        e.preventDefault();
+                                        e.stopPropagation();
+                                        toggleFavorite(route.to);
+                                      }}
+                                    />
+                                  </NavLink>
                                 </SidebarMenuSubButton>
                               </SidebarMenuSubItem>
                             ))}
@@ -160,9 +250,22 @@ export default function AppSidebar() {
                       isActive={pathname === route.to}
                       className="justify-start"
                     >
-                      <NavLink to={route.to}>
+                      <NavLink to={route.to} className="flex w-full items-center">
                         <MapIcon className="mr-2" />
-                        <span>{highlight(route.label)}</span>
+                        <span className="flex-1">{highlight(route.label)}</span>
+                        <Star
+                          className={cn(
+                            "ml-auto h-4 w-4",
+                            favorites.includes(route.to)
+                              ? "fill-yellow-400 text-yellow-400"
+                              : "text-muted-foreground"
+                          )}
+                          onClick={(e) => {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            toggleFavorite(route.to);
+                          }}
+                        />
                       </NavLink>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
