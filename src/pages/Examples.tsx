@@ -20,7 +20,12 @@ import AreaChartLoadRatio from "@/components/examples/AreaChartLoadRatio";
 import TreadmillVsOutdoorExample from "@/components/examples/TreadmillVsOutdoor";
 import { mockDailySteps } from "@/lib/api";
 import StepsTrendWithGoal from "@/components/dashboard/StepsTrendWithGoal";
-import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+import {
+  ActivityByTime,
+  AvgDailyMileageRadar,
+  EquipmentUsageTimeline,
+  PeerBenchmarkBands,
+} from "@/components/statistics";
 import ChartPreview from "@/components/examples/ChartPreview";
 
 import PerfVsEnvironmentMatrixExample from "@/components/examples/PerfVsEnvironmentMatrix";
@@ -52,6 +57,18 @@ export default function Examples() {
 
       <ChartPreview>
         <PeerBenchmarkBands />
+      </ChartPreview>
+
+      <ChartPreview>
+        <ActivityByTime />
+      </ChartPreview>
+
+      <ChartPreview>
+        <AvgDailyMileageRadar />
+      </ChartPreview>
+
+      <ChartPreview>
+        <EquipmentUsageTimeline />
       </ChartPreview>
 
       <ChartPreview>
