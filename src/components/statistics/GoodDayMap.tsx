@@ -19,6 +19,8 @@ import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
 import { scaleLinear } from "d3-scale"
 import type { ChartConfig } from "@/components/ui/chart"
+import { useState } from "react"
+import SessionDetailDrawer from "./SessionDetailDrawer"
 
 interface GoodDayMapProps {
   data: SessionPoint[] | null
@@ -60,6 +62,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
   const maxDelta = Math.max(...goodSessions.map((d) => d.paceDelta))
   const colorScale = scaleLinear<string>().domain([minDelta, maxDelta]).range([start, end])
   const colored = goodSessions.map((s) => ({ ...s, fill: colorScale(s.paceDelta) }))
+  const [active, setActive] = useState<SessionPoint | null>(null)
 
   return (
     <ChartCard
@@ -79,13 +82,20 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
             ]}
             content={<ChartLegendContent />}
           />
-          <Scatter data={colored} shape="star" animationDuration={300}>
+          <Scatter
+            data={colored}
+            shape="star"
+            animationDuration={300}
+            onClick={(data) => setActive(data as SessionPoint)}
+            cursor="pointer"
+          >
             {colored.map((entry, idx) => (
               <Cell key={`cell-${idx}`} fill={entry.fill} />
             ))}
           </Scatter>
         </ScatterChart>
       </ChartContainer>
+      <SessionDetailDrawer session={active} onClose={() => setActive(null)} />
     </ChartCard>
   )
 }
