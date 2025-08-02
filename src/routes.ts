@@ -1,6 +1,28 @@
-export const dashboardRoutes = [
+import type { LucideIcon } from "lucide-react";
+import {
+  ChartArea,
+  ChartBar,
+  ChartLine,
+  ChartPie,
+  FlaskConical,
+  Radar,
+} from "lucide-react";
+
+export interface DashboardRoute {
+  to: string;
+  label: string;
+}
+
+export interface DashboardRouteGroup {
+  label: string;
+  icon: LucideIcon;
+  items: DashboardRoute[];
+}
+
+export const dashboardRoutes: DashboardRouteGroup[] = [
   {
     label: "Playground",
+    icon: FlaskConical,
     items: [
       { to: "/dashboard/map", label: "Map playground" },
       { to: "/dashboard/route-similarity", label: "Route similarity" },
@@ -9,6 +31,7 @@ export const dashboardRoutes = [
   },
   {
     label: "Analytics",
+    icon: ChartLine,
     items: [
       { to: "/dashboard/mileage-globe", label: "Mileage Globe" },
       { to: "/dashboard/fragility", label: "Fragility" },
@@ -19,12 +42,10 @@ export const dashboardRoutes = [
   },
 ];
 
-export type DashboardRouteGroup = (typeof dashboardRoutes)[number];
-export type DashboardRoute = DashboardRouteGroup["items"][number];
-
 export const chartRouteGroups: DashboardRouteGroup[] = [
   {
     label: "Area Charts",
+    icon: ChartArea,
     items: [
       { to: "/dashboard/charts/area-chart-interactive", label: "Area Chart Interactive" },
       { to: "/dashboard/charts/steps-trend-with-goal", label: "Steps Trend With Goal" },
@@ -36,6 +57,7 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
   },
   {
     label: "Bar Charts",
+    icon: ChartBar,
     items: [
       { to: "/dashboard/charts/bar-chart-interactive", label: "Bar Chart Interactive" },
       { to: "/dashboard/charts/bar-chart-default", label: "Bar Chart Default" },
@@ -50,6 +72,7 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
   },
   {
     label: "Radar Charts",
+    icon: Radar,
     items: [
       { to: "/dashboard/charts/radar-chart-default", label: "Radar Chart Default" },
       { to: "/dashboard/charts/radar-chart-workout-by-time", label: "Radar Chart Workout By Time" },
@@ -60,6 +83,7 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
   },
   {
     label: "Radial Charts",
+    icon: ChartPie,
     items: [
       { to: "/dashboard/charts/radial-chart-label", label: "Radial Chart Label" },
       { to: "/dashboard/charts/radial-chart-text", label: "Radial Chart Text" },
