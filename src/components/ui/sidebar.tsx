@@ -44,7 +44,7 @@ const Sidebar = React.forwardRef<
     <aside
       ref={ref}
       className={cn(
-        "bg-sidebar text-sidebar-foreground w-56 border-r border-sidebar-border p-4",
+        "bg-sidebar text-sidebar-foreground w-56 border-r border-sidebar-border p-4 flex flex-col h-screen",
         !open && "hidden",
         className,
       )}
@@ -56,14 +56,18 @@ Sidebar.displayName = "Sidebar";
 
 const SidebarHeader = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("mb-4", className)} {...props} />
+    <div ref={ref} className={cn("mb-4 sticky top-0", className)} {...props} />
   )
 );
 SidebarHeader.displayName = "SidebarHeader";
 
 const SidebarContent = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(
   ({ className, ...props }, ref) => (
-    <div ref={ref} className={cn("flex flex-col", className)} {...props} />
+    <div
+      ref={ref}
+      className={cn("flex flex-col flex-1 overflow-y-auto", className)}
+      {...props}
+    />
   )
 );
 SidebarContent.displayName = "SidebarContent";
@@ -107,7 +111,7 @@ const SidebarFooter = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("mt-auto", className)} {...props} />
+  <div ref={ref} className={cn("mt-auto sticky bottom-0", className)} {...props} />
 ));
 SidebarFooter.displayName = "SidebarFooter";
 
