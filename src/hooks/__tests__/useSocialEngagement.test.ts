@@ -1,5 +1,8 @@
 import { describe, it, expect } from 'vitest'
-import { computeSocialEngagementIndex } from '../useSocialEngagement'
+import {
+  computeSocialEngagementIndex,
+  computeDeviationFlags,
+} from '../useSocialEngagement'
 import type { LocationVisit } from '@/lib/api'
 
 const visits: LocationVisit[] = [
@@ -15,5 +18,22 @@ describe('computeSocialEngagementIndex', () => {
     const { index, consecutiveHomeDays } = computeSocialEngagementIndex(visits)
     expect(index).toBeCloseTo(0.56, 2)
     expect(consecutiveHomeDays).toBe(1)
+  })
+
+  it('flags large deviations', () => {
+    const metrics = computeSocialEngagementIndex(visits)
+    const baseline = {
+      entropy: metrics.locationEntropy * 2,
+      outOfHome: metrics.outOfHomeFrequency * 2,
+    }
+    const flags = computeDeviationFlags(
+      {
+        locationEntropy: metrics.locationEntropy,
+        outOfHomeFrequency: metrics.outOfHomeFrequency,
+      },
+      baseline,
+    )
+    expect(flags).toContain('entropy down 50%')
+    expect(flags).toContain('out-of-home down 50%')
   })
 })

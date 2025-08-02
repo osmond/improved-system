@@ -1,3 +1,4 @@
+import { groupConsecutivePoints, placeIdFor, type LocationPoint } from './locationProcessing';
 
 export interface LocationFix {
   timestamp: number;
@@ -41,8 +42,36 @@ export async function getFixes(): Promise<LocationFix[]> {
     req.onsuccess = () => resolve(req.result as LocationFix[]);
     req.onerror = () => reject(req.error);
   });
-=======
-import { groupConsecutivePoints, placeIdFor, type LocationPoint } from './locationProcessing';
+}
+
+// ----- Social baselines -----
+
+export interface SocialBaseline {
+  entropy: number;
+  outOfHome: number;
+}
+
+const BASELINE_KEY = 'loc:social-baseline';
+
+export function getSocialBaseline(userId = 'default'): SocialBaseline | null {
+  if (typeof localStorage === 'undefined') return null;
+  try {
+    const raw = localStorage.getItem(`${BASELINE_KEY}:${userId}`);
+    return raw ? (JSON.parse(raw) as SocialBaseline) : null;
+  } catch {
+    return null;
+  }
+}
+
+export function setSocialBaseline(
+  baseline: SocialBaseline,
+  userId = 'default',
+): void {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(`${BASELINE_KEY}:${userId}`, JSON.stringify(baseline));
+}
+
+// ----- Location visits and clusters -----
 
 export type LocationCategory = 'home' | 'work' | 'other';
 
@@ -196,5 +225,5 @@ export function getLocationVisits(): LocationVisit[] {
     placeId: v.placeId,
     category: clusters[v.placeId]?.category ?? 'other',
   }));
-
 }
+
