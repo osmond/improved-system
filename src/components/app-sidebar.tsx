@@ -7,45 +7,84 @@ import {
   SidebarGroupLabel,
   SidebarGroupContent,
   SidebarFooter,
+  SidebarMenu,
+  SidebarMenuItem,
+  SidebarMenuButton,
+  SidebarMenuSub,
+  SidebarMenuSubItem,
+  SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import { NavLink } from "react-router-dom";
-import { cn } from "@/lib/utils";
-import { dashboardRoutes, type DashboardRouteGroup } from "@/routes";
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from "@radix-ui/react-collapsible";
+import { NavLink, useLocation } from "react-router-dom";
+import { BarChart2, ChevronDown, Map as MapIcon } from "lucide-react";
+import { chartRoutes, mapRoutes } from "@/routes";
 
 export default function AppSidebar() {
-  return (
+  const { pathname } = useLocation();
 
-      <Sidebar>
-        <SidebarHeader />
-        <SidebarContent>
-          {dashboardRoutes.map((group: DashboardRouteGroup) => (
-            <SidebarGroup key={group.label}>
-              <SidebarGroupLabel>{group.label}</SidebarGroupLabel>
-              <SidebarGroupContent>
-                <ul className="space-y-1">
-                  {group.items.map((link) => (
-                    <li key={link.to}>
-                      <NavLink
-                        to={link.to}
-                        className={({ isActive }) =>
-                          cn(
-                            "block rounded-md px-3 py-2 text-sm",
-                            isActive
-                              ? "bg-accent text-accent-foreground"
-                              : "hover:bg-muted",
-                          )
-                        }
-                      >
-                        {link.label}
-                      </NavLink>
-                    </li>
-                  ))}
-                </ul>
-              </SidebarGroupContent>
-            </SidebarGroup>
-          ))}
-        </SidebarContent>
-        <SidebarFooter />
-      </Sidebar>
+  return (
+    <Sidebar>
+      <SidebarHeader />
+      <SidebarContent>
+        <SidebarGroup>
+          <SidebarGroupLabel>Charts</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              <SidebarMenuItem>
+                <Collapsible>
+                  <CollapsibleTrigger asChild>
+                    <SidebarMenuButton className="group w-full justify-start">
+                      <BarChart2 className="mr-2" />
+                      <span>All charts</span>
+                      <ChevronDown className="ml-auto transition-transform group-data-[state=open]:rotate-180" />
+                    </SidebarMenuButton>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent>
+                    <SidebarMenuSub>
+                      {chartRoutes.map((route) => (
+                        <SidebarMenuSubItem key={route.to}>
+                          <SidebarMenuSubButton
+                            asChild
+                            isActive={pathname === route.to}
+                          >
+                            <NavLink to={route.to}>{route.label}</NavLink>
+                          </SidebarMenuSubButton>
+                        </SidebarMenuSubItem>
+                      ))}
+                    </SidebarMenuSub>
+                  </CollapsibleContent>
+                </Collapsible>
+              </SidebarMenuItem>
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        <SidebarGroup>
+          <SidebarGroupLabel>Maps</SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {mapRoutes.map((route) => (
+                <SidebarMenuItem key={route.to}>
+                  <SidebarMenuButton
+                    asChild
+                    isActive={pathname === route.to}
+                    className="justify-start"
+                  >
+                    <NavLink to={route.to}>
+                      <MapIcon className="mr-2" />
+                      <span>{route.label}</span>
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+      </SidebarContent>
+      <SidebarFooter />
+    </Sidebar>
   );
 }
