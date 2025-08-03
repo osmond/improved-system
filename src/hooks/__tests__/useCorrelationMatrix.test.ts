@@ -21,5 +21,22 @@ describe('computeCorrelationMatrix', () => {
     expect(matrix.a.c).toBeCloseTo(-1)
     expect(matrix.b.c).toBeCloseTo(-1)
   })
+
+  it('handles uncorrelated data', () => {
+    interface SamplePoint extends MetricPoint {
+      a: number
+      b: number
+    }
+    const points: SamplePoint[] = [
+      { a: 1, b: 2 },
+      { a: 2, b: 1 },
+      { a: 3, b: 2 },
+      { a: 4, b: 1 },
+      { a: 5, b: 2 },
+    ]
+    const matrix = computeCorrelationMatrix(points)
+    expect(matrix.a.b).toBeCloseTo(0)
+    expect(matrix.b.a).toBeCloseTo(0)
+  })
 })
 
