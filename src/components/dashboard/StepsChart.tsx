@@ -16,11 +16,12 @@ import type { GarminDay } from "@/lib/api";
 import { useGarminDaysLazy } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { chartColors } from "@/lib/chartColors";
 
 const chartConfig = {
   steps: {
     label: "Steps",
-    color: "hsl(var(--chart-1))",
+    color: chartColors["1"],
   },
 } satisfies ChartConfig;
 

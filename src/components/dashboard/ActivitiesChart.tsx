@@ -15,15 +15,16 @@ import type { ChartConfig } from "@/components/ui/chart";
 import { useGarminData } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 import { Skeleton } from "@/components/ui/skeleton";
+import { chartColors } from "@/lib/chartColors";
 
 const chartConfig = {
   distance: {
     label: "Distance (km)",
-    color: "hsl(var(--chart-1))",
+    color: chartColors["1"],
   },
   duration: {
     label: "Duration (min)",
-    color: "hsl(var(--chart-2))",
+    color: chartColors["2"],
   },
 } satisfies ChartConfig;
 
