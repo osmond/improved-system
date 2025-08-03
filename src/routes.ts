@@ -18,6 +18,7 @@ export interface DashboardRoute {
   tooltip?: string;
   tags?: string[];
   badge?: string;
+  preview?: 'fragility';
 }
 
 export interface DashboardRouteGroup {
@@ -73,6 +74,7 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
         to: "/dashboard/fragility",
         label: "Fragility Analysis",
         description: "Review training fragility indicators",
+        preview: 'fragility',
       },
       {
         to: "/dashboard/session-similarity",
