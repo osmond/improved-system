@@ -10,8 +10,11 @@ vi.mock('@/lib/api', () => ({
   getHourlySteps: vi.fn(),
 }))
 
+vi.useRealTimers()
+
 afterEach(() => {
   vi.clearAllMocks()
+  vi.useRealTimers()
 })
 
 function makeDay(date: string, steps: number): HourlySteps[] {
