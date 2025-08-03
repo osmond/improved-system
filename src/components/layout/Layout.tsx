@@ -16,6 +16,7 @@ import {
   SidebarTrigger,
   SidebarInset,
 } from "@/components/ui/sidebar";
+import GlobalNavigation from "@/components/global-navigation";
 import {
   ChartActionsProvider,
   useChartActions,
@@ -134,6 +135,7 @@ export default function Layout({ children }: LayoutProps) {
           <header className="flex items-center justify-between p-4">
             <div className="flex items-center gap-2">
               <SidebarTrigger />
+              <GlobalNavigation />
               <Breadcrumbs />
             </div>
             <div className="flex items-center gap-2">
