@@ -1,8 +1,17 @@
-import React, { useMemo, useState } from "react";
-import Map, { Source, Layer, Marker, Popup, MapLayerMouseEvent } from "react-map-gl/maplibre";
+import React, { useMemo, useState, useRef } from "react";
+import Map, {
+  Source,
+  Layer,
+  Marker,
+  Popup,
+  MapLayerMouseEvent,
+  MapRef,
+} from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import { feature } from "topojson-client";
 import { geoCentroid } from "d3-geo";
+import { bbox } from "@turf/turf";
+import { AnimatePresence, motion } from "framer-motion";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
 import {
@@ -41,6 +50,8 @@ export default function GeoActivityExplorer() {
 
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
+
+  const mapRef = useRef<MapRef>(null);
 
 
   const now = new Date();
@@ -168,9 +179,25 @@ export default function GeoActivityExplorer() {
   };
 
   const selectState = (abbr: string) => {
-    setSelectedState((prev) => (prev === abbr ? null : abbr))
-    setExpandedState((prev) => (prev === abbr ? null : abbr))
-  }
+    const next = selectedState === abbr ? null : abbr;
+    setSelectedState(next);
+    setExpandedState((prev) => (prev === abbr ? null : abbr));
+    if (next) {
+      const feature = (statesGeo.features as any).find(
+        (f: any) => f.properties.abbr === abbr,
+      );
+      if (feature && mapRef.current) {
+        const [minX, minY, maxX, maxY] = bbox(feature);
+        mapRef.current.fitBounds(
+          [
+            [minX, minY],
+            [maxX, maxY],
+          ],
+          { padding: 20 },
+        );
+      }
+    }
+  };
 
   return (
     <>
@@ -232,6 +259,7 @@ export default function GeoActivityExplorer() {
       <div className="flex gap-12">
         <div className="relative w-80 h-60">
           <Map
+            ref={mapRef}
             aria-label="state map"
             mapLib={maplibregl}
             mapStyle="https://demotiles.maplibre.org/style.json"
@@ -259,6 +287,17 @@ export default function GeoActivityExplorer() {
                   "fill-outline-color": "hsl(var(--border))",
                 }}
               />
+              {selectedState && (
+                <Layer
+                  id="state-highlight"
+                  type="line"
+                  filter={["==", ["get", "abbr"], selectedState]}
+                  paint={{
+                    "line-color": "hsl(var(--foreground))",
+                    "line-width": 3,
+                  }}
+                />
+              )}
             </Source>
             {showWeather && weatherKey && (
               <Source
@@ -272,19 +311,25 @@ export default function GeoActivityExplorer() {
                 <Layer id="wx-layer" type="raster" />
               </Source>
             )}
-            {expandedState &&
-              summaryMap[expandedState]?.cities.map((c) => {
-                const coords = CITY_COORDS[c.name]
-                return coords ? (
-                  <Marker key={c.name} longitude={coords[0]} latitude={coords[1]}>
-                    <circle
-                      r={3}
-                      fill="hsl(var(--primary))"
-                      className="transition-transform motion-reduce:transition-none hover:scale-125"
-                    />
-                  </Marker>
-                ) : null
-              })}
+            <AnimatePresence>
+              {expandedState &&
+                summaryMap[expandedState]?.cities.map((c) => {
+                  const coords = CITY_COORDS[c.name];
+                  return coords ? (
+                    <Marker key={c.name} longitude={coords[0]} latitude={coords[1]}>
+                      <motion.circle
+                        r={3}
+                        fill="hsl(var(--primary))"
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        transition={{ duration: 0.2 }}
+                        className="transition-transform motion-reduce:transition-none hover:scale-125"
+                      />
+                    </Marker>
+                  ) : null;
+                })}
+            </AnimatePresence>
             {displayedMarkers.map(
               (m: {
                 abbr: string
