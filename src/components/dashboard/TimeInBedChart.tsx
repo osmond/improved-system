@@ -21,7 +21,9 @@ export default function TimeInBedChart() {
   const [data, setData] = useState<SleepSession[] | null>(null)
 
   useEffect(() => {
-    getSleepSessions().then(setData)
+    getSleepSessions().then((sessions) =>
+      setData([...sessions].sort((a, b) => a.date.localeCompare(b.date)))
+    )
   }, [])
 
   const dataWithAvg = useMemo(() => {
