@@ -7,15 +7,25 @@ import { timer, Timer } from "d3-timer";
 
 interface PathData {
   coordinates: [number, number][];
+  date?: string;
+  miles?: number;
 }
 
 interface GlobeRendererProps {
   paths: PathData[];
   autoRotate?: boolean;
   strokeWidth?: number;
+  onPathMouseEnter?: (p: PathData) => void;
+  onPathMouseLeave?: () => void;
 }
 
-export default function GlobeRenderer({ paths, autoRotate = false, strokeWidth = 2 }: GlobeRendererProps) {
+export default function GlobeRenderer({
+  paths,
+  autoRotate = false,
+  strokeWidth = 2,
+  onPathMouseEnter,
+  onPathMouseLeave,
+}: GlobeRendererProps) {
   const svgRef = useRef<SVGSVGElement | null>(null);
   const projectionRef = useRef(geoOrthographic().scale(180).translate([200, 200]));
   const pathGeneratorRef = useRef(geoPath(projectionRef.current));
@@ -95,6 +105,8 @@ export default function GlobeRenderer({ paths, autoRotate = false, strokeWidth =
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           opacity={0.8}
+          onMouseEnter={() => onPathMouseEnter?.(p)}
+          onMouseLeave={() => onPathMouseLeave?.()}
         />
       ))}
     </svg>

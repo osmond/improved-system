@@ -38,7 +38,9 @@ describe('useFragilityHistory', () => {
     ;(getHourlySteps as any).mockResolvedValue([...day1, ...day2, ...day3])
 
     const { result } = renderHook(() => useFragilityHistory())
-    await waitFor(() => result.current !== null)
+    await waitFor(() => {
+      expect(result.current).not.toBeNull()
+    })
 
     const expected = [
       {
@@ -62,7 +64,9 @@ describe('useFragilityHistory', () => {
     ;(getHourlySteps as any).mockResolvedValue([...day1, ...day2])
 
     const { result } = renderHook(() => useFragilityHistory())
-    await waitFor(() => result.current !== null)
+    await waitFor(() => {
+      expect(result.current).not.toBeNull()
+    })
 
     expect(result.current).toEqual([{ date: '2025-07-22', value: 0 }])
   })
@@ -73,7 +77,9 @@ describe('useFragilityHistory', () => {
     ;(getHourlySteps as any).mockResolvedValue([...day1])
 
     const { result } = renderHook(() => useFragilityHistory())
-    await waitFor(() => result.current !== null)
+    await waitFor(() => {
+      expect(result.current).not.toBeNull()
+    })
 
     expect(result.current).toEqual([])
   })
