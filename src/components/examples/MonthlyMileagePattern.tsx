@@ -38,7 +38,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export default function ChartRadarDots() {
+export default function MonthlyMileagePattern() {
   return (
     <Card>
       <CardHeader className='items-center'>

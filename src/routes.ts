@@ -181,8 +181,8 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         description: "Radar view of workout distribution by time",
       },
       {
-        to: "/dashboard/charts/radar-chart-dots",
-        label: "Dotted Radar Profile",
+        to: "/dashboard/charts/monthly-mileage-pattern",
+        label: "Monthly Mileage Pattern",
         description: "Radar chart with highlighted data points",
       },
       {
