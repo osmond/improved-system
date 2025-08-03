@@ -46,6 +46,7 @@ function RouteList({
                   <Link
                     to={route.to}
                     className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
+                    data-shortcut={route.to}
                   >
                     <route.icon className="mr-2 h-5 w-5" />
                     <div className="flex-1">
@@ -84,6 +85,7 @@ function RouteList({
               <Link
                 to={route.to}
                 className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
+                data-shortcut={route.to}
               >
                 <route.icon className="mr-2 h-5 w-5" />
                 <div className="flex-1">
@@ -122,6 +124,19 @@ function RouteList({
 export default function GlobalNavigation() {
   const { favorites, toggleFavorite } = useFavorites();
   const { recentViews } = useRecentViews();
+
+  const [menuValue, setMenuValue] = React.useState<string | undefined>();
+
+  React.useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "g") {
+        e.preventDefault();
+        setMenuValue((prev) => (prev ? undefined : "analytics"));
+      }
+    };
+    document.addEventListener("keydown", handleKeyDown);
+    return () => document.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   const insightsRoutes = React.useMemo(
     () => dashboardRoutes.find((g) => g.label === "Privacy")?.items ?? [],
@@ -177,10 +192,12 @@ export default function GlobalNavigation() {
     );
 
   return (
-    <NavigationMenu>
+    <NavigationMenu value={menuValue} onValueChange={setMenuValue}>
       <NavigationMenuList>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Analytics</NavigationMenuTrigger>
+        <NavigationMenuItem value="analytics">
+          <NavigationMenuTrigger data-shortcut="nav-analytics">
+            Analytics
+          </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
             {renderRecent()}
@@ -191,8 +208,10 @@ export default function GlobalNavigation() {
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Charts</NavigationMenuTrigger>
+        <NavigationMenuItem value="charts">
+          <NavigationMenuTrigger data-shortcut="nav-charts">
+            Charts
+          </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
             {renderRecent()}
@@ -210,8 +229,10 @@ export default function GlobalNavigation() {
             ))}
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Maps</NavigationMenuTrigger>
+        <NavigationMenuItem value="maps">
+          <NavigationMenuTrigger data-shortcut="nav-maps">
+            Maps
+          </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
             {renderRecent()}
@@ -222,8 +243,10 @@ export default function GlobalNavigation() {
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Insights/Personal</NavigationMenuTrigger>
+        <NavigationMenuItem value="insights">
+          <NavigationMenuTrigger data-shortcut="nav-insights">
+            Insights/Personal
+          </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
             {renderRecent()}
@@ -234,8 +257,10 @@ export default function GlobalNavigation() {
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
-        <NavigationMenuItem>
-          <NavigationMenuTrigger>Settings/Tools</NavigationMenuTrigger>
+        <NavigationMenuItem value="settings">
+          <NavigationMenuTrigger data-shortcut="nav-settings">
+            Settings/Tools
+          </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
             {renderRecent()}
