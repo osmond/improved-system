@@ -1,12 +1,59 @@
 import { useEffect, useState } from 'react'
-import { getReadingMediumTotals, type ReadingMediumTotal } from '@/lib/api'
+import type { ReadingMediumTotal } from '@/lib/api'
 
-export default function useReadingMediumTotals(): ReadingMediumTotal[] | null {
-  const [data, setData] = useState<ReadingMediumTotal[] | null>(null)
+interface UseReadingMediumTotalsOptions {
+  /**
+   * Optional pre-loaded data. When provided the hook will skip fetching.
+   */
+  data?: ReadingMediumTotal[]
+  /**
+   * Optional fetcher function. Defaults to calling `/api/reading-medium-totals`.
+   */
+  fetcher?: () => Promise<ReadingMediumTotal[]>
+}
+
+interface UseReadingMediumTotalsResult {
+  data: ReadingMediumTotal[] | null
+  isLoading: boolean
+  error: Error | null
+}
+
+async function defaultFetcher(): Promise<ReadingMediumTotal[]> {
+  const res = await fetch('/api/reading-medium-totals')
+  if (!res.ok) throw new Error('Failed to fetch reading medium totals')
+  return res.json()
+}
+
+export default function useReadingMediumTotals(
+  options: UseReadingMediumTotalsOptions = {},
+): UseReadingMediumTotalsResult {
+  const { data: initialData, fetcher } = options
+  const [data, setData] = useState<ReadingMediumTotal[] | null>(
+    initialData ?? null,
+  )
+  const [isLoading, setIsLoading] = useState(!initialData)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    getReadingMediumTotals().then(setData)
-  }, [])
+    if (initialData) return
 
-  return data
+    let active = true
+    const load = async () => {
+      try {
+        setIsLoading(true)
+        const result = await (fetcher ?? defaultFetcher)()
+        if (active) setData(result)
+      } catch (e) {
+        if (active) setError(e as Error)
+      } finally {
+        if (active) setIsLoading(false)
+      }
+    }
+    load()
+    return () => {
+      active = false
+    }
+  }, [initialData, fetcher])
+
+  return { data, isLoading, error }
 }

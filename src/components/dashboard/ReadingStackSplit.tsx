@@ -73,9 +73,15 @@ export function ReadingTooltip(
 
 export default function ReadingStackSplit() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const data = useReadingMediumTotals();
+  const { data, isLoading, error } = useReadingMediumTotals();
 
-  if (!data) return <Skeleton className="h-64" />;
+  if (isLoading) return <Skeleton className="h-64" />;
+  if (error || !data)
+    return (
+      <div className="h-64 flex items-center justify-center text-sm text-destructive">
+        Failed to load reading data
+      </div>
+    );
 
   const filtered = data.filter((d) => d.minutes > 0);
 
