@@ -6,6 +6,7 @@ import { lineString, bezierSpline } from '@turf/turf'
 import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
 import Slider from '@/components/ui/slider'
+import { Button } from '@/components/ui/button'
 import { getMockRoutes, Route } from '@/lib/api'
 import useRouteSimilarity from '@/hooks/useRouteSimilarity'
 
@@ -14,13 +15,23 @@ export default function RouteSimilarity() {
   const [routeAIndex, setRouteAIndex] = useState('0')
   const [routeBIndex, setRouteBIndex] = useState('1')
   const [precision, setPrecision] = useState(3)
+  const [error, setError] = useState<string | null>(null)
 
-  useEffect(() => {
-    getMockRoutes().then((rs) => {
+  const fetchRoutes = async () => {
+    try {
+      setError(null)
+      setRoutes([])
+      const rs = await getMockRoutes()
       setRoutes(rs)
       if (rs.length > 0) setRouteAIndex('0')
       if (rs.length > 1) setRouteBIndex('1')
-    })
+    } catch (e) {
+      setError('Failed to load routes')
+    }
+  }
+
+  useEffect(() => {
+    fetchRoutes()
   }, [])
 
   const routeA = routes[parseInt(routeAIndex)]
@@ -42,6 +53,15 @@ export default function RouteSimilarity() {
   )
 
   const center = routeA?.points[0]
+
+  if (error) {
+    return (
+      <Card className="p-4 space-y-2">
+        <p>{error}</p>
+        <Button onClick={fetchRoutes}>Retry</Button>
+      </Card>
+    )
+  }
 
   if (!routeA || !routeB || !center) {
     return <Card className="p-4">Loading routes...</Card>
