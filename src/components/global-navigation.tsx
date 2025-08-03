@@ -41,15 +41,14 @@ function RouteList({
               to={route.to}
               className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
             >
+              <route.icon className="mr-2 h-5 w-5" />
               <div className="flex-1">
                 <div className="text-sm font-medium leading-none">
                   {route.label}
                 </div>
-                {route.description && (
-                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                    {route.description}
-                  </p>
-                )}
+                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                  {route.description}
+                </p>
               </div>
               <Star
                 className={cn(
