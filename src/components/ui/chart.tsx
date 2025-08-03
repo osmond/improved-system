@@ -70,8 +70,9 @@ const ChartContainer = React.forwardRef<
     >["children"]
     title?: string
     subtitle?: string
+    disableResponsive?: boolean
   }
->(({ id, className, children, config, title, subtitle, ...props }, ref) => {
+>(({ id, className, children, config, title, subtitle, disableResponsive = false, ...props }, ref) => {
   const uniqueId = React.useId()
   const chartId = `chart-${id || uniqueId.replace(/:/g, "")}`
 
@@ -91,9 +92,13 @@ const ChartContainer = React.forwardRef<
         )}
         <ChartStyle id={chartId} config={config} />
         <div className="flex-1">
-          <RechartsPrimitive.ResponsiveContainer>
-            {children}
-          </RechartsPrimitive.ResponsiveContainer>
+          {disableResponsive ? (
+            children
+          ) : (
+            <RechartsPrimitive.ResponsiveContainer>
+              {children}
+            </RechartsPrimitive.ResponsiveContainer>
+          )}
         </div>
       </div>
     </ChartContext.Provider>
