@@ -3,6 +3,7 @@ import { GoodDayMap } from "@/components/statistics";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
 import { SimpleSelect } from "@/components/ui/select";
 import Slider from "@/components/ui/slider";
+import { Card } from "@/components/ui/card";
 
 export default function GoodDayPage() {
   const sessions = useRunningSessions();
@@ -14,12 +15,31 @@ export default function GoodDayPage() {
     [sessions],
   );
 
+  const stats = useMemo(() => {
+    if (!sessions) return null;
+    const goodSessions = sessions.filter((s) => s.good);
+    if (!goodSessions.length)
+      return { count: 0, mean: 0, max: 0 };
+    const deltas = goodSessions.map((s) => s.paceDelta);
+    const count = goodSessions.length;
+    const mean = deltas.reduce((sum, d) => sum + d, 0) / count;
+    const max = Math.max(...deltas);
+    return { count, mean, max };
+  }, [sessions]);
+
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Good Day Sessions</h1>
       <p className="text-sm text-muted-foreground">
         Sessions that exceeded expectations are highlighted below.
       </p>
+      {stats && (
+        <Card className="p-4 text-sm space-y-1">
+          <div>Good sessions: {stats.count}</div>
+          <div>Avg Δ Pace: {stats.mean.toFixed(2)} min/mi</div>
+          <div>Max Δ Pace: {stats.max.toFixed(2)} min/mi</div>
+        </Card>
+      )}
       {sessions && (
         <div className="flex gap-4 flex-wrap items-center">
           <SimpleSelect
