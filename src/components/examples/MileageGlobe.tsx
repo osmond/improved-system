@@ -20,6 +20,7 @@ function GlobeRenderer({
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
   const [worldData, setWorldData] = useState<any | null>(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const svg = svgRef.current
@@ -46,9 +47,16 @@ function GlobeRenderer({
   }, [])
 
   useEffect(() => {
-    fetch('/world-110m.json')
-      .then((res) => res.json())
-      .then((world) => setWorldData(world))
+    const load = async () => {
+      try {
+        const res = await fetch('/world-110m.json')
+        const world = await res.json()
+        setWorldData(world)
+      } catch {
+        setError(true)
+      }
+    }
+    load()
   }, [])
 
   useEffect(() => {
@@ -147,11 +155,17 @@ function GlobeRenderer({
 
   return (
     <div className='relative aspect-square w-full'>
-      <svg
-        ref={svgRef}
-        className='h-full w-full rounded'
-        preserveAspectRatio='xMidYMid meet'
-      />
+      {error ? (
+        <div className='flex h-full w-full items-center justify-center rounded bg-muted text-muted-foreground'>
+          Map unavailable
+        </div>
+      ) : (
+        <svg
+          ref={svgRef}
+          className='h-full w-full rounded'
+          preserveAspectRatio='xMidYMid meet'
+        />
+      )}
     </div>
   )
 }

@@ -56,6 +56,28 @@ describe("MileageGlobe", () => {
     });
   });
 
+  it("shows fallback when map data fails to load", async () => {
+    mockUseMileageTimeline.mockReturnValue([
+      {
+        date: "2024-01-01",
+        miles: 5,
+        cumulativeMiles: 5,
+        coordinates: [
+          [0, 0],
+          [10, 10],
+        ],
+      },
+    ])
+
+    global.fetch = vi.fn().mockRejectedValue(new Error("network")) as any
+
+    render(<MileageGlobe />)
+
+    await waitFor(() => {
+      expect(screen.getByText(/Map unavailable/i)).toBeInTheDocument()
+    })
+  })
+
   it("displays total mileage", async () => {
     mockUseMileageTimeline.mockReturnValue([
       {
