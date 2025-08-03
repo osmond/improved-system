@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import useMileageTimeline from '@/hooks/useMileageTimeline'
+import useMileageTimeline, { CumulativeMileagePoint } from '@/hooks/useMileageTimeline'
 import GlobeRenderer from '@/components/GlobeRenderer'
 
 interface MileageGlobeProps {
@@ -13,6 +13,7 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
     weekRange ? { startWeek: weekRange[0], endWeek: weekRange[1] } : undefined,
   )
   const [worldError, setWorldError] = useState(false)
+  const [tooltip, setTooltip] = useState<CumulativeMileagePoint | null>(null)
 
   useEffect(() => {
     // Simulate loading of world data to satisfy tests
@@ -39,7 +40,19 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
 
   return (
     <div className='relative aspect-square w-full'>
-      <GlobeRenderer paths={data} autoRotate={autoRotate} strokeWidth={strokeWidth} />
+      <GlobeRenderer
+        paths={data}
+        autoRotate={autoRotate}
+        strokeWidth={strokeWidth}
+        onPathMouseEnter={(p) => setTooltip(p as CumulativeMileagePoint)}
+        onPathMouseLeave={() => setTooltip(null)}
+      />
+      {tooltip && (
+        <div className='absolute top-2 right-2 bg-background text-foreground text-xs px-2 py-1 rounded shadow'>
+          <div>{tooltip.date}</div>
+          <div>{tooltip.miles} miles</div>
+        </div>
+      )}
       <div className='absolute bottom-2 left-2 text-xs text-foreground'>
         Total: {totalMiles} miles
       </div>
