@@ -54,7 +54,7 @@ import { SelectionProvider } from "@/hooks/useSelection";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <DashboardFiltersProvider>
         <SelectionProvider>
         <Layout>

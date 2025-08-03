@@ -49,7 +49,7 @@ describe("NavSection contentId", () => {
 
   const renderWithProvider = (props = {}) =>
     render(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SidebarProvider>
           <NavSection {...baseProps} {...props} />
         </SidebarProvider>
@@ -65,7 +65,7 @@ describe("NavSection contentId", () => {
     expect(firstId).toBe(`Section-group-${slugify("First Group")}`);
 
     rerender(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SidebarProvider>
           <NavSection {...baseProps} groups={groups} />
         </SidebarProvider>
@@ -82,7 +82,7 @@ describe("NavSection contentId", () => {
     const secondId = secondTrigger?.getAttribute("aria-controls");
 
     rerender(
-      <MemoryRouter>
+      <MemoryRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <SidebarProvider>
           <NavSection {...baseProps} groups={[...groups].reverse()} />
         </SidebarProvider>
