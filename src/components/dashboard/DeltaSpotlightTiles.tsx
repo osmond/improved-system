@@ -1,4 +1,5 @@
 import React from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
 import {
@@ -17,6 +18,7 @@ interface DeltaSpotlightTilesProps {
 }
 
 export default function DeltaSpotlightTiles({ metrics }: DeltaSpotlightTilesProps) {
+  const navigate = useNavigate()
   if (!metrics) return <Skeleton className="h-24 w-full" />
 
   return (
@@ -24,8 +26,18 @@ export default function DeltaSpotlightTiles({ metrics }: DeltaSpotlightTilesProp
       {metrics.map((metric, idx) => {
         const color = `hsl(var(--chart-${idx + 1}))`
         const config = { value: { color } }
+        const handleNavigate = () => navigate(`/metrics/${metric.key}`)
         return (
-          <Card key={metric.key} className="p-4 space-y-2">
+          <Card
+            key={metric.key}
+            role="button"
+            tabIndex={0}
+            onClick={handleNavigate}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') handleNavigate()
+            }}
+            className="p-4 space-y-2 cursor-pointer transition-colors hover:bg-accent/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-medium">{metric.label}</span>
               <span className={`text-xs ${metric.deltaPct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
