@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 
 const STORAGE_KEY = "favorites";
+const STORAGE_EVENT = "favorites:update";
 
 /**
  * Hook managing a list of favorite route paths persisted to localStorage.
@@ -18,6 +19,24 @@ export function useFavorites() {
     }
   });
 
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const sync = () => {
+      try {
+        const stored = localStorage.getItem(STORAGE_KEY);
+        setFavorites(stored ? (JSON.parse(stored) as string[]) : []);
+      } catch {
+        setFavorites([]);
+      }
+    };
+    window.addEventListener("storage", sync);
+    window.addEventListener(STORAGE_EVENT, sync);
+    return () => {
+      window.removeEventListener("storage", sync);
+      window.removeEventListener(STORAGE_EVENT, sync);
+    };
+  }, []);
+
   const toggleFavorite = useCallback((to: string) => {
     setFavorites((prev) => {
       const next = prev.includes(to)
@@ -26,6 +45,7 @@ export function useFavorites() {
       try {
         if (typeof window !== "undefined") {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+          window.dispatchEvent(new Event(STORAGE_EVENT));
         }
       } catch {
         // ignore

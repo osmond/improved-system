@@ -1,5 +1,6 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
+import { Star } from "lucide-react";
 import {
   NavigationMenu,
   NavigationMenuList,
@@ -18,8 +19,18 @@ import {
   dashboardRoutes,
   type DashboardRoute,
 } from "@/routes";
+import useFavorites from "@/hooks/useFavorites";
+import { cn } from "@/lib/utils";
 
-function RouteList({ routes }: { routes: DashboardRoute[] }) {
+function RouteList({
+  routes,
+  favorites,
+  toggleFavorite,
+}: {
+  routes: DashboardRoute[];
+  favorites: string[];
+  toggleFavorite: (to: string) => void;
+}) {
   return (
     <ul className="grid gap-3 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
       {routes.map((route) => (
@@ -27,16 +38,31 @@ function RouteList({ routes }: { routes: DashboardRoute[] }) {
           <NavigationMenuLink asChild>
             <Link
               to={route.to}
-              className="block rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
+              className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
             >
-              <div className="text-sm font-medium leading-none">
-                {route.label}
+              <div className="flex-1">
+                <div className="text-sm font-medium leading-none">
+                  {route.label}
+                </div>
+                {route.description && (
+                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
+                    {route.description}
+                  </p>
+                )}
               </div>
-              {route.description && (
-                <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                  {route.description}
-                </p>
-              )}
+              <Star
+                className={cn(
+                  "ml-2 h-4 w-4 shrink-0",
+                  favorites.includes(route.to)
+                    ? "fill-yellow-400 text-yellow-400"
+                    : "text-muted-foreground",
+                )}
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  toggleFavorite(route.to);
+                }}
+              />
             </Link>
           </NavigationMenuLink>
         </li>
@@ -46,11 +72,40 @@ function RouteList({ routes }: { routes: DashboardRoute[] }) {
 }
 
 export default function GlobalNavigation() {
+  const { favorites, toggleFavorite } = useFavorites();
+
   const insightsRoutes = React.useMemo(
-    () =>
-      dashboardRoutes.find((g) => g.label === "Privacy")?.items ?? [],
-    []
+    () => dashboardRoutes.find((g) => g.label === "Privacy")?.items ?? [],
+    [],
   );
+
+  const allRoutes = React.useMemo(
+    () => [
+      ...dashboardRoutes.flatMap((g) => g.items),
+      ...chartRouteGroups.flatMap((g) => g.items),
+    ],
+    [],
+  );
+
+  const favoriteRoutes = React.useMemo(
+    () =>
+      favorites
+        .map((to) => allRoutes.find((r) => r.to === to))
+        .filter(Boolean) as typeof allRoutes,
+    [favorites, allRoutes],
+  );
+
+  const renderFavorites = () =>
+    favoriteRoutes.length > 0 && (
+      <div className="mb-4">
+        <h4 className="mb-2 font-medium leading-none">Favorites</h4>
+        <RouteList
+          routes={favoriteRoutes}
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+        />
+      </div>
+    );
 
   return (
     <NavigationMenu>
@@ -58,18 +113,28 @@ export default function GlobalNavigation() {
         <NavigationMenuItem>
           <NavigationMenuTrigger>Analytics</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            <RouteList routes={analyticsRoutes} />
+            {renderFavorites()}
+            <RouteList
+              routes={analyticsRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Charts</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
+            {renderFavorites()}
             {chartRouteGroups.map((group) => (
               <div key={group.label} className="mb-4 last:mb-0">
                 <h4 className="mb-2 font-medium leading-none">
                   {group.label}
                 </h4>
-                <RouteList routes={group.items} />
+                <RouteList
+                  routes={group.items}
+                  favorites={favorites}
+                  toggleFavorite={toggleFavorite}
+                />
               </div>
             ))}
           </NavigationMenuContent>
@@ -77,19 +142,34 @@ export default function GlobalNavigation() {
         <NavigationMenuItem>
           <NavigationMenuTrigger>Maps</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            <RouteList routes={mapRoutes} />
+            {renderFavorites()}
+            <RouteList
+              routes={mapRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Insights/Personal</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            <RouteList routes={insightsRoutes} />
+            {renderFavorites()}
+            <RouteList
+              routes={insightsRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Settings/Tools</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            <RouteList routes={settingsRoutes} />
+            {renderFavorites()}
+            <RouteList
+              routes={settingsRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
           </NavigationMenuContent>
         </NavigationMenuItem>
       </NavigationMenuList>
