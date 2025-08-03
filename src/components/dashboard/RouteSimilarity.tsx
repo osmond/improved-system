@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from 'react'
 import Map, { Source, Layer, MapRef } from 'react-map-gl/maplibre'
 import maplibregl from 'maplibre-gl'
 import { lineString, bezierSpline, lineOverlap, bbox } from '@turf/turf'
+import { Share2 } from 'lucide-react'
 
 import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
@@ -155,6 +156,34 @@ export default function RouteSimilarity() {
     }
   }, [bounds])
 
+  const handleShareMap = async () => {
+    const map = mapRef.current
+    if (!map) return
+    const dataUrl = map.getCanvas().toDataURL('image/png')
+    try {
+      if (
+        navigator.clipboard &&
+        'write' in navigator.clipboard &&
+        typeof ClipboardItem !== 'undefined'
+      ) {
+        const blob = await (await fetch(dataUrl)).blob()
+        await navigator.clipboard.write([
+          new ClipboardItem({ 'image/png': blob }),
+        ])
+      } else {
+        const link = document.createElement('a')
+        link.href = dataUrl
+        link.download = 'route-similarity.png'
+        link.click()
+      }
+    } catch {
+      const link = document.createElement('a')
+      link.href = dataUrl
+      link.download = 'route-similarity.png'
+      link.click()
+    }
+  }
+
   const overlapFeature = useMemo(() => {
     if (routeAFeature && routeBFeature) {
       const overlap = lineOverlap(routeAFeature, routeBFeature, {
@@ -243,6 +272,9 @@ export default function RouteSimilarity() {
           />
         </div>
         <Button onClick={handleImportClick}>Import Route</Button>
+        <Button onClick={handleShareMap} aria-label="Share map">
+          <Share2 className="mr-2 h-4 w-4" /> Share
+        </Button>
         <input
           ref={fileInputRef}
           type="file"
