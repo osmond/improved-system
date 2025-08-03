@@ -1,4 +1,11 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
+import { getRetentionDays } from "@/lib/locationStore";
 
 export interface FocusEvent {
   timestamp: number;
@@ -16,12 +23,20 @@ interface FocusHistoryState {
 const STORAGE_KEY = "focus_history";
 const DISMISSED_KEY = "focus_dismissed";
 
+function pruneHistory(history: FocusEvent[], days = getRetentionDays()): FocusEvent[] {
+  const cutoff = Date.now() - days * 86400000;
+  return history.filter((e) => e.timestamp >= cutoff);
+}
+
 function loadHistory(): FocusEvent[] {
   if (typeof window === "undefined") return [];
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
-    return JSON.parse(atob(raw)) as FocusEvent[];
+    const parsed = JSON.parse(atob(raw)) as FocusEvent[];
+    const pruned = pruneHistory(parsed);
+    if (pruned.length !== parsed.length) storeHistory(pruned);
+    return pruned;
   } catch {
     return [];
   }
@@ -71,7 +86,10 @@ function useProvideFocusHistory(): FocusHistoryState {
 
   const addEvent = (evt: Omit<FocusEvent, "timestamp"> & { timestamp?: number }) => {
     setHistory((prev) => {
-      const next = [...prev, { ...evt, timestamp: evt.timestamp ?? Date.now() }];
+      const next = pruneHistory([
+        ...prev,
+        { ...evt, timestamp: evt.timestamp ?? Date.now() },
+      ]);
       storeHistory(next);
       return next;
     });
@@ -106,5 +124,20 @@ export default function useFocusHistory(): FocusHistoryState {
   const ctx = useContext(FocusHistoryContext);
   const fallback = useProvideFocusHistory();
   return ctx || fallback;
+}
+
+export function exportFocusHistory(): FocusEvent[] {
+  return loadHistory();
+}
+
+export function clearFocusHistory(): void {
+  if (typeof window === "undefined") return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem(DISMISSED_KEY);
+}
+
+export function purgeOldFocusHistory(days = getRetentionDays()): void {
+  const history = pruneHistory(loadHistory(), days);
+  storeHistory(history);
 }
 
