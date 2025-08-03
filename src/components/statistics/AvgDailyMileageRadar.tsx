@@ -8,6 +8,8 @@ import {
   PolarRadiusAxis,
   Radar,
   Tooltip as ChartTooltip,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 
@@ -22,7 +24,7 @@ const dailyMileage = [
 ]
 
 const config = {
-  miles: { label: "Miles", color: "var(--chart-3)" },
+  miles: { label: "Miles", color: "hsl(var(--chart-3))" },
 } satisfies Record<string, unknown>
 
 export default function AvgDailyMileageRadar() {
@@ -37,11 +39,12 @@ export default function AvgDailyMileageRadar() {
           <PolarAngleAxis dataKey="day" />
           <PolarRadiusAxis />
           <ChartTooltip />
+          <ChartLegend content={<ChartLegendContent />} />
           <Radar
             name="Mileage"
             dataKey="miles"
-            stroke="var(--chart-3)"
-            fill="var(--chart-3)"
+            stroke={config.miles.color}
+            fill={config.miles.color}
             fillOpacity={0.4}
           />
         </RadarChart>
