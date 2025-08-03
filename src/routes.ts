@@ -2,9 +2,7 @@ import type { LucideIcon } from "lucide-react";
 import {
   ChartArea,
   ChartBar,
-  ChartLine,
   ChartPie,
-  FlaskConical,
   Radar,
 } from "lucide-react";
 
@@ -20,6 +18,7 @@ export interface DashboardRouteGroup {
   icon: LucideIcon;
   items: DashboardRoute[];
 }
+
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
   {
@@ -80,6 +79,7 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
     ],
   },
 ];
+
 
 export const chartRouteGroups: DashboardRouteGroup[] = [
   {
