@@ -20,6 +20,7 @@ import {
   Tablet,
   BookOpen,
   BookOpenText,
+  Book,
   HelpCircle,
   type LucideIcon,
 } from "lucide-react";
@@ -116,15 +117,23 @@ export default function ReadingStackSplit() {
                 content={({ viewBox }) => {
                   const { cx, cy } = viewBox as { cx: number; cy: number };
                   return (
-                    <text
-                      x={cx}
-                      y={cy}
-                      textAnchor="middle"
-                      dominantBaseline="middle"
-                      className="text-xl font-bold fill-foreground"
+                    <g
+                      transform={`translate(${cx}, ${cy})`}
+                      className="fill-foreground"
                     >
-                      {`${total} 📚`}
-                    </text>
+                      <text
+                        textAnchor="middle"
+                        dominantBaseline="middle"
+                        className="text-xl font-bold"
+                      >
+                        {total}
+                      </text>
+                      <Book
+                        x={12}
+                        y={-12}
+                        className="h-5 w-5 text-foreground"
+                      />
+                    </g>
                   );
                 }}
               />
