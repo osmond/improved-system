@@ -7,7 +7,10 @@ import Dashboard from "../Dashboard";
 describe("Dashboard", () => {
   it("renders nested routes", () => {
     render(
-      <MemoryRouter initialEntries={["/dashboard/test"]}>
+      <MemoryRouter
+        initialEntries={["/dashboard/test"]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
         <Routes>
           <Route path="/dashboard" element={<Dashboard />}>
             <Route path="test" element={<div>Test Route</div>} />
