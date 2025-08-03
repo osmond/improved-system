@@ -126,13 +126,16 @@ export default function RouteSimilarity() {
         </Map>
       </div>
       <p className="mt-2 text-sm text-muted-foreground">
-        Route A is shown in blue and Route B in red. The Jaccard percentage
-        reflects the degree of overlap.
+        Route A is shown in blue and Route B in red. The percentages below
+        show the overlap (Jaccard), Dynamic Time Warping (DTW), and the maximum
+        of the two metrics.
       </p>
       {similarity != null && (
-        <p className="text-sm text-muted-foreground">
-          Jaccard similarity: {(similarity * 100).toFixed(1)}%
-        </p>
+        <div className="text-sm text-muted-foreground space-y-1">
+          <p>Jaccard similarity: {(similarity.overlapSimilarity * 100).toFixed(1)}%</p>
+          <p>DTW similarity: {(similarity.dtwSimilarity * 100).toFixed(1)}%</p>
+          <p>Max similarity: {(similarity.maxSimilarity * 100).toFixed(1)}%</p>
+        </div>
       )}
     </Card>
   )
