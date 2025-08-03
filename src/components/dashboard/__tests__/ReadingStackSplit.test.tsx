@@ -25,10 +25,12 @@ vi.mock("@/hooks/useReadingMediumTotals", () => ({
 }));
 
 describe("ReadingStackSplit", () => {
-  it("renders chart title", () => {
-    render(<ReadingStackSplit />);
+  it("renders chart title and icons", () => {
+    const { container } = render(<ReadingStackSplit />);
     expect(screen.getByText(/Reading Stack Split/)).toBeInTheDocument();
     expect(screen.getByText("Phone")).toBeInTheDocument();
     expect(screen.getByText("Kindle")).toBeInTheDocument();
+    expect(container.querySelector("svg.lucide-smartphone")).toBeInTheDocument();
+    expect(container.querySelector("svg.lucide-book-open")).toBeInTheDocument();
   });
 });

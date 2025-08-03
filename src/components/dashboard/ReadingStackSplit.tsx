@@ -12,6 +12,15 @@ import type { ChartConfig } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import useReadingMediumTotals from "@/hooks/useReadingMediumTotals";
 import { Skeleton } from "@/components/ui/skeleton";
+import {
+  Smartphone,
+  Monitor,
+  Tablet,
+  BookOpen,
+  BookOpenText,
+  HelpCircle,
+  type LucideIcon,
+} from "lucide-react";
 
 const labels: Record<string, string> = {
   phone: "Phone",
@@ -20,6 +29,15 @@ const labels: Record<string, string> = {
   kindle: "Kindle",
   real_book: "Real Book",
   other: "Other",
+};
+
+const icons: Record<string, LucideIcon> = {
+  phone: Smartphone,
+  computer: Monitor,
+  tablet: Tablet,
+  kindle: BookOpen,
+  real_book: BookOpenText,
+  other: HelpCircle,
 };
 
 export default function ReadingStackSplit() {
@@ -33,6 +51,7 @@ export default function ReadingStackSplit() {
   data.forEach((d, i) => {
     (config as any)[d.medium] = {
       label: labels[d.medium],
+      icon: icons[d.medium],
       color: `hsl(var(--chart-${i + 1}))`,
     };
   });

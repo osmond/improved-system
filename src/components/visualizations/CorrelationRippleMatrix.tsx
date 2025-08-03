@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ResponsiveContainer,
   ScatterChart,
@@ -17,6 +17,8 @@ interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
+  cellSize?: number; // optional explicit cell size
+  showValues?: boolean; // toggle numeric annotations
 }
 
 interface CellData {
@@ -24,8 +26,6 @@ interface CellData {
   y: number; // row index
   value: number;
 }
-
-const cellSize = 24;
 
 // simple blue to red scale
 function colorScale(v: number) {
@@ -38,8 +38,27 @@ export default function CorrelationRippleMatrix({
   matrix,
   labels,
   drilldown = {},
+  cellSize: cellSizeProp,
+  showValues = true,
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? 24);
+
+  useEffect(() => {
+    if (cellSizeProp !== undefined) return;
+    const update = () => {
+      if (containerRef.current) {
+        setCellSize(containerRef.current.clientWidth / labels.length);
+      }
+    };
+    update();
+    const observer = new ResizeObserver(() => update());
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, [cellSizeProp, labels.length]);
 
   const heatData: CellData[] = matrix.flatMap((row, y) =>
     row.map((value, x) => ({ x, y, value }))
@@ -52,11 +71,8 @@ export default function CorrelationRippleMatrix({
   const activeKey = active ? `${active.y}-${active.x}` : null;
   const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
 
-  const width = labels.length * cellSize;
-  const height = labels.length * cellSize;
-
   return (
-    <div className="relative" style={{ width, height }}>
+    <div ref={containerRef} className="relative w-full aspect-square">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
           <XAxis
@@ -67,6 +83,7 @@ export default function CorrelationRippleMatrix({
             interval={0}
             tickLine={false}
             axisLine={false}
+            tick={{ angle: -45, textAnchor: "end", dy: 8, dx: -5 }}
           />
           <YAxis
             type="number"
@@ -77,23 +94,56 @@ export default function CorrelationRippleMatrix({
             tickLine={false}
             axisLine={false}
           />
-          <Scatter data={heatData} shape={(props: any) => {
-            const { cx, cy, payload } = props;
-            const x = cx - cellSize / 2;
-            const y = cy - cellSize / 2;
-            return (
-              <Rectangle
-                x={x}
-                y={y}
-                width={cellSize}
-                height={cellSize}
-                fill={colorScale(payload.value)}
-                stroke="#ffffff"
-                onClick={() => handleCellClick(payload as CellData)}
-                cursor="pointer"
-              />
-            );
-          }} />
+          <Scatter
+            data={heatData}
+            shape={(props: any) => {
+              const { cx, cy, payload } = props;
+              const x = cx - cellSize / 2;
+              const y = cy - cellSize / 2;
+              return (
+                <g>
+                  <Rectangle
+                    x={x}
+                    y={y}
+                    width={cellSize}
+                    height={cellSize}
+                    fill={colorScale(payload.value)}
+                    stroke="#ffffff"
+                    onClick={() => handleCellClick(payload as CellData)}
+                    cursor="pointer"
+                  />
+                  {showValues && (
+                    <text
+                      x={cx}
+                      y={cy}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      pointerEvents="none"
+                      className="fill-black text-[10px]"
+                    >
+                      {payload.value.toFixed(2)}
+                    </text>
+                  )}
+                </g>
+              );
+            }}
+          />
+          <Tooltip
+            content={({ active, payload }) => {
+              if (active && payload && payload.length) {
+                const cell = payload[0].payload as CellData;
+                const xLabel = labels[cell.x] ?? "";
+                const yLabel = labels[cell.y] ?? "";
+                return (
+                  <div className="bg-white p-2 border rounded shadow">
+                    <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
+                    <div>{cell.value.toFixed(2)}</div>
+                  </div>
+                );
+              }
+              return null;
+            }}
+          />
         </ScatterChart>
       </ResponsiveContainer>
       {active && chartData.length > 0 && (
