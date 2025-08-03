@@ -47,7 +47,7 @@ export function useRecentViews() {
       try {
         if (typeof window !== "undefined") {
           localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
-          window.dispatchEvent(new Event(STORAGE_EVENT));
+          setTimeout(() => window.dispatchEvent(new Event(STORAGE_EVENT)), 0);
         }
       } catch {
         // ignore
