@@ -73,6 +73,7 @@ export default function CorrelationRippleMatrix({
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
+  const [hovered, setHovered] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
 
@@ -114,7 +115,10 @@ export default function CorrelationRippleMatrix({
     <div className="w-full">
       <div ref={containerRef} className="relative w-full aspect-square">
         <ResponsiveContainer width="100%" height="100%">
-          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+          <ScatterChart
+            margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
+            onMouseLeave={() => setHovered(null)}
+          >
           <XAxis
             type="number"
             dataKey="x"
@@ -140,6 +144,9 @@ export default function CorrelationRippleMatrix({
               const { cx, cy, payload } = props;
               const x = cx - cellSize / 2;
               const y = cy - cellSize / 2;
+              const isHighlighted =
+                hovered && (hovered.x === payload.x || hovered.y === payload.y);
+              const opacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
               return (
                 <g>
                   <Rectangle
@@ -149,7 +156,10 @@ export default function CorrelationRippleMatrix({
                     height={cellSize}
                     fill={colorScale(payload.value)}
                     stroke="#ffffff"
+                    opacity={opacity}
                     onClick={() => handleCellClick(payload as CellData)}
+                    onMouseOver={() => setHovered(payload as CellData)}
+                    onMouseOut={() => setHovered(null)}
                     cursor="pointer"
                   />
                   {showValues && (
@@ -160,6 +170,7 @@ export default function CorrelationRippleMatrix({
                       dominantBaseline="central"
                       pointerEvents="none"
                       className="fill-black text-[10px]"
+                      opacity={opacity}
                     >
                       {payload.value.toFixed(2)}
                     </text>

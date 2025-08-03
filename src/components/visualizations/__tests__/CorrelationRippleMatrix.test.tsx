@@ -43,7 +43,7 @@ describe('CorrelationRippleMatrix', () => {
 
     const cells = container.querySelectorAll('path.recharts-rectangle')
     expect(cells.length).toBeGreaterThan(1)
-    await userEvent.click(cells[1] as SVGPathElement)
+    await userEvent.click(cells[1] as SVGPathElement, { skipHover: true })
     await waitFor(() =>
       expect(container.querySelector('div.absolute')).toBeInTheDocument(),
     )
