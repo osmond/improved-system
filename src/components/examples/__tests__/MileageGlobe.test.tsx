@@ -47,12 +47,53 @@ describe("MileageGlobe", () => {
     const { container } = render(<MileageGlobe />);
 
     await waitFor(() => {
-      const path = container.querySelector(
+      const paths = container.querySelectorAll(
         "path[stroke='var(--primary-foreground)']",
-      ) as SVGPathElement | null;
-      expect(path).toBeTruthy();
+      );
+      expect(paths.length).toBe(1);
+      const path = paths[0] as SVGPathElement | undefined;
       expect(path?.getAttribute("stroke-width")).toBe("2");
       expect(path?.getAttribute("stroke-linecap")).toBe("round");
+    });
+  });
+
+  it("renders multiple mileage paths when multiple activities are provided", async () => {
+    mockUseMileageTimeline.mockReturnValue([
+      {
+        date: "2024-01-01",
+        miles: 5,
+        cumulativeMiles: 5,
+        coordinates: [
+          [0, 0],
+          [10, 10],
+        ],
+      },
+      {
+        date: "2024-01-02",
+        miles: 3,
+        cumulativeMiles: 8,
+        coordinates: [
+          [20, 20],
+          [30, 30],
+        ],
+      },
+    ]);
+
+    global.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          type: "Topology",
+          objects: { countries: { type: "GeometryCollection", geometries: [] } },
+        }),
+    }) as any;
+
+    const { container } = render(<MileageGlobe />);
+
+    await waitFor(() => {
+      const paths = container.querySelectorAll(
+        "path[stroke='var(--primary-foreground)']",
+      );
+      expect(paths.length).toBe(2);
     });
   });
 
