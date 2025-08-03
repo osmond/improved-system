@@ -14,7 +14,7 @@ import {
   SidebarMenuSubItem,
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
-import { cn } from "@/lib/utils";
+import { cn, slugify } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
@@ -101,7 +101,7 @@ export default function NavSection({
           <SidebarMenu>
             {groups.map((group, index) => {
               const GroupIcon = group.icon;
-              const contentId = `${label}-group-${index}`;
+              const contentId = `${label}-group-${slugify(group.label)}`;
               const isOpen = openGroups[group.label] ?? index === 0;
               return (
                 <Collapsible.Root
