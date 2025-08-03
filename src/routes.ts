@@ -4,6 +4,8 @@ import {
   ChartBar,
   ChartPie,
   Radar,
+  ChartLine,
+  FlaskConical,
 } from "lucide-react";
 
 export interface DashboardRoute {
