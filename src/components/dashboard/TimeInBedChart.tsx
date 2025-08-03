@@ -1,11 +1,13 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import {
   ChartContainer,
-  BarChart,
-  Bar,
+  AreaChart,
+  Area,
+  Line,
   XAxis,
   CartesianGrid,
   YAxis,
+  ReferenceLine,
   Tooltip as ChartTooltip,
 } from '@/components/ui/chart'
 import ChartCard from './ChartCard'
@@ -21,22 +23,42 @@ export default function TimeInBedChart() {
     getSleepSessions().then(setData)
   }, [])
 
+  const dataWithAvg = useMemo(() => {
+    if (!data) return []
+    return data.map((d, idx) => {
+      const start = Math.max(0, idx - 6)
+      const slice = data.slice(start, idx + 1)
+      const avg = slice.reduce((sum, val) => sum + val.timeInBed, 0) / slice.length
+      return { ...d, avg }
+    })
+  }, [data])
+
   if (!data) return <Skeleton className="h-64" />
 
   const config = {
     timeInBed: { label: 'Hours', color: 'var(--chart-1)' },
+    avg: { label: '7d Avg', color: 'var(--chart-2)' },
+    goal: { label: 'Goal', color: 'var(--chart-3)' },
   } satisfies ChartConfig
 
   return (
     <ChartCard title="Time in Bed" description="Hours spent in bed each night">
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
-        <BarChart data={data} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
+        <AreaChart data={dataWithAvg} margin={{ top: 20, right: 20, bottom: 20, left: 0 }}>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
           <YAxis />
+          <ReferenceLine y={8} stroke={config.goal.color} strokeDasharray="4 4" />
           <ChartTooltip />
-          <Bar dataKey="timeInBed" fill={config.timeInBed.color} radius={2} />
-        </BarChart>
+          <Area
+            type="monotone"
+            dataKey="timeInBed"
+            stroke={config.timeInBed.color}
+            fill={config.timeInBed.color}
+            fillOpacity={0.2}
+          />
+          <Line type="monotone" dataKey="avg" stroke={config.avg.color} dot={false} />
+        </AreaChart>
       </ChartContainer>
     </ChartCard>
   )
