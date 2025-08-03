@@ -227,6 +227,29 @@ Route Similarity measures overlap by comparing each route's segments against oth
 ## Theming extensions
 If you need new variants—like a "danger" button or a "success" badge—run `pnpm dlx shadcn-ui@latest add button` to scaffold the base component. Then copy or edit `src/components/ui/button.tsx` and register your variant in `tailwind.config.ts` under `theme.extend`. See <https://ui.shadcn.com/docs/components> for more details.
 
+## Data Pipeline
+
+### Data sources
+- Garmin Connect API for health metrics via [useGarminData.ts](src/hooks/useGarminData.ts)
+- Google Play Services `FusedLocationProviderClient` exposed through an Android [LocationPlugin](android/app/src/main/java/com/improvedsystem/app/MainActivity.kt)
+- Capacitor bridge to start the plugin from JavaScript in [location.ts](src/native/location.ts)
+
+### Flow
+1. The Android `LocationPlugin` streams raw fixes using Google's fused provider. The web layer calls `startLocationLogging()` which registers a listener and pushes each fix into the IndexedDB-backed `locationStore`.
+2. Stored fixes are periodically clustered and tagged to derive place visits and compute social baselines.
+3. Health and activity metrics are fetched from Garmin Connect and merged with location-derived features for downstream charts.
+
+### Limitations
+- Garmin access is currently mocked; `getGarminData()` in `useGarminData.ts` returns demo values until real credentials are supplied.
+- Clustering and baseline calculations are heuristic and may differ from production implementations.
+
+### Development setup
+1. **Location logging** – ensure the Android app runs with Google Play Services. Call `startLocationLogging()` from `location.ts` to begin receiving updates from the native plugin.
+2. **Garmin credentials** – register a developer app with Garmin and set `VITE_GARMIN_CLIENT_ID`/`VITE_GARMIN_CLIENT_SECRET` in your `.env` to enable OAuth flows used by `useGarminData`.
+
+### Privacy and ethics
+Handling location, behavioral and health data requires explicit user consent and secure storage. Only collect data necessary for the feature, purge it regularly, and follow local regulations. See [PRIVACY.md](PRIVACY.md) for more guidance.
+
 ## Documentation & testing
 Storybook (or even MDX) is great for cataloguing all `ui/` components with knobs for variant/size.
 
