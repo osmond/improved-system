@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { scaleLinear } from "d3-scale";
 import { line as d3Line, area as d3Area } from "d3-shape";
+import { format } from "date-fns";
 import TransitionMatrix from "./TransitionMatrix";
 
 export type Segment = {
@@ -28,10 +29,11 @@ interface BehavioralCharterMapProps {
   riskThresholds?: number[];
 }
 
+// Updated palette with modern hues
 const stateColors: Record<string, string> = {
-  reading: "#4ade80",
-  writing: "#60a5fa",
-  idle: "#f97316",
+  reading: "#14b8a6", // teal
+  writing: "#8b5cf6", // violet
+  idle: "#f59e0b", // amber
   other: "#a1a1aa",
 };
 
@@ -69,7 +71,7 @@ export default function BehavioralCharterMap({
     x: number;
     y: number;
     items: Attribution[];
-    meta?: { ciLow?: number; ciHigh?: number; thresholds?: number[]; risk?: number };
+    meta?: { ciLow?: number; ciHigh?: number; thresholds?: number[]; risk?: number; probability?: number };
   } | null>(null);
   const [showMatrix, setShowMatrix] = useState(false);
   const [date, setDate] = useState(day);
@@ -90,7 +92,12 @@ export default function BehavioralCharterMap({
       }
     }
     const items = (attributions[idx] || []).slice(0, 3);
-    setTooltip({ x: evt.clientX, y: evt.clientY, items, meta: meta[idx] });
+    setTooltip({
+      x: evt.clientX,
+      y: evt.clientY,
+      items,
+      meta: { ...meta[idx], probability: segments[idx].probability },
+    });
   };
 
   const handleLeave = () => setTooltip(null);
@@ -107,11 +114,30 @@ export default function BehavioralCharterMap({
 
   const filteredSegments = activity === "all" ? segments : segments.filter((s) => s.state === activity);
 
+  // summary calculations
+  const totalByState: Record<string, number> = {};
+  segments.forEach((s) => {
+    totalByState[s.state] = (totalByState[s.state] || 0) + 0.5;
+  });
+  const maxRiskIdx = segments.reduce(
+    (maxIdx, seg, i) => (seg.risk > segments[maxIdx].risk ? i : maxIdx),
+    0,
+  );
+
   return (
     <div className="space-y-2">
-      <div className="flex items-center gap-2">
-        <input type="date" value={date} onChange={(e) => setDate(e.target.value)} className="border p-1 text-sm" />
-        <select value={activity} onChange={(e) => setActivity(e.target.value)} className="border p-1 text-sm">
+      <div className="flex items-center gap-2 p-2 bg-gray-50 rounded">
+        <input
+          type="date"
+          value={date}
+          onChange={(e) => setDate(e.target.value)}
+          className="border p-1 text-sm"
+        />
+        <select
+          value={activity}
+          onChange={(e) => setActivity(e.target.value)}
+          className="border p-1 text-sm"
+        >
           <option value="all">All</option>
           {states.map((s) => (
             <option key={s} value={s}>
@@ -123,16 +149,45 @@ export default function BehavioralCharterMap({
           {showMatrix ? "Hide" : "Show"} Transitions
         </button>
       </div>
-      <div className="flex gap-4">{legend}</div>
+      <div className="flex gap-4 text-xs">{legend}</div>
       <svg width={width} height={svgHeight} className="block">
+        {/* probability grid */}
+        {Array.from({ length: 5 }).map((_, i) => (
+          <line
+            key={i}
+            x1={0}
+            x2={width}
+            y1={riskHeight + overlayHeight - (i * overlayHeight) / 4}
+            y2={riskHeight + overlayHeight - (i * overlayHeight) / 4}
+            stroke="#e5e7eb"
+            strokeWidth={0.5}
+          />
+        ))}
         {/* risk confidence band */}
         {riskArea(segments) && (
-          <path d={riskArea(segments)!} fill="rgba(30,64,175,0.2)" />
+          <path
+            d={riskArea(segments)!}
+            fill="rgba(30,64,175,0.2)"
+            style={{ transition: "d 0.3s" }}
+          />
         )}
         {/* risk line */}
         {riskLine(segments) && (
-          <path d={riskLine(segments)!} stroke="#1e40af" strokeWidth={2} fill="none" />
+          <path
+            d={riskLine(segments)!}
+            stroke="#1e40af"
+            strokeWidth={2}
+            fill="none"
+            style={{ transition: "d 0.3s" }}
+          />
         )}
+        {/* highest risk marker */}
+        <circle
+          cx={maxRiskIdx * segmentWidth + segmentWidth / 2}
+          cy={riskScale(segments[maxRiskIdx].risk)}
+          r={3}
+          fill="#ef4444"
+        />
         {/* threshold markers */}
         {riskThresholds?.map((t, i) => (
           <line
@@ -153,6 +208,9 @@ export default function BehavioralCharterMap({
               width={segmentWidth}
               height={height}
               fill={stateColors[seg.state] || stateColors.other}
+              stroke="#fff"
+              strokeWidth={0.5}
+              style={{ transition: "fill 0.3s" }}
               onMouseEnter={(e) => handleHover(i, e)}
               onMouseLeave={handleLeave}
             />
@@ -162,6 +220,9 @@ export default function BehavioralCharterMap({
               width={segmentWidth}
               height={overlayHeight}
               fill={probColor(seg.probability)}
+              stroke="#fff"
+              strokeWidth={0.5}
+              style={{ transition: "fill 0.3s" }}
             />
           </g>
         ))}
@@ -181,6 +242,9 @@ export default function BehavioralCharterMap({
           </ul>
           {tooltip.meta && (
             <div className="mt-1 space-y-1">
+              {tooltip.meta.probability !== undefined && (
+                <div>Probability: {tooltip.meta.probability.toFixed(2)}</div>
+              )}
               {tooltip.meta.risk !== undefined && (
                 <div>Risk: {tooltip.meta.risk.toFixed(2)}</div>
               )}
@@ -199,6 +263,18 @@ export default function BehavioralCharterMap({
       {showMatrix && transitionMatrix && (
         <TransitionMatrix matrix={transitionMatrix} labels={states} />
       )}
+      <div className="flex gap-4 text-xs">
+        <div>
+          Highest risk at {format(new Date(segments[maxRiskIdx].time), "HH:mm")}: {segments[
+            maxRiskIdx
+          ].risk.toFixed(2)}
+        </div>
+        {states.map((s) => (
+          <div key={s}>
+            {s}: {totalByState[s] ? totalByState[s].toFixed(1) : 0}h
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
