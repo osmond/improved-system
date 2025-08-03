@@ -47,9 +47,9 @@ export default function MonthlyMileagePattern() {
       </CardHeader>
       <CardContent className='pb-0'>
         <ChartContainer config={chartConfig} className='mx-auto aspect-square max-h-[250px] md:max-h-[300px] lg:max-h-[350px]'>
-          <RadarChart data={chartData}>
+          <RadarChart data={chartData} margin={{ top: 16, right: 16, bottom: 16, left: 16 }}>
             <ChartTooltip cursor={false} content={<ChartTooltipContent />} />
-            <PolarAngleAxis dataKey='month' />
+            <PolarAngleAxis dataKey='month' tick={{ fontSize: 12, dy: 4 }} />
             <PolarGrid />
             <Radar dataKey='miles' fill='var(--color-miles)' fillOpacity={0.6} dot={{ r: 4, fillOpacity: 1 }} />
           </RadarChart>

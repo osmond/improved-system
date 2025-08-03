@@ -9,23 +9,29 @@ import { drag } from 'd3-drag'
 import { feature, mesh } from 'topojson-client'
 
 function GlobeRenderer({
-  path,
+  paths,
   totalMiles,
   centroid,
 }: {
-  path: [number, number][]
+  paths: [number, number][][]
   totalMiles: number
   centroid: [number, number]
 }) {
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
+  const [worldData, setWorldData] = useState<any | null>(null)
 
   useEffect(() => {
     const svg = svgRef.current
     if (!svg) return
 
-    const update = () =>
-      setDimensions({ width: svg.clientWidth, height: svg.clientHeight })
+    const update = () => {
+      const width = svg.clientWidth
+      const height = svg.clientHeight
+      if (width > 0 && height > 0) {
+        setDimensions({ width, height })
+      }
+    }
 
     update()
 
@@ -40,7 +46,18 @@ function GlobeRenderer({
   }, [])
 
   useEffect(() => {
-    if (!svgRef.current || dimensions.width === 0 || dimensions.height === 0)
+    fetch('/world-110m.json')
+      .then((res) => res.json())
+      .then((world) => setWorldData(world))
+  }, [])
+
+  useEffect(() => {
+    if (
+      !svgRef.current ||
+      dimensions.width === 0 ||
+      dimensions.height === 0 ||
+      !worldData
+    )
       return
 
     const svg = select(svgRef.current)
@@ -64,14 +81,15 @@ function GlobeRenderer({
 
     let landPath: any
     let boundaryPath: any
-    let linePath: any
+    let linePaths: any[] = []
 
     const render = () => {
       sphere.attr('d', geo as any)
       landPath?.attr('d', geo as any)
       boundaryPath?.attr('d', geo as any)
-      linePath?.attr('d', geo as any)
+      linePaths.forEach((p) => p.attr('d', geo as any))
     }
+
 
     fetch('/world-110m.json')
       .then((res) => res.json())
@@ -97,20 +115,44 @@ function GlobeRenderer({
           .attr('stroke', '#94a3b8')
           .attr('stroke-width', 0.5)
 
-        linePath = svg
-          .append('path')
-          .datum({ type: 'LineString', coordinates: path } as any)
-          .attr('fill', 'none')
-          .attr('stroke', 'var(--primary-foreground)')
-          .attr(
-            'stroke-width',
-            Math.max(2, Math.min(10, 1 + totalMiles / 50))
-          )
-          .attr('stroke-linecap', 'round')
-          .attr('opacity', 0.8)
+        linePaths = paths.map((coordinates) =>
+          svg
+            .append('path')
+            .datum({ type: 'LineString', coordinates } as any)
+            .attr('fill', 'none')
+            .attr('stroke', 'var(--primary-foreground)')
+            .attr(
+              'stroke-width',
+              Math.max(2, Math.min(10, 1 + totalMiles / 50))
+            )
+            .attr('stroke-linecap', 'round')
+            .attr('opacity', 0.8),
+        )
 
-        render()
-      })
+    landPath = svg
+      .append('path')
+      .datum(land as any)
+      .attr('fill', '#334155')
+      .attr('stroke', '#1e293b')
+      .attr('stroke-width', 0.5)
+
+    boundaryPath = svg
+      .append('path')
+      .datum(boundaries as any)
+      .attr('fill', 'none')
+      .attr('stroke', '#94a3b8')
+      .attr('stroke-width', 0.5)
+
+    linePath = svg
+      .append('path')
+      .datum({ type: 'LineString', coordinates: path } as any)
+      .attr('fill', 'none')
+      .attr('stroke', 'var(--primary-foreground)')
+      .attr('stroke-width', Math.max(2, Math.min(10, 1 + totalMiles / 50)))
+      .attr('stroke-linecap', 'round')
+      .attr('opacity', 0.8)
+
+    render()
 
     const initialScale = projection.scale()
 
@@ -133,7 +175,9 @@ function GlobeRenderer({
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-  }, [path, totalMiles, dimensions, centroid])
+
+  }, [paths, totalMiles, dimensions, centroid])
+
 
   return (
     <div className='relative aspect-square w-full'>
@@ -167,20 +211,21 @@ export default function MileageGlobe({
   }
 
   const totalMiles = data.reduce((sum, p) => sum + p.miles, 0)
-  const path = data.flatMap((p) => p.coordinates) as [number, number][]
+  const paths = data.map((p) => p.coordinates as [number, number][])
+  const allCoords = paths.flat()
 
   let centroid: [number, number] = [0, 0]
-  if (path.length) {
-    const [sumLng, sumLat] = path.reduce(
+  if (allCoords.length) {
+    const [sumLng, sumLat] = allCoords.reduce(
       (acc, [lng, lat]) => [acc[0] + lng, acc[1] + lat],
       [0, 0],
     )
-    centroid = [sumLng / path.length, sumLat / path.length]
+    centroid = [sumLng / allCoords.length, sumLat / allCoords.length]
   }
 
   return (
     <div className='space-y-2'>
-      <GlobeRenderer path={path} totalMiles={totalMiles} centroid={centroid} />
+      <GlobeRenderer paths={paths} totalMiles={totalMiles} centroid={centroid} />
       <div className='rounded bg-muted p-2 text-sm'>
         Total: {totalMiles} miles
       </div>

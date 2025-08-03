@@ -15,9 +15,9 @@ import {
   SidebarMenuSubButton,
 } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
-import { Map as MapIcon, ChevronRight, Star } from "lucide-react";
+import { Map as MapIcon, ChevronRight, Star, ChartLine } from "lucide-react";
 import * as Collapsible from "@radix-ui/react-collapsible";
-import { chartRouteGroups, mapRoutes } from "@/routes";
+import { chartRouteGroups, mapRoutes, analyticsRoutes } from "@/routes";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -82,7 +82,11 @@ export default function AppSidebar() {
   };
 
   const allRoutes = React.useMemo(
-    () => [...mapRoutes, ...chartRouteGroups.flatMap((g) => g.items)],
+    () => [
+      ...mapRoutes,
+      ...analyticsRoutes,
+      ...chartRouteGroups.flatMap((g) => g.items),
+    ],
     []
   );
   const favoriteRoutes = React.useMemo(
@@ -215,6 +219,54 @@ export default function AppSidebar() {
                     </Collapsible.Root>
                   );
                 })}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+        {analyticsRoutes.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Analytics</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {analyticsRoutes.map((route) => (
+                  <SidebarMenuItem key={route.to}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === route.to}
+                          className="justify-start"
+                        >
+                          <NavLink
+                            to={route.to}
+                            className="flex w-full items-center"
+                          >
+                            <ChartLine className="mr-2 h-4 w-4" />
+                            <span className="flex-1">{route.label}</span>
+                            <Star
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                favorites.includes(route.to)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-muted-foreground"
+                              )}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(route.to);
+                              }}
+                            />
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {route.description && (
+                        <TooltipContent side="right">
+                          {route.description}
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
