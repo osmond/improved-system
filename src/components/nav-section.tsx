@@ -31,6 +31,8 @@ interface NavSectionProps {
   pathname: string;
   favorites: string[];
   toggleFavorite: (to: string) => void;
+  highlighted: string | null;
+  setHighlighted: (to: string) => void;
 }
 
 export default function NavSection({
@@ -41,6 +43,8 @@ export default function NavSection({
   pathname,
   favorites,
   toggleFavorite,
+  highlighted,
+  setHighlighted,
 }: NavSectionProps) {
   const storageKey = `nav_section_state_${label}`;
   const { openGroups, handleOpenChange } = usePersistedGroups(storageKey);
@@ -74,7 +78,12 @@ export default function NavSection({
                         <SidebarMenuButton
                           asChild
                           isActive={pathname === route.to}
-                          className="justify-start"
+                          className={cn(
+                            "justify-start",
+                            highlighted === route.to &&
+                              "bg-accent text-accent-foreground"
+                          )}
+                          onMouseEnter={() => setHighlighted(route.to)}
                         >
                           <NavLink to={route.to} className="flex w-full items-center">
                             {Icon && <Icon className="mr-2 h-4 w-4" />}
@@ -153,7 +162,12 @@ export default function NavSection({
                                 <SidebarMenuSubButton
                                   asChild
                                   isActive={pathname === route.to}
-                                  className="justify-start"
+                                  className={cn(
+                                    "justify-start",
+                                    highlighted === route.to &&
+                                      "bg-accent text-accent-foreground"
+                                  )}
+                                  onMouseEnter={() => setHighlighted(route.to)}
                                 >
                                   <NavLink
                                     to={route.to}
