@@ -34,9 +34,15 @@ const labels: Record<string, string> = {
 }
 
 export default function ChartRadialGrid() {
-  const data = useReadingMediumTotals()
+  const { data, isLoading, error } = useReadingMediumTotals()
 
-  if (!data) return <Skeleton className='h-64' />
+  if (isLoading) return <Skeleton className='h-64' />
+  if (error || !data)
+    return (
+      <div className='h-64 flex items-center justify-center text-sm text-destructive'>
+        Failed to load reading data
+      </div>
+    )
 
   const labelledData = data.map((d) => ({
     ...d,

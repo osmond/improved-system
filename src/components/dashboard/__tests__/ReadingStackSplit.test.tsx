@@ -28,10 +28,14 @@ vi.mock("@/hooks/useReadingMediumTotals", () => ({
 
 describe("ReadingStackSplit", () => {
   beforeEach(() => {
-    mockUseReadingMediumTotals.mockReturnValue([
-      { medium: "phone", minutes: 30 },
-      { medium: "kindle", minutes: 60 },
-    ]);
+    mockUseReadingMediumTotals.mockReturnValue({
+      data: [
+        { medium: "phone", minutes: 30 },
+        { medium: "kindle", minutes: 60 },
+      ],
+      isLoading: false,
+      error: null,
+    });
   });
 
   it("renders chart title and icons", () => {
@@ -62,11 +66,15 @@ describe("ReadingStackSplit", () => {
   });
 
   it("filters out media with zero minutes", () => {
-    mockUseReadingMediumTotals.mockReturnValue([
-      { medium: "phone", minutes: 30 },
-      { medium: "tablet", minutes: 0 },
-      { medium: "kindle", minutes: 60 },
-    ]);
+    mockUseReadingMediumTotals.mockReturnValue({
+      data: [
+        { medium: "phone", minutes: 30 },
+        { medium: "tablet", minutes: 0 },
+        { medium: "kindle", minutes: 60 },
+      ],
+      isLoading: false,
+      error: null,
+    });
     const { container } = render(<ReadingStackSplit />);
     expect(screen.queryByText("Tablet")).not.toBeInTheDocument();
     expect(
