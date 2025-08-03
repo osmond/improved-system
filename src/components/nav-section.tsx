@@ -112,6 +112,9 @@ export default function NavSection({
   }
 
   if (groups?.length) {
+    const openGroupLabel = Object.keys(openGroups).find(
+      (key) => openGroups[key]
+    );
     return (
       <SidebarGroup>
         <SidebarGroupLabel>{label}</SidebarGroupLabel>
@@ -120,7 +123,9 @@ export default function NavSection({
             {groups.map((group, index) => {
               const GroupIcon = group.icon;
               const contentId = `${label}-group-${slugify(group.label)}`;
-              const isOpen = openGroups[group.label] ?? index === 0;
+              const isOpen = openGroupLabel
+                ? openGroupLabel === group.label
+                : index === 0;
               return (
                 <Collapsible.Root
                   key={group.label}

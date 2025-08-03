@@ -19,4 +19,15 @@ describe("usePersistedGroups", () => {
     const stored = JSON.parse(localStorage.getItem("test_key") || "{}");
     expect(stored["Group A"]).toBe(true);
   });
+
+  it("only keeps one group open at a time", () => {
+    const { result } = renderHook(() => usePersistedGroups("test_key"));
+    act(() => {
+      result.current.handleOpenChange("Group A")(true);
+      result.current.handleOpenChange("Group B")(true);
+    });
+    expect(result.current.openGroups).toEqual({ "Group B": true });
+    const stored = JSON.parse(localStorage.getItem("test_key") || "{}");
+    expect(stored).toEqual({ "Group B": true });
+  });
 });
