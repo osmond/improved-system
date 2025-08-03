@@ -73,8 +73,11 @@ export default function StatisticsPage() {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Metric Correlations</h1>
-      <p className="text-sm text-muted-foreground">
-        Correlation between daily steps, sleep, heart rate, and calories.
+      <p className="text-xs text-muted-foreground">
+        Correlation between daily steps, sleep, heart rate, and calories. Red
+        squares indicate positive correlation while blue show negative. Color
+        intensity reflects the strength, and clicking a square reveals a
+        time-series drill-down.
       </p>
       <Button
         variant="outline"
