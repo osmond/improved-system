@@ -8,6 +8,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart";
 import { Cell, Label } from "recharts";
+import { useState } from "react";
 import type { ChartConfig } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import useReadingMediumTotals from "@/hooks/useReadingMediumTotals";
@@ -41,6 +42,7 @@ const icons: Record<string, LucideIcon> = {
 };
 
 export default function ReadingStackSplit() {
+  const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const data = useReadingMediumTotals();
 
   if (!data) return <Skeleton className="h-64" />;
@@ -73,13 +75,21 @@ export default function ReadingStackSplit() {
             dataKey="minutes"
             nameKey="medium"
             innerRadius={50}
-            outerRadius={70}
             paddingAngle={4}
             cornerRadius={8}
             label={({ percent }) => `${Math.round(percent * 100)}%`}
+            onMouseEnter={(_, index) => setActiveIndex(index)}
+            onMouseLeave={() => setActiveIndex(null)}
+            isAnimationActive
+            animationDuration={500}
           >
             {data.map((entry, idx) => (
-              <Cell key={entry.medium} fill={`hsl(var(--chart-${idx + 1}))`} />
+              <Cell
+                key={entry.medium}
+                fill={`hsl(var(--chart-${idx + 1}))`}
+                outerRadius={activeIndex === idx ? 80 : 70}
+                opacity={activeIndex === idx ? 1 : 0.6}
+              />
             ))}
             <Label
               content={({ viewBox }) => {
