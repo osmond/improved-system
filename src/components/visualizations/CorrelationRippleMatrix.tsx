@@ -12,11 +12,15 @@ import {
   Line,
   Tooltip,
 } from "recharts";
+import { scaleDiverging } from "d3-scale";
+import { interpolateRdBu } from "d3-scale-chromatic";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
+  min?: number; // lower bound for color scale (default -1)
+  max?: number; // upper bound for color scale (default 1)
 }
 
 interface CellData {
@@ -27,19 +31,24 @@ interface CellData {
 
 const cellSize = 24;
 
-// simple blue to red scale
-function colorScale(v: number) {
-  const hue = v >= 0 ? 0 : 240; // red for positive, blue for negative
-  const saturation = Math.round(Math.abs(v) * 100);
-  return `hsl(${hue}, ${saturation}%, 50%)`;
+/**
+ * Creates a perceptually uniform blue–white–red diverging color scale.
+ * Negative values trend toward blue, positive toward red, and zero maps to white.
+ * Bounds default to [-1, 1] but can be customized via min/max parameters.
+ */
+function createColorScale(min: number = -1, max: number = 1) {
+  return scaleDiverging((t) => interpolateRdBu(1 - t)).domain([min, 0, max]);
 }
 
 export default function CorrelationRippleMatrix({
   matrix,
   labels,
   drilldown = {},
+  min = -1,
+  max = 1,
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
+  const colorScale = createColorScale(min, max);
 
   const heatData: CellData[] = matrix.flatMap((row, y) =>
     row.map((value, x) => ({ x, y, value }))
