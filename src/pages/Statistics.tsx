@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
+import { Button } from "@/components/ui/button";
 import {
   getDailySteps,
   getDailySleep,
@@ -20,6 +21,7 @@ interface Metrics extends MetricPoint {
 
 export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
+  const [upperOnly, setUpperOnly] = useState(true);
 
   useEffect(() => {
     async function load() {
@@ -74,7 +76,18 @@ export default function StatisticsPage() {
       <p className="text-sm text-muted-foreground">
         Correlation between daily steps, sleep, heart rate, and calories.
       </p>
-      <CorrelationRippleMatrix matrix={matrix} labels={labels} />
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={() => setUpperOnly((p) => !p)}
+      >
+        {upperOnly ? "Show Full Matrix" : "Show Upper Triangle"}
+      </Button>
+      <CorrelationRippleMatrix
+        matrix={matrix}
+        labels={labels}
+        upperOnly={upperOnly}
+      />
     </div>
   );
 }

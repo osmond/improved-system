@@ -24,6 +24,7 @@ interface CorrelationRippleMatrixProps {
   maxValue?: number; // upper bound for color scale
   showValues?: boolean; // display correlation values in cells
   cellSize?: number; // explicit cell size override
+  upperOnly?: boolean; // only render x >= y cells
 
 }
 
@@ -68,6 +69,7 @@ export default function CorrelationRippleMatrix({
   maxValue = 1,
   showValues = false,
   cellSize: cellSizeProp,
+  upperOnly = false,
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
@@ -89,9 +91,9 @@ export default function CorrelationRippleMatrix({
     return () => observer.disconnect();
   }, [cellSizeProp, labels.length]);
 
-  const heatData: CellData[] = matrix.flatMap((row, y) =>
-    row.map((value, x) => ({ x, y, value }))
-  );
+  const heatData: CellData[] = matrix
+    .flatMap((row, y) => row.map((value, x) => ({ x, y, value })))
+    .filter(({ x, y }) => !upperOnly || x >= y);
 
   const colorScale = createColorScale(minValue, maxValue);
 
