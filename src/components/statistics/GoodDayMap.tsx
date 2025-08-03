@@ -23,6 +23,7 @@ import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { symbol, symbolStar } from "d3-shape"
 import SessionDetailDrawer from "./SessionDetailDrawer"
+import PaceDeltaHistogram from "./PaceDeltaHistogram"
 
 interface GoodDayMapProps {
   data: SessionPoint[] | null
@@ -63,7 +64,39 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
   const minDelta = Math.min(...goodSessions.map((d) => d.paceDelta))
   const maxDelta = Math.max(...goodSessions.map((d) => d.paceDelta))
   const colorScale = scaleLinear<string>().domain([minDelta, maxDelta]).range([start, end])
-  const colored = goodSessions.map((s) => ({ ...s, fill: colorScale(s.paceDelta) }))
+  const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
+  const colored = goodSessions.map((s) => ({
+    ...s,
+    fill: colorScale(s.paceDelta),
+    opacity: hoverRange
+      ? s.paceDelta >= hoverRange[0] && s.paceDelta < hoverRange[1]
+        ? 1
+        : 0.2
+      : 1,
+  }))
+
+  let bins: { start: number; end: number; count: number; color: string }[] = []
+  if (minDelta === maxDelta) {
+    bins = [
+      { start: minDelta, end: maxDelta, count: goodSessions.length, color: colorScale(minDelta) },
+    ]
+  } else {
+    const binCount = 5
+    const binSize = (maxDelta - minDelta) / binCount
+    bins = Array.from({ length: binCount }, (_, i) => {
+      const startBin = minDelta + i * binSize
+      const endBin = i === binCount - 1 ? maxDelta + 0.0001 : startBin + binSize
+      return {
+        start: startBin,
+        end: endBin,
+        count: goodSessions.filter(
+          (s) => s.paceDelta >= startBin && s.paceDelta < endBin,
+        ).length,
+        color: colorScale(startBin + binSize / 2),
+      }
+    })
+  }
+
   const [active, setActive] = useState<SessionPoint | null>(null)
   const [animKey, setAnimKey] = useState(0)
 
@@ -135,7 +168,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
     <motion.g
       transform={`translate(${cx}, ${cy})`}
       initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: 1 }}
+      animate={{ scale: 1, opacity: (payload as any)?.opacity ?? 1 }}
       transition={{ duration: 0.5 }}
       role="button"
       tabIndex={0}
@@ -192,6 +225,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
           />
         </ScatterChart>
       </ChartContainer>
+      <PaceDeltaHistogram bins={bins} onHover={setHoverRange} />
       <SessionDetailDrawer session={active} onClose={() => setActive(null)} />
     </ChartCard>
   )
