@@ -34,11 +34,24 @@ describe('computeReadingHeatmap', () => {
 })
 
 describe('computeHeatmapFromActivity', () => {
-  it('detects low-step stable periods', () => {
+  it('accounts for device fragmentation', () => {
     const snaps: ActivitySnapshot[] = [
-      { timestamp: '2025-07-28T10:00:00Z', heartRate: 60, steps: 50 },
-      { timestamp: '2025-07-28T10:30:00Z', heartRate: 62, steps: 40 },
-      { timestamp: '2025-07-28T11:00:00Z', heartRate: 100, steps: 500 },
+      {
+        timestamp: '2025-07-28T10:00:00Z',
+        heartRate: 60,
+        steps: 50,
+        appChanges: 0,
+        inputCadence: 150,
+        location: 'home',
+      },
+      {
+        timestamp: '2025-07-28T11:00:00Z',
+        heartRate: 60,
+        steps: 50,
+        appChanges: 6,
+        inputCadence: 5,
+        location: 'office',
+      },
     ]
     const result = computeHeatmapFromActivity(snaps)
     expect(result.length).toBe(168)
@@ -46,5 +59,6 @@ describe('computeHeatmapFromActivity', () => {
     const mon11 = result.find((c) => c.day === 1 && c.hour === 11)
     expect(mon10 && mon11).not.toBeUndefined()
     expect(mon10!.intensity).toBeGreaterThan(mon11!.intensity)
+    expect(mon11!.fragmentation).toBeGreaterThan(mon10!.fragmentation ?? 0)
   })
 })

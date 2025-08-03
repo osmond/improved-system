@@ -34,8 +34,18 @@ describe("ReadingProbabilityTimeline", () => {
 describe("useReadingProbability", () => {
   it("computes hourly percentages", async () => {
     const sessions = [
-      { timestamp: "2025-07-30T00:15:00Z", intensity: 0.5 },
-      { timestamp: "2025-07-30T01:45:00Z", intensity: 0.7 },
+      {
+        timestamp: "2025-07-30T00:15:00Z",
+        intensity: 0.5,
+        duration: 20,
+        medium: "phone",
+      },
+      {
+        timestamp: "2025-07-30T01:45:00Z",
+        intensity: 0.7,
+        duration: 40,
+        medium: "phone",
+      },
     ]
     ;(getReadingSessions as any).mockResolvedValue(sessions)
     const { result } = renderHook(() => useReadingProbability())
@@ -47,5 +57,9 @@ describe("useReadingProbability", () => {
     expect(h1?.probability).toBeCloseTo(0.5)
     expect(h0?.intensity).toBeCloseTo(0.5)
     expect(h1?.intensity).toBeCloseTo(0.7)
+    expect(h0?.avgDuration).toBeCloseTo(20)
+    expect(h1?.avgDuration).toBeCloseTo(40)
+    expect(h0?.label).toBe("Skim")
+    expect(h1?.label).toBe("Deep Dive")
   })
 })
