@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import Map, { Source, Layer } from 'react-map-gl/maplibre'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Map, { Source, Layer, MapRef } from 'react-map-gl/maplibre'
 import maplibregl from 'maplibre-gl'
-import { lineString, bezierSpline, lineOverlap } from '@turf/turf'
+import { lineString, bezierSpline, lineOverlap, bbox } from '@turf/turf'
 
 import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
@@ -52,6 +52,40 @@ export default function RouteSimilarity() {
     [routeB],
   )
 
+  const bounds = useMemo(() => {
+    if (routeAFeature && routeBFeature) {
+      const a = bbox(routeAFeature)
+      const b = bbox(routeBFeature)
+      return [
+        [Math.min(a[0], b[0]), Math.min(a[1], b[1])],
+        [Math.max(a[2], b[2]), Math.max(a[3], b[3])],
+      ] as [[number, number], [number, number]]
+    }
+    if (routeAFeature) {
+      const a = bbox(routeAFeature)
+      return [
+        [a[0], a[1]],
+        [a[2], a[3]],
+      ] as [[number, number], [number, number]]
+    }
+    if (routeBFeature) {
+      const b = bbox(routeBFeature)
+      return [
+        [b[0], b[1]],
+        [b[2], b[3]],
+      ] as [[number, number], [number, number]]
+    }
+    return null
+  }, [routeAFeature, routeBFeature])
+
+  const mapRef = useRef<MapRef | null>(null)
+
+  useEffect(() => {
+    if (mapRef.current && bounds) {
+      mapRef.current.fitBounds(bounds, { padding: 40 })
+    }
+  }, [bounds])
+
   const overlapFeature = useMemo(() => {
     if (routeAFeature && routeBFeature) {
       const overlap = lineOverlap(routeAFeature, routeBFeature, {
@@ -99,8 +133,6 @@ export default function RouteSimilarity() {
     [routeB],
   )
 
-  const center = routeA?.points[0]
-
   if (error) {
     return (
       <Card className="p-4 space-y-2">
@@ -110,7 +142,7 @@ export default function RouteSimilarity() {
     )
   }
 
-  if (!routeA || !routeB || !center) {
+  if (!routeA || !routeB || !bounds) {
     return <Card className="p-4">Loading routes...</Card>
   }
 
@@ -148,13 +180,9 @@ export default function RouteSimilarity() {
       </p>
       <div className="h-64 w-full">
         <Map
-          key={`${routeAIndex}-${routeBIndex}`}
           mapLib={maplibregl}
-          initialViewState={{
-            latitude: center.lat,
-            longitude: center.lon,
-            zoom: 13,
-          }}
+          ref={mapRef}
+          initialViewState={{ bounds, fitBoundsOptions: { padding: 40 } }}
           style={{ width: '100%', height: '100%' }}
           mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
         >
