@@ -1151,6 +1151,22 @@ const mockMadisonRoutes: Route[] = [
       { lat: 43.074, lon: -89.384 },
     ],
   },
+  {
+    name: "Monona Bay Loop",
+    points: [
+      { lat: 43.067, lon: -89.395 },
+      { lat: 43.068, lon: -89.392 },
+      { lat: 43.069, lon: -89.389 },
+    ],
+  },
+  {
+    name: "UW Arboretum Ride",
+    points: [
+      { lat: 43.047, lon: -89.429 },
+      { lat: 43.0485, lon: -89.423 },
+      { lat: 43.05, lon: -89.417 },
+    ],
+  },
 ];
 
 export async function getMockRoutes(): Promise<Route[]> {
