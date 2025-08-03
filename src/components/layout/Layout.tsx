@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import AppSidebar from "@/components/app-sidebar";
 import CommandPalette from "@/components/ui/CommandPalette";
@@ -122,75 +122,39 @@ function ActionMenu() {
   );
 }
 
-function TopNav({ activeCategory }: { activeCategory: string }) {
-  const navigate = useNavigate();
-  const categories = [
-    { value: "dashboard", label: "Dashboard", to: "/dashboard" },
-    {
-      value: "charts",
-      label: "Charts",
-      to: "/dashboard/charts/area-chart-interactive",
-    },
-    { value: "settings", label: "Settings", to: "/dashboard/settings" },
-  ];
-  return (
-    <nav className="flex gap-2">
-      {categories.map((cat) => (
-        <Button
-          key={cat.value}
-          variant={activeCategory === cat.value ? "secondary" : "ghost"}
-          size="sm"
-          onClick={() => navigate(cat.to)}
-        >
-          {cat.label}
-        </Button>
-      ))}
-    </nav>
-  );
-}
-
 export default function Layout({ children }: LayoutProps) {
   const [open, setOpen] = React.useState(false);
-  const location = useLocation();
-  const activeCategory = React.useMemo(() => {
-    if (location.pathname.startsWith("/dashboard/charts")) return "charts";
-    if (location.pathname.startsWith("/dashboard/settings")) return "settings";
-    return "dashboard";
-  }, [location.pathname]);
 
   return (
     <ChartActionsProvider>
       <SidebarProvider>
-        <AppSidebar activeCategory={activeCategory} />
+        <AppSidebar />
         <CommandPalette open={open} setOpen={setOpen} />
         <SidebarInset>
-          <header className="flex flex-col gap-2 p-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <SidebarTrigger />
-                <TopNav activeCategory={activeCategory} />
-              </div>
-              <div className="flex items-center gap-2">
-                <ActionMenu />
-                <TooltipProvider delayDuration={100}>
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setOpen(true)}
-                      >
-                        <Command className="h-4 w-4" />
-                        <span className="sr-only">Open command palette</span>
-                      </Button>
-                    </TooltipTrigger>
-                    <TooltipContent>Ctrl/⌘+K</TooltipContent>
-                  </Tooltip>
-                </TooltipProvider>
-                <ThemeToggle />
-              </div>
+          <header className="flex items-center justify-between p-4">
+            <div className="flex items-center gap-2">
+              <SidebarTrigger />
+              <Breadcrumbs />
             </div>
-            <Breadcrumbs />
+            <div className="flex items-center gap-2">
+              <ActionMenu />
+              <TooltipProvider delayDuration={100}>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setOpen(true)}
+                    >
+                      <Command className="h-4 w-4" />
+                      <span className="sr-only">Open command palette</span>
+                    </Button>
+                  </TooltipTrigger>
+                  <TooltipContent>Ctrl/⌘+K</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+              <ThemeToggle />
+            </div>
           </header>
           <main className="flex-1 p-4 pt-0">{children}</main>
         </SidebarInset>

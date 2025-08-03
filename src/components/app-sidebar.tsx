@@ -6,9 +6,11 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useLocation } from "react-router-dom";
-import { Settings as SettingsIcon } from "lucide-react";
+import { Map as MapIcon, ChartLine, Settings as SettingsIcon } from "lucide-react";
 import {
   chartRouteGroups,
+  mapRoutes,
+  analyticsRoutes,
   settingsRoutes,
   dashboardRoutes,
 } from "@/routes";
@@ -16,11 +18,7 @@ import NavSection from "@/components/nav-section";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useFavorites from "@/hooks/useFavorites";
 
-interface AppSidebarProps {
-  activeCategory: string;
-}
-
-export default function AppSidebar({ activeCategory }: AppSidebarProps) {
+export default function AppSidebar() {
   const { pathname } = useLocation();
 
   const { favorites, toggleFavorite } = useFavorites();
@@ -41,11 +39,6 @@ export default function AppSidebar({ activeCategory }: AppSidebarProps) {
     [favorites, allRoutes]
   );
 
-  const dashboardGroups = React.useMemo(
-    () => dashboardRoutes.filter((g) => g.label !== "Settings"),
-    []
-  );
-
   return (
     <TooltipProvider>
       <Sidebar>
@@ -60,16 +53,7 @@ export default function AppSidebar({ activeCategory }: AppSidebarProps) {
               toggleFavorite={toggleFavorite}
             />
           )}
-          {activeCategory === "dashboard" && dashboardGroups.length > 0 && (
-            <NavSection
-              label="Dashboard"
-              groups={dashboardGroups}
-              pathname={pathname}
-              favorites={favorites}
-              toggleFavorite={toggleFavorite}
-            />
-          )}
-          {activeCategory === "charts" && chartRouteGroups.length > 0 && (
+          {chartRouteGroups.length > 0 && (
             <NavSection
               label="Charts"
               groups={chartRouteGroups}
@@ -78,11 +62,31 @@ export default function AppSidebar({ activeCategory }: AppSidebarProps) {
               toggleFavorite={toggleFavorite}
             />
           )}
-          {activeCategory === "settings" && settingsRoutes.length > 0 && (
+          {analyticsRoutes.length > 0 && (
+            <NavSection
+              label="Analytics"
+              routes={analyticsRoutes}
+              icon={ChartLine}
+              pathname={pathname}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
+          )}
+          {settingsRoutes.length > 0 && (
             <NavSection
               label="Settings"
               routes={settingsRoutes}
               icon={SettingsIcon}
+              pathname={pathname}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
+          )}
+          {mapRoutes.length > 0 && (
+            <NavSection
+              label="Maps"
+              routes={mapRoutes}
+              icon={MapIcon}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
