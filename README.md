@@ -23,7 +23,7 @@ resolve: {
 ```
 
 ## Theming & design tokens
-All colours, spacings, radii, etc. should come from your CSS variables in `globals.css` (populated from `tailwind.config.js`’s `theme.extend`).
+All colours, spacings, radii, etc. should come from your CSS variables in `globals.css` (populated from `tailwind.config.ts`’s `theme.extend`).
 
 Add new tokens (e.g. `--chart-6`–`--chart-10`) in the same `:root { … }` block so everything—charts, rings, cards—uses the same palette.
 
@@ -225,7 +225,7 @@ Route Similarity measures overlap by comparing each route's segments against oth
 - **Analytics Fun Page** – sandbox showcasing interactive chart demos.
 
 ## Theming extensions
-If you need new variants—like a "danger" button or a "success" badge—run `pnpm dlx shadcn-ui@latest add button` to scaffold the base component. Then copy or edit `src/components/ui/button.tsx` and register your variant in `tailwind.config.js` under `theme.extend`. See <https://ui.shadcn.com/docs/components> for more details.
+If you need new variants—like a "danger" button or a "success" badge—run `pnpm dlx shadcn-ui@latest add button` to scaffold the base component. Then copy or edit `src/components/ui/button.tsx` and register your variant in `tailwind.config.ts` under `theme.extend`. See <https://ui.shadcn.com/docs/components> for more details.
 
 ## Documentation & testing
 Storybook (or even MDX) is great for cataloguing all `ui/` components with knobs for variant/size.
