@@ -35,22 +35,38 @@ export function calculateRouteSimilarity(
 }
 
 function dtwDistance(a: LatLon[], b: LatLon[]): number {
-  const n = a.length
-  const m = b.length
-  const dp = Array.from({ length: n + 1 }, () => Array(m + 1).fill(Infinity))
-  dp[0][0] = 0
+  let n = a.length
+  let m = b.length
+  const lenSum = n + m
+
+  if (n === 0 && m === 0) return NaN
+  if (n === 0 || m === 0) return Infinity
+
+  // Ensure `b` is the shorter sequence so we allocate only O(min(n, m)) memory
+  if (m > n) {
+    ;[a, b] = [b, a]
+    ;[n, m] = [m, n]
+  }
+
+  let prev = new Array(m + 1).fill(Infinity)
+  let curr = new Array(m + 1).fill(Infinity)
+  prev[0] = 0
+
   for (let i = 1; i <= n; i++) {
+    curr[0] = Infinity
     for (let j = 1; j <= m; j++) {
       // Convert the haversine distance (meters) to angular degrees to
       // preserve the scale used by the original implementation that
       // operated directly on degree differences.
       const cost =
         (haversineDistance(a[i - 1], b[j - 1]) / EARTH_RADIUS) *
-        (180 / Math.PI);
-      dp[i][j] = cost + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
+        (180 / Math.PI)
+      curr[j] = cost + Math.min(prev[j], curr[j - 1], prev[j - 1])
     }
+    ;[prev, curr] = [curr, prev]
   }
-  return dp[n][m] / (n + m)
+
+  return prev[m] / lenSum
 }
 
 export function computeRouteMetrics(
