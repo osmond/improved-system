@@ -6,6 +6,7 @@ import {
   Pie,
   Tooltip as ChartTooltip,
   ChartLegend,
+  ResponsiveContainer,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { Cell } from "recharts"
@@ -28,29 +29,41 @@ export default function TreadmillVsOutdoor() {
       description="Indoor vs outdoor mileage split"
     >
       <ChartContainer config={config} className="h-60 md:h-80 lg:h-96">
-        <PieChart width={200} height={160}>
-          <ChartTooltip />
+        <ResponsiveContainer>
+          <PieChart>
+            <defs>
+              <linearGradient id="treadmill-gradient-outdoor">
+                <stop offset="0%" stopColor="hsl(var(--chart-5))" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="hsl(var(--chart-5))" stopOpacity={0.5} />
+              </linearGradient>
+              <linearGradient id="treadmill-gradient-indoor">
+                <stop offset="0%" stopColor="hsl(var(--chart-6))" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="hsl(var(--chart-6))" stopOpacity={0.5} />
+              </linearGradient>
+            </defs>
+            <ChartTooltip />
 
-          <ChartLegend verticalAlign="bottom" height={24} />
+            <ChartLegend verticalAlign="bottom" height={24} />
 
-          <Pie
-            data={treadmillData}
-            dataKey="value"
-            nameKey="name"
-            innerRadius={50}
-            outerRadius={70}
-            paddingAngle={4}
-            cornerRadius={8}
-            label={({ percent }) => `${Math.round(percent * 100)}%`}
-          >
-            {treadmillData.map((entry, idx) => (
-              <Cell
-                key={entry.name}
-                fill={idx === 0 ? "hsl(var(--chart-5))" : "hsl(var(--chart-6))"}
-              />
-            ))}
-          </Pie>
-        </PieChart>
+            <Pie
+              data={treadmillData}
+              dataKey="value"
+              nameKey="name"
+              innerRadius="60%"
+              outerRadius="85%"
+              paddingAngle={4}
+              cornerRadius={8}
+              label={({ percent }) => `${Math.round(percent * 100)}%`}
+            >
+              {treadmillData.map((entry, idx) => (
+                <Cell
+                  key={entry.name}
+                  fill={idx === 0 ? "url(#treadmill-gradient-outdoor)" : "url(#treadmill-gradient-indoor)"}
+                />
+              ))}
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
       </ChartContainer>
     </ChartCard>
   )
