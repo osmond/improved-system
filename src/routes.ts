@@ -72,6 +72,11 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
         label: "Habit Consistency Trend",
         description: "Track how consistently habits are maintained over time",
       },
+      {
+        to: "/dashboard/statistics",
+        label: "Metric Correlation Matrix",
+        description: "Explore correlations between daily metrics",
+      },
     ],
   },
 ];
@@ -218,6 +223,17 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         to: "/dashboard/charts/reading-stack-split",
         label: "Reading Stack Split",
         description: "Segment reading activity across categories",
+      },
+    ],
+  },
+  {
+    label: "Matrix Charts",
+    icon: ChartLine,
+    items: [
+      {
+        to: "/dashboard/statistics",
+        label: "Metric Correlation Matrix",
+        description: "Explore correlations between daily metrics",
       },
     ],
   },

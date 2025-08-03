@@ -10,6 +10,7 @@ import FragilityPage from "@/pages/Fragility";
 import SessionSimilarityPage from "@/pages/SessionSimilarity";
 import GoodDayPage from "@/pages/GoodDay";
 import HabitConsistencyPage from "@/pages/HabitConsistency";
+import StatisticsPage from "@/pages/Statistics";
 import AreaChartInteractivePage from "@/pages/charts/AreaChartInteractive";
 import StepsTrendWithGoalPage from "@/pages/charts/StepsTrendWithGoal";
 import AreaChartLoadRatioPage from "@/pages/charts/AreaChartLoadRatio";
@@ -61,6 +62,7 @@ function App() {
               <Route path="session-similarity" element={<SessionSimilarityPage />} />
               <Route path="good-day" element={<GoodDayPage />} />
               <Route path="habit-consistency" element={<HabitConsistencyPage />} />
+              <Route path="statistics" element={<StatisticsPage />} />
               <Route path="charts/area-chart-interactive" element={<AreaChartInteractivePage />} />
               <Route path="charts/steps-trend-with-goal" element={<StepsTrendWithGoalPage />} />
               <Route path="charts/area-chart-load-ratio" element={<AreaChartLoadRatioPage />} />
