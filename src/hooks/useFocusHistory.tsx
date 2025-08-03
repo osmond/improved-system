@@ -9,9 +9,12 @@ export interface FocusEvent {
 interface FocusHistoryState {
   history: FocusEvent[];
   addEvent: (evt: Omit<FocusEvent, "timestamp"> & { timestamp?: number }) => void;
+  dismissEvent: (index: number) => void;
+  dismissed: string[];
 }
 
 const STORAGE_KEY = "focus_history";
+const DISMISSED_KEY = "focus_dismissed";
 
 function loadHistory(): FocusEvent[] {
   if (typeof window === "undefined") return [];
@@ -19,6 +22,17 @@ function loadHistory(): FocusEvent[] {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (!raw) return [];
     return JSON.parse(atob(raw)) as FocusEvent[];
+  } catch {
+    return [];
+  }
+}
+
+function loadDismissed(): string[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(DISMISSED_KEY);
+    if (!raw) return [];
+    return JSON.parse(atob(raw)) as string[];
   } catch {
     return [];
   }
@@ -34,13 +48,25 @@ function storeHistory(history: FocusEvent[]) {
   }
 }
 
+function storeDismissed(messages: string[]) {
+  if (typeof window === "undefined") return;
+  try {
+    const encoded = btoa(JSON.stringify(messages));
+    localStorage.setItem(DISMISSED_KEY, encoded);
+  } catch {
+    // ignore
+  }
+}
+
 const FocusHistoryContext = createContext<FocusHistoryState | undefined>(undefined);
 
 function useProvideFocusHistory(): FocusHistoryState {
   const [history, setHistory] = useState<FocusEvent[]>([]);
+  const [dismissed, setDismissed] = useState<string[]>([]);
 
   useEffect(() => {
     setHistory(loadHistory());
+    setDismissed(loadDismissed());
   }, []);
 
   const addEvent = (evt: Omit<FocusEvent, "timestamp"> & { timestamp?: number }) => {
@@ -51,7 +77,24 @@ function useProvideFocusHistory(): FocusHistoryState {
     });
   };
 
-  return { history, addEvent };
+  const dismissEvent = (index: number) => {
+    setHistory((prev) => {
+      const evt = prev[index];
+      const next = prev.filter((_, i) => i !== index);
+      storeHistory(next);
+      if (evt) {
+        setDismissed((dprev) => {
+          if (dprev.includes(evt.message)) return dprev;
+          const dnext = [...dprev, evt.message];
+          storeDismissed(dnext);
+          return dnext;
+        });
+      }
+      return next;
+    });
+  };
+
+  return { history, addEvent, dismissEvent, dismissed };
 }
 
 export function FocusHistoryProvider({ children }: { children: ReactNode }) {

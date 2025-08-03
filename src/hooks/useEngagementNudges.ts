@@ -7,7 +7,7 @@ import { predictFocus } from "@/lib/detection/crfModel";
 export default function useEngagementNudges() {
   const data = useSocialEngagement();
   const { prefs } = useInterventionPreferences();
-  const { addEvent } = useFocusHistory();
+  const { addEvent, dismissed } = useFocusHistory();
   const [nudges, setNudges] = useState<string[]>([]);
   const notified = useRef<Set<string>>(new Set());
   const timers = useRef<Record<string, number>>({});
@@ -29,12 +29,13 @@ export default function useEngagementNudges() {
     if (data.consecutiveHomeDays >= 5) {
       messages.push("Been home 5 days—try a short outing?");
     }
-    setNudges(messages);
+    const active = messages.filter((m) => !dismissed.includes(m));
+    setNudges(active);
 
     Object.values(timers.current).forEach((id) => clearTimeout(id));
     timers.current = {};
 
-    messages.forEach((msg) => {
+    active.forEach((msg) => {
       addEvent({ type: "detection", message: msg });
       if (!prefs.remindersEnabled || notified.current.has(msg)) return;
       const delay = prefs.delayMinutes * 60 * 1000;
@@ -53,7 +54,7 @@ export default function useEngagementNudges() {
       }, delay);
       timers.current[msg] = id;
     });
-  }, [data, prefs, addEvent]);
+  }, [data, prefs, addEvent, dismissed]);
 
   return nudges;
 }
