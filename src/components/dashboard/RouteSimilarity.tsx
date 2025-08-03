@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Map, { Source, Layer } from 'react-map-gl/maplibre'
 import maplibregl from 'maplibre-gl'
+import { lineString, bezierSpline } from '@turf/turf'
 
 import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
@@ -27,31 +28,16 @@ export default function RouteSimilarity() {
 
   const similarity = useRouteSimilarity(routeA, routeB, precision)
 
+  const mapMatchRoute = (route: Route) =>
+    bezierSpline(lineString(route.points.map((p) => [p.lon, p.lat])))
+
   const routeAFeature = useMemo(
-    () =>
-      routeA
-        ? {
-            type: 'Feature',
-            geometry: {
-              type: 'LineString',
-              coordinates: routeA.points.map((p) => [p.lon, p.lat]),
-            },
-          }
-        : null,
+    () => (routeA ? mapMatchRoute(routeA) : null),
     [routeA],
   )
 
   const routeBFeature = useMemo(
-    () =>
-      routeB
-        ? {
-            type: 'Feature',
-            geometry: {
-              type: 'LineString',
-              coordinates: routeB.points.map((p) => [p.lon, p.lat]),
-            },
-          }
-        : null,
+    () => (routeB ? mapMatchRoute(routeB) : null),
     [routeB],
   )
 

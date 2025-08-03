@@ -14,8 +14,6 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
   )
   const [worldError, setWorldError] = useState(false)
 
-  const [worldError, setWorldError] = useState(false)
-
   useEffect(() => {
     // Simulate loading of world data to satisfy tests
     fetch('/world-110m.json').catch(() => setWorldError(true))
@@ -28,14 +26,6 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
       </div>
     )
   }
-  if (worldError) {
-    return (
-      <div className='flex items-center justify-center h-96 w-full bg-muted text-muted-foreground rounded'>
-        Map unavailable
-      </div>
-    )
-  }
-
   if (worldError) {
     return (
       <div className='flex items-center justify-center h-96 w-full bg-muted text-muted-foreground rounded'>
