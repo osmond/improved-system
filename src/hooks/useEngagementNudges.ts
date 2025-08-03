@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import useSocialEngagement from "./useSocialEngagement";
 import useInterventionPreferences from "./useInterventionPreferences";
 import useFocusHistory from "./useFocusHistory";
+import { predictFocus } from "@/lib/detection/crfModel";
 
 export default function useEngagementNudges() {
   const data = useSocialEngagement();
@@ -14,6 +15,17 @@ export default function useEngagementNudges() {
   useEffect(() => {
     if (!data) return;
     const messages: string[] = [];
+    // Derive a simple binary sequence from recent engagement metrics
+    const sequence = [
+      data.index > 0.5 ? 1 : 0,
+      data.locationEntropy > 0.5 ? 1 : 0,
+      data.outOfHomeFrequency > 0.5 ? 1 : 0,
+      data.consecutiveHomeDays > 3 ? 1 : 0,
+      data.index > 0.7 ? 1 : 0,
+    ];
+    if (predictFocus(sequence) === 1) {
+      messages.push("Focus drifting—consider an intervention");
+    }
     if (data.consecutiveHomeDays >= 5) {
       messages.push("Been home 5 days—try a short outing?");
     }
