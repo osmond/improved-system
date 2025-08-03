@@ -97,6 +97,48 @@ describe("MileageGlobe", () => {
     });
   });
 
+  it("shows tooltip with date and mileage on path hover", async () => {
+    mockUseMileageTimeline.mockReturnValue([
+      {
+        date: "2024-01-01",
+        miles: 5,
+        cumulativeMiles: 5,
+        coordinates: [
+          [0, 0],
+          [10, 10],
+        ],
+      },
+    ]);
+
+    global.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          type: "Topology",
+          objects: { countries: { type: "GeometryCollection", geometries: [] } },
+        }),
+    }) as any;
+
+    const { container } = render(<MileageGlobe />);
+
+    await waitFor(() => {
+      expect(
+        container.querySelector("path[stroke='var(--primary-foreground)']"),
+      ).toBeTruthy();
+    });
+
+    const path = container.querySelector(
+      "path[stroke='var(--primary-foreground)']",
+    ) as SVGPathElement;
+
+    path.dispatchEvent(
+      new MouseEvent("mouseenter", { bubbles: true, clientX: 10, clientY: 10 }),
+    );
+
+    expect(
+      await screen.findByText("2024-01-01: 5 miles"),
+    ).toBeInTheDocument();
+  });
+
   it("displays total mileage", async () => {
     mockUseMileageTimeline.mockReturnValue([
       {

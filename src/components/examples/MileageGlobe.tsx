@@ -9,11 +9,11 @@ import { drag } from 'd3-drag'
 import { feature, mesh } from 'topojson-client'
 
 function GlobeRenderer({
-  paths,
+  runs,
   totalMiles,
   centroid,
 }: {
-  paths: [number, number][][]
+  runs: { coordinates: [number, number][]; date: string; miles: number }[]
   totalMiles: number
   centroid: [number, number]
 }) {
@@ -21,6 +21,9 @@ function GlobeRenderer({
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
   const [worldData, setWorldData] = useState<any | null>(null)
   const [error, setError] = useState(false)
+  const [tooltip, setTooltip] = useState<
+    { x: number; y: number; date: string; miles: number } | null
+  >(null)
 
   useEffect(() => {
     const svg = svgRef.current
@@ -116,15 +119,25 @@ function GlobeRenderer({
       .attr('stroke', '#94a3b8')
       .attr('stroke-width', 0.5)
 
-    linePaths = paths.map((coordinates) =>
+    linePaths = runs.map((run) =>
       svg
         .append('path')
-        .datum({ type: 'LineString', coordinates } as any)
+        .datum({ type: 'LineString', coordinates: run.coordinates } as any)
         .attr('fill', 'none')
         .attr('stroke', 'var(--primary-foreground)')
         .attr('stroke-width', Math.max(2, Math.min(10, 1 + totalMiles / 50)))
         .attr('stroke-linecap', 'round')
-        .attr('opacity', 0.8),
+        .attr('opacity', 0.8)
+        .on('mouseenter', (event) => {
+          const rect = svgRef.current?.getBoundingClientRect()
+          setTooltip({
+            x: event.clientX - (rect?.left ?? 0),
+            y: event.clientY - (rect?.top ?? 0),
+            date: run.date,
+            miles: run.miles,
+          })
+        })
+        .on('mouseleave', () => setTooltip(null)),
     )
 
     render()
@@ -150,7 +163,7 @@ function GlobeRenderer({
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-  }, [paths, totalMiles, dimensions, centroid, worldData])
+  }, [runs, totalMiles, dimensions, centroid, worldData])
 
   return (
     <div className='relative aspect-square w-full'>
@@ -164,6 +177,14 @@ function GlobeRenderer({
           className='h-full w-full rounded'
           preserveAspectRatio='xMidYMid meet'
         />
+      )}
+      {tooltip && (
+        <div
+          className='pointer-events-none absolute rounded bg-black/80 px-2 py-1 text-xs text-white'
+          style={{ left: tooltip.x, top: tooltip.y }}
+        >
+          {tooltip.date}: {tooltip.miles} miles
+        </div>
       )}
     </div>
   )
@@ -190,8 +211,12 @@ export default function MileageGlobe({
   }
 
   const totalMiles = data.reduce((sum, p) => sum + p.miles, 0)
-  const paths = data.map((p) => p.coordinates as [number, number][])
-  const allCoords = paths.flat()
+  const runs = data.map((p) => ({
+    coordinates: p.coordinates as [number, number][],
+    date: p.date,
+    miles: p.miles,
+  }))
+  const allCoords = runs.flatMap((r) => r.coordinates)
 
   let centroid: [number, number] = [0, 0]
   if (allCoords.length) {
@@ -204,7 +229,7 @@ export default function MileageGlobe({
 
   return (
     <div className='space-y-2'>
-      <GlobeRenderer paths={paths} totalMiles={totalMiles} centroid={centroid} />
+      <GlobeRenderer runs={runs} totalMiles={totalMiles} centroid={centroid} />
       <div className='rounded bg-muted p-2 text-sm'>
         Total: {totalMiles} miles
       </div>
