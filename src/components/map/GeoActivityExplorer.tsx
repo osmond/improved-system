@@ -3,6 +3,8 @@ import Map, { Source, Layer, Marker, Popup, MapLayerMouseEvent } from "react-map
 import maplibregl from "maplibre-gl";
 import { feature } from "topojson-client";
 import { geoCentroid } from "d3-geo";
+import { scaleSequential } from "d3-scale";
+import { interpolateBlues } from "d3-scale-chromatic";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
 import {
@@ -94,22 +96,19 @@ export default function GeoActivityExplorer() {
         (s) => s.stateCode.toLowerCase().includes(q) || s.cities.length > 0,
       )
   }, [states, debouncedQuery])
-  const legendConfig = useMemo(() => {
-    const cfg: Record<string, { label: string; color: string }> = {}
-    for (let i = 1; i <= 10; i++) {
-      cfg[i] = { label: String(i), color: `hsl(var(--chart-${i}))` }
-    }
-    return cfg
-  }, [])
-
-  const legendPayload = useMemo(
-    () =>
-      Array.from({ length: 10 }, (_, i) => ({
-        value: String(i + 1),
-        color: `hsl(var(--chart-${i + 1}))`,
-      })),
-    []
+  const maxDays = useMemo(
+    () => Math.max(...states.map((s) => s.totalDays), 0),
+    [states],
   )
+  const colorScale = useMemo(
+    () => scaleSequential(interpolateBlues).domain([0, maxDays || 1]),
+    [maxDays],
+  )
+  const legendGradient = useMemo(
+    () => `linear-gradient(to right, ${colorScale(0)}, ${colorScale(maxDays)})`,
+    [colorScale, maxDays],
+  )
+  const legendConfig = useMemo(() => ({}), [])
 
   const statesGeo = useMemo(() => {
     const fc = feature(
@@ -123,14 +122,11 @@ export default function GeoActivityExplorer() {
         const abbr = fipsToAbbr[f.id as string]
         const summary = summaryMap[abbr]
         const intensity = summary?.totalDays || 0
-        const colorIndex = Math.min(10, Math.max(1, Math.ceil(intensity)))
-        const color = summary
-          ? `hsl(var(--chart-${colorIndex}))`
-          : `hsl(var(--muted))`
+        const color = summary ? colorScale(intensity) : `hsl(var(--muted))`
         return { ...f, properties: { ...f.properties, abbr, color } }
       }),
     }
-  }, [summaryMap])
+  }, [summaryMap, colorScale])
 
   const stateMarkers = useMemo(
     () =>
@@ -336,8 +332,15 @@ export default function GeoActivityExplorer() {
             )}
           </Map>
           <ChartLegend
-            payload={legendPayload}
-            content={<ChartLegendContent nameKey="value" hideIcon />}
+            payload={[]}
+            content={
+              <ChartLegendContent
+                variant="gradient"
+                min="0"
+                max={`${maxDays}`}
+                gradient={legendGradient}
+              />
+            }
           />
           <StateVisitCallout />
         </div>
