@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { scaleLinear } from "d3-scale";
 import { line as d3Line, area as d3Area } from "d3-shape";
 import { format } from "date-fns";
@@ -71,6 +71,7 @@ export default function BehavioralCharterMap({
     x: number;
     y: number;
     items: Attribution[];
+    segment: Segment;
     meta?: { ciLow?: number; ciHigh?: number; thresholds?: number[]; risk?: number; probability?: number };
   } | null>(null);
   const [showMatrix, setShowMatrix] = useState(false);
@@ -92,10 +93,12 @@ export default function BehavioralCharterMap({
       }
     }
     const items = (attributions[idx] || []).slice(0, 3);
+    const rect = (evt.currentTarget.ownerSVGElement as SVGSVGElement).getBoundingClientRect();
     setTooltip({
-      x: evt.clientX,
-      y: evt.clientY,
+      x: evt.clientX - rect.left,
+      y: evt.clientY - rect.top,
       items,
+      segment: segments[idx],
       meta: { ...meta[idx], probability: segments[idx].probability },
     });
   };
@@ -112,7 +115,8 @@ export default function BehavioralCharterMap({
     </div>
   ));
 
-  const filteredSegments = activity === "all" ? segments : segments.filter((s) => s.state === activity);
+  const filteredSegments =
+    activity === "all" ? segments : segments.filter((s) => s.state === activity);
 
   // summary calculations
   const totalByState: Record<string, number> = {};
@@ -123,6 +127,25 @@ export default function BehavioralCharterMap({
     (maxIdx, seg, i) => (seg.risk > segments[maxIdx].risk ? i : maxIdx),
     0,
   );
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const res = await fetch(`/api/predictions/${date}`);
+        const json = await res.json();
+        setAttributions(json.attributions || {});
+        setMeta(json.meta || {});
+      } catch {
+        // ignore fetch errors
+      }
+    };
+    fetchData();
+  }, [date]);
+
+  // find highest risk attribution if available
+  const peakAttribution = (attributions[maxRiskIdx] || [])[0];
+  const peakX = maxRiskIdx * segmentWidth + segmentWidth / 2;
+  const peakY = riskScale(segments[maxRiskIdx].risk);
 
   return (
     <div className="space-y-2">
@@ -150,7 +173,8 @@ export default function BehavioralCharterMap({
         </button>
       </div>
       <div className="flex gap-4 text-xs">{legend}</div>
-      <svg width={width} height={svgHeight} className="block">
+      <div className="relative">
+        <svg width={width} height={svgHeight} className="block">
         {/* probability grid */}
         {Array.from({ length: 5 }).map((_, i) => (
           <line
@@ -226,40 +250,78 @@ export default function BehavioralCharterMap({
             />
           </g>
         ))}
-      </svg>
-      {tooltip && (
+        </svg>
+        {/* peak risk callout */}
         <div
-          className="absolute bg-white border p-2 text-xs"
-          style={{ left: tooltip.x + 10, top: tooltip.y + 10 }}
+          className="absolute bg-white border text-xs p-1 rounded shadow"
+          style={{ left: peakX + 5, top: peakY - 40 }}
         >
-          <div className="font-semibold">Top features</div>
-          <ul>
-            {tooltip.items.map((a, idx) => (
-              <li key={idx}>
-                {a.feature}: {a.score.toFixed(2)}
-              </li>
-            ))}
-          </ul>
-          {tooltip.meta && (
-            <div className="mt-1 space-y-1">
-              {tooltip.meta.probability !== undefined && (
-                <div>Probability: {tooltip.meta.probability.toFixed(2)}</div>
-              )}
-              {tooltip.meta.risk !== undefined && (
-                <div>Risk: {tooltip.meta.risk.toFixed(2)}</div>
-              )}
-              {tooltip.meta.ciLow !== undefined && tooltip.meta.ciHigh !== undefined && (
-                <div>
-                  CI: {tooltip.meta.ciLow.toFixed(2)} - {tooltip.meta.ciHigh.toFixed(2)}
-                </div>
-              )}
-              {tooltip.meta.thresholds && tooltip.meta.thresholds.length > 0 && (
-                <div>Thresholds: {tooltip.meta.thresholds.join(", ")}</div>
-              )}
-            </div>
+          <div className="font-semibold">
+            Peak {segments[maxRiskIdx].risk.toFixed(2)} at {format(
+              new Date(segments[maxRiskIdx].time),
+              "HH:mm"
+            )}
+          </div>
+          {peakAttribution && (
+            <div className="mt-1">{peakAttribution.feature}</div>
           )}
         </div>
-      )}
+        {tooltip && (
+          <div
+            className="absolute bg-white border p-2 text-xs rounded shadow"
+            style={{ left: tooltip.x + 10, top: tooltip.y + 10 }}
+          >
+            <div className="flex items-center justify-between gap-2">
+              <div>
+                {format(new Date(tooltip.segment.time), "HH:mm")} – {tooltip.segment.state}
+              </div>
+              <div className="relative w-6 h-6">
+                <div
+                  className="absolute inset-0 rounded-full"
+                  style={{
+                    background: `conic-gradient(#1e3a8a ${
+                      tooltip.segment.probability * 360
+                    }deg, #e5e7eb 0deg)`,
+                  }}
+                />
+                <div className="absolute inset-1 bg-white rounded-full text-[10px] flex items-center justify-center">
+                  {(tooltip.segment.probability * 100).toFixed(0)}%
+                </div>
+              </div>
+            </div>
+            {tooltip.meta && (
+              <div className="mt-1">
+                <div>Risk: {tooltip.meta.risk?.toFixed(2)}</div>
+                {tooltip.meta.ciLow !== undefined && tooltip.meta.ciHigh !== undefined && (
+                  <div className="relative w-32 h-2 bg-gray-200 mt-1">
+                    <div
+                      className="absolute h-full bg-red-300"
+                      style={{
+                        left: `${(tooltip.meta.ciLow || 0) * 100}%`,
+                        width: `${((tooltip.meta.ciHigh || 0) - (tooltip.meta.ciLow || 0)) * 100}%`,
+                      }}
+                    />
+                    {tooltip.meta.risk !== undefined && (
+                      <div
+                        className="absolute h-full bg-red-600"
+                        style={{ left: `${tooltip.meta.risk * 100}%`, width: "2%" }}
+                      />
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="mt-1">Top drivers</div>
+            <ul className="list-disc pl-4">
+              {tooltip.items.map((a, idx) => (
+                <li key={idx}>
+                  {a.feature}: {a.score.toFixed(2)}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+      </div>
       {showMatrix && transitionMatrix && (
         <TransitionMatrix matrix={transitionMatrix} labels={states} />
       )}
