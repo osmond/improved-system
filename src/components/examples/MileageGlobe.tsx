@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import useMileageTimeline from '@/hooks/useMileageTimeline'
 
 interface MileageGlobeProps {
@@ -12,15 +12,25 @@ export default function MileageGlobe({ weekRange }: MileageGlobeProps) {
     weekRange ? { startWeek: weekRange[0], endWeek: weekRange[1] } : undefined,
   )
 
+  const [worldError, setWorldError] = useState(false)
+
   useEffect(() => {
     // Simulate loading of world data to satisfy tests
-    fetch('/world-110m.json').catch(() => {})
+    fetch('/world-110m.json').catch(() => setWorldError(true))
   }, [])
 
   if (!data) {
     return (
       <div className='flex items-center justify-center h-96 w-full bg-muted text-muted-foreground rounded'>
         Loading mileage globe...
+      </div>
+    )
+  }
+
+  if (worldError) {
+    return (
+      <div className='flex items-center justify-center h-96 w-full bg-muted text-muted-foreground rounded'>
+        Map unavailable
       </div>
     )
   }

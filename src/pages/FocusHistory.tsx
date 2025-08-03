@@ -1,6 +1,7 @@
 import React from "react";
 import useFocusHistory from "@/hooks/useFocusHistory";
 import { Card } from "@/components/ui/card";
+import { FocusTimeline } from "@/components/visualizations";
 
 export default function FocusHistoryPage() {
   const { history } = useFocusHistory();
@@ -8,6 +9,7 @@ export default function FocusHistoryPage() {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Focus History</h1>
+      {history.length > 0 && <FocusTimeline events={history} />}
       {history.length === 0 ? (
         <p className="text-sm text-muted-foreground">No history yet.</p>
       ) : (
