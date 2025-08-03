@@ -11,6 +11,7 @@ export { default as TopInsights } from "./TopInsights";
 export { default as BehavioralWeatherWidget } from "./BehavioralWeatherWidget";
 export { default as TimeInBedChart } from "./TimeInBedChart";
 export { default as ReadingProbabilityTimeline } from "./ReadingProbabilityTimeline";
+export { default as DeltaSpotlightTiles } from "./DeltaSpotlightTiles";
 
 export { default as CommuteRank } from "./CommuteRank";
 
