@@ -36,7 +36,7 @@ import CompactNextGameCardPage from "@/pages/charts/CompactNextGameCard";
 import RunSoundtrackCardDemoPage from "@/pages/charts/RunSoundtrackCardDemo";
 import RadarChartDefaultPage from "@/pages/charts/RadarChartDefault";
 import RadarChartWorkoutByTimePage from "@/pages/charts/RadarChartWorkoutByTime";
-import RadarChartDotsPage from "@/pages/charts/RadarChartDots";
+import MonthlyMileagePatternPage from "@/pages/charts/MonthlyMileagePattern";
 import AvgDailyMileageRadarPage from "@/pages/charts/AvgDailyMileageRadar";
 import RadialChartLabelPage from "@/pages/charts/RadialChartLabel";
 import RadialChartTextPage from "@/pages/charts/RadialChartText";
@@ -87,7 +87,10 @@ function App() {
               <Route path="charts/run-soundtrack-card-demo" element={<RunSoundtrackCardDemoPage />} />
               <Route path="charts/radar-chart-default" element={<RadarChartDefaultPage />} />
               <Route path="charts/radar-chart-workout-by-time" element={<RadarChartWorkoutByTimePage />} />
-              <Route path="charts/radar-chart-dots" element={<RadarChartDotsPage />} />
+              <Route
+                path="charts/monthly-mileage-pattern"
+                element={<MonthlyMileagePatternPage />}
+              />
               <Route path="charts/avg-daily-mileage-radar" element={<AvgDailyMileageRadarPage />} />
               <Route path="charts/radial-chart-label" element={<RadialChartLabelPage />} />
               <Route path="charts/radial-chart-text" element={<RadialChartTextPage />} />
