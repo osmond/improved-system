@@ -2,12 +2,17 @@
 
 import { useState } from "react";
 import { scaleLinear } from "d3-scale";
+import { line as d3Line, area as d3Area } from "d3-shape";
 import TransitionMatrix from "./TransitionMatrix";
 
 export type Segment = {
   time: string; // ISO timestamp for start of 30 min window
   state: string; // observed state label
   probability: number; // predicted reading probability 0-1
+  risk: number; // model risk score 0-1
+  ciLow?: number; // lower bound of confidence interval
+  ciHigh?: number; // upper bound of confidence interval
+  thresholds?: number[]; // optional threshold markers
 };
 
 export interface Attribution {
@@ -20,6 +25,7 @@ interface BehavioralCharterMapProps {
   segments: Segment[];
   states: string[];
   transitionMatrix?: number[][];
+  riskThresholds?: number[];
 }
 
 const stateColors: Record<string, string> = {
@@ -34,36 +40,57 @@ export default function BehavioralCharterMap({
   segments,
   states,
   transitionMatrix,
+  riskThresholds,
 }: BehavioralCharterMapProps) {
   const width = 800;
   const height = 60;
   const overlayHeight = 10;
+  const riskHeight = 40;
+  const svgHeight = riskHeight + overlayHeight + height;
   const segmentWidth = width / segments.length;
 
   const probColor = scaleLinear<string>().domain([0, 1]).range(["#e0f2fe", "#1e3a8a"]);
+  const riskScale = scaleLinear().domain([0, 1]).range([riskHeight, 0]);
+
+  const riskLine = d3Line<Segment>()
+    .defined((d) => d.risk != null)
+    .x((_, i) => i * segmentWidth + segmentWidth / 2)
+    .y((d) => riskScale(d.risk));
+
+  const riskArea = d3Area<Segment>()
+    .defined((d) => d.ciLow != null && d.ciHigh != null)
+    .x((_, i) => i * segmentWidth + segmentWidth / 2)
+    .y0((d) => riskScale(d.ciLow ?? d.risk))
+    .y1((d) => riskScale(d.ciHigh ?? d.risk));
 
   const [attributions, setAttributions] = useState<Record<number, Attribution[]>>({});
+  const [meta, setMeta] = useState<Record<number, { ciLow?: number; ciHigh?: number; thresholds?: number[]; risk?: number }>>({});
   const [tooltip, setTooltip] = useState<{
     x: number;
     y: number;
     items: Attribution[];
+    meta?: { ciLow?: number; ciHigh?: number; thresholds?: number[]; risk?: number };
   } | null>(null);
   const [showMatrix, setShowMatrix] = useState(false);
   const [date, setDate] = useState(day);
   const [activity, setActivity] = useState("all");
 
-  const handleHover = async (idx: number, evt: React.MouseEvent<SVGRectElement, MouseEvent>) => {
-    if (!attributions[idx]) {
+  const handleHover = async (
+    idx: number,
+    evt: React.MouseEvent<SVGRectElement, MouseEvent>
+  ) => {
+    if (!attributions[idx] || !meta[idx]) {
       try {
         const res = await fetch(`/api/predictions/${date}`);
         const json = await res.json();
         setAttributions(json.attributions || {});
+        setMeta(json.meta || {});
       } catch {
         // ignore fetch errors
       }
     }
     const items = (attributions[idx] || []).slice(0, 3);
-    setTooltip({ x: evt.clientX, y: evt.clientY, items });
+    setTooltip({ x: evt.clientX, y: evt.clientY, items, meta: meta[idx] });
   };
 
   const handleLeave = () => setTooltip(null);
@@ -97,12 +124,32 @@ export default function BehavioralCharterMap({
         </button>
       </div>
       <div className="flex gap-4">{legend}</div>
-      <svg width={width} height={height + overlayHeight} className="block">
+      <svg width={width} height={svgHeight} className="block">
+        {/* risk confidence band */}
+        {riskArea(segments) && (
+          <path d={riskArea(segments)!} fill="rgba(30,64,175,0.2)" />
+        )}
+        {/* risk line */}
+        {riskLine(segments) && (
+          <path d={riskLine(segments)!} stroke="#1e40af" strokeWidth={2} fill="none" />
+        )}
+        {/* threshold markers */}
+        {riskThresholds?.map((t, i) => (
+          <line
+            key={i}
+            x1={0}
+            x2={width}
+            y1={riskScale(t)}
+            y2={riskScale(t)}
+            stroke="#ef4444"
+            strokeDasharray="4 2"
+          />
+        ))}
         {filteredSegments.map((seg, i) => (
           <g key={i}>
             <rect
               x={i * segmentWidth}
-              y={overlayHeight}
+              y={riskHeight + overlayHeight}
               width={segmentWidth}
               height={height}
               fill={stateColors[seg.state] || stateColors.other}
@@ -111,7 +158,7 @@ export default function BehavioralCharterMap({
             />
             <rect
               x={i * segmentWidth}
-              y={0}
+              y={riskHeight}
               width={segmentWidth}
               height={overlayHeight}
               fill={probColor(seg.probability)}
@@ -132,6 +179,21 @@ export default function BehavioralCharterMap({
               </li>
             ))}
           </ul>
+          {tooltip.meta && (
+            <div className="mt-1 space-y-1">
+              {tooltip.meta.risk !== undefined && (
+                <div>Risk: {tooltip.meta.risk.toFixed(2)}</div>
+              )}
+              {tooltip.meta.ciLow !== undefined && tooltip.meta.ciHigh !== undefined && (
+                <div>
+                  CI: {tooltip.meta.ciLow.toFixed(2)} - {tooltip.meta.ciHigh.toFixed(2)}
+                </div>
+              )}
+              {tooltip.meta.thresholds && tooltip.meta.thresholds.length > 0 && (
+                <div>Thresholds: {tooltip.meta.thresholds.join(", ")}</div>
+              )}
+            </div>
+          )}
         </div>
       )}
       {showMatrix && transitionMatrix && (
