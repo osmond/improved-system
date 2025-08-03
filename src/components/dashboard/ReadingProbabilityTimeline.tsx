@@ -1,4 +1,5 @@
 "use client";
+import React from "react";
 import {
   ChartContainer,
   AreaChart,
@@ -18,23 +19,50 @@ import { Skeleton } from "@/components/ui/skeleton";
 import type { TooltipProps } from "recharts";
 
 export default function ReadingProbabilityTimeline() {
-  const data = useReadingProbability();
-
-  if (!data) return <Skeleton className="h-64" />;
+  const raw = useReadingProbability();
 
   const config = {
     probability: { label: "Probability", color: "hsl(var(--chart-1))" },
-    intensity: { label: "Intensity", color: "hsl(var(--chart-2))" },
-    highlight: { color: "hsl(var(--chart-3))" },
+    confidence: { label: "Confidence", color: "hsl(var(--chart-2))" },
+    deepDive: { color: "hsl(var(--chart-4))" },
+    skim: { color: "hsl(var(--chart-5))" },
+    panic: { color: "hsl(var(--chart-6))" },
   } satisfies ChartConfig;
 
-  const highAreas = data.reduce<{ x1: string; x2: string }[]>((acc, cur, i) => {
-    if (cur.probability > 0.8) {
-      const next = data[i + 1];
-      acc.push({ x1: cur.time, x2: next ? next.time : cur.time });
-    }
-    return acc;
-  }, []);
+  const data = React.useMemo(() => {
+    if (!raw) return null;
+    return raw.map((p) => {
+      const spread = (1 - p.intensity) * 0.1;
+      const lower = Math.max(0, p.probability - spread);
+      const upper = Math.min(1, p.probability + spread);
+      return { ...p, lower, river: upper - lower };
+    });
+  }, [raw]);
+
+  const stateAreas = React.useMemo(() => {
+    if (!raw) return [];
+    const areas: { x1: string; x2: string; state: string }[] = [];
+    let start: number | null = null;
+    let curLabel = "";
+    const key = (l: string) =>
+      l === "Deep Dive" ? "deepDive" : l === "Skim" ? "skim" : l === "Page Turn Panic" ? "panic" : "";
+    raw.forEach((d, i) => {
+      const label = key(d.label);
+      if (label !== curLabel) {
+        if (start !== null && curLabel) {
+          areas.push({ x1: raw[start].time, x2: d.time, state: curLabel });
+        }
+        start = i;
+        curLabel = label;
+      }
+      if (i === raw.length - 1 && start !== null && curLabel) {
+        areas.push({ x1: raw[start].time, x2: d.time, state: curLabel });
+      }
+    });
+    return areas;
+  }, [raw]);
+
+  if (!data) return <Skeleton className="h-64" />;
 
   function ReadingTooltip(props: TooltipProps<number, string>) {
     const { active, payload, label } = props;
@@ -60,7 +88,7 @@ export default function ReadingProbabilityTimeline() {
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis dataKey="time" tickFormatter={(t) => String(new Date(t).getHours())} />
           <YAxis domain={[0, 1]} tickFormatter={(v) => `${Math.round(v * 100)}%`} />
-          {highAreas.map((a, idx) => (
+          {stateAreas.map((a, idx) => (
             <ReferenceArea
               key={idx}
               x1={a.x1}
@@ -68,13 +96,35 @@ export default function ReadingProbabilityTimeline() {
               y1={0}
               y2={1}
               strokeOpacity={0}
-              fill="var(--color-highlight)"
-              fillOpacity={0.1}
+              fill={`var(--color-${a.state})`}
+              fillOpacity={0.08}
             />
           ))}
           <ChartTooltip content={<ReadingTooltip />} />
-          <Area type="monotone" dataKey="intensity" stroke={config.intensity.color} fill={config.intensity.color} fillOpacity={0.2} />
-          <Line type="monotone" dataKey="probability" stroke={config.probability.color} dot={false} />
+          <Area
+            type="monotone"
+            dataKey="lower"
+            stackId="confidence"
+            stroke="none"
+            fillOpacity={0}
+            isAnimationActive={false}
+          />
+          <Area
+            type="monotone"
+            dataKey="river"
+            stackId="confidence"
+            stroke="none"
+            fill={config.confidence.color}
+            fillOpacity={0.15}
+            isAnimationActive={false}
+          />
+          <Line
+            type="monotone"
+            dataKey="probability"
+            stroke={config.probability.color}
+            dot={false}
+            isAnimationActive={false}
+          />
         </AreaChart>
       </ChartContainer>
     </ChartCard>
