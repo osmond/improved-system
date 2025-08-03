@@ -13,7 +13,8 @@ import {
 export interface DashboardRoute {
   to: string;
   label: string;
-  description?: string;
+  icon: LucideIcon;
+  description: string;
   tooltip?: string;
   tags?: string[];
 }
@@ -24,12 +25,19 @@ export interface DashboardRouteGroup {
   items: DashboardRoute[];
 }
 
+function withIcon(
+  icon: LucideIcon,
+  routes: Omit<DashboardRoute, "icon">[],
+): DashboardRoute[] {
+  return routes.map((route) => ({ ...route, icon }));
+}
+
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
   {
     label: "Playground",
     icon: FlaskConical,
-    items: [
+    items: withIcon(FlaskConical, [
       {
         to: "/dashboard/map",
         label: "State Visits Map",
@@ -48,12 +56,12 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
         description: "Assess how unique a route is compared to known paths",
         tags: ["map"],
       },
-    ],
+    ]),
   },
   {
     label: "Analytics",
     icon: ChartLine,
-    items: [
+    items: withIcon(ChartLine, [
       {
         to: "/dashboard/mileage-globe",
         label: "Global Mileage Map",
@@ -95,29 +103,29 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
         label: "Behavioral Charter Map",
         description: "Timeline of activity segments with risk scores",
       },
-    ],
+    ]),
   },
   {
     label: "Settings",
     icon: Settings,
-    items: [
+    items: withIcon(Settings, [
       {
         to: "/dashboard/settings",
         label: "Intervention Settings",
         description: "Configure reminder preferences",
       },
-    ],
+    ]),
   },
   {
     label: "Privacy",
     icon: Shield,
-    items: [
+    items: withIcon(Shield, [
       {
         to: "/dashboard/privacy",
         label: "Privacy Dashboard",
         description: "Manage data retention and export/delete options",
       },
-    ],
+    ]),
   },
 ];
 
@@ -126,7 +134,7 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
   {
     label: "Area Charts",
     icon: ChartArea,
-    items: [
+    items: withIcon(ChartArea, [
       {
         to: "/dashboard/charts/area-chart-interactive",
         label: "Interactive Trend",
@@ -157,12 +165,12 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         label: "Time in Bed Trend",
         description: "Examine time spent in bed",
       },
-    ],
+    ]),
   },
   {
     label: "Bar Charts",
     icon: ChartBar,
-    items: [
+    items: withIcon(ChartBar, [
       {
         to: "/dashboard/charts/bar-chart-interactive",
         label: "Interactive Comparison",
@@ -188,7 +196,7 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         label: "Custom Label Comparison",
         description: "Bar chart demonstrating custom labels",
       },
-      { 
+      {
         to: "/dashboard/charts/shoe-usage-chart",
         label: "Shoe Usage Comparison",
         description: "Compare mileage by shoe",
@@ -203,12 +211,12 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         label: "Weekly Volume Trend",
         description: "Historical view of weekly training volume",
       },
-    ],
+    ]),
   },
   {
     label: "Radar Charts",
     icon: Radar,
-    items: [
+    items: withIcon(Radar, [
       {
         to: "/dashboard/charts/radar-chart-default",
         label: "Default Radar Profile",
@@ -234,12 +242,12 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         label: "Activity Time Radar",
         description: "Visualize activity levels across time",
       },
-    ],
+    ]),
   },
   {
     label: "Radial Charts",
     icon: ChartPie,
-    items: [
+    items: withIcon(ChartPie, [
       {
         to: "/dashboard/charts/radial-chart-label",
         label: "Labeled Radial Progress",
@@ -260,18 +268,18 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         label: "Reading Stack Split",
         description: "Segment reading activity across categories",
       },
-    ],
+    ]),
   },
   {
     label: "Matrix Charts",
     icon: ChartLine,
-    items: [
+    items: withIcon(ChartLine, [
       {
         to: "/dashboard/statistics",
         label: "Metric Correlation Matrix",
         description: "Explore correlations between daily metrics",
       },
-    ],
+    ]),
   },
 ];
 
