@@ -44,11 +44,13 @@ import RadialChartGridPage from "@/pages/charts/RadialChartGrid";
 import PrivacyDashboardPage from "@/pages/PrivacyDashboard";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
+import { SelectionProvider } from "@/hooks/useSelection";
 
 function App() {
   return (
     <BrowserRouter>
       <DashboardFiltersProvider>
+        <SelectionProvider>
         <Layout>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
@@ -100,6 +102,7 @@ function App() {
             </Route>
           </Routes>
         </Layout>
+        </SelectionProvider>
       </DashboardFiltersProvider>
     </BrowserRouter>
   );
