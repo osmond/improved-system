@@ -17,6 +17,7 @@ export interface DashboardRoute {
   description: string;
   tooltip?: string;
   tags?: string[];
+  badge?: string;
 }
 
 export interface DashboardRouteGroup {

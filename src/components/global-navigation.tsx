@@ -22,6 +22,7 @@ import {
 import useFavorites from "@/hooks/useFavorites";
 import useRecentViews from "@/hooks/useRecentViews";
 import { cn } from "@/lib/utils";
+import { Badge } from "@/components/ui/badge";
 
 function RouteList({
   routes,
@@ -43,8 +44,11 @@ function RouteList({
             >
               <route.icon className="mr-2 h-5 w-5" />
               <div className="flex-1">
-                <div className="text-sm font-medium leading-none">
+                <div className="text-sm font-medium leading-none flex items-center gap-2">
                   {route.label}
+                  {route.badge && (
+                    <Badge variant={route.badge}>{route.badge}</Badge>
+                  )}
                 </div>
                 <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
                   {route.description}

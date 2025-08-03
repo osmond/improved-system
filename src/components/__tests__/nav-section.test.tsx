@@ -1,4 +1,5 @@
 import { render, screen } from "@testing-library/react";
+import "@testing-library/jest-dom";
 import { Star } from "lucide-react";
 import NavSection from "../nav-section";
 import { slugify } from "@/lib/utils";
@@ -11,6 +12,8 @@ describe("NavSection contentId", () => {
     pathname: "",
     favorites: [] as string[],
     toggleFavorite: () => {},
+    highlighted: null as string | null,
+    setHighlighted: () => {},
   };
 
   const groups = [
@@ -92,5 +95,12 @@ describe("NavSection contentId", () => {
     expect(secondTriggerReordered?.getAttribute("aria-controls")).toBe(
       secondId,
     );
+  });
+
+  it("renders badges next to route labels", () => {
+    renderWithProvider({
+      routes: [{ to: "/badge", label: "With Badge", badge: "Beta" }],
+    });
+    expect(screen.getByText("Beta")).toBeInTheDocument();
   });
 });

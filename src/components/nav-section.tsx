@@ -20,6 +20,7 @@ import {
   TooltipContent,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { Badge } from "@/components/ui/badge";
 import type { DashboardRoute, DashboardRouteGroup } from "@/routes";
 import usePersistedGroups from "@/hooks/usePersistedGroups";
 
@@ -87,7 +88,12 @@ export default function NavSection({
                         >
                           <NavLink to={route.to} className="flex w-full items-center">
                             {Icon && <Icon className="mr-2 h-4 w-4" />}
-                            <span className="flex-1">{route.label}</span>
+                            <span className="flex flex-1 items-center gap-2">
+                              {route.label}
+                              {route.badge && (
+                                <Badge variant={route.badge}>{route.badge}</Badge>
+                              )}
+                            </span>
                             <Star
                               className={cn(
                                 "ml-auto h-4 w-4",
@@ -173,7 +179,12 @@ export default function NavSection({
                                     to={route.to}
                                     className="flex w-full items-center"
                                   >
-                                    <span className="flex-1">{route.label}</span>
+                                    <span className="flex flex-1 items-center gap-2">
+                                      {route.label}
+                                      {route.badge && (
+                                        <Badge variant={route.badge}>{route.badge}</Badge>
+                                      )}
+                                    </span>
                                     <Star
                                       className={cn(
                                         "ml-auto h-4 w-4",
