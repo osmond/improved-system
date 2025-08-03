@@ -3,6 +3,14 @@ export function cn(...classes: (string | undefined | false | null)[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+export function slugify(str: string) {
+  return str
+    .toLowerCase()
+    .trim()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 export function minutesSince(date: string | number | Date): number {
   const d = new Date(date)
   return Math.floor((Date.now() - d.getTime()) / 60000)
