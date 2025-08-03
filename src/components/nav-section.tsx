@@ -46,50 +46,68 @@ export default function NavSection({
   const { openGroups, handleOpenChange } = usePersistedGroups(storageKey);
 
   if (routes?.length) {
+    const contentId = `${label}-routes`;
+    const isOpen = openGroups[label] ?? true;
     return (
-      <SidebarGroup>
-        <SidebarGroupLabel>{label}</SidebarGroupLabel>
-        <SidebarGroupContent>
-          <SidebarMenu>
-            {routes.map((route) => (
-              <SidebarMenuItem key={route.to}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <SidebarMenuButton
-                      asChild
-                      isActive={pathname === route.to}
-                      className="justify-start"
-                    >
-                      <NavLink to={route.to} className="flex w-full items-center">
-                        {Icon && <Icon className="mr-2 h-4 w-4" />}
-                        <span className="flex-1">{route.label}</span>
-                        <Star
-                          className={cn(
-                            "ml-auto h-4 w-4",
-                            favorites.includes(route.to)
-                              ? "fill-yellow-400 text-yellow-400"
-                              : "text-muted-foreground"
-                          )}
-                          onClick={(e) => {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            toggleFavorite(route.to);
-                          }}
-                        />
-                      </NavLink>
-                    </SidebarMenuButton>
-                  </TooltipTrigger>
-                  {route.description && (
-                    <TooltipContent side="right">
-                      {route.description}
-                    </TooltipContent>
-                  )}
-                </Tooltip>
-              </SidebarMenuItem>
-            ))}
-          </SidebarMenu>
-        </SidebarGroupContent>
-      </SidebarGroup>
+      <Collapsible.Root
+        open={isOpen}
+        onOpenChange={handleOpenChange(label)}
+      >
+        <SidebarGroup>
+          <Collapsible.Trigger asChild>
+            <SidebarGroupLabel
+              className="cursor-pointer"
+              aria-expanded={isOpen}
+              aria-controls={contentId}
+            >
+              {label}
+              <ChevronRight className="ml-auto transition-transform data-[state=open]:rotate-90" />
+            </SidebarGroupLabel>
+          </Collapsible.Trigger>
+          <Collapsible.Content id={contentId}>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {routes.map((route) => (
+                  <SidebarMenuItem key={route.to}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <SidebarMenuButton
+                          asChild
+                          isActive={pathname === route.to}
+                          className="justify-start"
+                        >
+                          <NavLink to={route.to} className="flex w-full items-center">
+                            {Icon && <Icon className="mr-2 h-4 w-4" />}
+                            <span className="flex-1">{route.label}</span>
+                            <Star
+                              className={cn(
+                                "ml-auto h-4 w-4",
+                                favorites.includes(route.to)
+                                  ? "fill-yellow-400 text-yellow-400"
+                                  : "text-muted-foreground",
+                              )}
+                              onClick={(e) => {
+                                e.preventDefault();
+                                e.stopPropagation();
+                                toggleFavorite(route.to);
+                              }}
+                            />
+                          </NavLink>
+                        </SidebarMenuButton>
+                      </TooltipTrigger>
+                      {route.description && (
+                        <TooltipContent side="right">
+                          {route.description}
+                        </TooltipContent>
+                      )}
+                    </Tooltip>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </Collapsible.Content>
+        </SidebarGroup>
+      </Collapsible.Root>
     );
   }
 
@@ -142,7 +160,7 @@ export default function NavSection({
                                         "ml-auto h-4 w-4",
                                         favorites.includes(route.to)
                                           ? "fill-yellow-400 text-yellow-400"
-                                          : "text-muted-foreground"
+                                          : "text-muted-foreground",
                                       )}
                                       onClick={(e) => {
                                         e.preventDefault();
@@ -175,4 +193,3 @@ export default function NavSection({
 
   return null;
 }
-
