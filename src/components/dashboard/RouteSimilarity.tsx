@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from 'react'
 import Map, { Source, Layer } from 'react-map-gl/maplibre'
 import maplibregl from 'maplibre-gl'
-import { lineString, bezierSpline } from '@turf/turf'
+import { lineString, bezierSpline, lineOverlap } from '@turf/turf'
 
 import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
@@ -49,6 +49,53 @@ export default function RouteSimilarity() {
 
   const routeBFeature = useMemo(
     () => (routeB ? mapMatchRoute(routeB) : null),
+    [routeB],
+  )
+
+  const overlapFeature = useMemo(() => {
+    if (routeAFeature && routeBFeature) {
+      const overlap = lineOverlap(routeAFeature, routeBFeature, {
+        tolerance: 0.0001,
+      })
+      return overlap.features.length ? overlap : null
+    }
+    return null
+  }, [routeAFeature, routeBFeature])
+
+  const createPoint = (lat: number, lon: number) => ({
+    type: 'Feature' as const,
+    geometry: {
+      type: 'Point' as const,
+      coordinates: [lon, lat],
+    },
+  })
+
+  const routeAStart = useMemo(
+    () => (routeA ? createPoint(routeA.points[0].lat, routeA.points[0].lon) : null),
+    [routeA],
+  )
+  const routeAEnd = useMemo(
+    () =>
+      routeA
+        ? createPoint(
+            routeA.points[routeA.points.length - 1].lat,
+            routeA.points[routeA.points.length - 1].lon,
+          )
+        : null,
+    [routeA],
+  )
+  const routeBStart = useMemo(
+    () => (routeB ? createPoint(routeB.points[0].lat, routeB.points[0].lon) : null),
+    [routeB],
+  )
+  const routeBEnd = useMemo(
+    () =>
+      routeB
+        ? createPoint(
+            routeB.points[routeB.points.length - 1].lat,
+            routeB.points[routeB.points.length - 1].lon,
+          )
+        : null,
     [routeB],
   )
 
@@ -116,7 +163,19 @@ export default function RouteSimilarity() {
               <Layer
                 id="routeA-line"
                 type="line"
-                paint={{ 'line-color': '#3b82f6', 'line-width': 4 }}
+                layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+                paint={{
+                  'line-width': 4,
+                  'line-gradient': [
+                    'interpolate',
+                    ['linear'],
+                    ['line-progress'],
+                    0,
+                    '#93c5fd',
+                    1,
+                    '#1e3a8a',
+                  ],
+                }}
               />
             </Source>
           )}
@@ -125,7 +184,89 @@ export default function RouteSimilarity() {
               <Layer
                 id="routeB-line"
                 type="line"
-                paint={{ 'line-color': '#ef4444', 'line-width': 4 }}
+                layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+                paint={{
+                  'line-color': '#ef4444',
+                  'line-width': 4,
+                  'line-dasharray': [2, 2],
+                }}
+              />
+            </Source>
+          )}
+          {overlapFeature && (
+            <Source id="overlap" type="geojson" data={overlapFeature}>
+              <Layer
+                id="overlap-line"
+                type="line"
+                layout={{ 'line-cap': 'round', 'line-join': 'round' }}
+                paint={{
+                  'line-width': 6,
+                  'line-gradient': [
+                    'interpolate',
+                    ['linear'],
+                    ['line-progress'],
+                    0,
+                    '#6ee7b7',
+                    1,
+                    '#047857',
+                  ],
+                }}
+              />
+            </Source>
+          )}
+          {routeAStart && (
+            <Source id="routeA-start" type="geojson" data={routeAStart}>
+              <Layer
+                id="routeA-start-circle"
+                type="circle"
+                paint={{
+                  'circle-color': '#3b82f6',
+                  'circle-radius': 5,
+                  'circle-stroke-color': '#ffffff',
+                  'circle-stroke-width': 2,
+                }}
+              />
+            </Source>
+          )}
+          {routeAEnd && (
+            <Source id="routeA-end" type="geojson" data={routeAEnd}>
+              <Layer
+                id="routeA-end-circle"
+                type="circle"
+                paint={{
+                  'circle-color': '#1e3a8a',
+                  'circle-radius': 5,
+                  'circle-stroke-color': '#ffffff',
+                  'circle-stroke-width': 2,
+                }}
+              />
+            </Source>
+          )}
+          {routeBStart && (
+            <Source id="routeB-start" type="geojson" data={routeBStart}>
+              <Layer
+                id="routeB-start-circle"
+                type="circle"
+                paint={{
+                  'circle-color': '#ef4444',
+                  'circle-radius': 5,
+                  'circle-stroke-color': '#ffffff',
+                  'circle-stroke-width': 2,
+                }}
+              />
+            </Source>
+          )}
+          {routeBEnd && (
+            <Source id="routeB-end" type="geojson" data={routeBEnd}>
+              <Layer
+                id="routeB-end-circle"
+                type="circle"
+                paint={{
+                  'circle-color': '#7f1d1d',
+                  'circle-radius': 5,
+                  'circle-stroke-color': '#ffffff',
+                  'circle-stroke-width': 2,
+                }}
               />
             </Source>
           )}
