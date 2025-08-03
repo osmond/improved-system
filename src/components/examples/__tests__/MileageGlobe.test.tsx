@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from "@testing-library/react";
+import { render, screen, waitFor, fireEvent } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import MileageGlobe from "../MileageGlobe";
 import useMileageTimeline from "@/hooks/useMileageTimeline";
@@ -145,5 +145,53 @@ describe("MileageGlobe", () => {
     await waitFor(() => {
       expect(screen.getByText(/Map unavailable/i)).toBeInTheDocument();
     });
+  });
+
+  it("shows tooltip with run date and mileage on hover", async () => {
+    mockUseMileageTimeline.mockReturnValue([
+      {
+        date: "2024-01-01",
+        miles: 5,
+        cumulativeMiles: 5,
+        coordinates: [
+          [0, 0],
+          [10, 10],
+        ],
+      },
+    ]);
+
+    global.fetch = vi.fn().mockResolvedValue({
+      json: () =>
+        Promise.resolve({
+          type: "Topology",
+          objects: { countries: { type: "GeometryCollection", geometries: [] } },
+        }),
+    }) as any;
+
+    const { container } = render(<MileageGlobe />);
+
+    await waitFor(() => {
+      expect(
+        container.querySelector("path[stroke='var(--primary-foreground)']")
+      ).toBeTruthy();
+    });
+
+    const path = container.querySelector(
+      "path[stroke='var(--primary-foreground)']"
+    ) as SVGPathElement;
+
+    fireEvent.mouseEnter(path);
+
+    expect(screen.getByText("2024-01-01: 5 miles")).toBeInTheDocument();
+
+    fireEvent.mouseLeave(path);
+
+    await waitFor(() => {
+      expect(
+        screen.queryByText("2024-01-01: 5 miles")
+      ).not.toBeInTheDocument();
+    });
+
+    global.fetch = originalFetch;
   });
 });
