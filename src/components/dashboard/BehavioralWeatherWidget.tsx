@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
-import { Zap, HeartPulse, Brain } from "lucide-react";
+import { Zap, HeartPulse, Brain, ArrowUp, ArrowDown } from "lucide-react";
 import { Card } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
@@ -48,14 +48,18 @@ export default function BehavioralWeatherWidget() {
           {data.map((item) => {
             const diff = item.value - item.typical;
             const diffPct = Math.round(diff * 100);
+            const DiffIcon = diff >= 0 ? ArrowUp : ArrowDown;
+            const diffClass = diff >= 0 ? "text-green-600" : "text-red-600";
             return (
               <div key={item.label} className="flex flex-col items-center gap-1">
                 <item.icon className="h-6 w-6" />
                 <span className="text-sm">{item.label}</span>
-                <span className="text-lg font-semibold">{Math.round(item.value * 100)}%</span>
-                <span className="text-xs text-gray-500">
-                  {diffPct >= 0 ? "+" : ""}
-                  {diffPct}% vs wk avg
+                <span className="text-lg font-semibold">
+                  {Math.round(item.value * 100)}%
+                </span>
+                <span className={`flex items-center text-xs ${diffClass}`}>
+                  <DiffIcon className="mr-1 h-3 w-3" />
+                  {Math.abs(diffPct)}% vs wk avg
                 </span>
               </div>
             );
