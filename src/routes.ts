@@ -19,7 +19,67 @@ export interface DashboardRouteGroup {
   items: DashboardRoute[];
 }
 
-export const dashboardRoutes: DashboardRouteGroup[] = [];
+
+export const dashboardRoutes: DashboardRouteGroup[] = [
+  {
+    label: "Playground",
+    icon: FlaskConical,
+    items: [
+      {
+        to: "/dashboard/map",
+        label: "Map Exploration",
+        description: "Explore routes and locations on an interactive map",
+      },
+      {
+        to: "/dashboard/route-similarity",
+        label: "Route Similarity Analysis",
+        description: "Compare routes based on similarity metrics",
+      },
+      {
+        to: "/dashboard/route-novelty",
+        label: "Route Novelty Analysis",
+        description: "Assess how unique a route is compared to known paths",
+      },
+    ],
+  },
+  {
+    label: "Analytics",
+    icon: ChartLine,
+    items: [
+      {
+        to: "/dashboard/mileage-globe",
+        label: "Global Mileage Map",
+        description: "Visualize mileage across the world using a globe",
+      },
+      {
+        to: "/dashboard/fragility",
+        label: "Fragility Analysis",
+        description: "Review training fragility indicators",
+      },
+      {
+        to: "/dashboard/session-similarity",
+        label: "Session Similarity Analysis",
+        description: "Find training sessions that resemble each other",
+      },
+      {
+        to: "/dashboard/good-day",
+        label: "Good Day Analysis",
+        description: "Identify patterns that contribute to positive days",
+      },
+      {
+        to: "/dashboard/habit-consistency",
+        label: "Habit Consistency Trend",
+        description: "Track how consistently habits are maintained over time",
+      },
+      {
+        to: "/dashboard/statistics",
+        label: "Metric Correlation Matrix",
+        description: "Explore correlations between daily metrics",
+      },
+    ],
+  },
+];
+
 
 export const chartRouteGroups: DashboardRouteGroup[] = [
   {
@@ -163,6 +223,17 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         to: "/dashboard/charts/reading-stack-split",
         label: "Reading Stack Split",
         description: "Segment reading activity across categories",
+      },
+    ],
+  },
+  {
+    label: "Matrix Charts",
+    icon: ChartLine,
+    items: [
+      {
+        to: "/dashboard/statistics",
+        label: "Metric Correlation Matrix",
+        description: "Explore correlations between daily metrics",
       },
     ],
   },
