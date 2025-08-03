@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useEffect } from "react";
 import MileageGlobe from "@/components/examples/MileageGlobe";
 import Slider from "@/components/ui/slider";
