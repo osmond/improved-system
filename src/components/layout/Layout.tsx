@@ -2,7 +2,6 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import AppSidebar from "@/components/app-sidebar";
-import AppNavbar from "@/components/app-navbar";
 import CommandPalette from "@/components/ui/CommandPalette";
 import { Button } from "@/components/ui/button";
 import {
@@ -134,10 +133,9 @@ export default function Layout({ children }: LayoutProps) {
         <SidebarInset>
           <header className="flex items-center justify-between p-4">
             <div className="flex items-center gap-2">
-              <SidebarTrigger className="md:hidden" />
+              <SidebarTrigger />
               <Breadcrumbs />
             </div>
-            <AppNavbar className="hidden md:block" />
             <div className="flex items-center gap-2">
               <ActionMenu />
               <TooltipProvider delayDuration={100}>

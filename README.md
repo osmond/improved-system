@@ -53,13 +53,6 @@ The UI sidebar includes configurable behaviour:
 
 See [`components/ui/sidebar.tsx`](components/ui/sidebar.tsx) for implementation details.
 
-## Navbar
-
-The top navigation bar (`src/components/app-navbar.tsx`) uses shadcn/ui's
-`NavigationMenu` primitives to surface dashboard routes. It appears on desktop
-viewports and collapses away on mobile, where the existing sidebar or drawer can
-be opened with the sidebar trigger.
-
 ## State & data hooks
 Keep all API-specific logic (auth, fetch, shape/normalize) inside `src/hooks/useGarminData.ts`. That way components stay pure/presentational.
 
