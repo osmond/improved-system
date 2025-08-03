@@ -54,6 +54,16 @@ export const analyticsRoutes: DashboardRoute[] = [
     label: "Metric Correlation Matrix",
     description: "Explore correlations between daily metrics",
   },
+  {
+    to: "/dashboard/focus-history",
+    label: "Focus History",
+    description: "Review past focus detections and interventions",
+  },
+  {
+    to: "/dashboard/settings",
+    label: "Intervention Settings",
+    description: "Configure reminder preferences",
+  },
 ];
 
 export const dashboardRoutes: DashboardRouteGroup[] = [

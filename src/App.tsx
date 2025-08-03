@@ -41,7 +41,12 @@ import AvgDailyMileageRadarPage from "@/pages/charts/AvgDailyMileageRadar";
 import RadialChartLabelPage from "@/pages/charts/RadialChartLabel";
 import RadialChartTextPage from "@/pages/charts/RadialChartText";
 import RadialChartGridPage from "@/pages/charts/RadialChartGrid";
+
+import FocusHistoryPage from "@/pages/FocusHistory";
+import InterventionSettingsPage from "@/pages/InterventionSettings";
+
 import PrivacyDashboardPage from "@/pages/PrivacyDashboard";
+
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 
@@ -97,6 +102,8 @@ function App() {
               <Route path="charts/radial-chart-label" element={<RadialChartLabelPage />} />
               <Route path="charts/radial-chart-text" element={<RadialChartTextPage />} />
               <Route path="charts/radial-chart-grid" element={<RadialChartGridPage />} />
+              <Route path="focus-history" element={<FocusHistoryPage />} />
+              <Route path="settings" element={<InterventionSettingsPage />} />
             </Route>
           </Routes>
         </Layout>
