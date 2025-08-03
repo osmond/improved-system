@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
-import { interpolateRdBu } from "d3-scale-chromatic";
+import { interpolateHcl } from "d3-interpolate";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
@@ -22,6 +22,8 @@ interface CorrelationRippleMatrixProps {
 
   minValue?: number; // lower bound for color scale
   maxValue?: number; // upper bound for color scale
+  showValues?: boolean; // display correlation values in cells
+  cellSize?: number; // explicit cell size override
 
 }
 
@@ -32,19 +34,29 @@ interface CellData {
 }
 
 
-const cellSize = 24;
+const DEFAULT_CELL_SIZE = 24;
 
 /**
  * Create a perceptually uniform diverging scale mapping:
- *   minValue -> blue, 0 -> white, maxValue -> red.
- * Uses d3's RdBu palette reversed so that negative values are blue
- * and positive values are red. The scale clamps to the provided bounds.
+ *   minValue → blue (#2166ac),
+ *   0       → white (#ffffff),
+ *   maxValue → red (#b2182b).
+ * Colors are interpolated in HCL space for smoother perception.
+ * The returned scale clamps values outside the [minValue, maxValue] range.
  */
 function createColorScale(minValue = -1, maxValue = 1) {
-  return scaleDiverging((t) => interpolateRdBu(1 - t))
+  const blue = "#2166ac";
+  const white = "#ffffff";
+  const red = "#b2182b";
+
+  const interpolator = (t: number) =>
+    t < 0.5
+      ? interpolateHcl(blue, white)(t * 2)
+      : interpolateHcl(white, red)((t - 0.5) * 2);
+
+  return scaleDiverging(interpolator)
     .domain([minValue, 0, maxValue])
     .clamp(true);
-
 }
 
 export default function CorrelationRippleMatrix({
@@ -54,11 +66,13 @@ export default function CorrelationRippleMatrix({
 
   minValue = -1,
   maxValue = 1,
+  showValues = false,
+  cellSize: cellSizeProp,
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? 24);
+  const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
 
   useEffect(() => {
     if (cellSizeProp !== undefined) return;
@@ -88,10 +102,17 @@ export default function CorrelationRippleMatrix({
   const activeKey = active ? `${active.y}-${active.x}` : null;
   const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
 
+  const legendGradient = `linear-gradient(to right, ${colorScale(
+    minValue
+  )}, ${colorScale(0)}, ${colorScale(maxValue)})`;
+  const minLabel = Number(minValue).toFixed(1);
+  const maxLabel = Number(maxValue).toFixed(1);
+
   return (
-    <div ref={containerRef} className="relative w-full aspect-square">
-      <ResponsiveContainer width="100%" height="100%">
-        <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
+    <div className="w-full">
+      <div ref={containerRef} className="relative w-full aspect-square">
+        <ResponsiveContainer width="100%" height="100%">
+          <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
           <XAxis
             type="number"
             dataKey="x"
@@ -145,48 +166,60 @@ export default function CorrelationRippleMatrix({
               );
             }}
           />
-          <Tooltip
-            content={({ active, payload }) => {
-              if (active && payload && payload.length) {
-                const cell = payload[0].payload as CellData;
-                const xLabel = labels[cell.x] ?? "";
-                const yLabel = labels[cell.y] ?? "";
-                return (
-                  <div className="bg-white p-2 border rounded shadow">
-                    <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
-                    <div>{cell.value.toFixed(2)}</div>
-                  </div>
-                );
-              }
-              return null;
+            <Tooltip
+              content={({ active, payload }) => {
+                if (active && payload && payload.length) {
+                  const cell = payload[0].payload as CellData;
+                  const xLabel = labels[cell.x] ?? "";
+                  const yLabel = labels[cell.y] ?? "";
+                  return (
+                    <div className="bg-white p-2 border rounded shadow">
+                      <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
+                      <div>{cell.value.toFixed(2)}</div>
+                    </div>
+                  );
+                }
+                return null;
+              }}
+            />
+          </ScatterChart>
+        </ResponsiveContainer>
+        {active && chartData.length > 0 && (
+          <div
+            className="absolute bg-white border p-2 rounded shadow"
+            style={{
+              left: active.x * cellSize + cellSize / 2,
+              top: active.y * cellSize + cellSize / 2,
+              transform: "translate(-50%, -50%)",
+              animation: "ripple 0.3s ease-out",
+              pointerEvents: "auto",
             }}
-          />
-        </ScatterChart>
-      </ResponsiveContainer>
-      {active && chartData.length > 0 && (
+            onClick={() => setActive(null)}
+          >
+            <LineChart width={150} height={80} data={chartData}>
+              <Line type="monotone" dataKey="y" stroke="#8884d8" dot={false} />
+              <Tooltip />
+            </LineChart>
+          </div>
+        )}
+        <style>{`
+          @keyframes ripple {
+            from { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
+            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+          }
+        `}</style>
+      </div>
+      <div className="mt-2">
         <div
-          className="absolute bg-white border p-2 rounded shadow"
-          style={{
-            left: active.x * cellSize + cellSize / 2,
-            top: active.y * cellSize + cellSize / 2,
-            transform: "translate(-50%, -50%)",
-            animation: "ripple 0.3s ease-out",
-            pointerEvents: "auto",
-          }}
-          onClick={() => setActive(null)}
-        >
-          <LineChart width={150} height={80} data={chartData}>
-            <Line type="monotone" dataKey="y" stroke="#8884d8" dot={false} />
-            <Tooltip />
-          </LineChart>
+          className="h-2 w-full rounded"
+          style={{ background: legendGradient }}
+        />
+        <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
+          <span>{minLabel}</span>
+          <span>0</span>
+          <span>{maxLabel}</span>
         </div>
-      )}
-      <style>{`
-        @keyframes ripple {
-          from { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
-          to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-        }
-      `}</style>
+      </div>
     </div>
   );
 }

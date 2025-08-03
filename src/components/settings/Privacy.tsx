@@ -1,13 +1,22 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
+import {
+  clearLocationData,
+  exportLocationData,
+  getRetentionDays,
+  purgeOldLocationData,
+  setRetentionDays,
+} from "@/lib/locationStore";
 
 export default function Privacy() {
   const [backgroundLocation, setBackgroundLocation] = useState(false);
+  const [retention, setRetention] = useState(30);
 
   useEffect(() => {
     if (typeof localStorage === "undefined") return;
     const stored = localStorage.getItem("bg:location");
     setBackgroundLocation(stored === "true");
+    setRetention(getRetentionDays());
   }, []);
 
   function toggleBackgroundLocation() {
@@ -18,11 +27,28 @@ export default function Privacy() {
     }
   }
 
-  function clearHistory() {
-    if (typeof localStorage !== "undefined") {
-      localStorage.removeItem("loc:points");
-      localStorage.removeItem("loc:clusters");
-    }
+  async function exportData() {
+    const data = await exportLocationData();
+    const blob = new Blob([JSON.stringify(data, null, 2)], {
+      type: "application/json",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "location-data.json";
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  async function clearHistory() {
+    await clearLocationData();
+  }
+
+  function updateRetention(e: React.ChangeEvent<HTMLInputElement>) {
+    const days = parseInt(e.target.value, 10) || 0;
+    setRetention(days);
+    setRetentionDays(days);
+    purgeOldLocationData(days);
   }
 
   return (
@@ -35,9 +61,24 @@ export default function Privacy() {
         />
         <span>Enable background location</span>
       </label>
-      <Button variant="outline" onClick={clearHistory}>
-        Clear history
-      </Button>
+      <div className="flex items-center gap-2">
+        <label htmlFor="retention">Retention (days)</label>
+        <input
+          id="retention"
+          type="number"
+          value={retention}
+          onChange={updateRetention}
+          className="w-20 rounded border px-2 py-1"
+        />
+      </div>
+      <div className="flex gap-2">
+        <Button variant="outline" onClick={exportData}>
+          Export data
+        </Button>
+        <Button variant="outline" onClick={clearHistory}>
+          Delete data
+        </Button>
+      </div>
     </div>
   );
 }

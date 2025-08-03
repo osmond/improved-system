@@ -6,6 +6,7 @@ import {
   Radar,
   ChartLine,
   FlaskConical,
+  Shield,
 } from "lucide-react";
 
 export interface DashboardRoute {
@@ -91,6 +92,17 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
     label: "Analytics",
     icon: ChartLine,
     items: analyticsRoutes,
+  },
+  {
+    label: "Privacy",
+    icon: Shield,
+    items: [
+      {
+        to: "/dashboard/privacy",
+        label: "Privacy Dashboard",
+        description: "Manage data retention and export/delete options",
+      },
+    ],
   },
 ];
 

@@ -20,6 +20,7 @@ function GlobeRenderer({
   const svgRef = useRef<SVGSVGElement | null>(null)
   const [dimensions, setDimensions] = useState({ width: 300, height: 300 })
   const [worldData, setWorldData] = useState<any | null>(null)
+  const [error, setError] = useState(false)
 
   useEffect(() => {
     const svg = svgRef.current
@@ -48,7 +49,11 @@ function GlobeRenderer({
   useEffect(() => {
     fetch('/world-110m.json')
       .then((res) => res.json())
-      .then((world) => setWorldData(world))
+      .then((world) => {
+        setWorldData(world)
+        setError(false)
+      })
+      .catch(() => setError(true))
   }, [])
 
   useEffect(() => {
@@ -90,44 +95,12 @@ function GlobeRenderer({
       linePaths.forEach((p) => p.attr('d', geo as any))
     }
 
-
-    fetch('/world-110m.json')
-      .then((res) => res.json())
-      .then((world) => {
-        const land = feature(world, world.objects.countries)
-        const boundaries = mesh(
-          world,
-          world.objects.countries,
-          (a, b) => a !== b
-        )
-
-        landPath = svg
-          .append('path')
-          .datum(land as any)
-          .attr('fill', '#334155')
-          .attr('stroke', '#1e293b')
-          .attr('stroke-width', 0.5)
-
-        boundaryPath = svg
-          .append('path')
-          .datum(boundaries as any)
-          .attr('fill', 'none')
-          .attr('stroke', '#94a3b8')
-          .attr('stroke-width', 0.5)
-
-        linePaths = paths.map((coordinates) =>
-          svg
-            .append('path')
-            .datum({ type: 'LineString', coordinates } as any)
-            .attr('fill', 'none')
-            .attr('stroke', 'var(--primary-foreground)')
-            .attr(
-              'stroke-width',
-              Math.max(2, Math.min(10, 1 + totalMiles / 50))
-            )
-            .attr('stroke-linecap', 'round')
-            .attr('opacity', 0.8),
-        )
+    const land = feature(worldData, worldData.objects.countries)
+    const boundaries = mesh(
+      worldData,
+      worldData.objects.countries,
+      (a, b) => a !== b,
+    )
 
     landPath = svg
       .append('path')
@@ -143,14 +116,16 @@ function GlobeRenderer({
       .attr('stroke', '#94a3b8')
       .attr('stroke-width', 0.5)
 
-    linePath = svg
-      .append('path')
-      .datum({ type: 'LineString', coordinates: path } as any)
-      .attr('fill', 'none')
-      .attr('stroke', 'var(--primary-foreground)')
-      .attr('stroke-width', Math.max(2, Math.min(10, 1 + totalMiles / 50)))
-      .attr('stroke-linecap', 'round')
-      .attr('opacity', 0.8)
+    linePaths = paths.map((coordinates) =>
+      svg
+        .append('path')
+        .datum({ type: 'LineString', coordinates } as any)
+        .attr('fill', 'none')
+        .attr('stroke', 'var(--primary-foreground)')
+        .attr('stroke-width', Math.max(2, Math.min(10, 1 + totalMiles / 50)))
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', 0.8),
+    )
 
     render()
 
@@ -175,17 +150,21 @@ function GlobeRenderer({
 
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
-
-  }, [paths, totalMiles, dimensions, centroid])
-
+  }, [paths, totalMiles, dimensions, centroid, worldData])
 
   return (
     <div className='relative aspect-square w-full'>
-      <svg
-        ref={svgRef}
-        className='h-full w-full rounded'
-        preserveAspectRatio='xMidYMid meet'
-      />
+      {error ? (
+        <div className='flex h-full w-full items-center justify-center rounded bg-muted text-muted-foreground'>
+          Map unavailable
+        </div>
+      ) : (
+        <svg
+          ref={svgRef}
+          className='h-full w-full rounded'
+          preserveAspectRatio='xMidYMid meet'
+        />
+      )}
     </div>
   )
 }
