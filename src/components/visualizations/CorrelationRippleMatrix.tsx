@@ -12,13 +12,17 @@ import {
   Line,
   Tooltip,
 } from "recharts";
+import { scaleDiverging } from "d3-scale";
+import { interpolateRdBu } from "d3-scale-chromatic";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
-  cellSize?: number; // optional explicit cell size
-  showValues?: boolean; // toggle numeric annotations
+
+  minValue?: number; // lower bound for color scale
+  maxValue?: number; // upper bound for color scale
+
 }
 
 interface CellData {
@@ -27,19 +31,30 @@ interface CellData {
   value: number;
 }
 
-// simple blue to red scale
-function colorScale(v: number) {
-  const hue = v >= 0 ? 0 : 240; // red for positive, blue for negative
-  const saturation = Math.round(Math.abs(v) * 100);
-  return `hsl(${hue}, ${saturation}%, 50%)`;
+
+const cellSize = 24;
+
+/**
+ * Create a perceptually uniform diverging scale mapping:
+ *   minValue -> blue, 0 -> white, maxValue -> red.
+ * Uses d3's RdBu palette reversed so that negative values are blue
+ * and positive values are red. The scale clamps to the provided bounds.
+ */
+function createColorScale(minValue = -1, maxValue = 1) {
+  return scaleDiverging((t) => interpolateRdBu(1 - t))
+    .domain([minValue, 0, maxValue])
+    .clamp(true);
+
 }
 
 export default function CorrelationRippleMatrix({
   matrix,
   labels,
   drilldown = {},
-  cellSize: cellSizeProp,
-  showValues = true,
+
+  minValue = -1,
+  maxValue = 1,
+
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -63,6 +78,8 @@ export default function CorrelationRippleMatrix({
   const heatData: CellData[] = matrix.flatMap((row, y) =>
     row.map((value, x) => ({ x, y, value }))
   );
+
+  const colorScale = createColorScale(minValue, maxValue);
 
   const handleCellClick = (cell: CellData) => {
     setActive(cell);
