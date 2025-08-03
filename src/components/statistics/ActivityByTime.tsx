@@ -8,6 +8,7 @@ import {
   PolarRadiusAxis,
   Radar,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from "@/components/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 
@@ -36,17 +37,20 @@ export default function ActivityByTime() {
       title="Workout Activity by Time"
       description="Sessions by time of day"
     >
-      <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
+      <ChartContainer
+        config={config}
+        className="mx-auto aspect-square max-h-[250px] md:max-h-[300px] lg:max-h-[350px]"
+      >
         <RadarChart data={activityByTimeData}>
           <PolarGrid />
           <PolarAngleAxis dataKey="time" />
           <PolarRadiusAxis />
-          <ChartTooltip />
+          <ChartTooltip content={<ChartTooltipContent />} />
           <Radar
             name="Activity"
             dataKey="value"
-            stroke="var(--chart-2)"
-            fill="var(--chart-2)"
+            stroke="var(--color-value)"
+            fill="var(--color-value)"
             fillOpacity={0.6}
           />
         </RadarChart>
