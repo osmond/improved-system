@@ -4,6 +4,7 @@ import { geoOrthographic, geoPath } from "d3-geo";
 import { drag } from "d3-drag";
 import { zoom } from "d3-zoom";
 import { timer, Timer } from "d3-timer";
+import type { Feature } from "geojson";
 
 interface PathData {
   coordinates: [number, number][];
@@ -13,6 +14,7 @@ interface PathData {
 
 interface GlobeRendererProps {
   paths: PathData[];
+  worldFeatures?: Feature[];
   autoRotate?: boolean;
   strokeWidth?: number;
   onPathMouseEnter?: (p: PathData) => void;
@@ -21,6 +23,7 @@ interface GlobeRendererProps {
 
 export default function GlobeRenderer({
   paths,
+  worldFeatures = [],
   autoRotate = false,
   strokeWidth = 2,
   onPathMouseEnter,
@@ -96,6 +99,15 @@ export default function GlobeRenderer({
 
   return (
     <svg ref={svgRef} className="h-full w-full rounded" viewBox="0 0 400 400">
+      {worldFeatures.map((f, idx) => (
+        <path
+          key={`land-${idx}`}
+          d={pathGenerator(f as any) || undefined}
+          fill="var(--muted)"
+          stroke="var(--muted-foreground)"
+          strokeWidth={0.5}
+        />
+      ))}
       {paths.map((p, idx) => (
         <path
           key={idx}

@@ -1,4 +1,6 @@
 import { useEffect, useState } from 'react'
+import type { Feature } from 'geojson'
+import { feature } from 'topojson-client'
 import useMileageTimeline, { CumulativeMileagePoint } from '@/hooks/useMileageTimeline'
 import GlobeRenderer from '@/components/GlobeRenderer'
 
@@ -13,11 +15,21 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
     weekRange ? { startWeek: weekRange[0], endWeek: weekRange[1] } : undefined,
   )
   const [worldError, setWorldError] = useState(false)
+  const [worldFeatures, setWorldFeatures] = useState<Feature[]>([])
   const [tooltip, setTooltip] = useState<CumulativeMileagePoint | null>(null)
 
   useEffect(() => {
-    // Simulate loading of world data to satisfy tests
-    fetch('/world-110m.json').catch(() => setWorldError(true))
+    fetch('/world-110m.json')
+      .then((res) => res.json())
+      .then((world) => {
+        try {
+          const countries = feature(world, world.objects.countries).features as Feature[]
+          setWorldFeatures(countries)
+        } catch (e) {
+          setWorldError(true)
+        }
+      })
+      .catch(() => setWorldError(true))
   }, [])
 
   if (!data) {
@@ -42,6 +54,7 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
     <div className='relative aspect-square w-full'>
       <GlobeRenderer
         paths={data}
+        worldFeatures={worldFeatures}
         autoRotate={autoRotate}
         strokeWidth={strokeWidth}
         onPathMouseEnter={(p) => setTooltip(p as CumulativeMileagePoint)}

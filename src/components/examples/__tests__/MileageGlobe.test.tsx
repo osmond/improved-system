@@ -9,6 +9,17 @@ vi.mock("@/hooks/useMileageTimeline");
 describe("MileageGlobe", () => {
   const mockUseMileageTimeline = useMileageTimeline as unknown as vi.Mock;
   const originalFetch = global.fetch;
+  const mockWorld = {
+    type: "Topology",
+    transform: { scale: [1, 1], translate: [0, 0] },
+    arcs: [[[0, 0], [10, 0], [0, 10], [-10, 0], [0, -10]]],
+    objects: {
+      countries: {
+        type: "GeometryCollection",
+        geometries: [{ type: "Polygon", arcs: [[0]] }],
+      },
+    },
+  };
 
   beforeEach(() => {
     vi.resetAllMocks();
@@ -37,16 +48,14 @@ describe("MileageGlobe", () => {
     ]);
 
     global.fetch = vi.fn().mockResolvedValue({
-      json: () =>
-        Promise.resolve({
-          type: "Topology",
-          objects: { countries: { type: "GeometryCollection", geometries: [] } },
-        }),
+      json: () => Promise.resolve(mockWorld),
     }) as any;
 
     const { container } = render(<MileageGlobe />);
 
     await waitFor(() => {
+      const land = container.querySelectorAll("path[fill='var(--muted)']");
+      expect(land.length).toBeGreaterThan(0);
       const paths = container.querySelectorAll(
         "path[stroke='var(--primary-foreground)']",
       );
@@ -80,11 +89,7 @@ describe("MileageGlobe", () => {
     ]);
 
     global.fetch = vi.fn().mockResolvedValue({
-      json: () =>
-        Promise.resolve({
-          type: "Topology",
-          objects: { countries: { type: "GeometryCollection", geometries: [] } },
-        }),
+      json: () => Promise.resolve(mockWorld),
     }) as any;
 
     const { container } = render(<MileageGlobe />);
@@ -111,11 +116,7 @@ describe("MileageGlobe", () => {
     ]);
 
     global.fetch = vi.fn().mockResolvedValue({
-      json: () =>
-        Promise.resolve({
-          type: "Topology",
-          objects: { countries: { type: "GeometryCollection", geometries: [] } },
-        }),
+      json: () => Promise.resolve(mockWorld),
     }) as any;
 
     render(<MileageGlobe />);
@@ -125,7 +126,7 @@ describe("MileageGlobe", () => {
     });
   });
 
-  it("still renders total mileage when world data fails to load", async () => {
+  it("shows map unavailable when world data fails to load", async () => {
     mockUseMileageTimeline.mockReturnValue([
       {
         date: "2024-01-01",
@@ -143,7 +144,7 @@ describe("MileageGlobe", () => {
     render(<MileageGlobe />);
 
     await waitFor(() => {
-      expect(screen.getByText("Total: 5 miles")).toBeInTheDocument();
+      expect(screen.getByText("Map unavailable")).toBeInTheDocument();
     });
   });
 
@@ -161,11 +162,7 @@ describe("MileageGlobe", () => {
     ]);
 
     global.fetch = vi.fn().mockResolvedValue({
-      json: () =>
-        Promise.resolve({
-          type: "Topology",
-          objects: { countries: { type: "GeometryCollection", geometries: [] } },
-        }),
+      json: () => Promise.resolve(mockWorld),
     }) as any;
 
     const { container } = render(<MileageGlobe />);
