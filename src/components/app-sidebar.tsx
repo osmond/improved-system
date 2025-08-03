@@ -200,21 +200,27 @@ export default function AppSidebar() {
               <SidebarMenu>
                 {filteredChartGroups.map((group, index) => {
                   const Icon = group.icon;
+                  const contentId = `chart-group-${index}`;
+                  const isOpen = openGroups[group.label] ?? index === 0;
                   return (
                     <Collapsible.Root
                       key={group.label}
-                      open={openGroups[group.label] ?? index === 0}
+                      open={isOpen}
                       onOpenChange={handleOpenChange(group.label)}
                     >
                       <SidebarMenuItem>
                         <Collapsible.Trigger asChild>
-                          <SidebarMenuButton className="justify-start">
+                          <SidebarMenuButton
+                            className="justify-start"
+                            aria-expanded={isOpen}
+                            aria-controls={contentId}
+                          >
                             <Icon className="mr-2 h-4 w-4" />
                             {highlight(group.label)}
                             <ChevronRight className="ml-auto transition-transform data-[state=open]:rotate-90" />
                           </SidebarMenuButton>
                         </Collapsible.Trigger>
-                        <Collapsible.Content>
+                        <Collapsible.Content id={contentId}>
                           <SidebarMenuSub>
                             {group.items.map((route) => (
                               <SidebarMenuSubItem key={route.to}>
