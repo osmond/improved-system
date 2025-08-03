@@ -306,6 +306,10 @@ const ChartLegendContent = React.forwardRef<
       hideIcon?: boolean
       nameKey?: string
       activeKeys?: string[]
+      variant?: "list" | "gradient"
+      min?: React.ReactNode
+      max?: React.ReactNode
+      gradient?: string
     }
 >(
   (
@@ -316,12 +320,34 @@ const ChartLegendContent = React.forwardRef<
       verticalAlign = "bottom",
       nameKey,
       activeKeys,
+      variant = "list",
+      min,
+      max,
+      gradient,
       onClick,
       ...props
     },
     ref
   ) => {
     const { config } = useChart()
+
+    if (variant === "gradient") {
+      return (
+        <div
+          ref={ref}
+          className={cn(
+            "flex items-center justify-center gap-2",
+            verticalAlign === "top" ? "pb-3" : "pt-3",
+            className,
+          )}
+          {...props}
+        >
+          {min && <span className="text-muted-foreground">{min}</span>}
+          <div className="h-2 w-24 rounded-sm" style={{ background: gradient }} />
+          {max && <span className="text-muted-foreground">{max}</span>}
+        </div>
+      )
+    }
 
     if (!payload?.length) {
       return null
