@@ -209,12 +209,16 @@ export interface ActivitySnapshot {
   inputCadence: number;
   /** Identifier for Wi-Fi network or location cluster */
   location: string;
+  /** Network SSID or identifier */
+  network: string;
 }
 
 export function generateMockActivitySnapshots(days = 30): ActivitySnapshot[] {
   const data: ActivitySnapshot[] = [];
   const locations = ["home", "office", "cafe"];
   let currentLoc = locations[0];
+  const networks = ["wifi_home", "wifi_office", "wifi_public"];
+  let currentNet = networks[0];
   for (let i = 0; i < days; i++) {
     const base = new Date();
     base.setDate(base.getDate() - i);
@@ -224,6 +228,9 @@ export function generateMockActivitySnapshots(days = 30): ActivitySnapshot[] {
       if (Math.random() < 0.1) {
         currentLoc = locations[Math.floor(Math.random() * locations.length)];
       }
+      if (Math.random() < 0.1) {
+        currentNet = networks[Math.floor(Math.random() * networks.length)];
+      }
       data.push({
         timestamp: d.toISOString(),
         heartRate: Math.round(60 + Math.random() * 40),
@@ -231,6 +238,7 @@ export function generateMockActivitySnapshots(days = 30): ActivitySnapshot[] {
         appChanges: Math.floor(Math.random() * 6),
         inputCadence: Math.floor(Math.random() * 200),
         location: currentLoc,
+        network: currentNet,
       });
     }
   }
@@ -1484,6 +1492,41 @@ export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
       const sessions = generateMockReadingSessions();
       resolve(aggregateReadingMediumTotals(sessions));
     }, 200);
+  });
+}
+
+// ----- Focus sessions -----
+
+export type FocusLabel = "Deep Dive" | "Skim" | "Page Turn Panic";
+
+export interface FocusSession {
+  /** ISO timestamp when the session started */
+  start: string;
+  /** Duration of the session in minutes */
+  duration: number;
+  /** Focus label describing the session */
+  label: FocusLabel;
+}
+
+export function generateMockFocusSessions(count = 40): FocusSession[] {
+  const labels: FocusLabel[] = ["Deep Dive", "Skim", "Page Turn Panic"];
+  const sessions: FocusSession[] = [];
+  for (let i = 0; i < count; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - Math.floor(Math.random() * 30));
+    d.setHours(Math.floor(Math.random() * 24), 0, 0, 0);
+    sessions.push({
+      start: d.toISOString(),
+      duration: Math.floor(5 + Math.random() * 55),
+      label: labels[Math.floor(Math.random() * labels.length)],
+    });
+  }
+  return sessions;
+}
+
+export async function getFocusSessions(): Promise<FocusSession[]> {
+  return new Promise((resolve) => {
+    setTimeout(() => resolve(generateMockFocusSessions()), 200);
   });
 }
 

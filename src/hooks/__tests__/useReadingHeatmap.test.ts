@@ -43,6 +43,7 @@ describe('computeHeatmapFromActivity', () => {
         appChanges: 0,
         inputCadence: 150,
         location: 'home',
+        network: 'wifi_home',
       },
       {
         timestamp: '2025-07-28T11:00:00Z',
@@ -51,6 +52,7 @@ describe('computeHeatmapFromActivity', () => {
         appChanges: 6,
         inputCadence: 5,
         location: 'office',
+        network: 'wifi_office',
       },
     ]
     const result = computeHeatmapFromActivity(snaps)

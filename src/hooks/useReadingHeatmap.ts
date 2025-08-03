@@ -49,6 +49,7 @@ export function computeHeatmapFromActivity(
       appChanges: 0,
       inputCadence: 0,
       locationChanges: 0,
+      networkChanges: 0,
       count: 0,
     })),
   )
@@ -56,6 +57,7 @@ export function computeHeatmapFromActivity(
     (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime(),
   )
   let prevLocation: string | null = null
+  let prevNetwork: string | null = null
   for (const s of sorted) {
     const d = new Date(s.timestamp)
     const day = d.getDay()
@@ -68,7 +70,11 @@ export function computeHeatmapFromActivity(
     if (prevLocation !== null && s.location !== prevLocation) {
       cell.locationChanges += 1
     }
+    if (prevNetwork !== null && s.network !== prevNetwork) {
+      cell.networkChanges += 1
+    }
     prevLocation = s.location
+    prevNetwork = s.network
     cell.count += 1
   }
   const stepThreshold = 200
@@ -76,6 +82,7 @@ export function computeHeatmapFromActivity(
   const appChangeThreshold = 3
   const inputCadenceThreshold = 100
   const locationChangeThreshold = 2
+  const networkChangeThreshold = 2
   const result: HeatmapCell[] = []
   for (let day = 0; day < 7; day++) {
     for (let hour = 0; hour < 24; hour++) {
@@ -98,7 +105,11 @@ export function computeHeatmapFromActivity(
         0,
         1 - cell.locationChanges / locationChangeThreshold,
       )
-      const fragmentScore = appScore * inputScore * locScore
+      const netScore = Math.max(
+        0,
+        1 - cell.networkChanges / networkChangeThreshold,
+      )
+      const fragmentScore = appScore * inputScore * locScore * netScore
       const intensity = Math.min(stepScore, hrScore) * fragmentScore
       const fragmentation = 1 - fragmentScore
       result.push({ day, hour, intensity, fragmentation })
