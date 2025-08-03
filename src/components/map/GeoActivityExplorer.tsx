@@ -25,6 +25,7 @@ import StateVisitCallout from "./StateVisitCallout";
 import statesTopo from "@/lib/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
+import { motion, useReducedMotion } from "framer-motion";
 
 // OpenWeatherMap API key for precipitation tiles. This key is specific to the
 // app and can be replaced by setting VITE_WEATHER_KEY if needed.
@@ -43,6 +44,7 @@ export default function GeoActivityExplorer() {
 
   const [query, setQuery] = useState("");
   const debouncedQuery = useDebounce(query, 300);
+  const prefersReducedMotion = useReducedMotion();
 
 
   const now = new Date();
@@ -253,6 +255,9 @@ export default function GeoActivityExplorer() {
                 paint={{
                   "fill-color": ["get", "color"],
                   "fill-outline-color": "hsl(var(--border))",
+                  ...(prefersReducedMotion
+                    ? {}
+                    : { "fill-color-transition": { duration: 300 } }),
                 }}
               />
             </Source>
@@ -273,10 +278,13 @@ export default function GeoActivityExplorer() {
                 const coords = CITY_COORDS[c.name]
                 return coords ? (
                   <Marker key={c.name} longitude={coords[0]} latitude={coords[1]}>
-                    <circle
+                    <motion.circle
                       r={3}
                       fill="hsl(var(--primary))"
-                      className="transition-transform motion-reduce:transition-none hover:scale-125"
+                      className="motion-safe:transition-transform motion-safe:transition-opacity motion-reduce:transition-none hover:scale-125"
+                      initial={prefersReducedMotion ? false : { opacity: 0, scale: 0.5 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      transition={{ ease: "easeOut", duration: prefersReducedMotion ? 0 : 0.2 }}
                     />
                   </Marker>
                 ) : null
@@ -292,12 +300,12 @@ export default function GeoActivityExplorer() {
                   <button
                     onClick={() => selectState(m.abbr)}
                     aria-label={`${m.abbr} ${m.visited ? "visited" : "not visited"}`}
-                    className="bg-transparent border-none p-0 cursor-pointer"
+                    className={`${selectedState === m.abbr ? "motion-safe:scale-110" : ""} bg-transparent border-none p-0 cursor-pointer motion-safe:transition-transform motion-safe:transition-opacity motion-safe:duration-200 motion-safe:ease-out motion-reduce:transition-none motion-safe:hover:scale-110 motion-safe:hover:opacity-90`}
                   >
                     <Badge>{m.count}</Badge>
                   </button>
                 </Marker>
-              )
+              ),
             )}
             {hoveredState && stateCoords[hoveredState] && (
               <Popup
