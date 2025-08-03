@@ -19,4 +19,11 @@ describe("useFavorites", () => {
     const stored = localStorage.getItem("favorites");
     expect(stored).toBe(JSON.stringify(["/foo"]));
   });
+
+  it("syncs across hook instances", () => {
+    const hook1 = renderHook(() => useFavorites());
+    const hook2 = renderHook(() => useFavorites());
+    act(() => hook1.result.current.toggleFavorite("/bar"));
+    expect(hook2.result.current.favorites).toEqual(["/bar"]);
+  });
 });
