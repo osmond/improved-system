@@ -34,6 +34,8 @@ import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import statesTopo from "@/lib/us-states.json";
 import CITY_COORDS from "@/lib/cityCoords";
 import { fipsToAbbr } from "@/lib/stateCodes";
+import { formatDate, formatMiles } from "@/lib/format";
+import { Bike, Footprints } from "lucide-react";
 
 // OpenWeatherMap API key for precipitation tiles. This key is specific to the
 // app and can be replaced by setting VITE_WEATHER_KEY if needed.
@@ -198,6 +200,31 @@ export default function GeoActivityExplorer() {
     })
     setExpandedState((prev) => (prev === abbr ? null : abbr))
   }
+
+  const selectedDetails = useMemo(() => {
+    if (!selectedState) return null
+    const s = summaryMap[selectedState]
+    if (!s) return null
+    const last = [...s.log].sort(
+      (a, b) => new Date(b.date).getTime() - new Date(a.date).getTime(),
+    )[0]
+    const mostCity = s.cities.reduce(
+      (prev, curr) => (curr.days > prev.days ? curr : prev),
+      s.cities[0] || null,
+    )
+    const runMiles = s.log
+      .filter((l) => l.type === "run")
+      .reduce((acc, l) => acc + l.miles, 0)
+    const bikeMiles = s.log
+      .filter((l) => l.type === "bike")
+      .reduce((acc, l) => acc + l.miles, 0)
+    return {
+      lastDate: last?.date,
+      mostCity: mostCity?.name,
+      runMiles,
+      bikeMiles,
+    }
+  }, [selectedState, summaryMap])
 
   return (
     <>
@@ -379,7 +406,27 @@ export default function GeoActivityExplorer() {
                 <div className="flex flex-col gap-1 text-xs">
                   <span className="flex gap-2">
                     <Badge>{summaryMap[selectedState].totalDays}d</Badge>
-                    <Badge>{summaryMap[selectedState].totalMiles}mi</Badge>
+                    <Badge>{formatMiles(summaryMap[selectedState].totalMiles)}</Badge>
+                  </span>
+                  {selectedDetails?.lastDate && (
+                    <span>Last: {formatDate(selectedDetails.lastDate)}</span>
+                  )}
+                  {selectedDetails?.mostCity && (
+                    <span>Top city: {selectedDetails.mostCity}</span>
+                  )}
+                  <span className="flex gap-1">
+                    {selectedDetails?.runMiles ? (
+                      <Badge className="flex items-center gap-1">
+                        <Footprints className="h-3 w-3" />
+                        {formatMiles(selectedDetails.runMiles)}
+                      </Badge>
+                    ) : null}
+                    {selectedDetails?.bikeMiles ? (
+                      <Badge className="flex items-center gap-1">
+                        <Bike className="h-3 w-3" />
+                        {formatMiles(selectedDetails.bikeMiles)}
+                      </Badge>
+                    ) : null}
                   </span>
                   <button onClick={() => setSelectedState(null)}>Close</button>
                 </div>
@@ -397,7 +444,7 @@ export default function GeoActivityExplorer() {
               />
             }
           />
-          <StateVisitCallout />
+          <StateVisitCallout onSelectState={selectState} />
         </div>
 
         <div className="flex-1">

@@ -31,7 +31,13 @@ vi.mock("@/hooks/useStateVisits", () => ({
 
 describe("StateVisitCallout", () => {
   it("shows latest activity", () => {
-    render(<div className="relative h-10"><StateVisitCallout /></div>);
-    expect(screen.getByText("Latest bike: 10mi in CA")).toBeInTheDocument();
+    render(
+      <div className="relative h-10">
+        <StateVisitCallout onSelectState={() => {}} />
+      </div>
+    );
+    expect(screen.getByText(/Feb 1, 2025/)).toBeInTheDocument();
+    expect(screen.getByText(/10mi in California/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /View/ })).toBeInTheDocument();
   });
 });
