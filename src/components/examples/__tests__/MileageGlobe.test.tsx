@@ -125,7 +125,7 @@ describe("MileageGlobe", () => {
     });
   });
 
-  it("renders fallback message when world data fails to load", async () => {
+  it("still renders total mileage when world data fails to load", async () => {
     mockUseMileageTimeline.mockReturnValue([
       {
         date: "2024-01-01",
@@ -143,7 +143,7 @@ describe("MileageGlobe", () => {
     render(<MileageGlobe />);
 
     await waitFor(() => {
-      expect(screen.getByText(/Map unavailable/i)).toBeInTheDocument();
+      expect(screen.getByText("Total: 5 miles")).toBeInTheDocument();
     });
   });
 });

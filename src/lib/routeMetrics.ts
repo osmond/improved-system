@@ -1,5 +1,26 @@
 import type { LatLon } from './api'
 
+const EARTH_RADIUS = 6_371_000 // meters
+
+/**
+ * Compute the great-circle distance between two latitude/longitude pairs
+ * using the haversine formula.
+ *
+ * The result is returned in meters, allowing callers to reason about real
+ * world distances rather than raw degree differences.
+ */
+export function haversineDistance(a: LatLon, b: LatLon): number {
+  const toRad = (deg: number) => (deg * Math.PI) / 180
+  const dLat = toRad(b.lat - a.lat)
+  const dLon = toRad(b.lon - a.lon)
+  const lat1 = toRad(a.lat)
+  const lat2 = toRad(b.lat)
+  const h =
+    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLon / 2) * Math.sin(dLon / 2) * Math.cos(lat1) * Math.cos(lat2)
+  return 2 * EARTH_RADIUS * Math.asin(Math.sqrt(h))
+}
+
 export function calculateRouteSimilarity(
   a: LatLon[],
   b: LatLon[],
@@ -20,10 +41,12 @@ function dtwDistance(a: LatLon[], b: LatLon[]): number {
   dp[0][0] = 0
   for (let i = 1; i <= n; i++) {
     for (let j = 1; j <= m; j++) {
-      const cost = Math.hypot(
-        a[i - 1].lat - b[j - 1].lat,
-        a[i - 1].lon - b[j - 1].lon,
-      )
+      // Convert the haversine distance (meters) to angular degrees to
+      // preserve the scale used by the original implementation that
+      // operated directly on degree differences.
+      const cost =
+        (haversineDistance(a[i - 1], b[j - 1]) / EARTH_RADIUS) *
+        (180 / Math.PI);
       dp[i][j] = cost + Math.min(dp[i - 1][j], dp[i][j - 1], dp[i - 1][j - 1])
     }
   }
