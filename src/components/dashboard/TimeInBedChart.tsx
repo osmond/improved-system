@@ -9,6 +9,7 @@ import {
   YAxis,
   ReferenceLine,
   Tooltip as ChartTooltip,
+  ChartTooltipContent,
 } from '@/components/ui/chart'
 import ChartCard from './ChartCard'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -49,7 +50,15 @@ export default function TimeInBedChart() {
           <XAxis dataKey="date" tickFormatter={(d) => new Date(d).toLocaleDateString()} />
           <YAxis />
           <ReferenceLine y={8} stroke={config.goal.color} strokeDasharray="4 4" />
-          <ChartTooltip />
+          <ChartTooltip
+            content={
+              <ChartTooltipContent
+                nameKey="timeInBed"
+                formatter={(v) => `${v} hr`}
+                labelFormatter={(d) => new Date(d).toLocaleDateString()}
+              />
+            }
+          />
           <Area
             type="monotone"
             dataKey="timeInBed"
