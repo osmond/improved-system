@@ -90,6 +90,7 @@ export default function StatisticsPage() {
         matrix={matrix}
         labels={labels}
         upperOnly={upperOnly}
+        maxCellSize={80}
       />
     </div>
   );
