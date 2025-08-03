@@ -13,13 +13,11 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-  SidebarInput,
 } from "@/components/ui/sidebar";
 import { NavLink, useLocation } from "react-router-dom";
 import { Map as MapIcon, ChevronRight, Star } from "lucide-react";
 import * as Collapsible from "@radix-ui/react-collapsible";
 import { chartRouteGroups, mapRoutes } from "@/routes";
-import useDebounce from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
 import {
   Tooltip,
@@ -55,9 +53,6 @@ export default function AppSidebar() {
       return next;
     });
   };
-
-  const [query, setQuery] = React.useState("");
-  const debouncedQuery = useDebounce(query, 300);
 
   const FAVORITES_KEY = "favorites";
   const [favorites, setFavorites] = React.useState<string[]>(() => {
@@ -98,59 +93,11 @@ export default function AppSidebar() {
     [favorites, allRoutes]
   );
 
-  const highlight = React.useCallback(
-    (text: string) => {
-      if (!debouncedQuery) return text;
-      const index = text.toLowerCase().indexOf(debouncedQuery.toLowerCase());
-      if (index === -1) return text;
-      return (
-        <>
-          {text.slice(0, index)}
-          <span className="bg-sidebar-accent text-sidebar-accent-foreground rounded-sm">
-            {text.slice(index, index + debouncedQuery.length)}
-          </span>
-          {text.slice(index + debouncedQuery.length)}
-        </>
-      );
-    },
-    [debouncedQuery]
-  );
-
-  const filteredChartGroups = React.useMemo(() => {
-    const q = debouncedQuery.toLowerCase();
-    if (!q) return chartRouteGroups;
-    return chartRouteGroups
-      .map((group) => {
-        if (group.label.toLowerCase().includes(q)) {
-          return group;
-        }
-        const items = group.items.filter((item) =>
-          item.label.toLowerCase().includes(q)
-        );
-        return items.length ? { ...group, items } : null;
-      })
-      .filter(Boolean) as typeof chartRouteGroups;
-  }, [debouncedQuery]);
-
-  const filteredMapRoutes = React.useMemo(() => {
-    const q = debouncedQuery.toLowerCase();
-    if (!q) return mapRoutes;
-    return mapRoutes.filter((route) =>
-      route.label.toLowerCase().includes(q)
-    );
-  }, [debouncedQuery]);
-
   return (
     <TooltipProvider>
       <Sidebar>
         <SidebarHeader />
         <SidebarContent>
-        <SidebarInput
-          placeholder="Search..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="mb-2"
-        />
         {favoriteRoutes.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>Favorites</SidebarGroupLabel>
@@ -169,7 +116,7 @@ export default function AppSidebar() {
                             to={route.to}
                             className="flex w-full items-center"
                           >
-                            <span className="flex-1">{highlight(route.label)}</span>
+                            <span className="flex-1">{route.label}</span>
                             <Star
                               className="ml-auto h-4 w-4 fill-yellow-400 text-yellow-400"
                               onClick={(e) => {
@@ -193,12 +140,12 @@ export default function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-        {filteredChartGroups.length > 0 && (
+        {chartRouteGroups.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>Charts</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {filteredChartGroups.map((group, index) => {
+                {chartRouteGroups.map((group, index) => {
                   const Icon = group.icon;
                   const contentId = `chart-group-${index}`;
                   const isOpen = openGroups[group.label] ?? index === 0;
@@ -216,7 +163,7 @@ export default function AppSidebar() {
                             aria-controls={contentId}
                           >
                             <Icon className="mr-2 h-4 w-4" />
-                            {highlight(group.label)}
+                            {group.label}
                             <ChevronRight className="ml-auto transition-transform data-[state=open]:rotate-90" />
                           </SidebarMenuButton>
                         </Collapsible.Trigger>
@@ -236,7 +183,7 @@ export default function AppSidebar() {
                                         className="flex w-full items-center"
                                       >
                                         <span className="flex-1">
-                                          {highlight(route.label)}
+                                          {route.label}
                                         </span>
                                         <Star
                                           className={cn(
@@ -272,12 +219,12 @@ export default function AppSidebar() {
             </SidebarGroupContent>
           </SidebarGroup>
         )}
-        {filteredMapRoutes.length > 0 && (
+        {mapRoutes.length > 0 && (
           <SidebarGroup>
             <SidebarGroupLabel>Maps</SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
-                {filteredMapRoutes.map((route) => (
+                {mapRoutes.map((route) => (
                   <SidebarMenuItem key={route.to}>
                     <Tooltip>
                       <TooltipTrigger asChild>
@@ -291,7 +238,7 @@ export default function AppSidebar() {
                             className="flex w-full items-center"
                           >
                             <MapIcon className="mr-2" />
-                            <span className="flex-1">{highlight(route.label)}</span>
+                            <span className="flex-1">{route.label}</span>
                             <Star
                               className={cn(
                                 "ml-auto h-4 w-4",
