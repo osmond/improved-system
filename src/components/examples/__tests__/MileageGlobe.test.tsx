@@ -124,4 +124,26 @@ describe("MileageGlobe", () => {
       expect(screen.getByText("Total: 5 miles")).toBeInTheDocument();
     });
   });
+
+  it("renders fallback message when world data fails to load", async () => {
+    mockUseMileageTimeline.mockReturnValue([
+      {
+        date: "2024-01-01",
+        miles: 5,
+        cumulativeMiles: 5,
+        coordinates: [
+          [0, 0],
+          [10, 10],
+        ],
+      },
+    ]);
+
+    global.fetch = vi.fn().mockRejectedValue(new Error("network"));
+
+    render(<MileageGlobe />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/Map unavailable/i)).toBeInTheDocument();
+    });
+  });
 });
