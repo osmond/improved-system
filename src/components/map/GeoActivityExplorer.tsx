@@ -28,7 +28,7 @@ import StateCityBreakdown from "./StateCityBreakdown";
 import useDebounce from "@/hooks/useDebounce";
 
 import StateVisitCallout from "./StateVisitCallout";
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 
 
 import statesTopo from "@/lib/us-states.json";
@@ -54,6 +54,8 @@ export default function GeoActivityExplorer() {
   const debouncedQuery = useDebounce(query, 300);
 
   const mapRef = useRef<MapRef | null>(null);
+
+  const prefersReducedMotion = useReducedMotion();
 
 
   const now = new Date();
@@ -284,6 +286,9 @@ export default function GeoActivityExplorer() {
                   "fill-color": ["get", "color"],
                   "fill-outline-color": "hsl(var(--border))",
                 }}
+                {...(!prefersReducedMotion
+                  ? ({ "fill-color-transition": { duration: 300 } } as any)
+                  : {})}
               />
               {selectedState && (
                 <Layer
@@ -318,7 +323,7 @@ export default function GeoActivityExplorer() {
                       <motion.circle
                         r={3}
                         fill="hsl(var(--primary))"
-                        className="transition-transform motion-reduce:transition-none hover:scale-125"
+                        className="motion-safe:transition-transform motion-safe:hover:scale-125 motion-reduce:transition-none motion-reduce:hover:scale-100"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
@@ -336,13 +341,16 @@ export default function GeoActivityExplorer() {
                 count: number
               }) => (
                 <Marker key={m.abbr} longitude={m.coords[0]} latitude={m.coords[1]}>
-                  <button
+                  <motion.button
                     onClick={() => selectState(m.abbr)}
                     aria-label={`${m.abbr} ${m.visited ? "visited" : "not visited"}`}
-                    className="bg-transparent border-none p-0 cursor-pointer"
+                    className="bg-transparent border-none p-0 cursor-pointer motion-safe:transition motion-safe:ease-out motion-safe:hover:scale-110 motion-safe:hover:opacity-80 motion-reduce:transition-none motion-reduce:hover:scale-100 motion-reduce:hover:opacity-100"
+                    initial={prefersReducedMotion ? false : { opacity: 0, scale: 0 }}
+                    animate={{ opacity: 1, scale: selectedState === m.abbr ? 1.2 : 1 }}
+                    transition={{ duration: prefersReducedMotion ? 0 : 0.2, ease: "easeOut" }}
                   >
                     <Badge>{m.count}</Badge>
-                  </button>
+                  </motion.button>
                 </Marker>
               )
             )}
