@@ -17,6 +17,7 @@ import { Polygon } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/ui/button"
 import { scaleLinear } from "d3-scale"
 import type { ChartConfig } from "@/components/ui/chart"
 import { useEffect, useState } from "react"
@@ -31,9 +32,13 @@ interface GoodDayMapProps {
 }
 
 export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: GoodDayMapProps) {
-  if (!data) return <Skeleton className="h-64" />
+  const [sampleData, setSampleData] = useState<SessionPoint[] | null>(null)
 
-  const goodSessions = data.filter(
+  if (!data && !sampleData) return <Skeleton className="h-64" />
+
+  const sessions = sampleData ?? data ?? []
+
+  const goodSessions = sessions.filter(
     (d) =>
       d.good &&
       (!condition || d.condition === condition) &&
@@ -41,17 +46,58 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
       d.startHour <= hourRange[1],
   )
 
-  if (!goodSessions.length)
+  if (!goodSessions.length) {
+    const sampleSessions: SessionPoint[] = [
+      {
+        x: 1,
+        y: 2,
+        cluster: 0,
+        good: true,
+        pace: 7.5,
+        paceDelta: 0.3,
+        heartRate: 140,
+        temperature: 65,
+        humidity: 40,
+        wind: 5,
+        startHour: 8,
+        duration: 30,
+        lat: 0,
+        lon: 0,
+        condition: "Sunny",
+      },
+      {
+        x: 2,
+        y: 1.5,
+        cluster: 1,
+        good: true,
+        pace: 8,
+        paceDelta: 0.6,
+        heartRate: 150,
+        temperature: 70,
+        humidity: 50,
+        wind: 6,
+        startHour: 9,
+        duration: 40,
+        lat: 0,
+        lon: 0,
+        condition: "Cloudy",
+      },
+    ]
     return (
       <ChartCard
         title="Good Day Sessions"
         description="Sessions exceeding expectations"
       >
-        <div className="flex items-center justify-center h-64 md:h-80 lg:h-96 text-sm text-muted-foreground">
-          No sessions match the selected filters.
+        <div className="flex flex-col items-center justify-center gap-4 h-64 md:h-80 lg:h-96 text-sm text-muted-foreground text-center">
+          <p>No sessions match the selected filters.</p>
+          <p>Record runs to build up history or load sample data to explore this chart.</p>
+          <Button size="sm" onClick={() => setSampleData(sampleSessions)}>
+            Load sample data
+          </Button>
         </div>
       </ChartCard>
     )
+  }
   const style = getComputedStyle(document.documentElement)
   const start = `hsl(${style.getPropertyValue("--chart-4")})`
   const end = `hsl(${style.getPropertyValue("--chart-6")})`
@@ -69,7 +115,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
 
   useEffect(() => {
     setAnimKey((k) => k + 1)
-  }, [condition, hourRange])
+  }, [condition, hourRange, sampleData])
 
   const clusters = Array.from(new Set(colored.map((d) => d.cluster)))
 
