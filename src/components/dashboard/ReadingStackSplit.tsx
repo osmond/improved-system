@@ -7,7 +7,7 @@ import {
   ChartLegend,
   ChartLegendContent,
 } from "@/components/ui/chart";
-import { Cell } from "recharts";
+import { Cell, Label } from "recharts";
 import type { ChartConfig } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import useReadingMediumTotals from "@/hooks/useReadingMediumTotals";
@@ -45,6 +45,8 @@ export default function ReadingStackSplit() {
 
   if (!data) return <Skeleton className="h-64" />;
 
+  const total = data.reduce((sum, d) => sum + d.minutes, 0);
+
   const config: ChartConfig = {
     minutes: { label: "Minutes" },
   };
@@ -79,6 +81,22 @@ export default function ReadingStackSplit() {
             {data.map((entry, idx) => (
               <Cell key={entry.medium} fill={`hsl(var(--chart-${idx + 1}))`} />
             ))}
+            <Label
+              content={({ viewBox }) => {
+                const { cx, cy } = viewBox as { cx: number; cy: number };
+                return (
+                  <text
+                    x={cx}
+                    y={cy}
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    className="text-xl font-bold fill-foreground"
+                  >
+                    {`${total} 📚`}
+                  </text>
+                );
+              }}
+            />
           </Pie>
         </PieChart>
       </ChartContainer>

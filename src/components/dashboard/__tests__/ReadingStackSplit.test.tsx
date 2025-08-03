@@ -32,5 +32,6 @@ describe("ReadingStackSplit", () => {
     expect(screen.getByText("Kindle")).toBeInTheDocument();
     expect(container.querySelector("svg.lucide-smartphone")).toBeInTheDocument();
     expect(container.querySelector("svg.lucide-book-open")).toBeInTheDocument();
+    expect(screen.getByText("90 📚")).toBeInTheDocument();
   });
 });

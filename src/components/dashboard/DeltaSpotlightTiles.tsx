@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Card } from '@/components/ui/card'
 import { Skeleton } from '@/components/ui/skeleton'
@@ -19,6 +19,14 @@ interface DeltaSpotlightTilesProps {
 
 export default function DeltaSpotlightTiles({ metrics }: DeltaSpotlightTilesProps) {
   const navigate = useNavigate()
+  const numberFormatter = useMemo(
+    () =>
+      new Intl.NumberFormat(undefined, {
+        notation: 'compact',
+        maximumFractionDigits: 1,
+      }),
+    [],
+  )
   if (!metrics) return <Skeleton className="h-24 w-full" />
 
   return (
@@ -27,6 +35,9 @@ export default function DeltaSpotlightTiles({ metrics }: DeltaSpotlightTilesProp
         const color = `hsl(var(--chart-${idx + 1}))`
         const config = { value: { color } }
         const handleNavigate = () => navigate(`/metrics/${metric.key}`)
+        const prevValue =
+          metric.trend[metric.trend.length - 2]?.value ?? metric.value
+        const deltaAbs = metric.value - prevValue
         return (
           <Card
             key={metric.key}
@@ -40,8 +51,12 @@ export default function DeltaSpotlightTiles({ metrics }: DeltaSpotlightTilesProp
           >
             <div className="flex items-baseline justify-between">
               <span className="text-sm font-medium">{metric.label}</span>
-              <span className={`text-xs ${metric.deltaPct >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {metric.deltaPct >= 0 ? '+' : ''}{(metric.deltaPct * 100).toFixed(0)}%
+              <span className={`text-xs ${deltaAbs >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                {deltaAbs >= 0 ? '+' : '-'}
+                {numberFormatter.format(Math.abs(deltaAbs))}
+                {metric.unit && ` ${metric.unit}`} (
+                {metric.deltaPct >= 0 ? '+' : ''}
+                {(metric.deltaPct * 100).toFixed(0)}%)
               </span>
             </div>
             <div className="text-2xl font-bold">

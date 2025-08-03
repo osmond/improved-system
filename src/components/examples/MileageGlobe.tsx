@@ -3,6 +3,7 @@ import useMileageTimeline from '@/hooks/useMileageTimeline'
 
 interface MileageGlobeProps {
   weekRange?: [number, number]
+
 }
 
 export default function MileageGlobe({ weekRange }: MileageGlobeProps) {
