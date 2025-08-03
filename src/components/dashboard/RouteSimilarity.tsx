@@ -7,8 +7,51 @@ import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
 import Slider from '@/components/ui/slider'
 import { Button } from '@/components/ui/button'
-import { getMockRoutes, Route } from '@/lib/api'
+import { getMockRoutes, Route, saveRoute } from '@/lib/api'
 import useRouteSimilarity from '@/hooks/useRouteSimilarity'
+
+const parseGpx = (text: string, name: string): Route => {
+  const doc = new DOMParser().parseFromString(text, 'application/xml')
+  const pts = Array.from(doc.getElementsByTagName('trkpt'))
+  const points = pts
+    .map((pt) => ({
+      lat: parseFloat(pt.getAttribute('lat') || ''),
+      lon: parseFloat(pt.getAttribute('lon') || ''),
+    }))
+    .filter((p) => !Number.isNaN(p.lat) && !Number.isNaN(p.lon))
+  return { name, points }
+}
+
+const parseGeoJson = (text: string, name: string): Route => {
+  const data = JSON.parse(text)
+  let coords: number[][] = []
+  const extract = (geom: any) => {
+    if (!geom) return
+    if (geom.type === 'LineString') coords = geom.coordinates
+    else if (geom.type === 'MultiLineString') coords = geom.coordinates.flat()
+  }
+  if (data.type === 'FeatureCollection') {
+    for (const f of data.features) {
+      extract(f.geometry)
+      if (coords.length) break
+    }
+  } else if (data.type === 'Feature') {
+    extract(data.geometry)
+  } else {
+    extract(data)
+  }
+  const points = coords.map(([lon, lat]) => ({ lat, lon }))
+  const routeName = data.properties?.name || data.name || name
+  return { name: routeName, points }
+}
+
+const parseRouteFile = async (file: File): Promise<Route> => {
+  const text = await file.text()
+  const name = file.name.replace(/\.[^/.]+$/, '')
+  if (file.name.toLowerCase().endsWith('.gpx') || text.trim().startsWith('<'))
+    return parseGpx(text, name)
+  return parseGeoJson(text, name)
+}
 
 export default function RouteSimilarity() {
   const [routes, setRoutes] = useState<Route[]>([])
@@ -16,6 +59,32 @@ export default function RouteSimilarity() {
   const [routeBIndex, setRouteBIndex] = useState('1')
   const [precision, setPrecision] = useState(3)
   const [error, setError] = useState<string | null>(null)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
+
+  const handleImportClick = () => fileInputRef.current?.click()
+
+  const handleFileChange = async (
+    e: React.ChangeEvent<HTMLInputElement>,
+  ) => {
+    const file = e.target.files?.[0]
+    if (!file) return
+    try {
+      const route = await parseRouteFile(file)
+      setRoutes((prev) => {
+        const newRoutes = [...prev, route]
+        if (prev.length === 0) setRouteAIndex('0')
+        else if (prev.length === 1) setRouteBIndex('1')
+        return newRoutes
+      })
+      try {
+        await saveRoute(route)
+      } catch {}
+    } catch (err) {
+      setError('Failed to import route')
+    } finally {
+      e.target.value = ''
+    }
+  }
 
   const fetchRoutes = async () => {
     try {
@@ -173,6 +242,14 @@ export default function RouteSimilarity() {
             className="w-40"
           />
         </div>
+        <Button onClick={handleImportClick}>Import Route</Button>
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".gpx,.geojson,application/json"
+          className="hidden"
+          onChange={handleFileChange}
+        />
       </div>
       <p>
         Comparing <span className="font-medium">{routeA.name}</span> with{' '}
