@@ -23,6 +23,7 @@ export {
   Tooltip,
   ReferenceLine,
   ReferenceArea,
+  ReferenceDot,
   XAxis,
   YAxis,
   ResponsiveContainer,
