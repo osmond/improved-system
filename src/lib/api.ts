@@ -203,20 +203,34 @@ export interface ActivitySnapshot {
   heartRate: number;
   /** Step count recorded during that hour */
   steps: number;
+  /** Number of foreground app changes during the hour */
+  appChanges: number;
+  /** Combined keyboard and mouse events during the hour */
+  inputCadence: number;
+  /** Identifier for Wi-Fi network or location cluster */
+  location: string;
 }
 
 export function generateMockActivitySnapshots(days = 30): ActivitySnapshot[] {
   const data: ActivitySnapshot[] = [];
+  const locations = ["home", "office", "cafe"];
+  let currentLoc = locations[0];
   for (let i = 0; i < days; i++) {
     const base = new Date();
     base.setDate(base.getDate() - i);
     for (let h = 0; h < 24; h++) {
       const d = new Date(base);
       d.setHours(h, 0, 0, 0);
+      if (Math.random() < 0.1) {
+        currentLoc = locations[Math.floor(Math.random() * locations.length)];
+      }
       data.push({
         timestamp: d.toISOString(),
         heartRate: Math.round(60 + Math.random() * 40),
         steps: Math.floor(50 + Math.random() * 450),
+        appChanges: Math.floor(Math.random() * 6),
+        inputCadence: Math.floor(Math.random() * 200),
+        location: currentLoc,
       });
     }
   }
@@ -1236,7 +1250,16 @@ export type ReadingProbabilityPoint = {
   time: string;
   probability: number;
   intensity: number;
+  avgDuration: number;
+  label: string;
 };
+
+function labelForIntensity(intensity: number): string {
+  if (intensity > 0.66) return "Deep Dive";
+  if (intensity > 0.33) return "Skim";
+  if (intensity > 0) return "Page Turn Panic";
+  return "";
+}
 
 export function generateMockReadingProbability(): ReadingProbabilityPoint[] {
   return Array.from({ length: 24 }, (_, i) => {
@@ -1267,11 +1290,14 @@ export function generateMockReadingProbability(): ReadingProbabilityPoint[] {
 
     // Intensity loosely correlates with probability
     const intensity = probability * (0.5 + Math.random() * 0.5);
+    const avgDuration = 5 + Math.random() * 55;
 
     return {
       time: d.toISOString(),
       probability: +probability.toFixed(2),
       intensity: +intensity.toFixed(2),
+      avgDuration: Math.round(avgDuration),
+      label: labelForIntensity(intensity),
     };
   });
 }
