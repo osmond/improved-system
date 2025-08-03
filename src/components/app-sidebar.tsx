@@ -4,8 +4,9 @@ import {
   SidebarHeader,
   SidebarContent,
   SidebarFooter,
+  SidebarInput,
 } from "@/components/ui/sidebar";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { Map as MapIcon, ChartLine, Settings as SettingsIcon } from "lucide-react";
 import {
   chartRouteGroups,
@@ -20,8 +21,12 @@ import useFavorites from "@/hooks/useFavorites";
 
 export default function AppSidebar() {
   const { pathname } = useLocation();
+  const navigate = useNavigate();
 
   const { favorites, toggleFavorite } = useFavorites();
+
+  const [query, setQuery] = React.useState("");
+  const [highlighted, setHighlighted] = React.useState<string | null>(null);
 
   const allRoutes = React.useMemo(
     () => [
@@ -39,57 +44,155 @@ export default function AppSidebar() {
     [favorites, allRoutes]
   );
 
+  const filteredFavorites = React.useMemo(
+    () =>
+      favoriteRoutes.filter((r) =>
+        r.label.toLowerCase().includes(query.toLowerCase())
+      ),
+    [favoriteRoutes, query]
+  );
+
+  const filteredChartGroups = React.useMemo(
+    () =>
+      chartRouteGroups
+        .map((g) => ({
+          ...g,
+          items: g.items.filter((r) =>
+            r.label.toLowerCase().includes(query.toLowerCase())
+          ),
+        }))
+        .filter((g) => g.items.length > 0),
+    [query]
+  );
+
+  const filteredAnalytics = React.useMemo(
+    () =>
+      analyticsRoutes.filter((r) =>
+        r.label.toLowerCase().includes(query.toLowerCase())
+      ),
+    [query]
+  );
+
+  const filteredSettings = React.useMemo(
+    () =>
+      settingsRoutes.filter((r) =>
+        r.label.toLowerCase().includes(query.toLowerCase())
+      ),
+    [query]
+  );
+
+  const filteredMaps = React.useMemo(
+    () =>
+      mapRoutes.filter((r) =>
+        r.label.toLowerCase().includes(query.toLowerCase())
+      ),
+    [query]
+  );
+
+  React.useEffect(() => {
+    const first = [
+      ...filteredFavorites,
+      ...filteredChartGroups.flatMap((g) => g.items),
+      ...filteredAnalytics,
+      ...filteredSettings,
+      ...filteredMaps,
+    ][0];
+    setHighlighted(first?.to ?? null);
+  }, [
+    filteredFavorites,
+    filteredChartGroups,
+    filteredAnalytics,
+    filteredSettings,
+    filteredMaps,
+  ]);
+
+  const handleKeyDown = (
+    e: React.KeyboardEvent<HTMLInputElement>
+  ) => {
+    if (e.key === "Enter" && highlighted) {
+      if (e.metaKey || e.ctrlKey) {
+        document.dispatchEvent(
+          new KeyboardEvent("keydown", {
+            key: "k",
+            metaKey: e.metaKey,
+            ctrlKey: e.ctrlKey,
+          })
+        );
+      } else {
+        navigate(highlighted);
+      }
+    }
+  };
+
   return (
     <TooltipProvider>
       <Sidebar>
         <SidebarHeader />
         <SidebarContent>
-          {favoriteRoutes.length > 0 && (
+          <div className="p-2">
+            <SidebarInput
+              placeholder="Filter menu..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+              onKeyDown={handleKeyDown}
+            />
+          </div>
+          {filteredFavorites.length > 0 && (
             <NavSection
               label="Favorites"
-              routes={favoriteRoutes}
+              routes={filteredFavorites}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              highlighted={highlighted}
+              setHighlighted={setHighlighted}
             />
           )}
-          {chartRouteGroups.length > 0 && (
+          {filteredChartGroups.length > 0 && (
             <NavSection
               label="Charts"
-              groups={chartRouteGroups}
+              groups={filteredChartGroups}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              highlighted={highlighted}
+              setHighlighted={setHighlighted}
             />
           )}
-          {analyticsRoutes.length > 0 && (
+          {filteredAnalytics.length > 0 && (
             <NavSection
               label="Analytics"
-              routes={analyticsRoutes}
+              routes={filteredAnalytics}
               icon={ChartLine}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              highlighted={highlighted}
+              setHighlighted={setHighlighted}
             />
           )}
-          {settingsRoutes.length > 0 && (
+          {filteredSettings.length > 0 && (
             <NavSection
               label="Settings"
-              routes={settingsRoutes}
+              routes={filteredSettings}
               icon={SettingsIcon}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              highlighted={highlighted}
+              setHighlighted={setHighlighted}
             />
           )}
-          {mapRoutes.length > 0 && (
+          {filteredMaps.length > 0 && (
             <NavSection
               label="Maps"
-              routes={mapRoutes}
+              routes={filteredMaps}
               icon={MapIcon}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              highlighted={highlighted}
+              setHighlighted={setHighlighted}
             />
           )}
         </SidebarContent>
