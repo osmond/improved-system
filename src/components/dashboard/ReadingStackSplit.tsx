@@ -14,6 +14,7 @@ import type { ChartConfig } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
 import useReadingMediumTotals from "@/hooks/useReadingMediumTotals";
 import { Skeleton } from "@/components/ui/skeleton";
+import { type ReadingMedium } from "@/lib/api";
 import {
   Smartphone,
   Monitor,
@@ -25,7 +26,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 
-const labels: Record<string, string> = {
+const labels: Record<ReadingMedium, string> = {
   phone: "Phone",
   computer: "Computer",
   tablet: "Tablet",
@@ -34,7 +35,7 @@ const labels: Record<string, string> = {
   other: "Other",
 };
 
-const icons: Record<string, LucideIcon> = {
+const icons: Record<ReadingMedium, LucideIcon> = {
   phone: Smartphone,
   computer: Monitor,
   tablet: Tablet,
