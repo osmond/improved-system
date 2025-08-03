@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ResponsiveContainer,
   ScatterChart,
@@ -17,6 +17,7 @@ interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
+  cellSize?: number; // optional explicit cell size
 }
 
 interface CellData {
@@ -24,8 +25,6 @@ interface CellData {
   y: number; // row index
   value: number;
 }
-
-const cellSize = 24;
 
 // simple blue to red scale
 function colorScale(v: number) {
@@ -38,8 +37,26 @@ export default function CorrelationRippleMatrix({
   matrix,
   labels,
   drilldown = {},
+  cellSize: cellSizeProp,
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? 24);
+
+  useEffect(() => {
+    if (cellSizeProp !== undefined) return;
+    const update = () => {
+      if (containerRef.current) {
+        setCellSize(containerRef.current.clientWidth / labels.length);
+      }
+    };
+    update();
+    const observer = new ResizeObserver(() => update());
+    if (containerRef.current) {
+      observer.observe(containerRef.current);
+    }
+    return () => observer.disconnect();
+  }, [cellSizeProp, labels.length]);
 
   const heatData: CellData[] = matrix.flatMap((row, y) =>
     row.map((value, x) => ({ x, y, value }))
@@ -52,11 +69,8 @@ export default function CorrelationRippleMatrix({
   const activeKey = active ? `${active.y}-${active.x}` : null;
   const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
 
-  const width = labels.length * cellSize;
-  const height = labels.length * cellSize;
-
   return (
-    <div className="relative" style={{ width, height }}>
+    <div ref={containerRef} className="relative w-full aspect-square">
       <ResponsiveContainer width="100%" height="100%">
         <ScatterChart margin={{ top: 20, right: 20, bottom: 20, left: 20 }}>
           <XAxis
@@ -67,6 +81,7 @@ export default function CorrelationRippleMatrix({
             interval={0}
             tickLine={false}
             axisLine={false}
+            tick={{ angle: -45, textAnchor: "end", dy: 8, dx: -5 }}
           />
           <YAxis
             type="number"
