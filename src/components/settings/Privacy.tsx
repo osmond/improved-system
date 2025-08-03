@@ -7,6 +7,11 @@ import {
   purgeOldLocationData,
   setRetentionDays,
 } from "@/lib/locationStore";
+import {
+  clearFocusHistory,
+  exportFocusHistory,
+  purgeOldFocusHistory,
+} from "@/hooks/useFocusHistory";
 
 export default function Privacy() {
   const [backgroundLocation, setBackgroundLocation] = useState(false);
@@ -28,20 +33,24 @@ export default function Privacy() {
   }
 
   async function exportData() {
-    const data = await exportLocationData();
+    const data = {
+      location: await exportLocationData(),
+      focus: exportFocusHistory(),
+    };
     const blob = new Blob([JSON.stringify(data, null, 2)], {
       type: "application/json",
     });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "location-data.json";
+    a.download = "privacy-data.json";
     a.click();
     URL.revokeObjectURL(url);
   }
 
   async function clearHistory() {
     await clearLocationData();
+    clearFocusHistory();
   }
 
   function updateRetention(e: React.ChangeEvent<HTMLInputElement>) {
@@ -49,6 +58,7 @@ export default function Privacy() {
     setRetention(days);
     setRetentionDays(days);
     purgeOldLocationData(days);
+    purgeOldFocusHistory(days);
   }
 
   return (
