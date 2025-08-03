@@ -18,12 +18,14 @@ import {
 import NavSection from "@/components/nav-section";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useFavorites from "@/hooks/useFavorites";
+import useRecentViews from "@/hooks/useRecentViews";
 
 export default function AppSidebar() {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 
   const { favorites, toggleFavorite } = useFavorites();
+  const { recentViews } = useRecentViews();
 
   const [query, setQuery] = React.useState("");
   const [highlighted, setHighlighted] = React.useState<string | null>(null);
@@ -44,12 +46,28 @@ export default function AppSidebar() {
     [favorites, allRoutes]
   );
 
+  const recentRoutes = React.useMemo(
+    () =>
+      recentViews
+        .map((to) => allRoutes.find((r) => r.to === to))
+        .filter(Boolean) as typeof allRoutes,
+    [recentViews, allRoutes]
+  );
+
   const filteredFavorites = React.useMemo(
     () =>
       favoriteRoutes.filter((r) =>
         r.label.toLowerCase().includes(query.toLowerCase())
       ),
     [favoriteRoutes, query]
+  );
+
+  const filteredRecent = React.useMemo(
+    () =>
+      recentRoutes.filter((r) =>
+        r.label.toLowerCase().includes(query.toLowerCase())
+      ),
+    [recentRoutes, query]
   );
 
   const filteredChartGroups = React.useMemo(
@@ -92,6 +110,7 @@ export default function AppSidebar() {
   React.useEffect(() => {
     const first = [
       ...filteredFavorites,
+      ...filteredRecent,
       ...filteredChartGroups.flatMap((g) => g.items),
       ...filteredAnalytics,
       ...filteredSettings,
@@ -100,6 +119,7 @@ export default function AppSidebar() {
     setHighlighted(first?.to ?? null);
   }, [
     filteredFavorites,
+    filteredRecent,
     filteredChartGroups,
     filteredAnalytics,
     filteredSettings,
@@ -141,6 +161,17 @@ export default function AppSidebar() {
             <NavSection
               label="Favorites"
               routes={filteredFavorites}
+              pathname={pathname}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              highlighted={highlighted}
+              setHighlighted={setHighlighted}
+            />
+          )}
+          {filteredRecent.length > 0 && (
+            <NavSection
+              label="Recent"
+              routes={filteredRecent}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
