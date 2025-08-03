@@ -46,9 +46,16 @@ const icons: Record<ReadingMedium, LucideIcon> = {
 
 export default function ReadingStackSplit() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
-  const data = useReadingMediumTotals();
+  const { data, loading, error } = useReadingMediumTotals();
 
-  if (!data) return <Skeleton className="h-64" />;
+  if (loading) return <Skeleton className="h-64" />;
+  if (error)
+    return (
+      <div className="flex h-64 items-center justify-center text-sm text-destructive">
+        Failed to load reading data
+      </div>
+    );
+  if (!data) return null;
 
   const total = data.reduce((sum, d) => sum + d.minutes, 0);
 

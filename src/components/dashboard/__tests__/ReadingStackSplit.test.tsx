@@ -18,10 +18,14 @@ vi.mock("recharts", async () => {
 
 vi.mock("@/hooks/useReadingMediumTotals", () => ({
   __esModule: true,
-  default: () => [
-    { medium: "phone", minutes: 30 },
-    { medium: "kindle", minutes: 60 },
-  ],
+  default: () => ({
+    data: [
+      { medium: "phone", minutes: 30 },
+      { medium: "kindle", minutes: 60 },
+    ],
+    loading: false,
+    error: null,
+  }),
 }));
 
 describe("ReadingStackSplit", () => {
