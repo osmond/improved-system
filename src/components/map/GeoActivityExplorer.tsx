@@ -16,6 +16,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
+import StateCityBreakdown from "./StateCityBreakdown";
 
 import useDebounce from "@/hooks/useDebounce";
 
@@ -365,17 +366,7 @@ export default function GeoActivityExplorer() {
                     <Badge>{s.totalMiles}mi</Badge>
                   </span>
                 </summary>
-                <ul className="text-sm space-y-1 mt-2">
-                  {s.cities.map((c) => (
-                    <li key={c.name} className="flex justify-between px-2">
-                      <span>{c.name}</span>
-                      <span className="flex gap-2">
-                        <Badge>{c.days}d</Badge>
-                        <Badge>{c.miles}mi</Badge>
-                      </span>
-                    </li>
-                  ))}
-                </ul>
+                <StateCityBreakdown cities={s.cities} />
               </details>
             ))}
           </div>
