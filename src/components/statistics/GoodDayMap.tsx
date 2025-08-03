@@ -34,6 +34,13 @@ interface GoodDayMapProps {
 
 export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: GoodDayMapProps) {
   const [sampleData, setSampleData] = useState<SessionPoint[] | null>(null)
+  const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
+  const [active, setActive] = useState<SessionPoint | null>(null)
+  const [animKey, setAnimKey] = useState(0)
+
+  useEffect(() => {
+    setAnimKey((k) => k + 1)
+  }, [condition, hourRange, sampleData])
 
   if (!data && !sampleData) return <Skeleton className="h-64" />
 
@@ -110,7 +117,6 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
   const minDelta = Math.min(...goodSessions.map((d) => d.paceDelta))
   const maxDelta = Math.max(...goodSessions.map((d) => d.paceDelta))
   const colorScale = scaleLinear<string>().domain([minDelta, maxDelta]).range([start, end])
-  const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
   const colored = goodSessions.map((s) => ({
     ...s,
     fill: colorScale(s.paceDelta),
@@ -142,13 +148,6 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
       }
     })
   }
-
-  const [active, setActive] = useState<SessionPoint | null>(null)
-  const [animKey, setAnimKey] = useState(0)
-
-  useEffect(() => {
-    setAnimKey((k) => k + 1)
-  }, [condition, hourRange, sampleData])
 
   const clusters = Array.from(new Set(colored.map((d) => d.cluster)))
 
