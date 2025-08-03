@@ -233,6 +233,7 @@ export default function GeoActivityExplorer() {
         config={legendConfig}
         title="State Visits"
         className="h-60 md:h-80 lg:h-96 space-y-6"
+        disableResponsive
       >
       <>
       <div className="flex gap-4 mb-4">
