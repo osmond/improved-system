@@ -46,6 +46,7 @@ import FocusHistoryPage from "@/pages/FocusHistory";
 import InterventionSettingsPage from "@/pages/InterventionSettings";
 
 import PrivacyDashboardPage from "@/pages/PrivacyDashboard";
+import BehavioralCharterMapPage from "@/pages/BehavioralCharterMap";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
@@ -106,6 +107,7 @@ function App() {
               <Route path="charts/radial-chart-grid" element={<RadialChartGridPage />} />
               <Route path="focus-history" element={<FocusHistoryPage />} />
               <Route path="settings" element={<InterventionSettingsPage />} />
+              <Route path="behavioral-charter-map" element={<BehavioralCharterMapPage />} />
             </Route>
           </Routes>
         </Layout>
