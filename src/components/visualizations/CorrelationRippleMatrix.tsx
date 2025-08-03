@@ -18,6 +18,7 @@ interface CorrelationRippleMatrixProps {
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
   cellSize?: number; // optional explicit cell size
+  showValues?: boolean; // toggle numeric annotations
 }
 
 interface CellData {
@@ -38,6 +39,7 @@ export default function CorrelationRippleMatrix({
   labels,
   drilldown = {},
   cellSize: cellSizeProp,
+  showValues = true,
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -92,23 +94,56 @@ export default function CorrelationRippleMatrix({
             tickLine={false}
             axisLine={false}
           />
-          <Scatter data={heatData} shape={(props: any) => {
-            const { cx, cy, payload } = props;
-            const x = cx - cellSize / 2;
-            const y = cy - cellSize / 2;
-            return (
-              <Rectangle
-                x={x}
-                y={y}
-                width={cellSize}
-                height={cellSize}
-                fill={colorScale(payload.value)}
-                stroke="#ffffff"
-                onClick={() => handleCellClick(payload as CellData)}
-                cursor="pointer"
-              />
-            );
-          }} />
+          <Scatter
+            data={heatData}
+            shape={(props: any) => {
+              const { cx, cy, payload } = props;
+              const x = cx - cellSize / 2;
+              const y = cy - cellSize / 2;
+              return (
+                <g>
+                  <Rectangle
+                    x={x}
+                    y={y}
+                    width={cellSize}
+                    height={cellSize}
+                    fill={colorScale(payload.value)}
+                    stroke="#ffffff"
+                    onClick={() => handleCellClick(payload as CellData)}
+                    cursor="pointer"
+                  />
+                  {showValues && (
+                    <text
+                      x={cx}
+                      y={cy}
+                      textAnchor="middle"
+                      dominantBaseline="central"
+                      pointerEvents="none"
+                      className="fill-black text-[10px]"
+                    >
+                      {payload.value.toFixed(2)}
+                    </text>
+                  )}
+                </g>
+              );
+            }}
+          />
+          <Tooltip
+            content={({ active, payload }) => {
+              if (active && payload && payload.length) {
+                const cell = payload[0].payload as CellData;
+                const xLabel = labels[cell.x] ?? "";
+                const yLabel = labels[cell.y] ?? "";
+                return (
+                  <div className="bg-white p-2 border rounded shadow">
+                    <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
+                    <div>{cell.value.toFixed(2)}</div>
+                  </div>
+                );
+              }
+              return null;
+            }}
+          />
         </ScatterChart>
       </ResponsiveContainer>
       {active && chartData.length > 0 && (
