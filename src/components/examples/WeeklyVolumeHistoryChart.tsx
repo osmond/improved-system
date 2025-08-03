@@ -15,10 +15,12 @@ import ChartCard from '@/components/dashboard/ChartCard'
 import type { ChartConfig } from '@/components/ui/chart'
 import useWeeklyVolumeHistory from '@/hooks/useWeeklyVolumeHistory'
 import { Skeleton } from '@/components/ui/skeleton'
+import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 export default function WeeklyVolumeHistoryChart() {
   const data = useWeeklyVolumeHistory()
   const [range, setRange] = useState<[number, number]>([0, 0])
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     if (data) {
@@ -70,7 +72,15 @@ export default function WeeklyVolumeHistoryChart() {
               />
             }
           />
-          <Bar dataKey="miles" fill="var(--color-miles)" radius={2} animationDuration={300} />
+          <Bar
+            dataKey="miles"
+            fill="var(--color-miles)"
+            radius={2}
+            animationDuration={prefersReducedMotion ? 0 : 300}
+            animationEasing="ease-in-out"
+            isAnimationActive={!prefersReducedMotion}
+            className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
+          />
         </BarChart>
       </ChartContainer>
       <div className="mt-4">

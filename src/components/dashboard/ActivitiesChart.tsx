@@ -17,6 +17,7 @@ import useDashboardFilters from "@/hooks/useDashboardFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { chartColors } from "@/lib/chartColors";
 import useSelection from "@/hooks/useSelection";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 const chartConfig = {
   distance: {
@@ -33,6 +34,7 @@ export function ActivitiesChart() {
   const data = useGarminData();
   const { activity, range } = useDashboardFilters();
   const { selected, toggle } = useSelection();
+  const prefersReducedMotion = usePrefersReducedMotion();
   if (!data) return <Skeleton className="h-60 md:col-span-2" />;
   let activities = data.activities;
 
@@ -86,7 +88,10 @@ export function ActivitiesChart() {
             type="monotone"
             dataKey="distance"
             stroke={chartConfig.distance.color}
-            animationDuration={300}
+            animationDuration={prefersReducedMotion ? 0 : 300}
+            animationEasing="ease-in-out"
+            isAnimationActive={!prefersReducedMotion}
+            className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
           />
         )}
         {(!selected.length || selected.includes("duration")) && (
@@ -95,7 +100,10 @@ export function ActivitiesChart() {
             type="monotone"
             dataKey="duration"
             stroke={chartConfig.duration.color}
-            animationDuration={300}
+            animationDuration={prefersReducedMotion ? 0 : 300}
+            animationEasing="ease-in-out"
+            isAnimationActive={!prefersReducedMotion}
+            className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
           />
         )}
       </LineChart>

@@ -4,6 +4,7 @@ import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/comp
 import { Skeleton } from '@/components/ui/skeleton'
 import { getFragilityLevel } from '@/lib/fragility'
 import useSelection from '@/hooks/useSelection'
+import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 export interface FragilityGaugeProps {
   /** Diameter of the gauge in pixels */
@@ -19,10 +20,15 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
   const fragility = useFragilityIndex()
   const [displayIndex, setDisplayIndex] = useState(0)
   const { selected, toggle } = useSelection()
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     if (!fragility) return
     const { index } = fragility
+    if (prefersReducedMotion) {
+      setDisplayIndex(index)
+      return
+    }
     setDisplayIndex(0)
     let start: number | null = null
     const duration = 500
@@ -35,7 +41,7 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
     }
     frame = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(frame)
-  }, [fragility])
+  }, [fragility, prefersReducedMotion])
 
   if (!fragility) return <Skeleton className="h-32" />
   const { index } = fragility
@@ -82,7 +88,12 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+                className="motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-in-out hover:opacity-80"
+                style={{
+                  transition: prefersReducedMotion
+                    ? 'none'
+                    : 'stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)',
+                }}
               />
             </svg>
             <span className="mt-2 text-lg font-bold tabular-nums">

@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface AcwrGaugeProps {
   /** Array of daily training load values ordered from oldest to newest */
@@ -29,6 +30,7 @@ export function AcwrGauge({
 }: AcwrGaugeProps) {
   const ratio = useAcwr(loads);
   const normalized = Math.min(Math.max(ratio, 0), 2) / 2; // 0-2 mapped to 0-1
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   const radius = size / 2 - strokeWidth / 2;
   const circumference = Math.PI * radius; // half circle
@@ -73,6 +75,12 @@ export function AcwrGauge({
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
+                className="motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-in-out hover:opacity-80"
+                style={{
+                  transition: prefersReducedMotion
+                    ? "none"
+                    : "stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)",
+                }}
               />
             </svg>
             <span className="mt-2 text-lg font-bold tabular-nums">

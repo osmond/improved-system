@@ -20,6 +20,7 @@ import { useRunningStats } from "@/hooks/useRunningStats";
 import { Info } from "lucide-react";
 import type { TooltipProps } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface StepsTrendWithGoalProps {
   data: GarminDay[];
@@ -85,6 +86,7 @@ export function StepsTrendWithGoal({
       .filter((d) => d.condition === 'Rain' || d.condition === 'Snow' || d.temperature >= 85)
       .map((d) => ({ date: d.date, temp: d.temperature, condition: d.condition }))
   }, [stats])
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   const chartConfig = {
     steps: { label: "Pace", color: "hsl(var(--chart-1))" },
@@ -178,9 +180,21 @@ export function StepsTrendWithGoal({
             type="monotone"
             stroke={chartConfig.steps.color}
             fill={`url(#${fillStepsId})`}
-            animationDuration={300}
+            animationDuration={prefersReducedMotion ? 0 : 300}
+            animationEasing="ease-in-out"
+            isAnimationActive={!prefersReducedMotion}
+            className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
           />
-        <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} animationDuration={300} />
+        <Line
+          dataKey="avg"
+          type="monotone"
+          stroke={chartConfig.avg.color}
+          dot={false}
+          animationDuration={prefersReducedMotion ? 0 : 300}
+          animationEasing="ease-in-out"
+          isAnimationActive={!prefersReducedMotion}
+          className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
+        />
       </AreaChart>
       </ChartContainer>
       {weatherNote && (

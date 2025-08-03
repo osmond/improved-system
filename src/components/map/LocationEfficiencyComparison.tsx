@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import useLocationEfficiency from '@/hooks/useLocationEfficiency'
 import statesTopo from '@/lib/us-states.json'
 import CITY_COORDS from '@/lib/cityCoords'
+import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 
 const config = {
@@ -37,6 +38,7 @@ export default function LocationEfficiencyComparison() {
   if (!data) return <Skeleton className="h-64" />
 
   const sorted = [...data].sort((a, b) => b.effort - a.effort)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   return (
     <ChartCard
@@ -79,9 +81,19 @@ export default function LocationEfficiencyComparison() {
               <XAxis dataKey="city" />
               <YAxis />
               <ChartTooltip />
-              <Bar dataKey="effort" fill={config.effort.color} animationDuration={300}>
+              <Bar
+                dataKey="effort"
+                fill={config.effort.color}
+                animationDuration={prefersReducedMotion ? 0 : 300}
+                animationEasing="ease-in-out"
+                isAnimationActive={!prefersReducedMotion}
+              >
                 {sorted.map((l) => (
-                  <Cell key={l.city} aria-label={`Effort for ${l.city}`} />
+                  <Cell
+                    key={l.city}
+                    aria-label={`Effort for ${l.city}`}
+                    className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
+                  />
                 ))}
               </Bar>
             </BarChart>
