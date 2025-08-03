@@ -1,7 +1,7 @@
-import React, { useEffect, useMemo, useState } from 'react'
-import Map, { Source, Layer } from 'react-map-gl/maplibre'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
+import Map, { Source, Layer, MapRef } from 'react-map-gl/maplibre'
 import maplibregl from 'maplibre-gl'
-import { lineString, bezierSpline } from '@turf/turf'
+import { lineString, bezierSpline, bbox } from '@turf/turf'
 
 import { Card } from '@/components/ui/card'
 import { SimpleSelect } from '@/components/ui/select'
@@ -41,9 +41,29 @@ export default function RouteSimilarity() {
     [routeB],
   )
 
-  const center = routeA?.points[0]
+  const bounds = useMemo(() => {
+    if (!routeAFeature || !routeBFeature) return null
+    const [minLngA, minLatA, maxLngA, maxLatA] = bbox(routeAFeature)
+    const [minLngB, minLatB, maxLngB, maxLatB] = bbox(routeBFeature)
+    const minLng = Math.min(minLngA, minLngB)
+    const minLat = Math.min(minLatA, minLatB)
+    const maxLng = Math.max(maxLngA, maxLngB)
+    const maxLat = Math.max(maxLatA, maxLatB)
+    return [
+      [minLng, minLat],
+      [maxLng, maxLat],
+    ] as [[number, number], [number, number]]
+  }, [routeAFeature, routeBFeature])
 
-  if (!routeA || !routeB || !center) {
+  const mapRef = useRef<MapRef>(null)
+
+  useEffect(() => {
+    if (bounds && mapRef.current) {
+      mapRef.current.fitBounds(bounds, { padding: 20 })
+    }
+  }, [bounds])
+
+  if (!routeA || !routeB || !routeAFeature || !routeBFeature || !bounds) {
     return <Card className="p-4">Loading routes...</Card>
   }
 
@@ -81,12 +101,11 @@ export default function RouteSimilarity() {
       </p>
       <div className="h-64 w-full">
         <Map
-          key={`${routeAIndex}-${routeBIndex}`}
+          ref={mapRef}
           mapLib={maplibregl}
           initialViewState={{
-            latitude: center.lat,
-            longitude: center.lon,
-            zoom: 13,
+            bounds,
+            fitBoundsOptions: { padding: 20 },
           }}
           style={{ width: '100%', height: '100%' }}
           mapStyle="https://basemaps.cartocdn.com/gl/positron-gl-style/style.json"
