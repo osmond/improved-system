@@ -67,9 +67,12 @@ export function useRunningSessions(): SessionPoint[] | null {
   useEffect(() => {
     function expectedPace(s: RunningSession): number {
       const hour = new Date(s.start ?? s.date).getHours()
-      const tempAdj = (s.weather.temperature - 55) * 0.02
-      const humidAdj = (s.weather.humidity - 50) * 0.01
-      const windAdj = s.weather.wind * 0.01
+      const temp = s.weather.temperature || 55
+      const humidity = s.weather.humidity || 50
+      const wind = s.weather.wind || 0
+      const tempAdj = (temp - 55) * 0.02
+      const humidAdj = (humidity - 50) * 0.01
+      const windAdj = wind * 0.01
       const conditionAdjMap: Record<string, number> = {
         Clear: -0.05,
         Cloudy: 0.02,
@@ -108,7 +111,7 @@ export function useRunningSessions(): SessionPoint[] | null {
             x,
             y,
             cluster: labels[idx],
-            good: sessions[idx].pace < expected - 0.2,
+            good: paceDelta > 0,
             pace: sessions[idx].pace,
             paceDelta,
             heartRate: sessions[idx].heartRate,
