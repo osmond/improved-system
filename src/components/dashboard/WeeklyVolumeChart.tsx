@@ -14,6 +14,7 @@ import useWeeklyVolume from "@/hooks/useWeeklyVolume";
 import { useChartSelection } from "./ChartSelectionContext";
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 function BrushHandle({ x, y, width, height, stroke }: any) {
   const line1 = x + width / 2 - 3;
@@ -47,6 +48,7 @@ export default function WeeklyVolumeChart() {
   const [brushTooltip, setBrushTooltip] = useState<
     { x: number; y: number; start: string; end: string } | null
   >(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     if (data && range.start === null && range.end === null && data.length) {
@@ -98,7 +100,15 @@ export default function WeeklyVolumeChart() {
               }}
             />
             <ChartTooltip />
-            <Bar dataKey="miles" fill="var(--chart-1)" radius={2} animationDuration={300} />
+            <Bar
+              dataKey="miles"
+              fill="var(--chart-1)"
+              radius={2}
+              animationDuration={prefersReducedMotion ? 0 : 300}
+              animationEasing="ease-in-out"
+              isAnimationActive={!prefersReducedMotion}
+              className="motion-safe:transition-opacity motion-safe:duration-300 motion-safe:ease-in-out hover:opacity-80"
+            />
             <Brush
               dataKey="week"
               height={30}

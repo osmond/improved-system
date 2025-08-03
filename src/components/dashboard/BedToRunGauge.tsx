@@ -12,6 +12,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Skeleton } from "@/components/ui/skeleton";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface BedToRunGaugeProps {
   /** Diameter of the gauge in pixels */
@@ -31,6 +32,7 @@ export default function BedToRunGauge({
   safeRange = [0.1, 0.25],
 }: BedToRunGaugeProps) {
   const [ratio, setRatio] = useState<number | null>(null);
+  const prefersReducedMotion = usePrefersReducedMotion();
 
   useEffect(() => {
     Promise.all([getSleepSessions(), getRunBikeVolume()]).then(
@@ -93,6 +95,12 @@ export default function BedToRunGauge({
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
+                className="motion-safe:transition-all motion-safe:duration-500 motion-safe:ease-in-out hover:opacity-80"
+                style={{
+                  transition: prefersReducedMotion
+                    ? "none"
+                    : "stroke-dashoffset 0.5s cubic-bezier(0.4,0,0.2,1)",
+                }}
               />
             </svg>
             <span className="mt-2 text-lg font-bold tabular-nums">
