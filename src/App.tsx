@@ -23,7 +23,6 @@ import BarChartHorizontalPage from "@/pages/charts/BarChartHorizontal";
 import BarChartMixedPage from "@/pages/charts/BarChartMixed";
 import BarChartLabelCustomPage from "@/pages/charts/BarChartLabelCustom";
 import ShoeUsageChartPage from "@/pages/charts/ShoeUsageChart";
-import EquipmentUsageTimelinePage from "@/pages/charts/EquipmentUsageTimeline";
 import PeerBenchmarkBandsPage from "@/pages/charts/PeerBenchmarkBands";
 import TrainingEntropyHeatmapPage from "@/pages/charts/TrainingEntropyHeatmap";
 import PerfVsEnvironmentMatrixPage from "@/pages/charts/PerfVsEnvironmentMatrix";
@@ -75,7 +74,6 @@ function App() {
               <Route path="charts/bar-chart-mixed" element={<BarChartMixedPage />} />
               <Route path="charts/bar-chart-label-custom" element={<BarChartLabelCustomPage />} />
               <Route path="charts/shoe-usage-chart" element={<ShoeUsageChartPage />} />
-              <Route path="charts/equipment-usage-timeline" element={<EquipmentUsageTimelinePage />} />
               <Route path="charts/peer-benchmark-bands" element={<PeerBenchmarkBandsPage />} />
               <Route path="charts/training-entropy-heatmap" element={<TrainingEntropyHeatmapPage />} />
               <Route path="charts/perf-vs-environment-matrix" element={<PerfVsEnvironmentMatrixPage />} />

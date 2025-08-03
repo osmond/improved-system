@@ -1,6 +1,5 @@
 export { default as ActivityByTime } from "./ActivityByTime";
 export { default as AvgDailyMileageRadar } from "./AvgDailyMileageRadar";
-export { default as EquipmentUsageTimeline } from "./EquipmentUsageTimeline";
 export { default as GoodDayMap } from "./GoodDayMap";
 export { default as HabitConsistencyHeatmap } from "./HabitConsistencyHeatmap";
 export { default as PeerBenchmarkBands } from "./PeerBenchmarkBands";

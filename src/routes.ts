@@ -149,15 +149,10 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
         label: "Custom Label Comparison",
         description: "Bar chart demonstrating custom labels",
       },
-      {
+      { 
         to: "/dashboard/charts/shoe-usage-chart",
         label: "Shoe Usage Comparison",
         description: "Compare mileage by shoe",
-      },
-      {
-        to: "/dashboard/charts/equipment-usage-timeline",
-        label: "Equipment Usage Trend",
-        description: "Track equipment usage over time",
       },
       {
         to: "/dashboard/charts/treadmill-vs-outdoor",
