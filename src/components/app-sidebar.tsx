@@ -7,7 +7,12 @@ import {
 } from "@/components/ui/sidebar";
 import { useLocation } from "react-router-dom";
 import { Map as MapIcon, ChartLine } from "lucide-react";
-import { chartRouteGroups, mapRoutes, analyticsRoutes } from "@/routes";
+import {
+  chartRouteGroups,
+  mapRoutes,
+  analyticsRoutes,
+  dashboardRoutes,
+} from "@/routes";
 import NavSection from "@/components/nav-section";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import useFavorites from "@/hooks/useFavorites";
@@ -19,8 +24,7 @@ export default function AppSidebar() {
 
   const allRoutes = React.useMemo(
     () => [
-      ...mapRoutes,
-      ...analyticsRoutes,
+      ...dashboardRoutes.flatMap((g) => g.items),
       ...chartRouteGroups.flatMap((g) => g.items),
     ],
     []

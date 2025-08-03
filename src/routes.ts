@@ -14,6 +14,7 @@ export interface DashboardRoute {
   label: string;
   description?: string;
   tooltip?: string;
+  tags?: string[];
 }
 
 export interface DashboardRouteGroup {
@@ -22,54 +23,6 @@ export interface DashboardRouteGroup {
   items: DashboardRoute[];
 }
 
-
-export const analyticsRoutes: DashboardRoute[] = [
-  {
-    to: "/dashboard/mileage-globe",
-    label: "Global Mileage Map",
-    description: "Visualize mileage across the world using a globe",
-  },
-  {
-    to: "/dashboard/fragility",
-    label: "Fragility Analysis",
-    description: "Review training fragility indicators",
-  },
-  {
-    to: "/dashboard/session-similarity",
-    label: "Session Similarity Analysis",
-    description: "Find training sessions that resemble each other",
-  },
-  {
-    to: "/dashboard/good-day",
-    label: "Good Day Analysis",
-    description: "Identify patterns that contribute to positive days",
-  },
-  {
-    to: "/dashboard/habit-consistency",
-    label: "Habit Consistency Trend",
-    description: "Track how consistently habits are maintained over time",
-  },
-  {
-    to: "/dashboard/statistics",
-    label: "Metric Correlation Matrix",
-    description: "Explore correlations between daily metrics",
-  },
-  {
-    to: "/dashboard/focus-history",
-    label: "Focus History",
-    description: "Review past focus detections and interventions",
-  },
-  {
-    to: "/dashboard/settings",
-    label: "Intervention Settings",
-    description: "Configure reminder preferences",
-  },
-  {
-    to: "/dashboard/behavioral-charter-map",
-    label: "Behavioral Charter Map",
-    description: "Timeline of activity segments with risk scores",
-  },
-];
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
   {
@@ -80,23 +33,73 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
         to: "/dashboard/map",
         label: "State Visits Map",
         description: "View visited states on an interactive map",
+        tags: ["map"],
       },
       {
         to: "/dashboard/route-similarity",
         label: "Route Similarity Analysis",
         description: "Compare routes based on similarity metrics",
+        tags: ["map"],
       },
       {
         to: "/dashboard/route-novelty",
         label: "Route Novelty Analysis",
         description: "Assess how unique a route is compared to known paths",
+        tags: ["map"],
       },
     ],
   },
   {
     label: "Analytics",
     icon: ChartLine,
-    items: analyticsRoutes,
+    items: [
+      {
+        to: "/dashboard/mileage-globe",
+        label: "Global Mileage Map",
+        description: "Visualize mileage across the world using a globe",
+        tags: ["map"],
+      },
+      {
+        to: "/dashboard/fragility",
+        label: "Fragility Analysis",
+        description: "Review training fragility indicators",
+      },
+      {
+        to: "/dashboard/session-similarity",
+        label: "Session Similarity Analysis",
+        description: "Find training sessions that resemble each other",
+      },
+      {
+        to: "/dashboard/good-day",
+        label: "Good Day Analysis",
+        description: "Identify patterns that contribute to positive days",
+      },
+      {
+        to: "/dashboard/habit-consistency",
+        label: "Habit Consistency Trend",
+        description: "Track how consistently habits are maintained over time",
+      },
+      {
+        to: "/dashboard/statistics",
+        label: "Metric Correlation Matrix",
+        description: "Explore correlations between daily metrics",
+      },
+      {
+        to: "/dashboard/focus-history",
+        label: "Focus History",
+        description: "Review past focus detections and interventions",
+      },
+      {
+        to: "/dashboard/settings",
+        label: "Intervention Settings",
+        description: "Configure reminder preferences",
+      },
+      {
+        to: "/dashboard/behavioral-charter-map",
+        label: "Behavioral Charter Map",
+        description: "Timeline of activity segments with risk scores",
+      },
+    ],
   },
   {
     label: "Privacy",
@@ -265,25 +268,11 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
   },
 ];
 
-export const mapRoutes: DashboardRoute[] = [
-  {
-    to: "/dashboard/map",
-    label: "State Visits Map",
-    description: "View visited states on an interactive map",
-  },
-  {
-    to: "/dashboard/route-similarity",
-    label: "Route Similarity Analysis",
-    description: "Compare routes based on similarity metrics",
-  },
-  {
-    to: "/dashboard/route-novelty",
-    label: "Route Novelty Analysis",
-    description: "Assess how unique a route is compared to known paths",
-  },
-  {
-    to: "/dashboard/mileage-globe",
-    label: "Global Mileage Map",
-    description: "Visualize mileage across the world using a globe",
-  },
-];
+const allDashboardRoutes = dashboardRoutes.flatMap((group) => group.items);
+
+export const analyticsRoutes =
+  dashboardRoutes.find((g) => g.label === "Analytics")?.items ?? [];
+
+export const mapRoutes = allDashboardRoutes.filter((route) =>
+  route.tags?.includes("map")
+);
