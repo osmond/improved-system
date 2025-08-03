@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from "react";
 import MileageGlobe from "@/components/examples/MileageGlobe";
 import Slider from "@/components/ui/slider";
+import { Button } from "@/components/ui/button";
 import useWeeklyVolumeHistory from "@/hooks/useWeeklyVolumeHistory";
 
 export default function MileageGlobePage() {
   const weekly = useWeeklyVolumeHistory();
   const [range, setRange] = useState<[number, number] | null>(null);
+  const [autoRotate, setAutoRotate] = useState(true);
 
   useEffect(() => {
     if (weekly) {
@@ -41,8 +43,18 @@ export default function MileageGlobePage() {
           />
         </div>
       )}
-      <div className="mx-auto max-w-md">
-        <MileageGlobe weekRange={range ?? undefined} />
+      <div className="mx-auto max-w-md space-y-2">
+        <div className="flex justify-end">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setAutoRotate((a) => !a)}
+            aria-label={autoRotate ? "Pause rotation" : "Play rotation"}
+          >
+            {autoRotate ? "Pause" : "Play"}
+          </Button>
+        </div>
+        <MileageGlobe weekRange={range ?? undefined} autoRotate={autoRotate} />
       </div>
     </div>
   );
