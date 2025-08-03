@@ -926,13 +926,23 @@ export function generateMockRunningSessions(): RunningSession[] {
     { lat: 29.7604, lon: -95.3698 }, // Houston
   ]
 
+  const conditions = [
+    "Clear",
+    "Cloudy",
+    "Fog",
+    "Drizzle",
+    "Rain",
+    "Snow",
+    "Storm",
+  ];
+
   return Array.from({ length: 30 }, (_, i) => {
-    const pace = +(5 + Math.random() * 3).toFixed(2);
+    const pace = +(4 + Math.random() * 4).toFixed(2);
     const base = new Date();
     base.setDate(base.getDate() - i);
     const startHour = 5 + Math.round(Math.random() * 14); // 5 AM - 7 PM
     base.setHours(startHour, 0, 0, 0);
-    const { lat, lon } = coords[i % coords.length]
+    const { lat, lon } = coords[i % coords.length];
     return {
       id: i + 1,
       pace,
@@ -943,10 +953,10 @@ export function generateMockRunningSessions(): RunningSession[] {
       lat,
       lon,
       weather: {
-        temperature: 0,
-        humidity: 0,
-        wind: 0,
-        condition: "Unknown",
+        temperature: Math.round(45 + Math.random() * 40),
+        humidity: Math.round(30 + Math.random() * 60),
+        wind: Math.round(Math.random() * 15),
+        condition: conditions[i % conditions.length],
       },
     };
   });
@@ -968,7 +978,7 @@ export async function getRunningSessions(): Promise<RunningSession[]> {
     });
     sessions.forEach((s) => {
       const w = map[s.date];
-      if (w) {
+      if (w && (w.temperature || w.humidity || w.wind)) {
         s.weather = {
           temperature: w.temperature,
           humidity: w.humidity,
