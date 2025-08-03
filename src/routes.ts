@@ -22,6 +22,39 @@ export interface DashboardRouteGroup {
 }
 
 
+export const analyticsRoutes: DashboardRoute[] = [
+  {
+    to: "/dashboard/mileage-globe",
+    label: "Global Mileage Map",
+    description: "Visualize mileage across the world using a globe",
+  },
+  {
+    to: "/dashboard/fragility",
+    label: "Fragility Analysis",
+    description: "Review training fragility indicators",
+  },
+  {
+    to: "/dashboard/session-similarity",
+    label: "Session Similarity Analysis",
+    description: "Find training sessions that resemble each other",
+  },
+  {
+    to: "/dashboard/good-day",
+    label: "Good Day Analysis",
+    description: "Identify patterns that contribute to positive days",
+  },
+  {
+    to: "/dashboard/habit-consistency",
+    label: "Habit Consistency Trend",
+    description: "Track how consistently habits are maintained over time",
+  },
+  {
+    to: "/dashboard/statistics",
+    label: "Metric Correlation Matrix",
+    description: "Explore correlations between daily metrics",
+  },
+];
+
 export const dashboardRoutes: DashboardRouteGroup[] = [
   {
     label: "Playground",
@@ -47,38 +80,7 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
   {
     label: "Analytics",
     icon: ChartLine,
-    items: [
-      {
-        to: "/dashboard/mileage-globe",
-        label: "Global Mileage Map",
-        description: "Visualize mileage across the world using a globe",
-      },
-      {
-        to: "/dashboard/fragility",
-        label: "Fragility Analysis",
-        description: "Review training fragility indicators",
-      },
-      {
-        to: "/dashboard/session-similarity",
-        label: "Session Similarity Analysis",
-        description: "Find training sessions that resemble each other",
-      },
-      {
-        to: "/dashboard/good-day",
-        label: "Good Day Analysis",
-        description: "Identify patterns that contribute to positive days",
-      },
-      {
-        to: "/dashboard/habit-consistency",
-        label: "Habit Consistency Trend",
-        description: "Track how consistently habits are maintained over time",
-      },
-      {
-        to: "/dashboard/statistics",
-        label: "Metric Correlation Matrix",
-        description: "Explore correlations between daily metrics",
-      },
-    ],
+    items: analyticsRoutes,
   },
 ];
 
