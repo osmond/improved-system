@@ -116,12 +116,39 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
 
   const star = symbol().type(symbolStar).size(80)
 
-  const AnimatedStar = ({ cx, cy, fill }: { cx?: number; cy?: number; fill?: string }) => (
+  const AnimatedStar = (
+    {
+      cx,
+      cy,
+      fill,
+      payload,
+      onClick,
+      ...rest
+    }: {
+      cx?: number
+      cy?: number
+      fill?: string
+      payload?: SessionPoint
+      onClick?: (data: SessionPoint) => void
+    },
+  ) => (
     <motion.g
       transform={`translate(${cx}, ${cy})`}
       initial={{ scale: 0, opacity: 0 }}
       animate={{ scale: 1, opacity: 1 }}
       transition={{ duration: 0.5 }}
+      role="button"
+      tabIndex={0}
+      aria-label={`Session with pace ${payload ? payload.pace.toFixed(2) : ''} min/mi`}
+      onKeyDown={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault()
+          onClick?.(payload as SessionPoint)
+        }
+      }}
+      onClick={() => onClick?.(payload as SessionPoint)}
+      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+      {...rest}
     >
       <path d={star()} fill={fill} />
     </motion.g>
