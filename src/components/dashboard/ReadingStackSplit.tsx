@@ -6,6 +6,7 @@ import {
   ChartTooltip,
   ChartLegend,
   ChartLegendContent,
+  ResponsiveContainer,
 } from "@/components/ui/chart";
 import { Cell, Label } from "recharts";
 import { useState } from "react";
@@ -63,52 +64,73 @@ export default function ReadingStackSplit() {
   return (
     <ChartCard title="Reading Stack Split" description="Time by device">
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
-        <PieChart width={200} height={160}>
-          <ChartTooltip />
-          <ChartLegend
-            content={<ChartLegendContent />}
-            verticalAlign="bottom"
-            height={24}
-          />
-          <Pie
-            data={data}
-            dataKey="minutes"
-            nameKey="medium"
-            innerRadius={50}
-            paddingAngle={4}
-            cornerRadius={8}
-            label={({ percent }) => `${Math.round(percent * 100)}%`}
-            onMouseEnter={(_, index) => setActiveIndex(index)}
-            onMouseLeave={() => setActiveIndex(null)}
-            isAnimationActive
-            animationDuration={500}
-          >
-            {data.map((entry, idx) => (
-              <Cell
-                key={entry.medium}
-                fill={`hsl(var(--chart-${idx + 1}))`}
-                outerRadius={activeIndex === idx ? 80 : 70}
-                opacity={activeIndex === idx ? 1 : 0.6}
-              />
-            ))}
-            <Label
-              content={({ viewBox }) => {
-                const { cx, cy } = viewBox as { cx: number; cy: number };
-                return (
-                  <text
-                    x={cx}
-                    y={cy}
-                    textAnchor="middle"
-                    dominantBaseline="middle"
-                    className="text-xl font-bold fill-foreground"
-                  >
-                    {`${total} 📚`}
-                  </text>
-                );
-              }}
+        <ResponsiveContainer>
+          <PieChart>
+            <defs>
+              {data.map((_, idx) => (
+                <linearGradient
+                  key={idx}
+                  id={`reading-split-gradient-${idx}`}
+                >
+                  <stop
+                    offset="0%"
+                    stopColor={`hsl(var(--chart-${idx + 1}))`}
+                    stopOpacity={0.8}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={`hsl(var(--chart-${idx + 1}))`}
+                    stopOpacity={0.5}
+                  />
+                </linearGradient>
+              ))}
+            </defs>
+            <ChartTooltip />
+            <ChartLegend
+              content={<ChartLegendContent />}
+              verticalAlign="bottom"
+              height={24}
             />
-          </Pie>
-        </PieChart>
+            <Pie
+              data={data}
+              dataKey="minutes"
+              nameKey="medium"
+              innerRadius="60%"
+              outerRadius="85%"
+              paddingAngle={4}
+              cornerRadius={8}
+              label={({ percent }) => `${Math.round(percent * 100)}%`}
+              onMouseEnter={(_, index) => setActiveIndex(index)}
+              onMouseLeave={() => setActiveIndex(null)}
+              isAnimationActive
+              animationDuration={500}
+            >
+              {data.map((entry, idx) => (
+                <Cell
+                  key={entry.medium}
+                  fill={`url(#reading-split-gradient-${idx})`}
+                  opacity={activeIndex === idx ? 1 : 0.6}
+                />
+              ))}
+              <Label
+                content={({ viewBox }) => {
+                  const { cx, cy } = viewBox as { cx: number; cy: number };
+                  return (
+                    <text
+                      x={cx}
+                      y={cy}
+                      textAnchor="middle"
+                      dominantBaseline="middle"
+                      className="text-xl font-bold fill-foreground"
+                    >
+                      {`${total} 📚`}
+                    </text>
+                  );
+                }}
+              />
+            </Pie>
+          </PieChart>
+        </ResponsiveContainer>
       </ChartContainer>
     </ChartCard>
   );
