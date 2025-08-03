@@ -62,8 +62,8 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
     items: [
       {
         to: "/dashboard/map",
-        label: "Map Exploration",
-        description: "Explore routes and locations on an interactive map",
+        label: "State Visits Map",
+        description: "View visited states on an interactive map",
       },
       {
         to: "/dashboard/route-similarity",
@@ -241,8 +241,8 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
 export const mapRoutes: DashboardRoute[] = [
   {
     to: "/dashboard/map",
-    label: "Map Exploration",
-    description: "Explore routes and locations on an interactive map",
+    label: "State Visits Map",
+    description: "View visited states on an interactive map",
   },
   {
     to: "/dashboard/route-similarity",
