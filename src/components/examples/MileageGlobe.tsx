@@ -15,9 +15,21 @@ export default function MileageGlobe({ weekRange }: MileageGlobeProps) {
   const [worldError, setWorldError] = useState(false)
 
   useEffect(() => {
-    // Simulate loading of world data to satisfy tests
-    fetch('/world-110m.json').catch(() => setWorldError(true))
+
+    // Attempt to load world data, track failure for fallback rendering
+    fetch('/world-110m.json')
+      .then(() => setWorldError(false))
+      .catch(() => setWorldError(true))
+
   }, [])
+
+  if (worldError) {
+    return (
+      <div className='flex items-center justify-center h-96 w-full bg-muted text-muted-foreground rounded'>
+        Map unavailable
+      </div>
+    )
+  }
 
   if (!data) {
     return (
