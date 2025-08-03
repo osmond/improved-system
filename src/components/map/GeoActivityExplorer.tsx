@@ -14,11 +14,6 @@ import { scaleSequential } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
-import {
-  ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
-} from "@/components/ui/chart";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SimpleSelect } from "@/components/ui/select";
 import { Badge } from "@/components/ui/badge";
@@ -123,7 +118,6 @@ export default function GeoActivityExplorer() {
     () => `linear-gradient(to right, ${colorScale(0)}, ${colorScale(maxDays)})`,
     [colorScale, maxDays],
   )
-  const legendConfig = useMemo(() => ({}), [])
 
   const statesGeo = useMemo(() => {
     const fc = feature(
@@ -229,13 +223,7 @@ export default function GeoActivityExplorer() {
   return (
     <>
       <p className="text-sm">This is a work in progress, Andy. It's going to be so rad.</p>
-      <ChartContainer
-        config={legendConfig}
-        title="State Visits"
-        className="h-60 md:h-80 lg:h-96 space-y-6"
-        disableResponsive
-      >
-      <>
+      <div className="flex flex-col text-xs rounded-md bg-card p-4 h-60 md:h-80 lg:h-96 space-y-6">
       <div className="flex gap-4 mb-4">
         <SimpleSelect
           label="Activity"
@@ -434,17 +422,11 @@ export default function GeoActivityExplorer() {
               </Popup>
             )}
           </Map>
-          <ChartLegend
-            payload={[]}
-            content={
-              <ChartLegendContent
-                variant="gradient"
-                min="0"
-                max={`${maxDays}`}
-                gradient={legendGradient}
-              />
-            }
-          />
+          <div className="flex items-center justify-center gap-2 pt-3">
+            <span className="text-muted-foreground">0</span>
+            <div className="h-2 w-24 rounded-sm" style={{ background: legendGradient }} />
+            <span className="text-muted-foreground">{maxDays}</span>
+          </div>
           <StateVisitCallout onSelectState={selectState} />
         </div>
 
@@ -472,10 +454,9 @@ export default function GeoActivityExplorer() {
               </details>
             ))}
           </div>
+          </div>
         </div>
       </div>
-      </>
-    </ChartContainer>
     </>
   );
 }
