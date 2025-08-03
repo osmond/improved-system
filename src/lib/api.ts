@@ -1169,11 +1169,27 @@ const mockMadisonRoutes: Route[] = [
   },
 ];
 
+const uploadedRoutes: Route[] = [];
+
+export async function saveRoute(route: Route): Promise<void> {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      uploadedRoutes.push({ ...route, points: [...route.points] });
+      resolve();
+    }, 100);
+  });
+}
+
 export async function getMockRoutes(): Promise<Route[]> {
   return new Promise((resolve) => {
-    setTimeout(() =>
-      resolve(mockMadisonRoutes.map((r) => ({ ...r, points: [...r.points] }))),
-    200);
+    setTimeout(
+      () =>
+        resolve([
+          ...mockMadisonRoutes.map((r) => ({ ...r, points: [...r.points] })),
+          ...uploadedRoutes.map((r) => ({ ...r, points: [...r.points] })),
+        ]),
+      200,
+    );
   });
 }
 
