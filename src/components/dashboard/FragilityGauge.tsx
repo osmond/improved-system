@@ -3,6 +3,7 @@ import useFragilityIndex from '@/hooks/useFragilityIndex'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getFragilityLevel } from '@/lib/fragility'
+import useSelection from '@/hooks/useSelection'
 
 export interface FragilityGaugeProps {
   /** Diameter of the gauge in pixels */
@@ -17,6 +18,7 @@ export interface FragilityGaugeProps {
 export default function FragilityGauge({ size = 160, strokeWidth = 12 }: FragilityGaugeProps) {
   const fragility = useFragilityIndex()
   const [displayIndex, setDisplayIndex] = useState(0)
+  const { selected, toggle } = useSelection()
 
   useEffect(() => {
     if (!fragility) return
@@ -44,11 +46,18 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
 
   const { color } = getFragilityLevel(index)
 
+  const isDimmed = selected.length && !selected.includes('fragility')
+
   return (
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex flex-col items-center" role="img" aria-label={`Fragility ${displayIndex.toFixed(2)}`}> 
+          <div
+            className={isDimmed ? 'flex flex-col items-center opacity-30' : 'flex flex-col items-center'}
+            role="img"
+            aria-label={`Fragility ${displayIndex.toFixed(2)}`}
+            onClick={() => toggle('fragility')}
+          >
             <svg width={size} height={size / 2} viewBox={`0 0 ${size} ${size / 2}`}>
               <path
                 d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2 - strokeWidth / 2}`}
@@ -67,7 +76,7 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
                 style={{ transition: 'stroke-dashoffset 0.5s ease' }}
               />
             </svg>
-            <span className="mt-2 text-lg font-bold tabular-nums">{displayIndex.toFixed(2)}</span>
+          <span className="mt-2 text-lg font-bold tabular-nums">{displayIndex.toFixed(2)}</span>
           </div>
         </TooltipTrigger>
         <TooltipContent>
