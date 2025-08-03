@@ -2,6 +2,7 @@ import { render, renderHook, screen, fireEvent } from "@testing-library/react";
 import AcwrGauge from "../AcwrGauge";
 import { useAcwr } from "@/hooks/useAcwr";
 import { describe, it, expect, vi } from "vitest";
+vi.mock("@/hooks/usePrefersReducedMotion", () => ({ default: () => true }));
 
 describe("useAcwr", () => {
   it("computes ratio of 7d to 28d load", () => {

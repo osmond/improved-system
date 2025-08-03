@@ -16,6 +16,7 @@ import { useGarminData } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { chartColors } from "@/lib/chartColors";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 const chartConfig = {
   distance: {
@@ -31,6 +32,7 @@ const chartConfig = {
 export function ActivitiesChart() {
   const data = useGarminData();
   const { activity, range } = useDashboardFilters();
+  const prefersReducedMotion = usePrefersReducedMotion();
   if (!data) return <Skeleton className="h-60 md:col-span-2" />;
   let activities = data.activities;
 
@@ -64,8 +66,36 @@ export function ActivitiesChart() {
           content={<ChartTooltipContent labelFormatter={(d) => new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" })} />}
         />
         <ChartLegend content={<ChartLegendContent />} />
-        <Line yAxisId="left" type="monotone" dataKey="distance" stroke={chartConfig.distance.color} animationDuration={300} />
-        <Line yAxisId="right" type="monotone" dataKey="duration" stroke={chartConfig.duration.color} animationDuration={300} />
+        <Line
+          yAxisId="left"
+          type="monotone"
+          dataKey="distance"
+          stroke={chartConfig.distance.color}
+          animationDuration={300}
+          animationEasing="ease-in-out"
+          isAnimationActive={!prefersReducedMotion}
+          className={!prefersReducedMotion ? "transition-all hover:opacity-80" : undefined}
+          style={
+            prefersReducedMotion
+              ? undefined
+              : { transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)" }
+          }
+        />
+        <Line
+          yAxisId="right"
+          type="monotone"
+          dataKey="duration"
+          stroke={chartConfig.duration.color}
+          animationDuration={300}
+          animationEasing="ease-in-out"
+          isAnimationActive={!prefersReducedMotion}
+          className={!prefersReducedMotion ? "transition-all hover:opacity-80" : undefined}
+          style={
+            prefersReducedMotion
+              ? undefined
+              : { transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)" }
+          }
+        />
       </LineChart>
       </ChartContainer>
     </ChartCard>

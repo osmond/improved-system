@@ -17,6 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton'
 import useLocationEfficiency from '@/hooks/useLocationEfficiency'
 import statesTopo from '@/lib/us-states.json'
 import CITY_COORDS from '@/lib/cityCoords'
+import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 
 const config = {
@@ -25,6 +26,7 @@ const config = {
 
 export default function LocationEfficiencyComparison() {
   const data = useLocationEfficiency()
+  const prefersReducedMotion = usePrefersReducedMotion()
   const statesGeo = useMemo(
     () =>
       feature(
@@ -79,7 +81,19 @@ export default function LocationEfficiencyComparison() {
               <XAxis dataKey="city" />
               <YAxis />
               <ChartTooltip />
-              <Bar dataKey="effort" fill={config.effort.color} animationDuration={300}>
+              <Bar
+                dataKey="effort"
+                fill={config.effort.color}
+                animationDuration={300}
+                animationEasing="ease-in-out"
+                isAnimationActive={!prefersReducedMotion}
+                className={!prefersReducedMotion ? 'transition-all hover:opacity-80' : undefined}
+                style={
+                  prefersReducedMotion
+                    ? undefined
+                    : { transition: 'all 0.3s cubic-bezier(0.34,1.56,0.64,1)' }
+                }
+              >
                 {sorted.map((l) => (
                   <Cell key={l.city} aria-label={`Effort for ${l.city}`} />
                 ))}

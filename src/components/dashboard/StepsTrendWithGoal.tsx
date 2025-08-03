@@ -20,6 +20,7 @@ import { useRunningStats } from "@/hooks/useRunningStats";
 import { Info } from "lucide-react";
 import type { TooltipProps } from "recharts";
 import { Skeleton } from "@/components/ui/skeleton";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface StepsTrendWithGoalProps {
   data: GarminDay[];
@@ -48,6 +49,7 @@ export function StepsTrendWithGoal({
 
   const baselines = useSeasonalBaseline();
   const stats = useRunningStats();
+  const prefersReducedMotion = usePrefersReducedMotion();
   const weatherNote = useMemo(() => {
     if (!stats) return null;
     const rainy = stats.weatherConditions.find((w) => w.label === 'Rain')?.count || 0;
@@ -179,8 +181,30 @@ export function StepsTrendWithGoal({
             stroke={chartConfig.steps.color}
             fill={`url(#${fillStepsId})`}
             animationDuration={300}
+            animationEasing="ease-in-out"
+            isAnimationActive={!prefersReducedMotion}
+            className={!prefersReducedMotion ? "transition-all hover:opacity-80" : undefined}
+            style={
+              prefersReducedMotion
+                ? undefined
+                : { transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)" }
+            }
           />
-        <Line dataKey="avg" type="monotone" stroke={chartConfig.avg.color} dot={false} animationDuration={300} />
+        <Line
+          dataKey="avg"
+          type="monotone"
+          stroke={chartConfig.avg.color}
+          dot={false}
+          animationDuration={300}
+          animationEasing="ease-in-out"
+          isAnimationActive={!prefersReducedMotion}
+          className={!prefersReducedMotion ? "transition-all hover:opacity-80" : undefined}
+          style={
+            prefersReducedMotion
+              ? undefined
+              : { transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)" }
+          }
+        />
       </AreaChart>
       </ChartContainer>
       {weatherNote && (

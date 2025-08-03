@@ -14,6 +14,8 @@ describe('CircularFragilityRing', () => {
     const { container } = render(<CircularFragilityRing />)
     const arc = container.querySelector('svg circle:nth-of-type(2)')
     expect(arc).toHaveAttribute('stroke-dashoffset')
-    expect(arc).toHaveStyle('transition: stroke-dashoffset 0.5s ease, stroke 0.5s ease')
+    expect(arc).toHaveStyle(
+      'transition: stroke-dashoffset 0.5s cubic-bezier(0.34,1.56,0.64,1), stroke 0.5s cubic-bezier(0.34,1.56,0.64,1)'
+    )
   })
 })

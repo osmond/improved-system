@@ -3,6 +3,7 @@ import useFragilityIndex from '@/hooks/useFragilityIndex'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
 import { getFragilityLevel } from '@/lib/fragility'
+import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 export interface FragilityGaugeProps {
   /** Diameter of the gauge in pixels */
@@ -17,10 +18,15 @@ export interface FragilityGaugeProps {
 export default function FragilityGauge({ size = 160, strokeWidth = 12 }: FragilityGaugeProps) {
   const fragility = useFragilityIndex()
   const [displayIndex, setDisplayIndex] = useState(0)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     if (!fragility) return
     const { index } = fragility
+    if (prefersReducedMotion) {
+      setDisplayIndex(index)
+      return
+    }
     setDisplayIndex(0)
     let start: number | null = null
     const duration = 500
@@ -33,7 +39,7 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
     }
     frame = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(frame)
-  }, [fragility])
+  }, [fragility, prefersReducedMotion])
 
   if (!fragility) return <Skeleton className="h-32" />
   const { index } = fragility
@@ -48,7 +54,13 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex flex-col items-center" role="img" aria-label={`Fragility ${displayIndex.toFixed(2)}`}> 
+          <div
+            className={`flex flex-col items-center ${
+              prefersReducedMotion ? '' : 'transition-transform hover:scale-105'
+            }`}
+            role="img"
+            aria-label={`Fragility ${displayIndex.toFixed(2)}`}
+          >
             <svg width={size} height={size / 2} viewBox={`0 0 ${size} ${size / 2}`}>
               <path
                 d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2 - strokeWidth / 2}`}
@@ -64,7 +76,14 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 0.5s ease' }}
+                style={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        transition:
+                          'stroke-dashoffset 0.5s cubic-bezier(0.34,1.56,0.64,1)',
+                      }
+                }
               />
             </svg>
             <span className="mt-2 text-lg font-bold tabular-nums">{displayIndex.toFixed(2)}</span>

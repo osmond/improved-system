@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import useFragilityIndex from '@/hooks/useFragilityIndex'
 import { TooltipProvider, Tooltip, TooltipTrigger, TooltipContent } from '@/components/ui/tooltip'
 import { Skeleton } from '@/components/ui/skeleton'
+import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 export interface CircularFragilityRingProps {
   /** Diameter of the ring in pixels */
@@ -16,10 +17,15 @@ export interface CircularFragilityRingProps {
 export default function CircularFragilityRing({ size = 160, strokeWidth = 12 }: CircularFragilityRingProps) {
   const fragility = useFragilityIndex()
   const [displayIndex, setDisplayIndex] = useState(0)
+  const prefersReducedMotion = usePrefersReducedMotion()
 
   useEffect(() => {
     if (!fragility) return
     const { index } = fragility
+    if (prefersReducedMotion) {
+      setDisplayIndex(index)
+      return
+    }
     setDisplayIndex(0)
     let start: number | null = null
     const duration = 500
@@ -32,7 +38,7 @@ export default function CircularFragilityRing({ size = 160, strokeWidth = 12 }: 
     }
     frame = requestAnimationFrame(animate)
     return () => cancelAnimationFrame(frame)
-  }, [fragility])
+  }, [fragility, prefersReducedMotion])
 
   if (!fragility) return <Skeleton className="h-40" />
   const { index } = fragility
@@ -48,7 +54,13 @@ export default function CircularFragilityRing({ size = 160, strokeWidth = 12 }: 
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex flex-col items-center" role="img" aria-label={`Fragility ${displayIndex.toFixed(2)}`}>
+          <div
+            className={`flex flex-col items-center ${
+              prefersReducedMotion ? '' : 'transition-transform hover:scale-105'
+            }`}
+            role="img"
+            aria-label={`Fragility ${displayIndex.toFixed(2)}`}
+          >
             <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`}>
               <circle
                 cx={size / 2}
@@ -68,7 +80,14 @@ export default function CircularFragilityRing({ size = 160, strokeWidth = 12 }: 
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
-                style={{ transition: 'stroke-dashoffset 0.5s ease, stroke 0.5s ease' }}
+                style={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        transition:
+                          'stroke-dashoffset 0.5s cubic-bezier(0.34,1.56,0.64,1), stroke 0.5s cubic-bezier(0.34,1.56,0.64,1)',
+                      }
+                }
                 transform={`rotate(-90 ${size / 2} ${size / 2})`}
               />
             </svg>

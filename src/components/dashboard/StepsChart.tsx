@@ -17,6 +17,7 @@ import { useGarminDaysLazy } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
 import { Skeleton } from "@/components/ui/skeleton";
 import { chartColors } from "@/lib/chartColors";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 const chartConfig = {
   steps: {
@@ -88,6 +89,7 @@ export interface StepsChartProps {
 export function StepsChart({ active = true }: StepsChartProps = {}) {
   const data = useGarminDaysLazy(active);
   const { range } = useDashboardFilters();
+  const prefersReducedMotion = usePrefersReducedMotion();
   if (!data) return <Skeleton className="h-60 w-full" />;
 
   const days = range === '7d' ? 7 : range === '30d' ? 30 : 90;
@@ -132,7 +134,19 @@ export function StepsChart({ active = true }: StepsChartProps = {}) {
         />
         <YAxis />
         <ChartTooltip content={<StepsTooltip />} />
-        <Bar dataKey="steps" fill={chartConfig.steps.color} animationDuration={300}>
+        <Bar
+          dataKey="steps"
+          fill={chartConfig.steps.color}
+          animationDuration={300}
+          animationEasing="ease-in-out"
+          isAnimationActive={!prefersReducedMotion}
+          className={!prefersReducedMotion ? "transition-all hover:opacity-80" : undefined}
+          style={
+            prefersReducedMotion
+              ? undefined
+              : { transition: "all 0.3s cubic-bezier(0.34,1.56,0.64,1)" }
+          }
+        >
           {enriched.map((day) => (
             <Cell
               key={day.date}

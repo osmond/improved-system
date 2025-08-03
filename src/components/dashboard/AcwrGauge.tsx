@@ -6,6 +6,7 @@ import {
   TooltipTrigger,
   TooltipContent,
 } from "@/components/ui/tooltip";
+import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface AcwrGaugeProps {
   /** Array of daily training load values ordered from oldest to newest */
@@ -28,7 +29,29 @@ export function AcwrGauge({
   safeRange = [0.8, 1.3],
 }: AcwrGaugeProps) {
   const ratio = useAcwr(loads);
-  const normalized = Math.min(Math.max(ratio, 0), 2) / 2; // 0-2 mapped to 0-1
+  const [displayRatio, setDisplayRatio] = React.useState(0);
+  const prefersReducedMotion = usePrefersReducedMotion();
+
+  React.useEffect(() => {
+    if (prefersReducedMotion) {
+      setDisplayRatio(ratio);
+      return;
+    }
+    setDisplayRatio(0);
+    let start: number | null = null;
+    const duration = 500;
+    let frame: number;
+    const animate = (timestamp: number) => {
+      if (start === null) start = timestamp;
+      const progress = Math.min((timestamp - start) / duration, 1);
+      setDisplayRatio(progress * ratio);
+      if (progress < 1) frame = requestAnimationFrame(animate);
+    };
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [ratio, prefersReducedMotion]);
+
+  const normalized = Math.min(Math.max(displayRatio, 0), 2) / 2; // 0-2 mapped to 0-1
 
   const radius = size / 2 - strokeWidth / 2;
   const circumference = Math.PI * radius; // half circle
@@ -46,9 +69,11 @@ export function AcwrGauge({
       <Tooltip>
         <TooltipTrigger asChild>
           <div
-            className="flex flex-col items-center"
+            className={`flex flex-col items-center ${
+              prefersReducedMotion ? '' : 'transition-transform hover:scale-105'
+            }`}
             role="img"
-            aria-label={`ACWR ${ratio.toFixed(2)}`}
+            aria-label={`ACWR ${displayRatio.toFixed(2)}`}
           >
             <svg
               width={size}
@@ -73,10 +98,18 @@ export function AcwrGauge({
                 strokeDasharray={circumference}
                 strokeDashoffset={offset}
                 strokeLinecap="round"
+                style={
+                  prefersReducedMotion
+                    ? undefined
+                    : {
+                        transition:
+                          'stroke-dashoffset 0.5s cubic-bezier(0.34,1.56,0.64,1)',
+                      }
+                }
               />
             </svg>
             <span className="mt-2 text-lg font-bold tabular-nums">
-              {ratio.toFixed(2)}
+              {displayRatio.toFixed(2)}
             </span>
           </div>
         </TooltipTrigger>

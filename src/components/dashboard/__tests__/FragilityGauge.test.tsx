@@ -14,6 +14,8 @@ describe('FragilityGauge', () => {
     const { container } = render(<FragilityGauge />)
     const arc = container.querySelector('svg path:nth-of-type(2)')
     expect(arc).toHaveAttribute('stroke-dashoffset')
-    expect(arc).toHaveStyle('transition: stroke-dashoffset 0.5s ease')
+    expect(arc).toHaveStyle(
+      'transition: stroke-dashoffset 0.5s cubic-bezier(0.34,1.56,0.64,1)'
+    )
   })
 })
