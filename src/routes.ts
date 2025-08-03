@@ -7,6 +7,7 @@ import {
   ChartLine,
   FlaskConical,
   Shield,
+  Settings,
 } from "lucide-react";
 
 export interface DashboardRoute {
@@ -90,14 +91,20 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
         description: "Review past focus detections and interventions",
       },
       {
-        to: "/dashboard/settings",
-        label: "Intervention Settings",
-        description: "Configure reminder preferences",
-      },
-      {
         to: "/dashboard/behavioral-charter-map",
         label: "Behavioral Charter Map",
         description: "Timeline of activity segments with risk scores",
+      },
+    ],
+  },
+  {
+    label: "Settings",
+    icon: Settings,
+    items: [
+      {
+        to: "/dashboard/settings",
+        label: "Intervention Settings",
+        description: "Configure reminder preferences",
       },
     ],
   },
@@ -272,6 +279,9 @@ const allDashboardRoutes = dashboardRoutes.flatMap((group) => group.items);
 
 export const analyticsRoutes =
   dashboardRoutes.find((g) => g.label === "Analytics")?.items ?? [];
+
+export const settingsRoutes =
+  dashboardRoutes.find((g) => g.label === "Settings")?.items ?? [];
 
 export const mapRoutes = allDashboardRoutes.filter((route) =>
   route.tags?.includes("map")

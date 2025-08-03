@@ -6,11 +6,12 @@ import {
   SidebarFooter,
 } from "@/components/ui/sidebar";
 import { useLocation } from "react-router-dom";
-import { Map as MapIcon, ChartLine } from "lucide-react";
+import { Map as MapIcon, ChartLine, Settings as SettingsIcon } from "lucide-react";
 import {
   chartRouteGroups,
   mapRoutes,
   analyticsRoutes,
+  settingsRoutes,
   dashboardRoutes,
 } from "@/routes";
 import NavSection from "@/components/nav-section";
@@ -66,6 +67,16 @@ export default function AppSidebar() {
               label="Analytics"
               routes={analyticsRoutes}
               icon={ChartLine}
+              pathname={pathname}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+            />
+          )}
+          {settingsRoutes.length > 0 && (
+            <NavSection
+              label="Settings"
+              routes={settingsRoutes}
+              icon={SettingsIcon}
               pathname={pathname}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
