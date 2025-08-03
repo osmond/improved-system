@@ -21,6 +21,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import type { DashboardRoute, DashboardRouteGroup } from "@/routes";
+import usePersistedGroups from "@/hooks/usePersistedGroups";
 
 interface NavSectionProps {
   label: string;
@@ -42,29 +43,7 @@ export default function NavSection({
   toggleFavorite,
 }: NavSectionProps) {
   const storageKey = `nav_section_state_${label}`;
-  const [openGroups, setOpenGroups] = React.useState<Record<string, boolean>>(() => {
-    if (typeof window === "undefined") return {};
-    try {
-      const stored = localStorage.getItem(storageKey);
-      return stored ? JSON.parse(stored) : {};
-    } catch {
-      return {};
-    }
-  });
-
-  const handleOpenChange = (groupLabel: string) => (open: boolean) => {
-    setOpenGroups((prev) => {
-      const next = { ...prev, [groupLabel]: open };
-      try {
-        if (typeof window !== "undefined") {
-          localStorage.setItem(storageKey, JSON.stringify(next));
-        }
-      } catch {
-        // ignore
-      }
-      return next;
-    });
-  };
+  const { openGroups, handleOpenChange } = usePersistedGroups(storageKey);
 
   if (routes?.length) {
     return (
