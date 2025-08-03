@@ -145,6 +145,9 @@ const ChartTooltipContent = React.forwardRef<
       indicator?: "line" | "dot" | "dashed"
       nameKey?: string
       labelKey?: string
+      additionalMetrics?: (
+        payload: NonNullable<RechartsPrimitive.TooltipProps["payload"]>
+      ) => React.ReactNode
     }
 >(
   (
@@ -162,6 +165,7 @@ const ChartTooltipContent = React.forwardRef<
       color,
       nameKey,
       labelKey,
+      additionalMetrics,
     },
     ref
   ) => {
@@ -282,6 +286,11 @@ const ChartTooltipContent = React.forwardRef<
             )
           })}
         </div>
+        {additionalMetrics && (
+          <div className="mt-1.5 border-t pt-1.5">
+            {additionalMetrics(payload)}
+          </div>
+        )}
       </div>
     )
   }
@@ -296,10 +305,20 @@ const ChartLegendContent = React.forwardRef<
     Pick<RechartsPrimitive.LegendProps, "payload" | "verticalAlign"> & {
       hideIcon?: boolean
       nameKey?: string
+      activeKeys?: string[]
     }
 >(
   (
-    { className, hideIcon = false, payload, verticalAlign = "bottom", nameKey },
+    {
+      className,
+      hideIcon = false,
+      payload,
+      verticalAlign = "bottom",
+      nameKey,
+      activeKeys,
+      onClick,
+      ...props
+    },
     ref
   ) => {
     const { config } = useChart()
@@ -316,10 +335,12 @@ const ChartLegendContent = React.forwardRef<
           verticalAlign === "top" ? "pb-3" : "pt-3",
           className
         )}
+        {...props}
       >
-        {payload.map((item) => {
+        {payload.map((item, index) => {
           const key = `${nameKey || item.dataKey || "value"}`
           const itemConfig = getPayloadConfigFromPayload(config, item, key)
+          const isActive = !activeKeys?.length || activeKeys.includes(key)
 
           return (
             <div
@@ -328,8 +349,10 @@ const ChartLegendContent = React.forwardRef<
               tabIndex={0}
               aria-label={itemConfig?.label || String(item.value)}
               className={cn(
-                "flex items-center gap-1.5 cursor-pointer rounded px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
+                "flex items-center gap-1.5 cursor-pointer rounded px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground",
+                !isActive && "opacity-50"
               )}
+              onClick={() => onClick?.(item, index)}
               onKeyDown={(e) => {
                 if (e.key === "Enter" || e.key === " ") {
                   e.preventDefault()

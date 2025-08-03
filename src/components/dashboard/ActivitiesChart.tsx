@@ -73,6 +73,37 @@ export function ActivitiesChart() {
                   day: "numeric",
                 })
               }
+              additionalMetrics={(payload) => {
+                const index = payload?.[0]?.payloadIndex
+                if (index === undefined || index <= 0) return null
+                const current = payload[0].payload as any
+                const prev = activities[index - 1]
+                if (!prev) return null
+                const deltaDistance =
+                  (current.distance ?? 0) - (prev.distance ?? 0)
+                const deltaDuration =
+                  (current.duration ?? 0) - (prev.duration ?? 0)
+                return (
+                  <div className="grid gap-1.5">
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Δ Distance
+                      </span>
+                      <span className="font-mono text-foreground">
+                        {deltaDistance.toFixed(2)}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-muted-foreground">
+                        Δ Duration
+                      </span>
+                      <span className="font-mono text-foreground">
+                        {deltaDuration.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+                )
+              }}
             />
           }
         />
@@ -80,7 +111,7 @@ export function ActivitiesChart() {
           onClick={(o: any) => {
             if (o && o.dataKey) toggle(String(o.dataKey));
           }}
-          content={<ChartLegendContent />}
+          content={<ChartLegendContent activeKeys={selected} />}
         />
         {(!selected.length || selected.includes("distance")) && (
           <Line
