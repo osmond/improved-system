@@ -98,9 +98,7 @@ export function useRunningSessions(): SessionPoint[] | null {
         s.pace,
       ])
       model.init({ data: input, type: 'dense' })
-      for (let i = 0; i < 250; i++) {
-        model.step()
-      }
+      model.run()
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
       const data = output.map(
