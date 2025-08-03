@@ -41,6 +41,7 @@ import AvgDailyMileageRadarPage from "@/pages/charts/AvgDailyMileageRadar";
 import RadialChartLabelPage from "@/pages/charts/RadialChartLabel";
 import RadialChartTextPage from "@/pages/charts/RadialChartText";
 import RadialChartGridPage from "@/pages/charts/RadialChartGrid";
+import PrivacyDashboardPage from "@/pages/PrivacyDashboard";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 
@@ -62,6 +63,7 @@ function App() {
               <Route path="good-day" element={<GoodDayPage />} />
               <Route path="habit-consistency" element={<HabitConsistencyPage />} />
               <Route path="statistics" element={<StatisticsPage />} />
+              <Route path="privacy" element={<PrivacyDashboardPage />} />
               <Route path="charts/area-chart-interactive" element={<AreaChartInteractivePage />} />
               <Route path="charts/steps-trend-with-goal" element={<StepsTrendWithGoalPage />} />
               <Route path="charts/area-chart-load-ratio" element={<AreaChartLoadRatioPage />} />

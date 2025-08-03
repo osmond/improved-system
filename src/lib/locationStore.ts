@@ -11,6 +11,21 @@ const DB_NAME = 'location-db';
 const STORE_NAME = 'fixes';
 let dbPromise: Promise<IDBDatabase> | null = null;
 
+const RETENTION_KEY = 'loc:retentionDays';
+const DEFAULT_RETENTION_DAYS = 30;
+
+export function getRetentionDays(): number {
+  if (typeof localStorage === 'undefined') return DEFAULT_RETENTION_DAYS;
+  const raw = localStorage.getItem(RETENTION_KEY);
+  const parsed = raw ? parseInt(raw, 10) : NaN;
+  return Number.isFinite(parsed) ? parsed : DEFAULT_RETENTION_DAYS;
+}
+
+export function setRetentionDays(days: number): void {
+  if (typeof localStorage === 'undefined') return;
+  localStorage.setItem(RETENTION_KEY, String(days));
+}
+
 function getDB(): Promise<IDBDatabase> {
   if (!dbPromise) {
     dbPromise = new Promise((resolve, reject) => {
@@ -25,6 +40,25 @@ function getDB(): Promise<IDBDatabase> {
   return dbPromise;
 }
 
+async function purgeOldFixes(days: number): Promise<void> {
+  const db = await getDB();
+  const cutoff = Date.now() - days * 86400000;
+  return new Promise((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    const store = tx.objectStore(STORE_NAME);
+    const req = store.openCursor();
+    req.onsuccess = () => {
+      const cursor = req.result;
+      if (cursor) {
+        if ((cursor.key as number) < cutoff) cursor.delete();
+        cursor.continue();
+      }
+    };
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
 export async function storeFix(fix: LocationFix): Promise<void> {
   const db = await getDB();
   return new Promise((resolve, reject) => {
@@ -32,7 +66,7 @@ export async function storeFix(fix: LocationFix): Promise<void> {
     tx.objectStore(STORE_NAME).put(fix);
     tx.oncomplete = () => resolve();
     tx.onerror = () => reject(tx.error);
-  });
+  }).then(() => purgeOldFixes(getRetentionDays()));
 }
 
 export async function getFixes(): Promise<LocationFix[]> {
@@ -138,8 +172,9 @@ function readPoints(): LocationPoint[] {
   if (typeof localStorage === 'undefined') return [...mockPoints];
   try {
     const raw = localStorage.getItem(POINTS_KEY);
-    if (!raw) return [...mockPoints];
-    return JSON.parse(raw) as LocationPoint[];
+    const all = raw ? (JSON.parse(raw) as LocationPoint[]) : [...mockPoints];
+    const cutoff = Date.now() - getRetentionDays() * 86400000;
+    return all.filter((p) => new Date(p.timestamp).getTime() >= cutoff);
   } catch {
     return [...mockPoints];
   }
@@ -153,7 +188,11 @@ function writePoints(points: LocationPoint[]): void {
 export function logLocationPoint(point: LocationPoint): void {
   const points = readPoints();
   points.push(point);
-  writePoints(points);
+  const cutoff = Date.now() - getRetentionDays() * 86400000;
+  const filtered = points.filter(
+    (p) => new Date(p.timestamp).getTime() >= cutoff,
+  );
+  writePoints(filtered);
 }
 
 function readClusters(): Record<string, LocationCluster> {
@@ -226,4 +265,35 @@ export function getLocationVisits(): LocationVisit[] {
     category: clusters[v.placeId]?.category ?? 'other',
   }));
 
+}
+
+export async function exportLocationData() {
+  const [fixes, points] = await Promise.all([getFixes(), readPoints()]);
+  const clusters = readClusters();
+  const baseline = readBaseline();
+  return { fixes, points, clusters, baseline };
+}
+
+export async function clearLocationData(): Promise<void> {
+  if (typeof localStorage !== 'undefined') {
+    localStorage.removeItem(POINTS_KEY);
+    localStorage.removeItem(CLUSTERS_KEY);
+  }
+  const db = await getDB();
+  await new Promise<void>((resolve, reject) => {
+    const tx = db.transaction(STORE_NAME, 'readwrite');
+    tx.objectStore(STORE_NAME).clear();
+    tx.oncomplete = () => resolve();
+    tx.onerror = () => reject(tx.error);
+  });
+}
+
+export async function purgeOldLocationData(
+  days = getRetentionDays(),
+): Promise<void> {
+  const points = readPoints().filter(
+    (p) => new Date(p.timestamp).getTime() >= Date.now() - days * 86400000,
+  );
+  writePoints(points);
+  await purgeOldFixes(days);
 }
