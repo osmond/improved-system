@@ -4,11 +4,12 @@ import {
   PieChart,
   Pie,
   ChartTooltip,
+  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   ResponsiveContainer,
 } from "@/components/ui/chart";
-import { Cell, Label } from "recharts";
+import { Cell, Label, type TooltipProps } from "recharts";
 import { useState } from "react";
 import type { ChartConfig } from "@/components/ui/chart";
 import ChartCard from "./ChartCard";
@@ -44,18 +45,46 @@ const icons: Record<ReadingMedium, LucideIcon> = {
   other: HelpCircle,
 };
 
+export function ReadingTooltip(
+  props: TooltipProps<number, string> & { total: number }
+) {
+  const { active, payload, total } = props;
+  if (!(active && payload && payload.length)) return null;
+  const item = payload[0];
+  const minutes = item.value as number;
+  const medium = labels[item.payload.medium as ReadingMedium];
+  const percent = Math.round((minutes / total) * 100);
+  return (
+    <ChartTooltipContent
+      active={active}
+      payload={payload}
+      nameKey="medium"
+      formatter={() => (
+        <div className="grid gap-0.5">
+          <span>{medium}</span>
+          <span className="text-muted-foreground">
+            {minutes} min ({percent}%)
+          </span>
+        </div>
+      )}
+    />
+  );
+}
+
 export default function ReadingStackSplit() {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const data = useReadingMediumTotals();
 
   if (!data) return <Skeleton className="h-64" />;
 
-  const total = data.reduce((sum, d) => sum + d.minutes, 0);
+  const filtered = data.filter((d) => d.minutes > 0);
+
+  const total = filtered.reduce((sum, d) => sum + d.minutes, 0);
 
   const config: ChartConfig = {
     minutes: { label: "Minutes" },
   };
-  data.forEach((d, i) => {
+  filtered.forEach((d, i) => {
     (config as any)[d.medium] = {
       label: labels[d.medium],
       icon: icons[d.medium],
@@ -69,7 +98,7 @@ export default function ReadingStackSplit() {
         <ResponsiveContainer>
           <PieChart>
             <defs>
-              {data.map((_, idx) => (
+              {filtered.map((_, idx) => (
                 <linearGradient
                   key={idx}
                   id={`reading-split-gradient-${idx}`}
@@ -87,14 +116,14 @@ export default function ReadingStackSplit() {
                 </linearGradient>
               ))}
             </defs>
-            <ChartTooltip />
+            <ChartTooltip content={<ReadingTooltip total={total} />} />
             <ChartLegend
               content={<ChartLegendContent />}
               verticalAlign="bottom"
               height={24}
             />
             <Pie
-              data={data}
+              data={filtered}
               dataKey="minutes"
               nameKey="medium"
               innerRadius="60%"
@@ -107,7 +136,7 @@ export default function ReadingStackSplit() {
               isAnimationActive
               animationDuration={500}
             >
-              {data.map((entry, idx) => (
+              {filtered.map((entry, idx) => (
                 <Cell
                   key={entry.medium}
                   fill={`url(#reading-split-gradient-${idx})`}
