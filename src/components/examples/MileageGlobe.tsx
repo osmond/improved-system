@@ -91,43 +91,12 @@ function GlobeRenderer({
     }
 
 
-    fetch('/world-110m.json')
-      .then((res) => res.json())
-      .then((world) => {
-        const land = feature(world, world.objects.countries)
-        const boundaries = mesh(
-          world,
-          world.objects.countries,
-          (a, b) => a !== b
-        )
-
-        landPath = svg
-          .append('path')
-          .datum(land as any)
-          .attr('fill', '#334155')
-          .attr('stroke', '#1e293b')
-          .attr('stroke-width', 0.5)
-
-        boundaryPath = svg
-          .append('path')
-          .datum(boundaries as any)
-          .attr('fill', 'none')
-          .attr('stroke', '#94a3b8')
-          .attr('stroke-width', 0.5)
-
-        linePaths = paths.map((coordinates) =>
-          svg
-            .append('path')
-            .datum({ type: 'LineString', coordinates } as any)
-            .attr('fill', 'none')
-            .attr('stroke', 'var(--primary-foreground)')
-            .attr(
-              'stroke-width',
-              Math.max(2, Math.min(10, 1 + totalMiles / 50))
-            )
-            .attr('stroke-linecap', 'round')
-            .attr('opacity', 0.8),
-        )
+    const land = feature(worldData, worldData.objects.countries)
+    const boundaries = mesh(
+      worldData,
+      worldData.objects.countries,
+      (a, b) => a !== b,
+    )
 
     landPath = svg
       .append('path')
@@ -143,14 +112,19 @@ function GlobeRenderer({
       .attr('stroke', '#94a3b8')
       .attr('stroke-width', 0.5)
 
-    linePath = svg
-      .append('path')
-      .datum({ type: 'LineString', coordinates: path } as any)
-      .attr('fill', 'none')
-      .attr('stroke', 'var(--primary-foreground)')
-      .attr('stroke-width', Math.max(2, Math.min(10, 1 + totalMiles / 50)))
-      .attr('stroke-linecap', 'round')
-      .attr('opacity', 0.8)
+    linePaths = paths.map((coordinates) =>
+      svg
+        .append('path')
+        .datum({ type: 'LineString', coordinates } as any)
+        .attr('fill', 'none')
+        .attr('stroke', 'var(--primary-foreground)')
+        .attr(
+          'stroke-width',
+          Math.max(2, Math.min(10, 1 + totalMiles / 50))
+        )
+        .attr('stroke-linecap', 'round')
+        .attr('opacity', 0.8),
+    )
 
     render()
 
@@ -176,7 +150,7 @@ function GlobeRenderer({
     svg.call(zoomBehavior as any)
     svg.call(dragBehavior as any)
 
-  }, [paths, totalMiles, dimensions, centroid])
+  }, [paths, totalMiles, dimensions, centroid, worldData])
 
 
   return (
