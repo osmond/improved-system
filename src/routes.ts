@@ -64,6 +64,11 @@ export const analyticsRoutes: DashboardRoute[] = [
     label: "Intervention Settings",
     description: "Configure reminder preferences",
   },
+  {
+    to: "/dashboard/behavioral-charter-map",
+    label: "Behavioral Charter Map",
+    description: "Timeline of activity segments with risk scores",
+  },
 ];
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
