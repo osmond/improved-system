@@ -18,8 +18,8 @@ export function usePersistedGroups(storageKey: string) {
 
   const handleOpenChange = useCallback(
     (groupLabel: string) => (open: boolean) => {
-      setOpenGroups((prev) => {
-        const next = { ...prev, [groupLabel]: open };
+      setOpenGroups(() => {
+        const next = open ? { [groupLabel]: true } : {};
         try {
           if (typeof window !== "undefined") {
             localStorage.setItem(storageKey, JSON.stringify(next));
