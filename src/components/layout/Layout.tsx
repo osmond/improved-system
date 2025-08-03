@@ -21,6 +21,7 @@ import {
   ChartActionsProvider,
   useChartActions,
 } from "@/hooks/useChartActions";
+import useRecentViews from "@/hooks/useRecentViews";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -125,6 +126,12 @@ function ActionMenu() {
 
 export default function Layout({ children }: LayoutProps) {
   const [open, setOpen] = React.useState(false);
+  const location = useLocation();
+  const { addRecentView } = useRecentViews();
+
+  React.useEffect(() => {
+    addRecentView(location.pathname);
+  }, [location.pathname, addRecentView]);
 
   return (
     <ChartActionsProvider>

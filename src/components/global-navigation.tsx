@@ -20,6 +20,7 @@ import {
   type DashboardRoute,
 } from "@/routes";
 import useFavorites from "@/hooks/useFavorites";
+import useRecentViews from "@/hooks/useRecentViews";
 import { cn } from "@/lib/utils";
 
 function RouteList({
@@ -73,6 +74,7 @@ function RouteList({
 
 export default function GlobalNavigation() {
   const { favorites, toggleFavorite } = useFavorites();
+  const { recentViews } = useRecentViews();
 
   const insightsRoutes = React.useMemo(
     () => dashboardRoutes.find((g) => g.label === "Privacy")?.items ?? [],
@@ -95,12 +97,32 @@ export default function GlobalNavigation() {
     [favorites, allRoutes],
   );
 
+  const recentRoutes = React.useMemo(
+    () =>
+      recentViews
+        .map((to) => allRoutes.find((r) => r.to === to))
+        .filter(Boolean) as typeof allRoutes,
+    [recentViews, allRoutes],
+  );
+
   const renderFavorites = () =>
     favoriteRoutes.length > 0 && (
       <div className="mb-4">
         <h4 className="mb-2 font-medium leading-none">Favorites</h4>
         <RouteList
           routes={favoriteRoutes}
+          favorites={favorites}
+          toggleFavorite={toggleFavorite}
+        />
+      </div>
+    );
+
+  const renderRecent = () =>
+    recentRoutes.length > 0 && (
+      <div className="mb-4">
+        <h4 className="mb-2 font-medium leading-none">Recent</h4>
+        <RouteList
+          routes={recentRoutes}
           favorites={favorites}
           toggleFavorite={toggleFavorite}
         />
@@ -114,6 +136,7 @@ export default function GlobalNavigation() {
           <NavigationMenuTrigger>Analytics</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
+            {renderRecent()}
             <RouteList
               routes={analyticsRoutes}
               favorites={favorites}
@@ -125,6 +148,7 @@ export default function GlobalNavigation() {
           <NavigationMenuTrigger>Charts</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
+            {renderRecent()}
             {chartRouteGroups.map((group) => (
               <div key={group.label} className="mb-4 last:mb-0">
                 <h4 className="mb-2 font-medium leading-none">
@@ -143,6 +167,7 @@ export default function GlobalNavigation() {
           <NavigationMenuTrigger>Maps</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
+            {renderRecent()}
             <RouteList
               routes={mapRoutes}
               favorites={favorites}
@@ -154,6 +179,7 @@ export default function GlobalNavigation() {
           <NavigationMenuTrigger>Insights/Personal</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
+            {renderRecent()}
             <RouteList
               routes={insightsRoutes}
               favorites={favorites}
@@ -165,6 +191,7 @@ export default function GlobalNavigation() {
           <NavigationMenuTrigger>Settings/Tools</NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
             {renderFavorites()}
+            {renderRecent()}
             <RouteList
               routes={settingsRoutes}
               favorites={favorites}
