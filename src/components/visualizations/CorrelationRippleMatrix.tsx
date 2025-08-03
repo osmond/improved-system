@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
-import { interpolateRdBu } from "d3-scale-chromatic";
+import { interpolateHcl } from "d3-interpolate";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
@@ -38,15 +38,25 @@ const DEFAULT_CELL_SIZE = 24;
 
 /**
  * Create a perceptually uniform diverging scale mapping:
- *   minValue -> blue, 0 -> white, maxValue -> red.
- * Uses d3's RdBu palette reversed so that negative values are blue
- * and positive values are red. The scale clamps to the provided bounds.
+ *   minValue → blue (#2166ac),
+ *   0       → white (#ffffff),
+ *   maxValue → red (#b2182b).
+ * Colors are interpolated in HCL space for smoother perception.
+ * The returned scale clamps values outside the [minValue, maxValue] range.
  */
 function createColorScale(minValue = -1, maxValue = 1) {
-  return scaleDiverging((t) => interpolateRdBu(1 - t))
+  const blue = "#2166ac";
+  const white = "#ffffff";
+  const red = "#b2182b";
+
+  const interpolator = (t: number) =>
+    t < 0.5
+      ? interpolateHcl(blue, white)(t * 2)
+      : interpolateHcl(white, red)((t - 0.5) * 2);
+
+  return scaleDiverging(interpolator)
     .domain([minValue, 0, maxValue])
     .clamp(true);
-
 }
 
 export default function CorrelationRippleMatrix({
