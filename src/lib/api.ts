@@ -5,7 +5,7 @@ import {
   getLocationVisits as deriveLocationVisits,
   type LocationVisit,
 } from "./locationStore";
-import { trackRouteRun, fetchRouteRunHistory } from "./telemetry";
+import { trackRouteRun, fetchRouteRunHistory, resetRouteRuns } from "./telemetry";
 import { computeRouteMetrics } from "./routeMetrics";
 export { calculateRouteSimilarity } from "./routeMetrics";
 export type { LocationVisit } from "./locationStore";
@@ -1110,8 +1110,19 @@ export function computeRouteNovelty(
 
 let nextRouteRunId = 1;
 const routeHistory: RouteRun[] = [];
+let historySeeded = false;
+
+export async function seedRouteRuns(): Promise<void> {
+  if (historySeeded) return;
+  const runs = await fetchRouteRunHistory();
+  routeHistory.push(...runs);
+  nextRouteRunId =
+    runs.reduce((max, r) => Math.max(max, r.id), 0) + 1;
+  historySeeded = true;
+}
 
 export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
+  await seedRouteRuns();
   const { novelty, dtwSimilarity, overlapSimilarity } = computeRouteNovelty(
     points,
     routeHistory.map((r) => r.points),
@@ -1138,7 +1149,15 @@ export async function recordRouteRun(points: LatLon[]): Promise<RouteRun> {
 }
 
 export async function getRouteRunHistory(): Promise<RouteRun[]> {
+  await seedRouteRuns();
   return fetchRouteRunHistory();
+}
+
+export function resetRouteHistory(): void {
+  routeHistory.length = 0;
+  nextRouteRunId = 1;
+  historySeeded = false;
+  resetRouteRuns();
 }
 
 // ----- Sleep sessions -----
