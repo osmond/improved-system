@@ -324,9 +324,18 @@ const ChartLegendContent = React.forwardRef<
           return (
             <div
               key={item.value}
+              role="button"
+              tabIndex={0}
+              aria-label={itemConfig?.label || String(item.value)}
               className={cn(
-                "flex items-center gap-1.5 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
+                "flex items-center gap-1.5 cursor-pointer rounded px-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [&>svg]:h-3 [&>svg]:w-3 [&>svg]:text-muted-foreground"
               )}
+              onKeyDown={(e) => {
+                if (e.key === "Enter" || e.key === " ") {
+                  e.preventDefault()
+                  ;(e.currentTarget as HTMLElement).click()
+                }
+              }}
             >
               {itemConfig?.icon && !hideIcon ? (
                 <itemConfig.icon />

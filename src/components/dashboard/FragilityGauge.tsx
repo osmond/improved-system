@@ -52,13 +52,22 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
     <TooltipProvider delayDuration={100}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div
-            className={isDimmed ? 'flex flex-col items-center opacity-30' : 'flex flex-col items-center'}
-            role="img"
-            aria-label={`Fragility ${displayIndex.toFixed(2)}`}
+          <button
+            type="button"
+            className={
+              isDimmed
+                ? 'flex flex-col items-center opacity-30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded'
+                : 'flex flex-col items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded'
+            }
+            aria-label={`Toggle fragility metric (current ${displayIndex.toFixed(2)})`}
             onClick={() => toggle('fragility')}
           >
-            <svg width={size} height={size / 2} viewBox={`0 0 ${size} ${size / 2}`}>
+            <svg
+              width={size}
+              height={size / 2}
+              viewBox={`0 0 ${size} ${size / 2}`}
+              aria-hidden="true"
+            >
               <path
                 d={`M ${strokeWidth / 2},${size / 2 - strokeWidth / 2} A ${radius} ${radius} 0 0 1 ${size - strokeWidth / 2} ${size / 2 - strokeWidth / 2}`}
                 stroke="hsl(var(--muted))"
@@ -76,8 +85,10 @@ export default function FragilityGauge({ size = 160, strokeWidth = 12 }: Fragili
                 style={{ transition: 'stroke-dashoffset 0.5s ease' }}
               />
             </svg>
-          <span className="mt-2 text-lg font-bold tabular-nums">{displayIndex.toFixed(2)}</span>
-          </div>
+            <span className="mt-2 text-lg font-bold tabular-nums">
+              {displayIndex.toFixed(2)}
+            </span>
+          </button>
         </TooltipTrigger>
         <TooltipContent>
           Higher values indicate disrupted routine or sudden load increases
