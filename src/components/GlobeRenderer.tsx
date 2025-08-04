@@ -95,6 +95,26 @@ export default function GlobeRenderer({
     svg.call(zoomBehavior as any);
   }, [autoRotate]);
 
+  // animate newly added paths to "draw" themselves
+  useEffect(() => {
+    const svg = svgRef.current;
+    if (!svg) return;
+    const pathEls = svg.querySelectorAll("path.activity-path");
+    pathEls.forEach((el) => {
+      if (el.getAttribute("data-animated")) return;
+      const pathEl = el as SVGPathElement;
+      if (typeof pathEl.getTotalLength !== "function") return;
+      const length = pathEl.getTotalLength();
+      pathEl.setAttribute("stroke-dasharray", length.toString());
+      pathEl.setAttribute("stroke-dashoffset", length.toString());
+      pathEl.setAttribute("data-animated", "true");
+      pathEl.style.transition = "stroke-dashoffset 1s ease";
+      requestAnimationFrame(() => {
+        pathEl.setAttribute("stroke-dashoffset", "0");
+      });
+    });
+  }, [paths]);
+
   const pathGenerator = pathGeneratorRef.current;
 
   return (
@@ -111,6 +131,7 @@ export default function GlobeRenderer({
       {paths.map((p, idx) => (
         <path
           key={idx}
+          className="activity-path"
           d={pathGenerator({ type: "LineString", coordinates: p.coordinates }) || undefined}
           fill="none"
           stroke="var(--primary-foreground)"
