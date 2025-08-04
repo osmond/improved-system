@@ -11,6 +11,8 @@ import { SimpleSelect } from "@/ui/select"
 import Slider from "@/ui/slider"
 import { Button } from "@/ui/button"
 import { Badge } from "@/ui/badge"
+import { Popover, PopoverTrigger, PopoverContent } from "@/ui/popover"
+import useOnboardingTips from "@/hooks/useOnboardingTips"
 import { X } from "lucide-react"
 import { getWeatherForecast } from "@/lib/weatherApi"
 
@@ -58,6 +60,7 @@ export default function GoodDayPage() {
   const [forecast, setForecast] = useState<{ date: string; probability: number }[]>([])
   const [selectedPresets, setSelectedPresets] = useState<number[]>([])
   const lastPresetIdx = useRef<number | null>(null)
+  const { index: tip, next: nextTip } = useOnboardingTips('good-day', 3)
 
   if (error) {
     return (
@@ -348,9 +351,19 @@ export default function GoodDayPage() {
             <Button size="sm" variant="outline" onClick={resetFilters}>
               Reset filters
             </Button>
-            <Button size="sm" onClick={saveView}>
-              Save view
-            </Button>
+            <Popover open={tip === 0}>
+              <PopoverTrigger asChild>
+                <Button size="sm" onClick={saveView}>
+                  Save view
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent>
+                <p className="max-w-xs text-sm">Save the current filter selection for quick access later.</p>
+                <Button size="sm" className="mt-2" onClick={nextTip}>
+                  Next
+                </Button>
+              </PopoverContent>
+            </Popover>
           </div>
         </div>
         {sessions && <GoodDayBadges sessions={sessions} />}
@@ -382,19 +395,29 @@ export default function GoodDayPage() {
       {forecast.length > 0 && (
         <GoodDayForecastCalendar data={forecast} />
       )}
-      <div className="flex gap-2 flex-wrap">
-        {allPresets.map((p, i) => (
-          <Button
-            key={p.name}
-            size="sm"
-            variant={selectedPresets.includes(i) ? "default" : "outline"}
-            className="rounded-full"
-            onClick={(e) => handlePresetClick(e, i)}
-          >
-            {p.name}
+      <Popover open={tip === 1}>
+        <PopoverTrigger asChild>
+          <div className="flex gap-2 flex-wrap">
+            {allPresets.map((p, i) => (
+              <Button
+                key={p.name}
+                size="sm"
+                variant={selectedPresets.includes(i) ? "default" : "outline"}
+                className="rounded-full"
+                onClick={(e) => handlePresetClick(e, i)}
+              >
+                {p.name}
+              </Button>
+            ))}
+          </div>
+        </PopoverTrigger>
+        <PopoverContent>
+          <p className="max-w-xs text-sm">Apply a preset to quickly filter sessions.</p>
+          <Button size="sm" className="mt-2" onClick={nextTip}>
+            Next
           </Button>
-        ))}
-      </div>
+        </PopoverContent>
+      </Popover>
       <GoodDayInsights
         sessions={filteredSessions}
         trend={trend}
@@ -489,16 +512,28 @@ export default function GoodDayPage() {
           </div>
         </div>
       )}
-      <GoodDayMap
-        data={filteredSessions}
-        condition={condition === "all" ? null : condition}
-        hourRange={hourRange}
-        onSelect={(s) => {
-          setActive(s)
-          setHighlightDate(s.start.slice(0, 10))
-        }}
-        dateRange={dateRange}
-      />
+      <Popover open={tip === 2}>
+        <PopoverTrigger asChild>
+          <div>
+            <GoodDayMap
+              data={filteredSessions}
+              condition={condition === "all" ? null : condition}
+              hourRange={hourRange}
+              onSelect={(s) => {
+                setActive(s)
+                setHighlightDate(s.start.slice(0, 10))
+              }}
+              dateRange={dateRange}
+            />
+          </div>
+        </PopoverTrigger>
+        <PopoverContent>
+          <p className="max-w-xs text-sm">Explore your sessions on the map. Click a point to view details.</p>
+          <Button size="sm" className="mt-2" onClick={nextTip}>
+            Done
+          </Button>
+        </PopoverContent>
+      </Popover>
       <SessionDetailDrawer session={active} onClose={() => setActive(null)} />
     </div>
   )
