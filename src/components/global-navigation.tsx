@@ -50,7 +50,7 @@ export default function GlobalNavigation() {
 
   const insightsRoutes = React.useMemo(
     () => dashboardRoutes.find((g) => g.label === "Privacy")?.items ?? [],
-    [],
+    [dashboardRoutes],
   );
 
   const allRoutes = React.useMemo(
@@ -58,7 +58,7 @@ export default function GlobalNavigation() {
       ...dashboardRoutes.flatMap((g) => g.items),
       ...chartRouteGroups.flatMap((g) => g.items),
     ],
-    [],
+    [dashboardRoutes, chartRouteGroups],
   );
 
   const { favorites, favoriteRoutes, toggleFavorite } =
