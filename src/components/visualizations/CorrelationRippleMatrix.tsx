@@ -97,6 +97,62 @@ function getTextColor(background: string) {
   return luminance > 0.5 ? "#000" : "#fff";
 }
 
+interface LegendProps {
+  colorScale: (value: number) => string
+  minValue: number
+  maxValue: number
+}
+
+function Legend({ colorScale, minValue, maxValue }: LegendProps) {
+  const gradient = `linear-gradient(to right, ${colorScale(minValue)}, ${colorScale(0)}, ${colorScale(maxValue)})`
+  const ticks = [minValue, -0.5, 0, 0.5, maxValue].filter(
+    (v, i, arr) => v >= minValue && v <= maxValue && arr.indexOf(v) === i,
+  )
+
+  return (
+    <div className="mt-4 mx-auto flex w-full max-w-xs flex-col items-center">
+      <div
+        data-testid="legend-gradient"
+        className="relative h-2 w-full rounded"
+        style={{ background: gradient }}
+      >
+        {ticks
+          .filter((v) => v !== minValue && v !== maxValue)
+          .map((v) => {
+            const left = ((v - minValue) / (maxValue - minValue)) * 100
+            return (
+              <div
+                key={`tick-${v}`}
+                className="absolute top-full h-2 w-px bg-muted-foreground"
+                style={{ left: `${left}%`, transform: "translateX(-50%)" }}
+              />
+            )
+          })}
+      </div>
+      <div className="relative mt-1 h-4 w-full">
+        {ticks.map((v) => {
+          const left = ((v - minValue) / (maxValue - minValue)) * 100
+          return (
+            <span
+              key={`label-${v}`}
+              className="absolute text-[10px] text-muted-foreground"
+              style={{ left: `${left}%`, transform: "translateX(-50%)" }}
+            >
+              {v.toFixed(1)}
+            </span>
+          )
+        })}
+      </div>
+      <div className="mt-1 grid w-full grid-cols-3 text-[10px]">
+        <span className="justify-self-start">Strong Negative</span>
+        <span className="justify-self-center">No Correlation</span>
+        <span className="justify-self-end">Strong Positive</span>
+      </div>
+      <div className="mt-1 text-[10px] text-muted-foreground">Pearson r</div>
+    </div>
+  )
+}
+
 export default function CorrelationRippleMatrix({
   matrix,
   labels,
@@ -166,11 +222,6 @@ export default function CorrelationRippleMatrix({
   const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
 
   // Legend reflects the selected palette across the value range
-  const legendGradient = `linear-gradient(to right, ${colorScale(
-    minValue
-  )}, ${colorScale(0)}, ${colorScale(maxValue)})`;
-  const minLabel = Number(minValue).toFixed(1);
-  const maxLabel = Number(maxValue).toFixed(1);
 
   const renderXAxisTick = ({ x, y, payload }: any) => {
     const label = labels[payload.value] ?? "";
@@ -368,6 +419,7 @@ export default function CorrelationRippleMatrix({
         </ResponsiveContainer>
         {active && chartData.length > 0 && (
           <div
+            data-testid="detail-chart"
             className="absolute bg-white border p-2 rounded shadow"
             style={{
               left: active.x * cellSize + cellSize / 2,
@@ -390,17 +442,7 @@ export default function CorrelationRippleMatrix({
           }
         `}</style>
       </div>
-      <div className="mt-2">
-        <div
-          className="h-2 w-full rounded"
-          style={{ background: legendGradient }}
-        />
-        <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-          <span>{minLabel}</span>
-          <span>0</span>
-          <span>{maxLabel}</span>
-        </div>
-      </div>
+      <Legend colorScale={colorScale} minValue={minValue} maxValue={maxValue} />
     </div>
   );
 }
