@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/theme-toggle";
 import CommandPalette from "@/components/ui/CommandPalette";
 import { Button } from "@/components/ui/button";
@@ -19,44 +19,6 @@ import useRecentViews from "@/hooks/useRecentViews";
 
 interface LayoutProps {
   children: React.ReactNode;
-}
-
-function Breadcrumbs() {
-  const location = useLocation();
-  const segments = location.pathname.split("/").filter(Boolean);
-
-  if (!segments.length) return null;
-
-  return (
-    <nav aria-label="Breadcrumb" className="flex overflow-hidden">
-      <ol className="flex items-center text-sm text-muted-foreground">
-        {segments.map((segment, idx) => {
-          const path = "/" + segments.slice(0, idx + 1).join("/");
-          const label = decodeURIComponent(segment)
-            .replace(/-/g, " ")
-            .replace(/\b\w/g, (c) => c.toUpperCase());
-          const isLast = idx === segments.length - 1;
-          return (
-            <li key={path} className="inline-flex items-center">
-              {isLast ? (
-                <span aria-current="page" className="font-medium text-foreground">
-                  {label}
-                </span>
-              ) : (
-                <Link
-                  to={path}
-                  className="hover:underline focus:outline-none focus:underline"
-                >
-                  {label}
-                </Link>
-              )}
-              {!isLast && <span className="px-2">&gt;</span>}
-            </li>
-          );
-        })}
-      </ol>
-    </nav>
-  );
 }
 
 function ActionMenu() {
@@ -134,7 +96,6 @@ export default function Layout({ children }: LayoutProps) {
         <header className="flex items-center justify-between p-4">
           <div className="flex items-center gap-2">
             <GlobalNavigation />
-            <Breadcrumbs />
           </div>
           <div className="flex items-center gap-2">
             <ActionMenu />
