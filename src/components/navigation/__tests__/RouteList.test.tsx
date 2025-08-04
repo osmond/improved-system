@@ -13,7 +13,7 @@ describe("RouteList", () => {
       { to: "/foo", label: "Foo", description: "", icon: ChartBar },
     ];
     const toggle = vi.fn();
-    const { container } = render(
+    render(
       <MemoryRouter>
         <NavigationMenu>
           <RouteList
@@ -25,9 +25,8 @@ describe("RouteList", () => {
       </MemoryRouter>,
     );
     expect(screen.getByText("Foo")).toBeInTheDocument();
-    const svgs = container.querySelectorAll("svg");
-    expect(svgs.length).toBeGreaterThan(1);
-    fireEvent.click(svgs[1]);
+    const button = screen.getByRole("button", { name: /add to favorites/i });
+    fireEvent.click(button);
     expect(toggle).toHaveBeenCalledWith("/foo");
   });
 });
