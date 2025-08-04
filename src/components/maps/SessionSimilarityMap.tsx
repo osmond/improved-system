@@ -16,6 +16,7 @@ import { polygonHull, polygonCentroid } from "d3-polygon"
 import { contourDensity } from "d3-contour"
 import { geoPath } from "d3-geo"
 import { Customized, Polygon } from "recharts"
+import ClusterCard from "./ClusterCard"
 
 const colors = [
   "var(--chart-1)",
@@ -113,30 +114,15 @@ export default function SessionSimilarityMap({
           />
         </ScatterChart>
       </ChartContainer>
-      <div className="mt-4 grid grid-cols-3 gap-4">
+      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {clusters.map((c) => {
           const clusterData = data.filter((d) => d.cluster === c)
-          const avgTemp =
-            clusterData.reduce((sum, d) => sum + d.temperature, 0) /
-            clusterData.length
-          const avgStart =
-            clusterData.reduce((sum, d) => sum + d.startHour, 0) /
-            clusterData.length
-          const descriptor = clusterData[0]?.descriptor ?? ""
           return (
-            <div key={c} className="flex flex-col items-center">
-              <ChartContainer className="h-32 w-full" config={{}}>
-                <ScatterChart>
-                  <XAxis type="number" dataKey="x" hide />
-                  <YAxis type="number" dataKey="y" hide />
-                  <Scatter data={clusterData} fill={clusterConfig[c].color} />
-                </ScatterChart>
-              </ChartContainer>
-              <p className="mt-2 text-xs text-center">{descriptor}</p>
-              <p className="text-xs text-muted-foreground text-center">
-                Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h
-              </p>
-            </div>
+            <ClusterCard
+              key={c}
+              data={clusterData}
+              color={clusterConfig[c].color}
+            />
           )
         })}
       </div>
