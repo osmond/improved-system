@@ -57,7 +57,7 @@ describe("MileageGlobe", () => {
       const land = container.querySelectorAll("path[fill='var(--muted)']");
       expect(land.length).toBeGreaterThan(0);
       const paths = container.querySelectorAll(
-        "path[stroke='var(--primary-foreground)']",
+        "path[stroke='var(--color-run)']",
       );
       expect(paths.length).toBe(1);
       const path = paths[0] as SVGPathElement | undefined;
@@ -95,10 +95,14 @@ describe("MileageGlobe", () => {
     const { container } = render(<MileageGlobe />);
 
     await waitFor(() => {
-      const paths = container.querySelectorAll(
-        "path[stroke='var(--primary-foreground)']",
+      const runPath = container.querySelectorAll(
+        "path[stroke='var(--color-run)']",
       );
-      expect(paths.length).toBe(2);
+      const walkPath = container.querySelectorAll(
+        "path[stroke='var(--color-walk)']",
+      );
+      expect(runPath.length).toBe(1);
+      expect(walkPath.length).toBe(1);
     });
   });
 
@@ -169,12 +173,13 @@ describe("MileageGlobe", () => {
 
     await waitFor(() => {
       const path = container.querySelector(
-        "path[stroke='var(--primary-foreground)']",
+        "path[stroke='var(--color-run)']",
       ) as SVGPathElement | null;
       expect(path).not.toBeNull();
       fireEvent.mouseEnter(path!);
       expect(screen.getByText("2024-01-01")).toBeInTheDocument();
       expect(screen.getByText("5 miles")).toBeInTheDocument();
+      expect(screen.getByText("Cumulative: 5 miles")).toBeInTheDocument();
       fireEvent.mouseLeave(path!);
       expect(screen.queryByText("2024-01-01")).not.toBeInTheDocument();
     });

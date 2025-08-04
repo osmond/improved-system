@@ -50,10 +50,18 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
   const totalMiles = data.reduce((sum, p) => sum + p.miles, 0)
   const strokeWidth = Math.max(2, Math.min(10, 1 + totalMiles / 50))
 
+  const getPathColor = (miles: number) => {
+    if (miles < 4) return 'var(--color-walk)'
+    if (miles < 8) return 'var(--color-run)'
+    return 'var(--color-bike)'
+  }
+
+  const coloredPaths = data.map((p) => ({ ...p, color: getPathColor(p.miles) }))
+
   return (
     <div className='relative aspect-square w-full'>
       <GlobeRenderer
-        paths={data}
+        paths={coloredPaths}
         worldFeatures={worldFeatures}
         autoRotate={autoRotate}
         strokeWidth={strokeWidth}
@@ -64,6 +72,7 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
         <div className='absolute top-2 right-2 bg-background text-foreground text-xs px-2 py-1 rounded shadow'>
           <div>{tooltip.date}</div>
           <div>{tooltip.miles} miles</div>
+          <div>Cumulative: {tooltip.cumulativeMiles} miles</div>
         </div>
       )}
       <div className='absolute bottom-2 left-2 text-xs text-foreground'>
