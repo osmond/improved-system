@@ -24,6 +24,9 @@ import * as React from "react";
 interface ClusterCardProps {
   data: any[];
   color: string;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+  onSelect?: () => void;
 }
 
 function getAnnotation(avgTemp: number, avgStart: number) {
@@ -44,7 +47,13 @@ function getAnnotation(avgTemp: number, avgStart: number) {
   return `${timeLabel}, ${tempLabel}`;
 }
 
-export default function ClusterCard({ data, color }: ClusterCardProps) {
+export default function ClusterCard({
+  data,
+  color,
+  open,
+  onOpenChange,
+  onSelect,
+}: ClusterCardProps) {
   const paceData = React.useMemo(
     () => data.map((d, i) => ({ index: i, paceDelta: d.paceDelta })),
     [data],
@@ -56,9 +65,9 @@ export default function ClusterCard({ data, color }: ClusterCardProps) {
   const annotation = getAnnotation(avgTemp, avgStart);
 
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Card className="cursor-pointer">
+        <Card className="cursor-pointer" onClick={onSelect}>
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm">{annotation}</CardTitle>
             <CardDescription className="text-xs">
