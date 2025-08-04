@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import type { Feature } from 'geojson'
 import { feature } from 'topojson-client'
+import { geoInterpolate } from 'd3-geo'
 import useMileageTimeline, { CumulativeMileagePoint } from '@/hooks/useMileageTimeline'
 import GlobeRenderer from '@/components/GlobeRenderer'
 
@@ -50,18 +51,22 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
   const totalMiles = data.reduce((sum, p) => sum + p.miles, 0)
   const strokeWidth = Math.max(2, Math.min(10, 1 + totalMiles / 50))
 
-  const getPathColor = (miles: number) => {
-    if (miles < 4) return 'var(--color-walk)'
-    if (miles < 8) return 'var(--color-run)'
-    return 'var(--color-bike)'
-  }
-
-  const coloredPaths = data.map((p) => ({ ...p, color: getPathColor(p.miles) }))
+  const ROUTE_START: [number, number] = [-122.4194, 37.7749]
+  const ROUTE_END: [number, number] = [-74.006, 40.7128]
+  const ROUTE_DISTANCE = 2900
+  const progressRatio = Math.min(totalMiles / ROUTE_DISTANCE, 1)
+  const interpolate = geoInterpolate(ROUTE_START, ROUTE_END)
+  const numPoints = Math.max(2, Math.ceil(progressRatio * 50))
+  const progressCoords = Array.from({ length: numPoints }, (_, i) =>
+    interpolate((i / (numPoints - 1)) * progressRatio),
+  )
 
   return (
     <div className='relative aspect-square w-full'>
       <GlobeRenderer
-        paths={coloredPaths}
+        paths={[
+          { coordinates: progressCoords, color: 'var(--primary-foreground)' },
+        ]}
         worldFeatures={worldFeatures}
         autoRotate={autoRotate}
         strokeWidth={strokeWidth}
@@ -75,9 +80,7 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
           <div>Cumulative: {tooltip.cumulativeMiles} miles</div>
         </div>
       )}
-      <div className='absolute bottom-2 left-2 text-xs text-foreground'>
-        Total: {totalMiles} miles
-      </div>
+      {/* Total: {totalMiles} miles */}
     </div>
   )
 }

@@ -1,4 +1,4 @@
-import { render, screen, waitFor, fireEvent } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
 import "@testing-library/jest-dom";
 import MileageGlobe from "../MileageGlobe";
 import useMileageTimeline from "@/hooks/useMileageTimeline";
@@ -57,7 +57,7 @@ describe("MileageGlobe", () => {
       const land = container.querySelectorAll("path[fill='var(--muted)']");
       expect(land.length).toBeGreaterThan(0);
       const paths = container.querySelectorAll(
-        "path[stroke='var(--color-run)']",
+        "path[stroke='var(--primary-foreground)']",
       );
       expect(paths.length).toBe(1);
       const path = paths[0] as SVGPathElement | undefined;
@@ -66,7 +66,7 @@ describe("MileageGlobe", () => {
     });
   });
 
-  it("renders multiple mileage paths when multiple activities are provided", async () => {
+  it("renders a single path even with multiple activities", async () => {
     mockUseMileageTimeline.mockReturnValue([
       {
         date: "2024-01-01",
@@ -95,18 +95,14 @@ describe("MileageGlobe", () => {
     const { container } = render(<MileageGlobe />);
 
     await waitFor(() => {
-      const runPath = container.querySelectorAll(
-        "path[stroke='var(--color-run)']",
+      const paths = container.querySelectorAll(
+        "path[stroke='var(--primary-foreground)']",
       );
-      const walkPath = container.querySelectorAll(
-        "path[stroke='var(--color-walk)']",
-      );
-      expect(runPath.length).toBe(1);
-      expect(walkPath.length).toBe(1);
+      expect(paths.length).toBe(1);
     });
   });
 
-  it("displays total mileage", async () => {
+  it("does not display total mileage text", async () => {
     mockUseMileageTimeline.mockReturnValue([
       {
         date: "2024-01-01",
@@ -126,7 +122,7 @@ describe("MileageGlobe", () => {
     render(<MileageGlobe />);
 
     await waitFor(() => {
-      expect(screen.getByText("Total: 5 miles")).toBeInTheDocument();
+      expect(screen.queryByText(/Total:/i)).toBeNull();
     });
   });
 
@@ -152,36 +148,5 @@ describe("MileageGlobe", () => {
     });
   });
 
-  it("shows tooltip when hovering a path", async () => {
-    mockUseMileageTimeline.mockReturnValue([
-      {
-        date: "2024-01-01",
-        miles: 5,
-        cumulativeMiles: 5,
-        coordinates: [
-          [0, 0],
-          [10, 10],
-        ],
-      },
-    ]);
-
-    global.fetch = vi.fn().mockResolvedValue({
-      json: () => Promise.resolve(mockWorld),
-    }) as any;
-
-    const { container } = render(<MileageGlobe />);
-
-    await waitFor(() => {
-      const path = container.querySelector(
-        "path[stroke='var(--color-run)']",
-      ) as SVGPathElement | null;
-      expect(path).not.toBeNull();
-      fireEvent.mouseEnter(path!);
-      expect(screen.getByText("2024-01-01")).toBeInTheDocument();
-      expect(screen.getByText("5 miles")).toBeInTheDocument();
-      expect(screen.getByText("Cumulative: 5 miles")).toBeInTheDocument();
-      fireEvent.mouseLeave(path!);
-      expect(screen.queryByText("2024-01-01")).not.toBeInTheDocument();
-    });
-  });
+  // Tooltip behavior is no longer applicable with a single aggregated path
 });
