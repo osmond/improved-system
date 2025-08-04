@@ -4,6 +4,7 @@ const {
   getPoints,
   getAchievements,
   getDailyStats,
+  getSessions,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -37,6 +38,14 @@ router.get('/daily-stats', (req, res) => {
     res.json(getDailyStats());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load daily stats' });
+  }
+});
+
+router.get('/sessions', (req, res) => {
+  try {
+    res.json(getSessions());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load sessions' });
   }
 });
 

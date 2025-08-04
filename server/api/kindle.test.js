@@ -33,4 +33,12 @@ describe('GET /api/kindle', () => {
     expect(res.body[0]).toHaveProperty('date');
     expect(res.body[0]).toHaveProperty('minutes');
   });
+
+  it('returns sessions data', async () => {
+    const res = await request(app).get('/api/kindle/sessions');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('start');
+    expect(res.body[0]).toHaveProperty('title');
+  });
 });
