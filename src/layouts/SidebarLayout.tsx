@@ -8,6 +8,7 @@ import {
   SidebarInset,
 } from "@/ui/sidebar";
 import SidebarNavigation from "@/components/layout/sidebar-navigation";
+import Breadcrumbs from "@/components/layout/Breadcrumbs";
 
 interface SidebarLayoutProps {
   children: React.ReactNode;
@@ -23,7 +24,10 @@ export default function SidebarLayout({ children }: SidebarLayoutProps) {
         <SidebarNavigation />
         <SidebarFooter />
       </Sidebar>
-      <SidebarInset>{children}</SidebarInset>
+      <SidebarInset className="p-4">
+        <Breadcrumbs />
+        {children}
+      </SidebarInset>
     </SidebarProvider>
   );
 }
