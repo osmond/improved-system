@@ -34,6 +34,7 @@ interface NavSectionProps {
   toggleFavorite: (to: string) => void;
   highlighted: string | null;
   setHighlighted: (to: string) => void;
+  searchMatches?: string[];
 }
 
 export default function NavSection({
@@ -46,6 +47,7 @@ export default function NavSection({
   toggleFavorite,
   highlighted,
   setHighlighted,
+  searchMatches = [],
 }: NavSectionProps) {
   const storageKey = `nav_section_state_${label}`;
   const { openGroups, handleOpenChange } = usePersistedGroups(storageKey);
@@ -81,7 +83,8 @@ export default function NavSection({
                           isActive={pathname === route.to}
                           className={cn(
                             "justify-start",
-                            highlighted === route.to &&
+                            (highlighted === route.to ||
+                              searchMatches.includes(route.to)) &&
                               "bg-accent text-accent-foreground"
                           )}
                           onMouseEnter={() => setHighlighted(route.to)}
@@ -170,7 +173,8 @@ export default function NavSection({
                                   isActive={pathname === route.to}
                                   className={cn(
                                     "justify-start",
-                                    highlighted === route.to &&
+                                    (highlighted === route.to ||
+                                      searchMatches.includes(route.to)) &&
                                       "bg-accent text-accent-foreground"
                                   )}
                                   onMouseEnter={() => setHighlighted(route.to)}
