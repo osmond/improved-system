@@ -111,6 +111,8 @@ export default function GoodDayPage() {
   const filteredSessions = useMemo(() => {
     if (!sessions) return null
     return sessions.filter((s) => {
+      if (condition !== "all" && s.condition !== condition) return false
+      if (s.startHour < hourRange[0] || s.startHour > hourRange[1]) return false
       if (hasRoute && !getTag("route:", s)) return false
       if (route !== "all" && getTag("route:", s) !== route) return false
       if (hasGear && !getTag("gear:", s)) return false
@@ -124,7 +126,7 @@ export default function GoodDayPage() {
       if (day !== "all" && DAY_NAMES[new Date(s.start).getDay()] !== day) return false
       return true
     })
-  }, [sessions, route, gear, day, hasRoute, hasGear, hasTags])
+  }, [sessions, route, gear, day, hasRoute, hasGear, hasTags, condition, hourRange])
 
   useEffect(() => {
     try {
