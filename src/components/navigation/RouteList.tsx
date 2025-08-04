@@ -25,9 +25,12 @@ export default function RouteList({
 }: RouteListProps) {
   return (
     <ul className="grid gap-3 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
-      {routes.map((route) => (
-        <li key={route.to}>
-          {route.preview === "fragility" ? (
+      {routes.map((route) => {
+        const isFavorite = favorites.includes(route.to);
+
+        return (
+          <li key={route.to}>
+            {route.preview === "fragility" ? (
             <HoverCard>
               <HoverCardTrigger asChild>
                 <NavigationMenuLink asChild>
@@ -49,19 +52,28 @@ export default function RouteList({
                         {route.description}
                       </p>
                     </div>
-                    <Star
-                      className={cn(
-                        "ml-2 h-4 w-4 shrink-0",
-                        favorites.includes(route.to)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-muted-foreground",
-                      )}
+                    <button
+                      type="button"
+                      aria-label={
+                        isFavorite ? "Remove from favorites" : "Add to favorites"
+                      }
+                      aria-pressed={isFavorite}
+                      className="ml-2"
                       onClick={(e) => {
                         e.preventDefault();
                         e.stopPropagation();
                         toggleFavorite(route.to);
                       }}
-                    />
+                    >
+                      <Star
+                        className={cn(
+                          "h-4 w-4 shrink-0",
+                          isFavorite
+                            ? "fill-yellow-400 text-yellow-400"
+                            : "text-muted-foreground",
+                        )}
+                      />
+                    </button>
                   </Link>
                 </NavigationMenuLink>
               </HoverCardTrigger>
@@ -89,24 +101,34 @@ export default function RouteList({
                     {route.description}
                   </p>
                 </div>
-                <Star
-                  className={cn(
-                    "ml-2 h-4 w-4 shrink-0",
-                    favorites.includes(route.to)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-muted-foreground",
-                  )}
+                <button
+                  type="button"
+                  aria-label={
+                    isFavorite ? "Remove from favorites" : "Add to favorites"
+                  }
+                  aria-pressed={isFavorite}
+                  className="ml-2"
                   onClick={(e) => {
                     e.preventDefault();
                     e.stopPropagation();
                     toggleFavorite(route.to);
                   }}
-                />
+                >
+                  <Star
+                    className={cn(
+                      "h-4 w-4 shrink-0",
+                      isFavorite
+                        ? "fill-yellow-400 text-yellow-400"
+                        : "text-muted-foreground",
+                    )}
+                  />
+                </button>
               </Link>
             </NavigationMenuLink>
           )}
-        </li>
-      ))}
+          </li>
+        );
+      })}
     </ul>
   );
 }
