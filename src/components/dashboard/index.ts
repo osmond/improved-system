@@ -42,4 +42,6 @@ export { default as RouteNoveltyMap } from "./RouteNoveltyMap";
 export { default as SocialEngagementCard } from "./SocialEngagementCard";
 export { default as MapView } from "./MapView";
 
+export { default as FavoriteVisualizations } from "./FavoriteVisualizations";
+
 
