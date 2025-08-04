@@ -11,7 +11,12 @@ import {
   Tooltip,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
-import { interpolateRdBu, interpolatePRGn } from "d3-scale-chromatic";
+import {
+  interpolateRdBu,
+  interpolatePRGn,
+  interpolateViridis,
+  interpolateMagma,
+} from "d3-scale-chromatic";
 import { rgb } from "d3-color";
 
 interface CorrelationRippleMatrixProps {
@@ -26,7 +31,8 @@ interface CorrelationRippleMatrixProps {
   cellSize?: number; // explicit cell size override
   maxCellSize?: number; // maximum computed cell size
   upperOnly?: boolean; // only render x >= y cells
-  palette?: "default" | "colorblind"; // color scheme for visualization
+  palette?: PaletteOption; // color scheme for visualization
+  cellGap?: number; // gap or border width between cells
 }
 
 interface CellData {
@@ -35,6 +41,15 @@ interface CellData {
   value: number;
 }
 
+
+type PaletteOption = "default" | "colorblind" | "viridis" | "magma";
+
+const PALETTE_INTERPOLATORS: Record<PaletteOption, (t: number) => string> = {
+  default: (t) => interpolateRdBu(1 - t),
+  colorblind: (t) => interpolatePRGn(1 - t),
+  viridis: interpolateViridis,
+  magma: interpolateMagma,
+};
 
 const DEFAULT_CELL_SIZE = 24;
 const DetailChart = lazy(() => import("./CorrelationDetailChart"));
@@ -49,12 +64,10 @@ const DetailChart = lazy(() => import("./CorrelationDetailChart"));
 function createColorScale(
   minValue = -1,
   maxValue = 1,
-  palette: "default" | "colorblind" = "default"
+  palette: PaletteOption = "default",
 ) {
   const interpolator =
-    palette === "colorblind"
-      ? (t: number) => interpolatePRGn(1 - t)
-      : (t: number) => interpolateRdBu(1 - t);
+    PALETTE_INTERPOLATORS[palette] ?? PALETTE_INTERPOLATORS.default;
 
   return scaleDiverging(interpolator)
     .domain([minValue, 0, maxValue])
@@ -97,6 +110,7 @@ export default function CorrelationRippleMatrix({
   maxCellSize,
   upperOnly = false,
   palette = "default",
+  cellGap = 1,
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
@@ -301,7 +315,8 @@ export default function CorrelationRippleMatrix({
                     width={cellSize}
                     height={cellSize}
                     fill={fillColor}
-                    stroke="#ffffff"
+                    stroke={cellGap > 0 ? "#f0f0f0" : undefined}
+                    strokeWidth={cellGap}
                     opacity={opacity}
                     onClick={() => handleCellClick(payload as CellData)}
                     onMouseOver={() => setHovered(payload as CellData)}

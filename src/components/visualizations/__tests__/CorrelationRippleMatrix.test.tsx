@@ -69,5 +69,26 @@ describe('CorrelationRippleMatrix', () => {
     expect(bg).toContain('rgb(0,68,27)')
     expect(bg).toContain('rgb(64,0,75)')
   })
+
+  it('supports viridis palette', () => {
+    const matrix = [
+      [1, -1],
+      [-1, 1],
+    ]
+    const labels = ['A', 'B']
+    const { container } = render(
+      <CorrelationRippleMatrix
+        matrix={matrix}
+        labels={labels}
+        palette="viridis"
+        cellSize={50}
+      />, 
+    )
+
+    const legend = container.querySelector('.mt-2 .h-2') as HTMLDivElement
+    const bg = legend.style.background.replace(/\s/g, '')
+    expect(bg).toContain('#440154')
+    expect(bg).toContain('#fde725')
+  })
 })
 
