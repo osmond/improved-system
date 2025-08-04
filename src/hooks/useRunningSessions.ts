@@ -16,6 +16,7 @@ export interface SessionPoint {
   /** Unique session identifier */
   id: number
   cluster: number
+  descriptor: string
   good: boolean
   pace: number
   paceDelta: number
@@ -191,7 +192,7 @@ export function useRunningSessions(): {
       model.run()
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
-      const data = output.map(([x, y]: [number, number], idx: number) => {
+      const preliminary = output.map(([x, y]: [number, number], idx: number) => {
         const { expected, factors } = computeExpected(sessions[idx])
         const paceDelta = expected - sessions[idx].pace
         const confidence = baselineConfidence(sessions[idx])
@@ -220,6 +221,33 @@ export function useRunningSessions(): {
           factors,
         }
       })
+
+      const descriptorMap: Record<number, string> = {}
+      const uniqueClusters = Array.from(new Set(labels))
+      for (const c of uniqueClusters) {
+        const clusterSessions = preliminary.filter((p) => p.cluster === c)
+        const conditionCounts = clusterSessions.reduce(
+          (acc, s) => {
+            acc[s.condition] = (acc[s.condition] || 0) + 1
+            return acc
+          },
+          {} as Record<string, number>,
+        )
+        const condition = Object.keys(conditionCounts).reduce((a, b) =>
+          conditionCounts[a] > conditionCounts[b] ? a : b,
+        )
+        const avgHour =
+          clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
+          clusterSessions.length
+        const timeLabel = avgHour < 12 ? 'AM' : 'PM'
+        descriptorMap[c] = `${condition} ${timeLabel} Cluster`
+      }
+
+      const data = preliminary.map((p) => ({
+        ...p,
+        descriptor: descriptorMap[p.cluster],
+      }))
+
       setPoints(data)
       setTrend(computeTrend(data))
     })
