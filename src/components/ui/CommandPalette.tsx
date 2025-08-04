@@ -46,6 +46,7 @@ export default function CommandPalette({
         <div className="p-2">
           <input
             autoFocus
+            aria-label="Command search"
             className="mb-2 w-full border-b bg-transparent px-2 py-1 outline-none"
             placeholder="Type a command or search..."
             value={query}
