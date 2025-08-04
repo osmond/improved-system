@@ -28,6 +28,14 @@ export default function GoodDayInsights({
   const hookData = useRunningSessions()
   const sessions = propSessions ?? hookData.sessions
   const trend = propTrend ?? hookData.trend
+  const { error } = hookData
+
+  if (error)
+    return (
+      <div className="text-sm text-red-500">
+        Unable to load session insights.
+      </div>
+    )
 
   if (!sessions) return <Skeleton className="h-32" />
   if (!sessions.length) return null

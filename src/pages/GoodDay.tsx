@@ -33,7 +33,7 @@ const FILTERS_KEY = "goodDayFilters"
 const PRESETS_KEY = "goodDayPresets"
 
 export default function GoodDayPage() {
-  const { sessions, trend } = useRunningSessions()
+  const { sessions, trend, error } = useRunningSessions()
   const [condition, setCondition] = useState("all")
   const [hourRange, setHourRange] = useState<[number, number]>([0, 23])
   const [route, setRoute] = useState("all")
@@ -44,6 +44,14 @@ export default function GoodDayPage() {
   const [highlightDate, setHighlightDate] = useState<string | null>(null)
   const [presets, setPresets] = useState<FilterPreset[]>([])
   const [forecastMessage, setForecastMessage] = useState<string | null>(null)
+
+  if (error) {
+    return (
+      <div className="p-4">
+        Unable to load running sessions. Please try again later.
+      </div>
+    )
+  }
 
   const conditions = useMemo(
     () => (sessions ? Array.from(new Set(sessions.map((s) => s.condition))) : []),
