@@ -1,6 +1,6 @@
 "use client";
 import ChartCard from "./ChartCard";
-import { ChartContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip } from "@/ui/chart";
+import { ChartContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, ChartTooltip } from "@/ui/chart";
 import { Skeleton } from "@/ui/skeleton";
 import useTrainingConsistency from "@/hooks/useTrainingConsistency";
 import {

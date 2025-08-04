@@ -19,7 +19,7 @@ import {
   YAxis,
   Area,
   CartesianGrid,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   type ChartConfig,
 } from "@/ui/chart"
 

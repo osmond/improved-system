@@ -9,7 +9,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartTooltipContent,
   ReferenceArea,
   ReferenceLine,

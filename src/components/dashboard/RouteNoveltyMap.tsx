@@ -16,7 +16,7 @@ import {
   Line,
   XAxis,
   YAxis,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   Area,
   ReferenceLine,
   ReferenceArea,

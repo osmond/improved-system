@@ -10,7 +10,7 @@ import {
   CartesianGrid,
   ChartLegend,
   ChartLegendContent,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/ui/chart'
 import {

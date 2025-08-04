@@ -6,7 +6,7 @@ import {
   XAxis,
   CartesianGrid,
   Brush,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
 } from "@/ui/chart";
 import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/ui/chart";

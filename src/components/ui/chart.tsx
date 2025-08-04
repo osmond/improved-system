@@ -20,7 +20,7 @@ export {
   PolarRadiusAxis,
   CartesianGrid,
   Brush,
-  Tooltip,
+  Tooltip as RechartsTooltip,
   ReferenceLine,
   ReferenceArea,
   ReferenceDot,

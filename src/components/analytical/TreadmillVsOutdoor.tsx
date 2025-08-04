@@ -4,7 +4,7 @@ import {
   ChartContainer,
   PieChart,
   Pie,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartLegend,
   ResponsiveContainer,
 } from "@/ui/chart"

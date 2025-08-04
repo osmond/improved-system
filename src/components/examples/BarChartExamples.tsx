@@ -5,7 +5,7 @@ import {
   Bar,
   XAxis,
   YAxis,
-  Tooltip,
+  ChartTooltip as Tooltip,
   CartesianGrid,
   ChartLegend,
   ChartLegendContent,

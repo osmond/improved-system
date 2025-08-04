@@ -9,7 +9,7 @@ import {
   CartesianGrid,
   XAxis,
   YAxis,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
 } from "@/ui/chart";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
