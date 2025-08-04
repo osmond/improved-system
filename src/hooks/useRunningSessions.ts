@@ -5,6 +5,8 @@ import TSNE from 'tsne-js'
 export interface SessionPoint {
   x: number
   y: number
+  /** Unique session identifier */
+  id: number
   cluster: number
   good: boolean
   pace: number
@@ -110,6 +112,7 @@ export function useRunningSessions(): SessionPoint[] | null {
           return {
             x,
             y,
+            id: sessions[idx].id,
             cluster: labels[idx],
             good: paceDelta > 0,
             pace: sessions[idx].pace,

@@ -1019,6 +1019,59 @@ export async function getRunningSessions(): Promise<RunningSession[]> {
   return sessions;
 }
 
+export interface PaceWeatherPoint {
+  /** minutes from start */
+  t: number;
+  /** actual pace at time t */
+  actual: number;
+  /** expected baseline pace */
+  expected: number;
+  /** temperature at time t */
+  temperature: number;
+}
+
+export async function getSessionTimeseries(
+  id: number,
+): Promise<PaceWeatherPoint[]> {
+  const sessions = await getRunningSessions();
+  const s = sessions.find((r) => r.id === id);
+  if (!s) return [];
+
+  function expectedPace(rs: RunningSession): number {
+    const hour = new Date(rs.start ?? rs.date).getHours();
+    const temp = rs.weather.temperature || 55;
+    const humidity = rs.weather.humidity || 50;
+    const wind = rs.weather.wind || 0;
+    const tempAdj = (temp - 55) * 0.02;
+    const humidAdj = (humidity - 50) * 0.01;
+    const windAdj = wind * 0.01;
+    const conditionAdjMap: Record<string, number> = {
+      Clear: -0.05,
+      Cloudy: 0.02,
+      Fog: 0.05,
+      Drizzle: 0.07,
+      Rain: 0.1,
+      Snow: 0.15,
+      Storm: 0.2,
+    };
+    const conditionAdj = conditionAdjMap[rs.weather.condition] ?? 0;
+    const timeAdj = Math.abs(hour - 8) * 0.03;
+    const hrAdj = (rs.heartRate - 140) * 0.015;
+    return 6.5 + tempAdj + humidAdj + windAdj + conditionAdj + timeAdj + hrAdj;
+  }
+
+  const expected = expectedPace(s);
+  const minutes = Math.min(s.duration, 30);
+  const series: PaceWeatherPoint[] = [];
+  for (let i = 0; i < minutes; i++) {
+    const actual = +(s.pace + (Math.random() - 0.5) * 0.5).toFixed(2);
+    const temperature =
+      s.weather.temperature + Math.round((Math.random() - 0.5) * 4);
+    series.push({ t: i, actual, expected, temperature });
+  }
+  return series;
+}
+
 export interface RouteProfilePoint {
   distance: number;
   elevation: number;
