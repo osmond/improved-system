@@ -132,6 +132,7 @@ export default function GlobalNavigation() {
 
   const [menuValue, setMenuValue] = React.useState<string | undefined>();
   const closeMenu = React.useCallback(() => setMenuValue(undefined), []);
+  const firstRender = React.useRef(true);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -145,6 +146,10 @@ export default function GlobalNavigation() {
   }, []);
 
   React.useEffect(() => {
+    if (firstRender.current) {
+      firstRender.current = false;
+      return;
+    }
     closeMenu();
   }, [location.pathname, closeMenu]);
 
