@@ -201,6 +201,12 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
       diff: 1,
     },
     {
+      label: "Confidence",
+      accessor: (s) => s.confidence,
+      format: (n) => `${(n * 100).toFixed(0)}%`,
+      diff: 0.05,
+    },
+    {
       label: "Start Hour",
       accessor: (s) => s.startHour,
       format: (n) => n.toString(),
