@@ -17,21 +17,21 @@ export function usePersistedGroups(storageKey: string) {
   });
 
   const handleOpenChange = useCallback(
-    (groupLabel: string) => (open: boolean) => {
-      setOpenGroups(() => {
-        const next = open ? { [groupLabel]: true } : {};
-        try {
-          if (typeof window !== "undefined") {
-            localStorage.setItem(storageKey, JSON.stringify(next));
+      (groupLabel: string) => (open: boolean) => {
+        setOpenGroups(() => {
+          const next = { [groupLabel]: open };
+          try {
+            if (typeof window !== "undefined") {
+              localStorage.setItem(storageKey, JSON.stringify(next));
+            }
+          } catch {
+            // ignore
           }
-        } catch {
-          // ignore
-        }
-        return next;
-      });
-    },
-    [storageKey]
-  );
+          return next;
+        });
+      },
+      [storageKey]
+    );
 
   return { openGroups, handleOpenChange } as const;
 }
