@@ -30,6 +30,7 @@ export { default as FragilityGauge } from "./FragilityGauge";
 export { default as CircularFragilityRing } from "./CircularFragilityRing";
 export { default as FragilityIndexSparkline } from "./FragilityIndexSparkline";
 export { default as FragilityBreakdown } from "./FragilityBreakdown";
+export { default as FragilityIndexCard } from "./FragilityIndexCard";
 export { default as FragilityPreviewSparkline } from "./FragilityPreviewSparkline";
 
 export { default as TrainingEntropyHeatmap } from "./TrainingEntropyHeatmap";
