@@ -15,6 +15,7 @@ export interface CorrelationDrilldown {
   seriesY: TimeseriesPoint[];
   rolling: TimeseriesPoint[];
   breakdown: { weekday: number; weekend: number };
+  insight?: string;
 }
 
 interface CorrelationDetailsProps {

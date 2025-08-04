@@ -9,6 +9,8 @@ import {
   YAxis,
   Rectangle,
   Tooltip,
+  LineChart,
+  Line,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
 import {
@@ -25,7 +27,7 @@ import CorrelationDetails, {
 interface CorrelationCell {
   value: number; // correlation value between -1 and 1
   n: number; // sample size
-  p: number; // p-value
+  p?: number; // optional p-value
   sparkline?: number[]; // optional rolling correlation values
 }
 
@@ -106,6 +108,16 @@ function getTextColor(background: string) {
   const { r, g, b } = rgb(background);
   const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
   return luminance > 0.5 ? "#000" : "#fff";
+}
+
+function generateInsight(value: number) {
+  const abs = Math.abs(value);
+  const direction = value > 0 ? "positive" : "negative";
+  if (abs > 0.8) return `Very strong ${direction} correlation`;
+  if (abs > 0.6) return `Strong ${direction} correlation`;
+  if (abs > 0.4) return `Moderate ${direction} correlation`;
+  if (abs > 0.2) return `Weak ${direction} correlation`;
+  return "Little to no correlation";
 }
 
 interface LegendProps {
@@ -389,7 +401,8 @@ export default function CorrelationRippleMatrix({
               const highlight = hovered || (pinned ? active : null);
               const isHighlighted =
                 highlight && (highlight.x === payload.x || highlight.y === payload.y);
-              const significant = payload.p < 0.05;
+              const significant =
+                payload.p === undefined || payload.p < 0.05;
               const baseOpacity = significant ? 1 : 0.2;
               const opacity = highlight
                 ? isHighlighted
@@ -424,9 +437,13 @@ export default function CorrelationRippleMatrix({
                     onClick={() => handleCellClick(payload as CellData)}
                     onMouseOver={() => setHovered(payload as CellData)}
                     onMouseOut={() => setHovered(null)}
+                    onFocus={() => setHovered(payload as CellData)}
+                    onBlur={() => setHovered(null)}
                     cursor="pointer"
                     tabIndex={0}
-                    aria-label={`${xLabel} vs ${yLabel}: ${payload.value.toFixed(2)}`}
+                    aria-label={`${xLabel} vs ${yLabel}: ${payload.value.toFixed(2)}${
+                      payload.p !== undefined ? `, p ${payload.p.toExponential(2)}` : ""
+                    }`}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
                         handleCellClick(payload as CellData);
@@ -462,17 +479,77 @@ export default function CorrelationRippleMatrix({
             }}
           />
             <Tooltip
-              content={({ active, payload }) => {
-                if (active && payload && payload.length) {
+              content={({ active: tooltipActive, payload }) => {
+                if (tooltipActive && payload && payload.length) {
                   const cell = payload[0].payload as CellData;
                   const xLabel = labels[cell.x] ?? "";
                   const yLabel = labels[cell.y] ?? "";
+                  const key = `${cell.y}-${cell.x}`;
+                  const dd = drilldown[key];
+                  const scatterData = dd
+                    ? dd.seriesX
+                        .map((p, i) => ({
+                          x: p.value,
+                          y: dd.seriesY[i]?.value ?? null,
+                        }))
+                        .filter((p) => p.y !== null)
+                    : [];
+                  const sparkData = cell.sparkline
+                    ? cell.sparkline.map((v, i) => ({ index: i, value: v }))
+                    : [];
+                  const insight = dd?.insight ?? generateInsight(cell.value);
                   return (
-                    <div className="bg-white p-2 border rounded shadow">
-                      <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
+                    <div
+                      role="tooltip"
+                      tabIndex={0}
+                      aria-label={`${xLabel} vs ${yLabel} correlation ${cell.value.toFixed(2)}${
+                        cell.p !== undefined
+                          ? `, p-value ${cell.p.toExponential(2)}`
+                          : ""
+                      }`}
+                      className="bg-white p-2 border rounded shadow text-xs"
+                    >
+                      <div className="font-medium text-sm">{`${xLabel} vs ${yLabel}`}</div>
                       <div>r = {cell.value.toFixed(2)}</div>
-                      <div>n = {cell.n}</div>
-                      <div>p = {cell.p.toExponential(2)}</div>
+                      {cell.p !== undefined && (
+                        <div>p = {cell.p.toExponential(2)}</div>
+                      )}
+                      {scatterData.length > 0 ? (
+                        <ResponsiveContainer
+                          width={120}
+                          height={80}
+                          className="my-1"
+                          aria-hidden="true"
+                        >
+                          <ScatterChart margin={{ top: 0, right: 0, bottom: 0, left: 0 }}>
+                            <XAxis dataKey="x" type="number" hide />
+                            <YAxis dataKey="y" type="number" hide />
+                            <Scatter data={scatterData} fill="hsl(var(--chart-1))" />
+                          </ScatterChart>
+                        </ResponsiveContainer>
+                      ) : sparkData.length > 1 ? (
+                        <ResponsiveContainer
+                          width={120}
+                          height={80}
+                          className="my-1"
+                          aria-hidden="true"
+                        >
+                          <LineChart
+                            data={sparkData}
+                            margin={{ top: 5, right: 5, bottom: 0, left: 5 }}
+                          >
+                            <XAxis dataKey="index" hide />
+                            <YAxis domain={[-1, 1]} hide />
+                            <Line
+                              type="monotone"
+                              dataKey="value"
+                              stroke="hsl(var(--chart-1))"
+                              dot={false}
+                            />
+                          </LineChart>
+                        </ResponsiveContainer>
+                      ) : null}
+                      <div className="mt-1 text-muted-foreground">{insight}</div>
                     </div>
                   );
                 }
