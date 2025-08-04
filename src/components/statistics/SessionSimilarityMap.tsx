@@ -20,13 +20,6 @@ const colors = [
   "var(--chart-4)",
 ]
 
-const config = {
-  0: { label: "Cluster 1", color: colors[0] },
-  1: { label: "Cluster 2", color: colors[1] },
-  2: { label: "Cluster 3", color: colors[2] },
-  good: { label: "Good Day", color: "hsl(var(--chart-6))" },
-} satisfies Record<string, unknown>
-
 interface SessionSimilarityMapProps {
   data: SessionPoint[] | null
 }
@@ -37,6 +30,19 @@ export default function SessionSimilarityMap({
   if (!data) return <Skeleton className="h-64" />
 
   const clusters = Array.from(new Set(data.map((d) => d.cluster)))
+  const clusterConfig = clusters.reduce(
+    (acc, c) => {
+      const descriptor =
+        data.find((d) => d.cluster === c)?.descriptor ?? `Cluster ${c + 1}`
+      acc[c] = { label: descriptor, color: colors[c % colors.length] }
+      return acc
+    },
+    {} as Record<number, { label: string; color: string }>,
+  )
+  const config = {
+    ...clusterConfig,
+    good: { label: "Good Day", color: "hsl(var(--chart-6))" },
+  }
 
   return (
     <ChartCard
@@ -53,7 +59,7 @@ export default function SessionSimilarityMap({
             <Scatter
               key={c}
               data={data.filter((d) => d.cluster === c)}
-              fill={colors[c % colors.length]}
+              fill={clusterConfig[c].color}
               animationDuration={300}
             />
           ))}
@@ -73,19 +79,18 @@ export default function SessionSimilarityMap({
           const avgStart =
             clusterData.reduce((sum, d) => sum + d.startHour, 0) /
             clusterData.length
+          const descriptor = clusterData[0]?.descriptor ?? ""
           return (
             <div key={c} className="flex flex-col items-center">
               <ChartContainer className="h-32 w-full" config={{}}>
                 <ScatterChart>
                   <XAxis type="number" dataKey="x" hide />
                   <YAxis type="number" dataKey="y" hide />
-                  <Scatter
-                    data={clusterData}
-                    fill={colors[c % colors.length]}
-                  />
+                  <Scatter data={clusterData} fill={clusterConfig[c].color} />
                 </ScatterChart>
               </ChartContainer>
-              <p className="mt-2 text-xs text-muted-foreground text-center">
+              <p className="mt-2 text-xs text-center">{descriptor}</p>
+              <p className="text-xs text-muted-foreground text-center">
                 Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h
               </p>
             </div>

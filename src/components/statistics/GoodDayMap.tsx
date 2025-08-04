@@ -231,20 +231,8 @@ export default function GoodDayMap({
         clusterSessions.reduce((sum, s) => sum + s.paceDelta, 0) /
         clusterSessions.length
       const count = clusterSessions.length
-      const conditionCounts = clusterSessions.reduce(
-        (acc, s) => {
-          acc[s.condition] = (acc[s.condition] || 0) + 1
-          return acc
-        },
-        {} as Record<string, number>,
-      )
-      const conditionLabel = Object.keys(conditionCounts).reduce((a, b) =>
-        conditionCounts[a] > conditionCounts[b] ? a : b,
-      )
-      const avgHour =
-        clusterSessions.reduce((sum, s) => sum + s.startHour, 0) / count
-      const timeLabel =
-        avgHour < 12 ? "Mornings" : avgHour < 18 ? "Afternoons" : "Evenings"
+      const descriptor =
+        clusterSessions[0]?.descriptor ?? `Cluster ${c + 1}`
       const centroid = polygonCentroid(hull)
       return {
         cluster: c,
@@ -252,8 +240,7 @@ export default function GoodDayMap({
         centroid,
         meanDelta,
         count,
-        conditionLabel,
-        timeLabel,
+        descriptor,
       }
     })
     .filter(Boolean) as {
@@ -262,8 +249,7 @@ export default function GoodDayMap({
     centroid: { x: number; y: number }
     meanDelta: number
     count: number
-    conditionLabel: string
-    timeLabel: string
+    descriptor: string
   }[]
 
   const clusterColors = [
@@ -405,7 +391,7 @@ export default function GoodDayMap({
             })}
           </AnimatePresence>
           {clusterStats.map(
-            ({ cluster, centroid, meanDelta, count, conditionLabel, timeLabel }) => (
+            ({ cluster, centroid, meanDelta, count, descriptor }) => (
               <ReferenceDot
                 key={`label-${cluster}`}
                 x={centroid.x}
@@ -413,7 +399,7 @@ export default function GoodDayMap({
                 r={0}
                 isFront
                 label={{
-                  value: `${conditionLabel} ${timeLabel}: avg Δ ${meanDelta.toFixed(1)} min/mi, ${count} sessions`,
+                  value: `${descriptor}: avg Δ ${meanDelta.toFixed(1)} min/mi, ${count} sessions`,
                   position: "top",
                   fontSize: 12,
                   fill: "currentColor",
@@ -467,6 +453,7 @@ function GoodDayTooltip(props: TooltipProps<number, string>) {
       hideIndicator
       formatter={() => (
         <div className="grid gap-1">
+          <span>{session.descriptor}</span>
           <span>Pace: {session.pace.toFixed(2)} min/mi</span>
           <span>Δ Pace: {session.paceDelta.toFixed(2)} min/mi</span>
           <span>Heart Rate: {session.heartRate} bpm</span>
