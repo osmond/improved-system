@@ -13,6 +13,10 @@ export interface VisitGroup {
   placeId: string;
 }
 
+interface CurrentVisit extends VisitGroup {
+  count: number;
+}
+
 const EARTH_RADIUS = 6371000; // meters
 
 export function haversineDistance(a: LocationPoint, b: LocationPoint): number {
@@ -40,13 +44,13 @@ export function groupConsecutivePoints(
     a.timestamp.localeCompare(b.timestamp),
   );
   const visits: VisitGroup[] = [];
-  let current = {
+  let current: CurrentVisit = {
     start: sorted[0].timestamp,
     end: sorted[0].timestamp,
     latitude: sorted[0].latitude,
     longitude: sorted[0].longitude,
     count: 1,
-  } as any;
+  };
   let prev = sorted[0];
   for (let i = 1; i < sorted.length; i++) {
     const p = sorted[i];
