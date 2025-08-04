@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { scaleLinear } from "d3-scale";
 import { line as d3Line, area as d3Area } from "d3-shape";
 import { format } from "date-fns";
-import TransitionMatrix from "./TransitionMatrix";
+import TransitionMatrix from "../analytical/TransitionMatrix";
 
 export type Segment = {
   time: string; // ISO timestamp for start of 30 min window
