@@ -40,6 +40,9 @@ interface CorrelationRippleMatrixProps {
   displayMode?: "upper" | "lower" | "full"; // which part of the matrix to display
   palette?: PaletteOption; // color scheme for visualization
   cellGap?: number; // gap or border width between cells
+  signFilter?: "all" | "positive" | "negative"; // filter by correlation sign
+  threshold?: number; // minimum absolute correlation value
+  topN?: number; // show only top-N strongest correlations
 }
 
 interface CellData extends CorrelationCell {
@@ -173,10 +176,14 @@ export default function CorrelationRippleMatrix({
   displayMode = "upper",
   palette = "default",
   cellGap = 1,
+  signFilter = "all",
+  threshold = 0,
+  topN,
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
   const [hovered, setHovered] = useState<CellData | null>(null);
+  const [pinned, setPinned] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
 
@@ -214,18 +221,39 @@ export default function CorrelationRippleMatrix({
     return () => observer.disconnect();
   }, [cellSizeProp, labels.length, maxCellSize]);
 
-  const heatData: CellData[] = matrix
+  let heatData: CellData[] = matrix
     .flatMap((row, y) => row.map((cell, x) => ({ x, y, ...cell })))
     .filter(({ x, y }) => {
-      if (displayMode === "upper") return x >= y
-      if (displayMode === "lower") return x <= y
-      return true
+      if (displayMode === "upper") return x >= y;
+      if (displayMode === "lower") return x <= y;
+      return true;
     });
+
+  heatData = heatData.filter((cell) => {
+    if (signFilter === "positive" && cell.value <= 0) return false;
+    if (signFilter === "negative" && cell.value >= 0) return false;
+    if (Math.abs(cell.value) < threshold) return false;
+    return true;
+  });
+
+  if (topN !== undefined && topN > 0) {
+    heatData = heatData
+      .slice()
+      .sort((a, b) => Math.abs(b.value) - Math.abs(a.value))
+      .slice(0, topN);
+  }
 
   const colorScale = createColorScale(minValue, maxValue, palette);
 
   const handleCellClick = (cell: CellData) => {
-    setActive(cell);
+    const same = pinned && pinned.x === cell.x && pinned.y === cell.y;
+    if (same) {
+      setActive(null);
+      setPinned(null);
+    } else {
+      setActive(cell);
+      setPinned(cell);
+    }
   };
 
   const activeKey = active ? `${active.y}-${active.x}` : null;
@@ -363,11 +391,12 @@ export default function CorrelationRippleMatrix({
               const y = cy - cellSize / 2;
               const xLabel = labels[payload.x] ?? "";
               const yLabel = labels[payload.y] ?? "";
+              const highlight = hovered || pinned;
               const isHighlighted =
-                hovered && (hovered.x === payload.x || hovered.y === payload.y);
+                highlight && (highlight.x === payload.x || highlight.y === payload.y);
               const significant = payload.p < 0.05;
               const baseOpacity = significant ? 1 : 0.2;
-              const opacity = hovered
+              const opacity = highlight
                 ? isHighlighted
                   ? baseOpacity
                   : baseOpacity * 0.3
@@ -468,7 +497,10 @@ export default function CorrelationRippleMatrix({
               animation: "ripple 0.3s ease-out",
               pointerEvents: "auto",
             }}
-            onClick={() => setActive(null)}
+            onClick={() => {
+              setActive(null);
+              setPinned(null);
+            }}
           >
             <Suspense fallback={<div className="p-2 text-xs">Loading...</div>}>
               <DetailChart data={chartData} />

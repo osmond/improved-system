@@ -2,6 +2,8 @@ import React, { useEffect, useState } from "react";
 import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
 import { Button } from "@/ui/button";
 import { SimpleSelect } from "@/ui/select";
+import { Slider } from "@/ui/slider";
+import { Input } from "@/ui/input";
 import {
   getDailySteps,
   getDailySleep,
@@ -57,6 +59,11 @@ export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
   const [displayMode, setDisplayMode] = useState<"upper" | "lower" | "full">("upper");
   const [showValues, setShowValues] = useState(false);
+  const [signFilter, setSignFilter] = useState<"all" | "positive" | "negative">(
+    "all",
+  );
+  const [threshold, setThreshold] = useState(0);
+  const [topN, setTopN] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -149,7 +156,7 @@ export default function StatisticsPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <SimpleSelect
             value={displayMode}
             onValueChange={(v) =>
@@ -169,6 +176,44 @@ export default function StatisticsPage() {
           >
             {showValues ? "Hide Values" : "Show Values"}
           </Button>
+          <SimpleSelect
+            value={signFilter}
+            onValueChange={(v) =>
+              setSignFilter(v as "all" | "positive" | "negative")
+            }
+            options={[
+              { value: "all", label: "All" },
+              { value: "positive", label: "Positive Only" },
+              { value: "negative", label: "Negative Only" },
+            ]}
+            label="Sign"
+          />
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-medium">Min |r|</span>
+            <Slider
+              value={[threshold]}
+              max={1}
+              step={0.01}
+              className="w-32"
+              onValueChange={(v) => setThreshold(v[0] ?? 0)}
+            />
+            <span className="w-10 text-right text-sm">
+              {threshold.toFixed(2)}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <label className="text-sm font-medium" htmlFor="top-n">
+              Top N
+            </label>
+            <Input
+              id="top-n"
+              type="number"
+              min={0}
+              value={topN}
+              onChange={(e) => setTopN(Number(e.target.value))}
+              className="w-20"
+            />
+          </div>
         </div>
         <ul className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
           <li>
@@ -194,6 +239,9 @@ export default function StatisticsPage() {
           displayMode={displayMode}
           showValues={showValues}
           maxCellSize={80}
+          signFilter={signFilter}
+          threshold={threshold}
+          topN={topN > 0 ? topN : undefined}
         />
       </CardContent>
     </Card>
