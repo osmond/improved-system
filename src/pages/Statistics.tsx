@@ -11,6 +11,12 @@ import {
 } from "@/lib/api";
 import { Skeleton } from "@/components/ui/skeleton";
 import useCorrelationMatrix, { type MetricPoint } from "@/hooks/useCorrelationMatrix";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+} from "@/components/ui/card";
 
 interface Metrics extends MetricPoint {
   steps: number;
@@ -63,36 +69,44 @@ export default function StatisticsPage() {
 
   if (!points.length) {
     return (
-      <div className="p-4 space-y-4">
-        <h1 className="text-2xl font-bold">Metric Correlations</h1>
-        <Skeleton className="h-64" />
-      </div>
+      <Card>
+        <CardHeader>
+          <h1 className="text-2xl font-bold">Metric Correlations</h1>
+        </CardHeader>
+        <CardContent>
+          <Skeleton className="h-64" />
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Metric Correlations</h1>
-      <p className="text-xs text-muted-foreground">
-        Correlation between daily steps, sleep, heart rate, and calories. Red
-        squares indicate positive correlation while blue show negative. Color
-        intensity reflects the strength, and clicking a square reveals a
-        time-series drill-down.
-      </p>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={() => setUpperOnly((p) => !p)}
-      >
-        {upperOnly ? "Show Full Matrix" : "Show Upper Triangle"}
-      </Button>
-      <CorrelationRippleMatrix
-        matrix={matrix}
-        labels={labels}
-        upperOnly={upperOnly}
-        maxCellSize={80}
-      />
-    </div>
+    <Card>
+      <CardHeader>
+        <h1 className="text-2xl font-bold">Metric Correlations</h1>
+        <CardDescription>
+          Correlation between daily steps, sleep, heart rate, and calories. Red
+          squares indicate positive correlation while blue show negative. Color
+          intensity reflects the strength, and clicking a square reveals a
+          time-series drill-down.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => setUpperOnly((p) => !p)}
+        >
+          {upperOnly ? "Show Full Matrix" : "Show Upper Triangle"}
+        </Button>
+        <CorrelationRippleMatrix
+          matrix={matrix}
+          labels={labels}
+          upperOnly={upperOnly}
+          maxCellSize={80}
+        />
+      </CardContent>
+    </Card>
   );
 }
 
