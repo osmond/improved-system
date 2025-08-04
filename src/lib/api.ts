@@ -7,6 +7,7 @@ import {
 } from "./locationStore";
 import { trackRouteRun, fetchRouteRunHistory, resetRouteRuns } from "./telemetry";
 import { computeRouteMetrics } from "./routeMetrics";
+import { getAllSessionMeta } from "./sessionStore";
 export { calculateRouteSimilarity } from "./routeMetrics";
 export type { LocationVisit } from "./locationStore";
 
@@ -1017,6 +1018,78 @@ export async function getRunningSessions(): Promise<RunningSession[]> {
   }
   sessionCache = sessions;
   return sessions;
+}
+
+function isPresent(v: unknown) {
+  return v !== null && v !== undefined && !(typeof v === "number" && isNaN(v));
+}
+
+function baselineConfidence(s: RunningSession): number {
+  const baseFields = [s.pace, s.duration, s.heartRate, s.start ?? s.date, s.lat, s.lon];
+  const completeness = baseFields.filter(isPresent).length / baseFields.length;
+  const weatherFields = [s.weather.temperature, s.weather.humidity, s.weather.wind];
+  const weatherAccuracy = weatherFields.filter(isPresent).length / weatherFields.length;
+  return +(0.5 * completeness + 0.5 * weatherAccuracy).toFixed(2);
+}
+
+function expectedPace(s: RunningSession): number {
+  const hour = new Date(s.start ?? s.date).getHours();
+  const temp = s.weather.temperature || 55;
+  const humidity = s.weather.humidity || 50;
+  const wind = s.weather.wind || 0;
+  const tempAdj = (temp - 55) * 0.02;
+  const humidAdj = (humidity - 50) * 0.01;
+  const windAdj = wind * 0.01;
+  const conditionAdjMap: Record<string, number> = {
+    Clear: -0.05,
+    Cloudy: 0.02,
+    Fog: 0.05,
+    Drizzle: 0.07,
+    Rain: 0.1,
+    Snow: 0.15,
+    Storm: 0.2,
+  };
+  const conditionAdj = conditionAdjMap[s.weather.condition] ?? 0;
+  const timeAdj = Math.abs(hour - 8) * 0.03;
+  const hrAdj = (s.heartRate - 140) * 0.015;
+  return 6.5 + tempAdj + humidAdj + windAdj + conditionAdj + timeAdj + hrAdj;
+}
+
+export interface GoodDaySession {
+  id: number;
+  start: string;
+  pace: number;
+  paceDelta: number;
+  tags: string[];
+  confidence: number;
+}
+
+export async function getGoodDaySessions(
+  options?: { tags?: string[] },
+): Promise<GoodDaySession[]> {
+  const sessions = await getRunningSessions();
+  const metaMap = getAllSessionMeta();
+  return sessions
+    .map((s) => {
+      const meta = metaMap[s.id] || { tags: [], isFalsePositive: false };
+      const paceDelta = +(expectedPace(s) - s.pace).toFixed(2);
+      return {
+        id: s.id,
+        start: s.start ?? s.date,
+        pace: s.pace,
+        paceDelta,
+        tags: meta.tags,
+        confidence: baselineConfidence(s),
+        isFalsePositive: meta.isFalsePositive,
+      };
+    })
+    .filter(
+      (s) =>
+        s.paceDelta > 0 &&
+        !s.isFalsePositive &&
+        (!options?.tags || options.tags.every((t) => s.tags.includes(t))),
+    )
+    .map(({ isFalsePositive, ...rest }) => rest);
 }
 
 export interface PaceWeatherPoint {
