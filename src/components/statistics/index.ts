@@ -12,4 +12,5 @@ export { default as PerfVsEnvironmentMatrix } from "./PerfVsEnvironmentMatrix";
 export { default as SessionSimilarityMap } from "./SessionSimilarityMap";
 export { default as TreadmillVsOutdoor } from "./TreadmillVsOutdoor";
 export { default as WeeklyComparisonChart } from "./WeeklyComparisonChart";
+export { default as FilterBar } from "./FilterBar";
 

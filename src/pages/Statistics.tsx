@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
 import { Button } from "@/ui/button";
-import { SimpleSelect } from "@/ui/select";
-import { Slider } from "@/ui/slider";
+import { FilterBar } from "@/components/statistics";
 import {
   getDailySteps,
   getDailySleep,
@@ -166,64 +165,19 @@ export default function StatisticsPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex flex-wrap items-center gap-2">
-          <SimpleSelect
-            value={displayMode}
-            onValueChange={(v) =>
-              setDisplayMode(v as "upper" | "lower" | "full")
-            }
-            options={[
-              { value: "upper", label: "Upper Triangle" },
-              { value: "lower", label: "Lower Triangle" },
-              { value: "full", label: "Full Matrix" },
-            ]}
-            label="Display"
-          />
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setShowValues((p) => !p)}
-          >
-            {showValues ? "Hide Values" : "Show Values"}
-          </Button>
-          <SimpleSelect
-            value={signFilter}
-            onValueChange={(v) =>
-              setSignFilter(v as "all" | "positive" | "negative")
-            }
-            options={[
-              { value: "all", label: "All" },
-              { value: "positive", label: "Positive Only" },
-              { value: "negative", label: "Negative Only" },
-            ]}
-            label="Sign"
-          />
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Min |r|</span>
-            <Slider
-              value={[threshold]}
-              max={1}
-              step={0.01}
-              className="w-32"
-              onValueChange={(v) => setThreshold(v[0] ?? 0)}
-            />
-            <span className="w-10 text-right text-sm">
-              {threshold.toFixed(2)}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <span className="text-sm font-medium">Top N</span>
-            <Slider
-              value={[topN]}
-              min={0}
-              max={maxPairs}
-              step={1}
-              className="w-32"
-              onValueChange={(v) => setTopN(v[0] ?? 0)}
-            />
-            <span className="w-10 text-right text-sm">{topN}</span>
-          </div>
-        </div>
+        <FilterBar
+          displayMode={displayMode}
+          onDisplayModeChange={(v) => setDisplayMode(v)}
+          showValues={showValues}
+          onToggleValues={() => setShowValues((p) => !p)}
+          signFilter={signFilter}
+          onSignFilterChange={(v) => setSignFilter(v)}
+          threshold={threshold}
+          onThresholdChange={(v) => setThreshold(v)}
+          topN={topN}
+          maxPairs={maxPairs}
+          onTopNChange={(v) => setTopN(v)}
+        />
         <div className="flex flex-wrap gap-2">
           {presets.map((p) => (
             <Button
@@ -256,17 +210,19 @@ export default function StatisticsPage() {
             {mostChanging.labels[1]} ({mostChanging.value.toFixed(2)})
           </li>
         </ul>
-        <CorrelationRippleMatrix
-          matrix={matrix}
-          labels={labels}
-          groups={groups}
-          displayMode={displayMode}
-          showValues={showValues}
-          maxCellSize={80}
-          signFilter={signFilter}
-          threshold={threshold}
-          topN={topN > 0 ? topN : undefined}
-        />
+        <div className="mx-auto w-full max-w-3xl">
+          <CorrelationRippleMatrix
+            matrix={matrix}
+            labels={labels}
+            groups={groups}
+            displayMode={displayMode}
+            showValues={showValues}
+            maxCellSize={80}
+            signFilter={signFilter}
+            threshold={threshold}
+            topN={topN > 0 ? topN : undefined}
+          />
+        </div>
       </CardContent>
     </Card>
   );
