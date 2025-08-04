@@ -42,6 +42,8 @@ export default function HabitConsistencyHeatmap() {
                   key={idx}
                   className="flex items-center justify-center border bg-accent text-accent-foreground h-4"
                   style={{ opacity: max ? cell.count / max : 0 }}
+                  tabIndex={0}
+                  aria-label={`${dayLabels[idx]} hour ${hour}: ${cell.count} sessions`}
                 />
               ))}
             </div>

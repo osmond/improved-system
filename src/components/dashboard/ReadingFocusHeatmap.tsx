@@ -47,7 +47,8 @@ export default function ReadingFocusHeatmap() {
                     style={{
                       opacity: cell.intensity,
                     }}
-                    aria-label={labelForIntensity(cell.intensity)}
+                    tabIndex={0}
+                    aria-label={`${dayLabels[idx]} hour ${hour}: ${labelForIntensity(cell.intensity) || "No data"}`}
                   >
                     {labelForIntensity(cell.intensity)}
                   </div>

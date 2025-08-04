@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, lazy, Suspense } from "react";
 import {
   ResponsiveContainer,
   ScatterChart,
@@ -8,8 +8,6 @@ import {
   XAxis,
   YAxis,
   Rectangle,
-  LineChart,
-  Line,
   Tooltip,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
@@ -37,6 +35,7 @@ interface CellData {
 
 
 const DEFAULT_CELL_SIZE = 24;
+const DetailChart = lazy(() => import("./CorrelationDetailChart"));
 
 /**
  * Create a perceptually uniform diverging scale mapping:
@@ -152,6 +151,8 @@ export default function CorrelationRippleMatrix({
               const { cx, cy, payload } = props;
               const x = cx - cellSize / 2;
               const y = cy - cellSize / 2;
+              const xLabel = labels[payload.x] ?? "";
+              const yLabel = labels[payload.y] ?? "";
               const isHighlighted =
                 hovered && (hovered.x === payload.x || hovered.y === payload.y);
               const opacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
@@ -169,6 +170,13 @@ export default function CorrelationRippleMatrix({
                     onMouseOver={() => setHovered(payload as CellData)}
                     onMouseOut={() => setHovered(null)}
                     cursor="pointer"
+                    tabIndex={0}
+                    aria-label={`${xLabel} vs ${yLabel}: ${payload.value.toFixed(2)}`}
+                    onKeyDown={(e) => {
+                      if (e.key === "Enter" || e.key === " ") {
+                        handleCellClick(payload as CellData);
+                      }
+                    }}
                   />
                   {showValues && (
                     <text
@@ -217,10 +225,9 @@ export default function CorrelationRippleMatrix({
             }}
             onClick={() => setActive(null)}
           >
-            <LineChart width={150} height={80} data={chartData}>
-              <Line type="monotone" dataKey="y" stroke="#8884d8" dot={false} />
-              <Tooltip />
-            </LineChart>
+            <Suspense fallback={<div className="p-2 text-xs">Loading...</div>}>
+              <DetailChart data={chartData} />
+            </Suspense>
           </div>
         )}
         <style>{`

@@ -76,6 +76,10 @@ export default function PaceDeltaHistogram({ bins, onHover }: PaceDeltaHistogram
               fill={entry.color}
               onMouseEnter={() => onHover([entry.start, entry.end])}
               onMouseLeave={() => onHover(null)}
+              onFocus={() => onHover([entry.start, entry.end])}
+              onBlur={() => onHover(null)}
+              tabIndex={0}
+              aria-label={`${entry.start.toFixed(2)}–${entry.end.toFixed(2)} minutes per mile: ${entry.count} runs`}
             />
           ))}
         </Bar>
