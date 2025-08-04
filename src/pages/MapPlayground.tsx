@@ -1,5 +1,5 @@
 import React from "react";
-import GeoActivityExplorer from "@/components/map/GeoActivityExplorer";
+import GeoActivityExplorer from "@/components/maps/GeoActivityExplorer";
 
 export default function MapPlaygroundPage() {
   return (

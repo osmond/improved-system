@@ -1,5 +1,5 @@
 import React from "react";
-import { BehavioralCharterMap, Segment } from "@/components/visualizations";
+import { BehavioralCharterMap, Segment } from "@/components/maps";
 
 const demoSegments: Segment[] = [
   {

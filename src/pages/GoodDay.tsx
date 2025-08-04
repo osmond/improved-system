@@ -1,11 +1,11 @@
 import React, { useEffect, useMemo, useRef, useState } from "react"
+import { GoodDayMap } from "@/components/maps"
 import {
-  GoodDayMap,
   GoodDayInsights,
   GoodDayBadges,
   GoodDayForecastCalendar,
-} from "@/components/statistics"
-import SessionDetailDrawer from "@/components/statistics/SessionDetailDrawer"
+} from "@/components/goals"
+import SessionDetailDrawer from "@/components/analytical/SessionDetailDrawer"
 import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions"
 import { SimpleSelect } from "@/ui/select"
 import Slider from "@/ui/slider"

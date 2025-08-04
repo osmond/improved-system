@@ -1,5 +1,5 @@
 import React from "react";
-import { SessionSimilarityMap } from "@/components/statistics";
+import { SessionSimilarityMap } from "@/components/maps";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
 
 export default function SessionSimilarityPage() {

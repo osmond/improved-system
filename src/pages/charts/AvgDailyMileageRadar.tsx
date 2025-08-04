@@ -1,5 +1,5 @@
 import React from "react";
-import AvgDailyMileageRadar from "@/components/statistics/AvgDailyMileageRadar";
+import AvgDailyMileageRadar from "@/components/analytical/AvgDailyMileageRadar";
 
 export default function AvgDailyMileageRadarPage() {
   return (

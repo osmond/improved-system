@@ -1,5 +1,5 @@
 import React from "react";
-import { HabitConsistencyHeatmap } from "@/components/statistics";
+import { HabitConsistencyHeatmap } from "@/components/trends";
 
 export default function HabitConsistencyPage() {
   return (

@@ -2,8 +2,7 @@
 
 import { Card } from "@/ui/card"
 import { Skeleton } from "@/ui/skeleton"
-import GoodDaySparkline from "./GoodDaySparkline"
-import GoodDayTrendline from "./GoodDayTrendline"
+import { GoodDaySparkline, GoodDayTrendline } from "@/components/trends"
 import {
   useRunningSessions,
   type SessionPoint,

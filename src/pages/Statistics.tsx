@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
+import CorrelationRippleMatrix from "@/components/analytical/CorrelationRippleMatrix";
 import { Button } from "@/ui/button";
-import { FilterBar } from "@/components/statistics";
+import { FilterBar } from "@/components/analytical";
 import {
   getDailySteps,
   getDailySleep,
