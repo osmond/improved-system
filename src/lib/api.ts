@@ -959,7 +959,10 @@ export function generateMockRunningSessions(): RunningSession[] {
   ];
 
   return Array.from({ length: 30 }, (_, i) => {
-    const pace = +(4 + Math.random() * 4).toFixed(2);
+    const pace =
+      i % 5 === 0
+        ? +(4.5 + Math.random() * 0.5).toFixed(2)
+        : +(6 + Math.random() * 2).toFixed(2);
     const base = new Date();
     base.setDate(base.getDate() - i);
     const startHour = 5 + Math.round(Math.random() * 14); // 5 AM - 7 PM
