@@ -45,6 +45,32 @@ export interface GoodDayTrendPoint {
   upper: number
 }
 
+export interface ClusterMetrics {
+  goodRuns: number
+  variance: number
+  boundaryBreaches: number
+}
+
+function computeClusterMetrics(
+  points: SessionPoint[],
+): Record<number, ClusterMetrics> {
+  const clusters = Array.from(new Set(points.map((p) => p.cluster)))
+  const result: Record<number, ClusterMetrics> = {}
+  for (const c of clusters) {
+    const pts = points.filter((p) => p.cluster === c)
+    const goodRuns = pts.filter((p) => p.good).length
+    const mean = pts.reduce((s, p) => s + p.paceDelta, 0) / pts.length
+    const variance =
+      pts.reduce((s, p) => s + (p.paceDelta - mean) ** 2, 0) / pts.length
+    const std = Math.sqrt(variance)
+    const boundaryBreaches = pts.filter(
+      (p) => Math.abs(p.paceDelta - mean) > 2 * std,
+    ).length
+    result[c] = { goodRuns, variance, boundaryBreaches }
+  }
+  return result
+}
+
 function kMeans(data: number[][], k: number, iterations = 10): number[] {
   let centroids = data.slice(0, k).map((p) => [...p])
   const labels = new Array(data.length).fill(0)
@@ -174,10 +200,14 @@ export function computeExpected(s: RunningSession): { expected: number; factors:
 export function useRunningSessions(): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
+  clusterStats: Record<number, ClusterMetrics> | null
   error: Error | null
 } {
   const [points, setPoints] = useState<SessionPoint[] | null>(null)
   const [trend, setTrend] = useState<GoodDayTrendPoint[] | null>(null)
+  const [clusterStats, setClusterStats] = useState<
+    Record<number, ClusterMetrics> | null
+  >(null)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
@@ -256,6 +286,7 @@ export function useRunningSessions(): {
 
         setPoints(data)
         setTrend(computeTrend(data))
+        setClusterStats(computeClusterMetrics(data))
       } catch (e) {
         setError(e instanceof Error ? e : new Error('Failed to load sessions'))
       }
@@ -272,6 +303,7 @@ export function useRunningSessions(): {
           return { ...p, tags: meta.tags, isFalsePositive: meta.isFalsePositive }
         })
         setTrend(computeTrend(updated))
+        setClusterStats(computeClusterMetrics(updated))
         return updated
       })
     }
@@ -279,5 +311,5 @@ export function useRunningSessions(): {
     return () => window.removeEventListener('sessionMetaUpdated', onMetaUpdate)
   }, [])
 
-  return { sessions: points, trend, error }
+  return { sessions: points, trend, clusterStats, error }
 }
