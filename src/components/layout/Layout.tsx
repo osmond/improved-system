@@ -1,7 +1,6 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import ThemeToggle from "@/components/ui/theme-toggle";
-import AppSidebar from "@/components/app-sidebar";
 import CommandPalette from "@/components/ui/CommandPalette";
 import { Button } from "@/components/ui/button";
 import {
@@ -11,11 +10,6 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Command, Download, Info, Save, Share2 } from "lucide-react";
-import {
-  SidebarProvider,
-  SidebarTrigger,
-  SidebarInset,
-} from "@/components/ui/sidebar";
 import GlobalNavigation from "@/components/global-navigation";
 import {
   ChartActionsProvider,
@@ -135,39 +129,35 @@ export default function Layout({ children }: LayoutProps) {
 
   return (
     <ChartActionsProvider>
-      <SidebarProvider>
-        <AppSidebar />
-        <CommandPalette open={open} setOpen={setOpen} />
-        <SidebarInset>
-          <header className="flex items-center justify-between p-4">
-            <div className="flex items-center gap-2">
-              <SidebarTrigger />
-              <GlobalNavigation />
-              <Breadcrumbs />
-            </div>
-            <div className="flex items-center gap-2">
-              <ActionMenu />
-              <TooltipProvider delayDuration={100}>
-                <Tooltip>
-                  <TooltipTrigger asChild>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setOpen(true)}
-                    >
-                      <Command className="h-4 w-4" />
-                      <span className="sr-only">Open command palette</span>
-                    </Button>
-                  </TooltipTrigger>
-                  <TooltipContent>Ctrl/⌘+K</TooltipContent>
-                </Tooltip>
-              </TooltipProvider>
-              <ThemeToggle />
-            </div>
-          </header>
-          <main className="flex-1 p-4 pt-0">{children}</main>
-        </SidebarInset>
-      </SidebarProvider>
+      <CommandPalette open={open} setOpen={setOpen} />
+      <div className="relative flex w-full flex-1 flex-col bg-background">
+        <header className="flex items-center justify-between p-4">
+          <div className="flex items-center gap-2">
+            <GlobalNavigation />
+            <Breadcrumbs />
+          </div>
+          <div className="flex items-center gap-2">
+            <ActionMenu />
+            <TooltipProvider delayDuration={100}>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setOpen(true)}
+                >
+                  <Command className="h-4 w-4" />
+                  <span className="sr-only">Open command palette</span>
+                </Button>
+                </TooltipTrigger>
+                <TooltipContent>Ctrl/⌘+K</TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+            <ThemeToggle />
+          </div>
+        </header>
+        <main className="flex-1 p-4 pt-0">{children}</main>
+      </div>
     </ChartActionsProvider>
   );
 }
