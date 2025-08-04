@@ -100,6 +100,54 @@
     --font-slab: "Georgia", "Times New Roman", serif;
   }
 
+  .contrast {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 100%;
+    --card: 0 0% 0%;
+    --card-foreground: 0 0% 100%;
+    --popover: 0 0% 0%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 60 100% 50%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 0 0% 20%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 0 0% 20%;
+    --muted-foreground: 0 0% 100%;
+    --accent: 0 0% 20%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 100% 50%;
+    --destructive-foreground: 0 0% 0%;
+    --border: 0 0% 100%;
+    --input: 0 0% 100%;
+    --ring: 60 100% 50%;
+    /* Chart color tokens */
+    --chart-1: 60 100% 50%;
+    --chart-2: 0 0% 100%;
+    --chart-3: 120 100% 50%;
+    --chart-4: 180 100% 50%;
+    --chart-5: 300 100% 50%;
+    --chart-6: 30 100% 50%;
+    --chart-7: 150 100% 50%;
+    --chart-8: 210 100% 50%;
+    --chart-9: 270 100% 50%;
+    --chart-10: 330 100% 50%;
+    --sidebar: 0 0% 0%;
+    --sidebar-foreground: 0 0% 100%;
+    --sidebar-primary: 60 100% 50%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 0 0% 20%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 100%;
+    --sidebar-ring: 60 100% 50%;
+    --wild-primary: 157 40% 24%;
+    --wild-secondary: 351 60% 45%;
+    --wild-gold: 44 80% 52%;
+    --wild-wheat: 41 40% 80%;
+    --spotify-primary: 141 60% 50%;
+    --spotify-foreground: 0 0% 100%;
+    --font-slab: "Georgia", "Times New Roman", serif;
+  }
+
   html, body {
     @apply bg-background text-foreground;
   }
