@@ -1,13 +1,36 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getStateVisits } from "@/lib/api";
 import type { StateVisit } from "@/lib/types";
 
-export function useStateVisits(): StateVisit[] | null {
-  const [data, setData] = useState<StateVisit[] | null>(null);
+interface UseStateVisitsResult {
+  data: StateVisit[] | null;
+  loading: boolean;
+  error: Error | null;
+  refetch: () => Promise<void>;
+}
 
-  useEffect(() => {
-    getStateVisits().then(setData);
+export function useStateVisits(): UseStateVisitsResult {
+  const [data, setData] = useState<StateVisit[] | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<Error | null>(null);
+
+  const fetchVisits = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const result = await getStateVisits();
+      setData(result);
+    } catch (e) {
+      setError(e as Error);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  return data;
+  useEffect(() => {
+    fetchVisits();
+  }, [fetchVisits]);
+
+  return { data, loading, error, refetch: fetchVisits };
 }
+

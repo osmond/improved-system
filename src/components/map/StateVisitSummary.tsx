@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export default function StateVisitSummary() {
-  const states = useStateVisits();
+  const { data: states, loading, error, refetch } = useStateVisits();
   const insights = useInsights();
 
   const summary = useMemo(() => {
@@ -20,7 +20,19 @@ export default function StateVisitSummary() {
     return { totalStates, totalMiles, favorite: favorite.stateCode };
   }, [states]);
 
-  if (!summary) return <Skeleton className="h-4 w-full" />;
+  if (loading) return <Skeleton className="h-4 w-full" />;
+
+  if (error)
+    return (
+      <div className="text-xs">
+        Failed to load state visits.{" "}
+        <button className="underline" onClick={refetch}>
+          Retry
+        </button>
+      </div>
+    );
+
+  if (!summary) return null;
 
   return (
     <div className="flex gap-2 flex-wrap text-xs mb-2">
