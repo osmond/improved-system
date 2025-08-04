@@ -1,20 +1,22 @@
-import React, { useMemo, useState } from "react";
-import { GoodDayMap, GoodDayInsights } from "@/components/statistics";
-import SessionDetailDrawer from "@/components/statistics/SessionDetailDrawer";
-import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions";
-import { SimpleSelect } from "@/ui/select";
-import Slider from "@/ui/slider";
+import React, { useMemo, useState } from "react"
+import { GoodDayMap, GoodDayInsights } from "@/components/statistics"
+import SessionDetailDrawer from "@/components/statistics/SessionDetailDrawer"
+import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions"
+import { SimpleSelect } from "@/ui/select"
+import Slider from "@/ui/slider"
 
 export default function GoodDayPage() {
-  const sessions = useRunningSessions();
-  const [condition, setCondition] = useState("all");
-  const [hourRange, setHourRange] = useState<[number, number]>([0, 23]);
-  const [active, setActive] = useState<SessionPoint | null>(null);
+  const sessions = useRunningSessions()
+  const [condition, setCondition] = useState("all")
+  const [hourRange, setHourRange] = useState<[number, number]>([0, 23])
+  const [active, setActive] = useState<SessionPoint | null>(null)
+  const [dateRange, setDateRange] = useState<[string, string] | null>(null)
+  const [highlightDate, setHighlightDate] = useState<string | null>(null)
 
   const conditions = useMemo(
     () => (sessions ? Array.from(new Set(sessions.map((s) => s.condition))) : []),
     [sessions],
-  );
+  )
 
 
   return (
@@ -23,7 +25,12 @@ export default function GoodDayPage() {
       <p className="text-sm text-muted-foreground">
         Sessions that exceeded expectations are highlighted below.
       </p>
-      <GoodDayInsights sessions={sessions} onSelect={setActive} />
+      <GoodDayInsights
+        sessions={sessions}
+        onSelect={setActive}
+        onRangeChange={setDateRange}
+        highlightDate={highlightDate}
+      />
       {sessions && (
         <div className="flex gap-4 flex-wrap items-center">
           <SimpleSelect
@@ -67,9 +74,13 @@ export default function GoodDayPage() {
         data={sessions}
         condition={condition === "all" ? null : condition}
         hourRange={hourRange}
-        onSelect={setActive}
+        onSelect={(s) => {
+          setActive(s)
+          setHighlightDate(s.start.slice(0, 10))
+        }}
+        dateRange={dateRange}
       />
       <SessionDetailDrawer session={active} onClose={() => setActive(null)} />
     </div>
-  );
+  )
 }

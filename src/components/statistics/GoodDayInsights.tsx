@@ -8,9 +8,16 @@ import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSession
 interface GoodDayInsightsProps {
   sessions?: SessionPoint[] | null
   onSelect?: (s: SessionPoint) => void
+  onRangeChange?: (range: [string, string] | null) => void
+  highlightDate?: string | null
 }
 
-export default function GoodDayInsights({ sessions: propSessions, onSelect }: GoodDayInsightsProps) {
+export default function GoodDayInsights({
+  sessions: propSessions,
+  onSelect,
+  onRangeChange,
+  highlightDate,
+}: GoodDayInsightsProps) {
   const hookSessions = useRunningSessions()
   const sessions = propSessions ?? hookSessions
 
@@ -70,7 +77,11 @@ export default function GoodDayInsights({ sessions: propSessions, onSelect }: Go
           </div>
         </div>
         <div className="sm:w-40 w-full">
-          <GoodDaySparkline data={trendData} />
+          <GoodDaySparkline
+            data={trendData}
+            onRangeChange={onRangeChange}
+            highlightDate={highlightDate}
+          />
         </div>
       </div>
       {clusters.length > 0 && (
