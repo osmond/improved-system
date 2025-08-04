@@ -1,5 +1,4 @@
-import { render, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { render, waitFor, fireEvent } from '@testing-library/react'
 import { describe, it, expect, vi } from 'vitest'
 import React from 'react'
 import '@testing-library/jest-dom'
@@ -57,7 +56,7 @@ describe('CorrelationRippleMatrix', () => {
 
     const cells = container.querySelectorAll('path.recharts-rectangle')
     expect(cells.length).toBeGreaterThan(1)
-    await userEvent.click(cells[1] as SVGPathElement, { skipHover: true })
+    fireEvent.click(cells[1] as SVGPathElement)
     await waitFor(() =>
       expect(
         document.querySelector('[data-testid="correlation-details"]'),
