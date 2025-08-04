@@ -19,9 +19,15 @@ export function useStateVisits(): UseStateVisitsResult {
     setError(null);
     try {
       const result = await getStateVisits();
-      setData(result);
+      if (!result) {
+        setError(new Error("Failed to load state visits"));
+        setData([]);
+      } else {
+        setData(result);
+      }
     } catch (e) {
       setError(e as Error);
+      setData([]);
     } finally {
       setLoading(false);
     }
