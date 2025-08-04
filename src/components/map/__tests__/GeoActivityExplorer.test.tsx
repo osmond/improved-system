@@ -28,30 +28,40 @@ vi.mock("recharts", async () => {
   };
 });
 
-vi.mock("@/hooks/useStateVisits", () => ({
-  useStateVisits: () => [
-    {
-      stateCode: "CA",
-      visited: true,
-      totalDays: 10,
-      totalMiles: 100,
-      cities: [{ name: "LA", days: 4, miles: 40 }],
-      log: [
-        { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
-      ],
-    },
-    {
-      stateCode: "TX",
-      visited: true,
-      totalDays: 5,
-      totalMiles: 50,
-      cities: [{ name: "Austin", days: 5, miles: 50 }],
-      log: [
-        { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
-      ],
-    },
-  ],
-}));
+const mockVisits = [
+  {
+    stateCode: "CA",
+    visited: true,
+    totalDays: 10,
+    totalMiles: 100,
+    cities: [{ name: "LA", days: 4, miles: 40 }],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+    ],
+  },
+  {
+    stateCode: "TX",
+    visited: true,
+    totalDays: 5,
+    totalMiles: 50,
+    cities: [{ name: "Austin", days: 5, miles: 50 }],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+    ],
+  },
+];
+
+beforeEach(() => {
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({ ok: true, json: async () => mockVisits }),
+  );
+});
+
+afterEach(() => {
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
+});
 
 vi.mock("@/hooks/useInsights", () => ({
   __esModule: true,
@@ -68,41 +78,41 @@ vi.mock("@/hooks/useInsights", () => ({
 
 
 describe("GeoActivityExplorer", () => {
-  it("renders filter selects", () => {
+  it("renders filter selects", async () => {
     render(<GeoActivityExplorer />);
-    expect(screen.getAllByLabelText("Activity").length).toBeGreaterThan(0);
-    expect(screen.getAllByLabelText("Range").length).toBeGreaterThan(0);
+    expect((await screen.findAllByLabelText("Activity")).length).toBeGreaterThan(0);
+    expect((await screen.findAllByLabelText("Range")).length).toBeGreaterThan(0);
   });
 
-  it("filters states by activity", () => {
+  it("filters states by activity", async () => {
     render(<GeoActivityExplorer />);
-    expect(screen.getByLabelText("CA visited")).toBeInTheDocument();
+    expect(await screen.findByLabelText("CA visited")).toBeInTheDocument();
     const trigger = screen.getByLabelText("Activity");
     fireEvent.click(trigger);
     fireEvent.click(screen.getByText("Bike"));
     expect(screen.queryByLabelText("CA visited")).not.toBeInTheDocument();
   });
 
-  it("renders summary badges", () => {
+  it("renders summary badges", async () => {
     render(<GeoActivityExplorer />);
-    expect(screen.getByText("2 states")).toBeInTheDocument();
+    expect(await screen.findByText("2 states")).toBeInTheDocument();
     expect(screen.getByText("150mi")).toBeInTheDocument();
     expect(screen.getByText("Fav: CA")).toBeInTheDocument();
     expect(screen.getByText("5d streak")).toBeInTheDocument();
   });
 
-  it("shows popup with summary when state clicked", () => {
+  it("shows popup with summary when state clicked", async () => {
     render(<GeoActivityExplorer />);
-    const state = screen.getByLabelText("CA visited");
+    const state = await screen.findByLabelText("CA visited");
     fireEvent.click(state);
-    expect(screen.getAllByText("1d").length).toBeGreaterThan(1);
+    expect((await screen.findAllByText("1d")).length).toBeGreaterThan(1);
     expect(screen.getAllByText("1mi").length).toBeGreaterThan(1);
   });
 
-  it("filters states by search query", () => {
-    vi.useFakeTimers();
+  it("filters states by search query", async () => {
     render(<GeoActivityExplorer />);
-    const input = screen.getByLabelText("Search");
+    const input = await screen.findByLabelText("Search");
+    vi.useFakeTimers();
     fireEvent.change(input, { target: { value: "tx" } });
     act(() => {
       vi.advanceTimersByTime(300);
@@ -110,12 +120,11 @@ describe("GeoActivityExplorer", () => {
     vi.runOnlyPendingTimers();
     expect(screen.queryByLabelText("CA visited")).toBeNull();
     expect(screen.queryAllByLabelText("TX visited").length).toBeGreaterThan(0);
-    vi.useRealTimers();
   });
 
   it("shows tooltip on state hover", async () => {
     render(<GeoActivityExplorer />);
-    const map = screen.getByLabelText("state map");
+    const map = await screen.findByLabelText("state map");
     fireEvent.mouseMove(map, {
       features: [{ properties: { abbr: "CA" } }],
     } as any);

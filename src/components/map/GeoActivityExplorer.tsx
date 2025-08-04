@@ -38,7 +38,7 @@ const weatherKey =
   import.meta.env.VITE_WEATHER_KEY || "37744b6f778e02303a56b9cf3c6da8e0";
 
 export default function GeoActivityExplorer() {
-  const data = useStateVisits();
+  const { data, isLoading, error } = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
@@ -164,10 +164,6 @@ export default function GeoActivityExplorer() {
     [stateMarkers, filteredStates],
   )
 
-  if (!data) {
-    return <Skeleton className="h-60 w-full" />;
-  }
-
   const toggleState = (abbr: string) => {
     setExpandedState((prev) => (prev === abbr ? null : abbr));
   };
@@ -219,6 +215,13 @@ export default function GeoActivityExplorer() {
       bikeMiles,
     }
   }, [selectedState, summaryMap])
+
+  if (isLoading) {
+    return <Skeleton className="h-60 w-full" />
+  }
+  if (error || !data) {
+    return null
+  }
 
   return (
     <>

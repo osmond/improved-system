@@ -27,7 +27,7 @@ interface StateVisitCalloutProps {
 export default function StateVisitCallout({
   onSelectState,
 }: StateVisitCalloutProps) {
-  const visits = useStateVisits();
+  const { data: visits, isLoading, error } = useStateVisits();
 
   const latest = useMemo(() => {
     if (!visits) return null;
@@ -59,8 +59,8 @@ export default function StateVisitCallout({
     return entry;
   }, [visits]);
 
-  if (!visits) return <Skeleton className="h-4 w-full" />;
-  if (!latest) return null;
+  if (isLoading) return <Skeleton className="h-4 w-full" />;
+  if (error || !latest) return null;
 
   const { type, stateCode, stateName, formattedDate, formattedMiles } = latest;
   const Icon = type === "run" ? Footprints : Bike;
