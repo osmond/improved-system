@@ -13,6 +13,11 @@ export interface TrainingConsistency {
   weeklyEntropy: number[]
 }
 
+export interface UseTrainingConsistencyResult {
+  data: TrainingConsistency | null
+  error: Error | null
+}
+
 function computeHeatmap(sessions: RunningSession[]): TrainingHeatmapCell[] {
   const bins = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0))
   sessions.forEach((s) => {
@@ -57,14 +62,15 @@ function computeWeeklyEntropy(sessions: RunningSession[]): number[] {
     .map((k) => shannonEntropy(weeks[k]))
 }
 
-export default function useTrainingConsistency(): TrainingConsistency | null {
+export default function useTrainingConsistency(): UseTrainingConsistencyResult {
   const [sessions, setSessions] = useState<RunningSession[] | null>(null)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    getRunningSessions().then(setSessions)
+    getRunningSessions().then(setSessions).catch((e) => setError(e as Error))
   }, [])
 
-  return useMemo(() => {
+  const data = useMemo(() => {
     if (!sessions) return null
     return {
       sessions,
@@ -72,4 +78,6 @@ export default function useTrainingConsistency(): TrainingConsistency | null {
       weeklyEntropy: computeWeeklyEntropy(sessions),
     }
   }, [sessions])
+
+  return { data, error }
 }

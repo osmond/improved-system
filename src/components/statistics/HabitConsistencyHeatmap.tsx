@@ -10,7 +10,14 @@ import { Link } from "react-router-dom"
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 export default function HabitConsistencyHeatmap() {
-  const data = useTrainingConsistency()
+  const { data, error } = useTrainingConsistency()
+
+  if (error)
+    return (
+      <div className="h-64 flex items-center justify-center text-sm text-destructive">
+        Failed to load training data
+      </div>
+    )
 
   if (!data) return <Skeleton className="h-64" />
 
