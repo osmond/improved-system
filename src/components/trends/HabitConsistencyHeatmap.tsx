@@ -11,6 +11,15 @@ function getHourLabel(hour: number) {
 }
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
+const fullDayLabels = [
+  "Sunday",
+  "Monday",
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday",
+]
 
 export default function HabitConsistencyHeatmap({
   heatmap,
@@ -54,13 +63,18 @@ export default function HabitConsistencyHeatmap({
         timeframe !== 'all' ? ` (last ${timeframe})` : ''
       }`}
     >
-      <ChartContainer config={{}} className="h-64 md:h-80 lg:h-96">
-        <div className="flex h-full flex-col">
-          <div className="grid flex-1 gap-px text-center text-[10px]">
+      <ChartContainer
+        config={{}}
+        className="h-64 md:h-80 lg:h-96 overflow-x-auto"
+      >
+        <div className="flex h-full min-w-max flex-col">
+          <div className="grid flex-1 min-w-max gap-px text-center text-[10px]">
             <div className="grid grid-cols-8 text-xs font-medium">
               <div />
               {dayLabels.map((d) => (
-                <div key={d}>{d}</div>
+                <div key={d} className="w-4 md:w-5">
+                  {d}
+                </div>
               ))}
             </div>
             {grid.map((row, hour) => (
@@ -70,14 +84,17 @@ export default function HabitConsistencyHeatmap({
                 </div>
                 {row.map((cell, idx) => {
                   const ratio = max ? cell.count / max : 0
-                  const color = `hsl(var(--accent) / ${ratio})`
+                  const intensity = ratio ? 0.4 + 0.6 * ratio : 0
+                  const color = ratio
+                    ? `hsl(var(--chart-1) / ${intensity})`
+                    : "hsl(var(--background))"
                   return (
                     <div
                       key={idx}
-                      className="flex items-center justify-center border text-accent-foreground h-4"
+                      className="flex h-4 w-4 items-center justify-center border text-accent-foreground md:h-5 md:w-5 [@media(prefers-contrast:more)]:bg-chart-1"
                       style={{ backgroundColor: color }}
                       tabIndex={0}
-                      aria-label={`${dayLabels[idx]} hour ${hour}: ${cell.count} sessions`}
+                      aria-label={`${fullDayLabels[idx]} at ${getHourLabel(hour)}, ${cell.count} session${cell.count === 1 ? '' : 's'}`}
                     />
                   )
                 })}
@@ -89,7 +106,8 @@ export default function HabitConsistencyHeatmap({
             <div
               className="h-2 flex-1 rounded"
               style={{
-                background: "linear-gradient(to right, hsl(var(--accent) / 0), hsl(var(--accent)))",
+                background:
+                  "linear-gradient(to right, hsl(var(--background)), hsl(var(--chart-1)))",
               }}
             />
             <span className="ml-2">{max}</span>
