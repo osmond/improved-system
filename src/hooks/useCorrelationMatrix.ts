@@ -1,9 +1,19 @@
 import { useMemo } from "react";
+import { jStat } from "jstat";
 
 export type MetricPoint = Record<string, number>;
 
+export interface CorrelationCell {
+  /** Pearson correlation coefficient */
+  value: number;
+  /** number of paired samples */
+  n: number;
+  /** two-tailed p-value */
+  p: number;
+}
+
 export type CorrelationMatrix<T extends MetricPoint> = {
-  [K in keyof T]: { [K2 in keyof T]: number };
+  [K in keyof T]: { [K2 in keyof T]: CorrelationCell };
 };
 
 function pearson(x: number[], y: number[]): number {
@@ -43,10 +53,19 @@ export function computeCorrelationMatrix<T extends MetricPoint>(
   const matrix = {} as CorrelationMatrix<T>;
   for (const k1 of keys) {
     const s1 = series[k1]!;
-    matrix[k1] = {} as Record<keyof T, number>;
+    matrix[k1] = {} as Record<keyof T, CorrelationCell>;
     for (const k2 of keys) {
       const s2 = series[k2]!;
-      matrix[k1][k2] = pearson(s1, s2);
+      const n = Math.min(s1.length, s2.length);
+      const value = pearson(s1, s2);
+      let p = 1;
+      if (n > 2 && Math.abs(value) < 1) {
+        const t = (value * Math.sqrt(n - 2)) / Math.sqrt(1 - value * value);
+        p = 2 * (1 - jStat.studentt.cdf(Math.abs(t), n - 2));
+      } else if (Math.abs(value) === 1) {
+        p = 0;
+      }
+      matrix[k1][k2] = { value, n, p };
     }
   }
   return matrix;

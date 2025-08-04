@@ -45,7 +45,8 @@
     "recharts": "^2.15.4",
     "swr": "^2.3.4",
     "topojson-client": "^3.1.0",
-    "tsne-js": "^1.0.3"
+    "tsne-js": "^1.0.3",
+    "jstat": "^1.9.6"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^6.6.4",

@@ -15,8 +15,15 @@ import {
 import { scaleDiverging } from "d3-scale";
 import { interpolateHcl } from "d3-interpolate";
 
+interface CorrelationCell {
+  value: number; // correlation coefficient
+  n: number; // sample size
+  p: number; // p-value
+  sparkline?: { x: number; y: number }[]; // optional sparkline data
+}
+
 interface CorrelationRippleMatrixProps {
-  matrix: number[][]; // correlation values between -1 and 1
+  matrix: CorrelationCell[][]; // correlation stats
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
 
@@ -26,13 +33,12 @@ interface CorrelationRippleMatrixProps {
   cellSize?: number; // explicit cell size override
   maxCellSize?: number; // maximum computed cell size
   upperOnly?: boolean; // only render x >= y cells
-
+  alpha?: number; // significance threshold
 }
 
-interface CellData {
+interface CellData extends CorrelationCell {
   x: number; // column index
   y: number; // row index
-  value: number;
 }
 
 
@@ -72,7 +78,7 @@ export default function CorrelationRippleMatrix({
   cellSize: cellSizeProp,
   maxCellSize,
   upperOnly = false,
-
+  alpha = 0.05,
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
   const [hovered, setHovered] = useState<CellData | null>(null);
@@ -101,7 +107,7 @@ export default function CorrelationRippleMatrix({
   }, [cellSizeProp, labels.length, maxCellSize]);
 
   const heatData: CellData[] = matrix
-    .flatMap((row, y) => row.map((value, x) => ({ x, y, value })))
+    .flatMap((row, y) => row.map((cell, x) => ({ x, y, ...cell })))
     .filter(({ x, y }) => !upperOnly || x >= y);
 
   const colorScale = createColorScale(minValue, maxValue);
@@ -154,7 +160,25 @@ export default function CorrelationRippleMatrix({
               const y = cy - cellSize / 2;
               const isHighlighted =
                 hovered && (hovered.x === payload.x || hovered.y === payload.y);
-              const opacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
+              const baseOpacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
+              const sigOpacity =
+                payload.p < alpha ? baseOpacity : baseOpacity * 0.3;
+
+              let sparkline: string | null = null;
+              if (payload.sparkline && payload.sparkline.length > 1) {
+                const values = payload.sparkline.map((d: any) => d.y);
+                const min = Math.min(...values);
+                const max = Math.max(...values);
+                const range = max - min || 1;
+                sparkline = payload.sparkline
+                  .map((d: any, i: number) => {
+                    const px = x + (i / (payload.sparkline.length - 1)) * cellSize;
+                    const py = y + cellSize - ((d.y - min) / range) * cellSize;
+                    return `${px},${py}`;
+                  })
+                  .join(" ");
+              }
+
               return (
                 <g>
                   <Rectangle
@@ -164,12 +188,22 @@ export default function CorrelationRippleMatrix({
                     height={cellSize}
                     fill={colorScale(payload.value)}
                     stroke="#ffffff"
-                    opacity={opacity}
+                    opacity={sigOpacity}
                     onClick={() => handleCellClick(payload as CellData)}
                     onMouseOver={() => setHovered(payload as CellData)}
                     onMouseOut={() => setHovered(null)}
                     cursor="pointer"
                   />
+                  {sparkline && (
+                    <polyline
+                      points={sparkline}
+                      stroke="#000"
+                      strokeWidth={0.5}
+                      fill="none"
+                      opacity={sigOpacity}
+                      pointerEvents="none"
+                    />
+                  )}
                   {showValues && (
                     <text
                       x={cx}
@@ -178,7 +212,7 @@ export default function CorrelationRippleMatrix({
                       dominantBaseline="central"
                       pointerEvents="none"
                       className="fill-black text-[10px]"
-                      opacity={opacity}
+                      opacity={sigOpacity}
                     >
                       {payload.value.toFixed(2)}
                     </text>
@@ -197,6 +231,7 @@ export default function CorrelationRippleMatrix({
                     <div className="bg-white p-2 border rounded shadow">
                       <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
                       <div>{cell.value.toFixed(2)}</div>
+                      <div className="text-[10px] text-muted-foreground">n={cell.n}, p={cell.p.toExponential(2)}</div>
                     </div>
                   );
                 }

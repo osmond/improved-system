@@ -20,8 +20,14 @@ vi.mock('recharts', async () => {
 describe('CorrelationRippleMatrix', () => {
   it('shows detail chart on cell click', async () => {
     const matrix = [
-      [1, 0.5],
-      [0.5, 1],
+      [
+        { value: 1, n: 10, p: 0 },
+        { value: 0.5, n: 10, p: 0.2 },
+      ],
+      [
+        { value: 0.5, n: 10, p: 0.2 },
+        { value: 1, n: 10, p: 0 },
+      ],
     ]
     const labels = ['A', 'B']
     const drilldown = {
@@ -43,6 +49,7 @@ describe('CorrelationRippleMatrix', () => {
 
     const cells = container.querySelectorAll('path.recharts-rectangle')
     expect(cells.length).toBeGreaterThan(1)
+    expect(cells[1]).toHaveAttribute('opacity', '0.3')
     await userEvent.click(cells[1] as SVGPathElement, { skipHover: true })
     await waitFor(() =>
       expect(container.querySelector('div.absolute')).toBeInTheDocument(),

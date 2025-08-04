@@ -66,7 +66,9 @@ export default function StatisticsPage() {
   const matrixObj = useCorrelationMatrix(points);
   const labels = ["Steps", "Sleep", "Heart Rate", "Calories"];
   const keys: (keyof Metrics)[] = ["steps", "sleep", "heartRate", "calories"];
-  const matrix = keys.map((k1) => keys.map((k2) => matrixObj?.[k1]?.[k2] ?? 0));
+  const matrix = keys.map((k1) =>
+    keys.map((k2) => matrixObj?.[k1]?.[k2] ?? { value: 0, n: 0, p: 1 }),
+  );
 
   if (!points.length) {
     return (
