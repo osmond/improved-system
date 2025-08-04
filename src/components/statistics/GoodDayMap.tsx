@@ -65,6 +65,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
         pace: 7.5,
         paceDelta: 0.3,
         heartRate: 140,
+        confidence: 0.9,
         temperature: 65,
         humidity: 40,
         wind: 5,
@@ -82,6 +83,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
         pace: 8,
         paceDelta: 0.6,
         heartRate: 150,
+        confidence: 0.7,
         temperature: 70,
         humidity: 50,
         wind: 6,
@@ -107,6 +109,11 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
       </ChartCard>
     )
   }
+  const benchmarkPercent = 0.1
+  const sortedByDelta = [...goodSessions].sort((a, b) => b.paceDelta - a.paceDelta)
+  const benchmarkCount = Math.max(1, Math.floor(sortedByDelta.length * benchmarkPercent))
+  const benchmarkSet = new Set(sortedByDelta.slice(0, benchmarkCount).map((s) => s.id))
+
   const style = getComputedStyle(document.documentElement)
   const start = `hsl(${style.getPropertyValue("--chart-4")})`
   const end = `hsl(${style.getPropertyValue("--chart-6")})`
@@ -126,6 +133,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
         ? 1
         : 0.2
       : 1,
+    benchmark: benchmarkSet.has(s.id),
   }))
 
   let bins: { start: number; end: number; count: number; color: string }[] = []
@@ -207,7 +215,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
       cx?: number
       cy?: number
       fill?: string
-      payload?: SessionPoint
+      payload?: SessionPoint & { benchmark?: boolean }
       onClick?: (data: SessionPoint) => void
     },
   ) => (
@@ -229,7 +237,19 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
       className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
       {...rest}
     >
-      <path d={star()} fill={fill} />
+      <circle
+        r={8}
+        fill="none"
+        stroke={fill}
+        strokeOpacity={(payload as any)?.confidence ?? 0}
+        strokeWidth={3}
+      />
+      <path
+        d={star()}
+        fill={(payload as any)?.benchmark ? fill : 'none'}
+        stroke={fill}
+        strokeWidth={1}
+      />
     </motion.g>
   )
 
@@ -293,6 +313,7 @@ function GoodDayTooltip(props: TooltipProps<number, string>) {
           <span>Pace: {session.pace.toFixed(2)} min/mi</span>
           <span>Δ Pace: {session.paceDelta.toFixed(2)} min/mi</span>
           <span>Heart Rate: {session.heartRate} bpm</span>
+          <span>Confidence: {(session.confidence * 100).toFixed(0)}%</span>
           <span>Temp: {session.temperature}°F</span>
           <span>Humidity: {session.humidity}%</span>
           <span>Wind: {session.wind} mph</span>
