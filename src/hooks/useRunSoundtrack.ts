@@ -5,6 +5,8 @@ import {
   getSpotifyNowPlaying,
   getAudioFeatures,
   type SpotifyTrack,
+  type SpotifyRecentPlay,
+  type SpotifyTrackItem,
 } from '@/lib/spotify'
 
 export interface RunTrack extends SpotifyTrack {
@@ -15,7 +17,7 @@ export interface RunTrack extends SpotifyTrack {
 
 export interface RunSoundtrackState {
   window: RunWindow
-  nowPlaying: any | null
+  nowPlaying: SpotifyTrackItem | null
   topTracks: RunTrack[]
 }
 
@@ -32,12 +34,12 @@ export default function useRunSoundtrack(): RunSoundtrackState | null {
       ])
       const start = new Date(window.start).getTime()
       const end = new Date(window.end).getTime()
-      const plays = recent.items.filter((p: any) => {
+      const plays: SpotifyRecentPlay[] = recent.items.filter((p) => {
         const t = new Date(p.played_at).getTime()
         return t >= start && t <= end
       })
-      const counts: Record<string, { track: any; count: number }> = {}
-      plays.forEach((p: any) => {
+      const counts: Record<string, { track: SpotifyTrackItem; count: number }> = {}
+      plays.forEach((p) => {
         const id = p.track.id
         if (!counts[id]) counts[id] = { track: p.track, count: 0 }
         counts[id].count++
@@ -56,7 +58,7 @@ export default function useRunSoundtrack(): RunSoundtrackState | null {
         withFeatures.push({
           id: item.track.id,
           name: item.track.name,
-          artists: item.track.artists.map((a: any) => a.name).join(', '),
+          artists: item.track.artists.map((a) => a.name).join(', '),
           uri: item.track.uri,
           playCount: item.count,
           tempo,
@@ -65,7 +67,8 @@ export default function useRunSoundtrack(): RunSoundtrackState | null {
       }
 
       if (active) {
-        setState({ window, nowPlaying: now?.item ?? null, topTracks: withFeatures })
+        const nowPlaying: SpotifyTrackItem | null = now?.item ?? null
+        setState({ window, nowPlaying, topTracks: withFeatures })
       }
     }
     fetchData()
