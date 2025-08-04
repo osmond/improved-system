@@ -5,6 +5,7 @@ export { default as GoodDaySparkline } from "./GoodDaySparkline";
 export { default as GoodDayInsights } from "./GoodDayInsights";
 export { default as GoodDayTrendline } from "./GoodDayTrendline";
 export { default as GoodDayBadges } from "./GoodDayBadges";
+export { default as GoodDayForecastCalendar } from "./GoodDayForecastCalendar";
 export { default as HabitConsistencyHeatmap } from "./HabitConsistencyHeatmap";
 export { default as PeerBenchmarkBands } from "./PeerBenchmarkBands";
 export { default as PerfVsEnvironmentMatrix } from "./PerfVsEnvironmentMatrix";
