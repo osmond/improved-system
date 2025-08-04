@@ -41,4 +41,11 @@ describe('GET /api/kindle', () => {
     expect(res.body[0]).toHaveProperty('start');
     expect(res.body[0]).toHaveProperty('title');
   });
+
+  it('returns genre hierarchy data', async () => {
+    const res = await request(app).get('/api/kindle/genre-hierarchy');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('name', 'root');
+    expect(res.body).toHaveProperty('children');
+  });
 });

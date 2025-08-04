@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { aggregateDailyReading } = require('../../src/services/readingStats');
 const { aggregateReadingSessions } = require('../../src/services/readingSessions');
+const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -119,11 +120,59 @@ function getSessions() {
   return aggregateReadingSessions(sessions, highlights, orders);
 }
 
+function getGenreHierarchy() {
+  const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
+
+  const sessionsPath = path.join(
+    base,
+    'Kindle.Devices.ReadingSession',
+    'Kindle.Devices.ReadingSession.csv'
+  );
+  const ordersPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders.csv'
+  );
+  const authorsPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerAuthorNameRelationship',
+    'Kindle.UnifiedLibraryIndex.CustomerAuthorNameRelationship.csv'
+  );
+  const genresPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerGenres',
+    'Kindle.UnifiedLibraryIndex.CustomerGenres.csv'
+  );
+  const tagsPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerTags',
+    'Kindle.UnifiedLibraryIndex.CustomerTags.csv'
+  );
+
+  const sessions = parseCsv(sessionsPath);
+  const orders = parseCsv(ordersPath);
+  const authors = parseCsv(authorsPath);
+  const genres = parseCsv(genresPath);
+  const tags = parseCsv(tagsPath);
+
+  const aggregated = aggregateReadingSessions(sessions, [], orders);
+  return buildGenreHierarchy(aggregated, genres, authors, tags);
+}
+
 module.exports = {
   getEvents,
   getPoints,
   getAchievements,
   getDailyStats,
   getSessions,
+  getGenreHierarchy,
 };
 
