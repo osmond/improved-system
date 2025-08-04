@@ -3,7 +3,7 @@ import { SessionSimilarityMap } from "@/components/statistics";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
 
 export default function SessionSimilarityPage() {
-  const sessions = useRunningSessions();
+  const { sessions } = useRunningSessions();
 
   return (
     <div className="p-4 space-y-4">

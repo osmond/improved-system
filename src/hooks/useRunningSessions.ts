@@ -29,6 +29,13 @@ export interface SessionPoint {
   isFalsePositive: boolean
 }
 
+export interface GoodDayTrendPoint {
+  date: string
+  avg: number
+  lower: number
+  upper: number
+}
+
 function kMeans(data: number[][], k: number, iterations = 10): number[] {
   let centroids = data.slice(0, k).map((p) => [...p])
   const labels = new Array(data.length).fill(0)
@@ -70,8 +77,44 @@ function kMeans(data: number[][], k: number, iterations = 10): number[] {
   return labels
 }
 
-export function useRunningSessions(): SessionPoint[] | null {
+function computeTrend(
+  points: SessionPoint[],
+  windowSize = 7,
+): GoodDayTrendPoint[] {
+  const byDate: Record<string, { good: number; total: number }> = {}
+  for (const p of points) {
+    if (p.isFalsePositive) continue
+    const key = p.start.slice(0, 10)
+    if (!byDate[key]) byDate[key] = { good: 0, total: 0 }
+    byDate[key].total++
+    if (p.good) byDate[key].good++
+  }
+  const dates = Object.keys(byDate).sort()
+  const daily = dates.map((d) => ({ date: d, ...byDate[d] }))
+  const result: GoodDayTrendPoint[] = []
+  for (let i = 0; i < daily.length; i++) {
+    const win = daily.slice(Math.max(0, i - windowSize + 1), i + 1)
+    const good = win.reduce((s, d) => s + d.good, 0)
+    const total = win.reduce((s, d) => s + d.total, 0)
+    const p = total ? good / total : 0
+    const z = 1.96
+    const margin = total ? z * Math.sqrt((p * (1 - p)) / total) : 0
+    result.push({
+      date: daily[i].date,
+      avg: p,
+      lower: Math.max(0, p - margin),
+      upper: Math.min(1, p + margin),
+    })
+  }
+  return result
+}
+
+export function useRunningSessions(): {
+  sessions: SessionPoint[] | null
+  trend: GoodDayTrendPoint[] | null
+} {
   const [points, setPoints] = useState<SessionPoint[] | null>(null)
+  const [trend, setTrend] = useState<GoodDayTrendPoint[] | null>(null)
 
   useEffect(() => {
     function expectedPace(s: RunningSession): number {
@@ -113,7 +156,10 @@ export function useRunningSessions(): SessionPoint[] | null {
       const data = output.map(([x, y]: [number, number], idx: number) => {
         const expected = expectedPace(sessions[idx])
         const paceDelta = expected - sessions[idx].pace
-        const hrStability = Math.max(0, 1 - Math.abs(sessions[idx].heartRate - 140) / 50)
+        const hrStability = Math.max(
+          0,
+          1 - Math.abs(sessions[idx].heartRate - 140) / 50,
+        )
         const meta = getSessionMeta(sessions[idx].id)
         return {
           x,
@@ -139,23 +185,25 @@ export function useRunningSessions(): SessionPoint[] | null {
         }
       })
       setPoints(data)
+      setTrend(computeTrend(data))
     })
   }, [])
 
   useEffect(() => {
     function onMetaUpdate() {
-      setPoints((prev) =>
-        prev
-          ? prev.map((p) => {
-              const meta = getSessionMeta(p.id)
-              return { ...p, tags: meta.tags, isFalsePositive: meta.isFalsePositive }
-            })
-          : prev,
-      )
+      setPoints((prev) => {
+        if (!prev) return prev
+        const updated = prev.map((p) => {
+          const meta = getSessionMeta(p.id)
+          return { ...p, tags: meta.tags, isFalsePositive: meta.isFalsePositive }
+        })
+        setTrend(computeTrend(updated))
+        return updated
+      })
     }
     window.addEventListener('sessionMetaUpdated', onMetaUpdate)
     return () => window.removeEventListener('sessionMetaUpdated', onMetaUpdate)
   }, [])
 
-  return points
+  return { sessions: points, trend }
 }

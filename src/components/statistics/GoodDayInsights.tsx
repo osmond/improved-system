@@ -3,10 +3,16 @@
 import { Card } from "@/ui/card"
 import { Skeleton } from "@/ui/skeleton"
 import GoodDaySparkline from "./GoodDaySparkline"
-import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions"
+import GoodDayTrendline from "./GoodDayTrendline"
+import {
+  useRunningSessions,
+  type SessionPoint,
+  type GoodDayTrendPoint,
+} from "@/hooks/useRunningSessions"
 
 interface GoodDayInsightsProps {
   sessions?: SessionPoint[] | null
+  trend?: GoodDayTrendPoint[] | null
   onSelect?: (s: SessionPoint) => void
   onRangeChange?: (range: [string, string] | null) => void
   highlightDate?: string | null
@@ -14,12 +20,14 @@ interface GoodDayInsightsProps {
 
 export default function GoodDayInsights({
   sessions: propSessions,
+  trend: propTrend,
   onSelect,
   onRangeChange,
   highlightDate,
 }: GoodDayInsightsProps) {
-  const hookSessions = useRunningSessions()
-  const sessions = propSessions ?? hookSessions
+  const hookData = useRunningSessions()
+  const sessions = propSessions ?? hookData.sessions
+  const trend = propTrend ?? hookData.trend
 
   if (!sessions) return <Skeleton className="h-32" />
   if (!sessions.length) return null
@@ -76,12 +84,13 @@ export default function GoodDayInsights({
             {trendChange.toFixed(2)} vs prev 7 runs)
           </div>
         </div>
-        <div className="sm:w-40 w-full">
+        <div className="sm:w-40 w-full space-y-2">
           <GoodDaySparkline
             data={trendData}
             onRangeChange={onRangeChange}
             highlightDate={highlightDate}
           />
+          {trend && <GoodDayTrendline data={trend.slice(-30)} />}
         </div>
       </div>
       {clusters.length > 0 && (

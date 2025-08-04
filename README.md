@@ -151,10 +151,13 @@ All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CS
 
 Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
 
-`useRunningSessions()` returns t-SNE coordinates for recent runs and is visualised with the `SessionSimilarityMap` scatter chart. A `good` flag marks sessions where pace beat the expected baseline.
+`useRunningSessions()` returns t-SNE coordinates for recent runs along with a rolling good-day frequency trendline. It feeds the `SessionSimilarityMap` scatter chart. A `good` flag marks sessions where pace beat the expected baseline.
 
 ```ts
-{ x: number; y: number; cluster: number; good: boolean }[]
+{
+  sessions: { x: number; y: number; cluster: number; good: boolean }[]
+  trend: { date: string; avg: number; lower: number; upper: number }[]
+}
 ```
 
 `useTrainingConsistency()` powers the `TrainingEntropyHeatmap` chart showing start-time
