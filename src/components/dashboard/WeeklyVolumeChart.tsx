@@ -16,7 +16,15 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "@/ui/skeleton";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
-function BrushHandle({ x, y, width, height, stroke }: any) {
+interface BrushHandleProps {
+  x: number
+  y: number
+  width: number
+  height: number
+  stroke: string
+}
+
+function BrushHandle({ x, y, width, height, stroke }: BrushHandleProps) {
   const line1 = x + width / 2 - 3;
   const line2 = x + width / 2 + 3;
   return (
