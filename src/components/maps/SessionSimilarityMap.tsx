@@ -8,6 +8,7 @@ import {
   YAxis,
   CartesianGrid,
   ChartTooltip,
+  ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
   Brush,
@@ -21,8 +22,10 @@ import { contourDensity } from "d3-contour"
 import { geoPath } from "d3-geo"
 import { Customized, Polygon } from "recharts"
 import ClusterCard from "./ClusterCard"
+import RunComparisonPanel from "./RunComparisonPanel"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
+import type { TooltipProps } from "recharts"
 
 const colors = [
   "var(--chart-1)",
@@ -67,6 +70,14 @@ export default function SessionSimilarityMap({
   const [time, setTime] = useState<string | null>(null)
   const [route, setRoute] = useState<string | null>(null)
   const [recovery, setRecovery] = useState<string | null>(null)
+
+  const [selected, setSelected] = useState<SessionPoint | null>(null)
+  const [panelOpen, setPanelOpen] = useState(false)
+
+  const handlePointSelect = (s: SessionPoint) => {
+    setSelected(s)
+    setPanelOpen(true)
+  }
 
   const filtered = data.filter((s) => {
     if (weather && s.condition !== weather) return false
@@ -212,7 +223,7 @@ export default function SessionSimilarityMap({
           <XAxis type="number" dataKey="x" name="X" />
           <YAxis type="number" dataKey="y" name="Y" />
           <Brush dataKey="x" height={20} travellerWidth={10} />
-          <ChartTooltip />
+          <ChartTooltip content={<SessionTooltip />} />
           <Customized
             component={
               <ClusterBackground
@@ -229,6 +240,9 @@ export default function SessionSimilarityMap({
               fill={clusterConfig[c].color}
               animationDuration={300}
               opacity={activeCluster === null || activeCluster === c ? 1 : 0.2}
+              shape={(props) => (
+                <RunSymbol {...props} onSelect={handlePointSelect} />
+              )}
             />
           ))}
           <Customized
@@ -247,6 +261,7 @@ export default function SessionSimilarityMap({
               <GoodRunSymbol
                 {...props}
                 paceThreshold={paceThreshold}
+                onSelect={handlePointSelect}
               />
             )}
           />
@@ -299,6 +314,17 @@ export default function SessionSimilarityMap({
           )
         })}
       </div>
+      <RunComparisonPanel
+        open={panelOpen}
+        onOpenChange={setPanelOpen}
+        session={selected}
+        clusterPoints={
+          selected
+            ? clusterDetails.find((d) => d.cluster === selected.cluster)?.points || []
+            : []
+        }
+        allSessions={filtered}
+      />
     </ChartCard>
   )
 }
@@ -447,7 +473,35 @@ function DeviationTrails({
   )
 }
 
-function GoodRunSymbol({ cx, cy, payload, paceThreshold }: any) {
+function RunSymbol({ cx, cy, payload, fill, onSelect }: any) {
+  const size = 6 + Math.max(0, payload.paceDelta) * 3
+  const halo = size + payload.confidence * 10
+
+  return (
+    <g>
+      <circle cx={cx} cy={cy} r={halo} fill={fill} opacity={0.2} />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={size}
+        fill={fill}
+        stroke="#fff"
+        strokeWidth={1}
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelect(payload)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            onSelect(payload)
+          }
+        }}
+      />
+    </g>
+  )
+}
+
+function GoodRunSymbol({ cx, cy, payload, paceThreshold, onSelect, fill }: any) {
   const size = 6 + Math.max(0, payload.paceDelta) * 3
   const conf = payload.confidence ?? 0
   const halo = size + 2
@@ -459,7 +513,7 @@ function GoodRunSymbol({ cx, cy, payload, paceThreshold }: any) {
         cy={cy}
         r={halo}
         fill="none"
-        stroke="hsl(var(--chart-6))"
+        stroke={fill}
         strokeOpacity={conf}
         strokeWidth={2}
       />
@@ -467,9 +521,18 @@ function GoodRunSymbol({ cx, cy, payload, paceThreshold }: any) {
         cx={cx}
         cy={cy}
         r={size}
-        fill="hsl(var(--chart-6))"
+        fill={fill}
         stroke="#fff"
         strokeWidth={1}
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelect(payload)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            onSelect(payload)
+          }
+        }}
       />
       {payload.paceDelta >= paceThreshold && (
         <text x={cx} y={cy - size - 2} textAnchor="middle" fontSize={10}>
@@ -521,6 +584,36 @@ function HaloLegendIcon() {
       <circle cx="8" cy="8" r="3" fill="currentColor" />
       <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="2" />
     </svg>
+  )
+}
+
+function SessionTooltip(props: TooltipProps<number, string>) {
+  const { active, payload } = props
+  if (!(active && payload && payload.length)) return null
+
+  const session = payload[0].payload as SessionPoint
+  const expected = session.pace + session.paceDelta
+  return (
+    <ChartTooltipContent
+      active={active}
+      payload={payload}
+      hideLabel
+      hideIndicator
+      formatter={() => (
+        <div className="grid gap-1">
+          <span>{new Date(session.start).toLocaleString()}</span>
+          <span>
+            Pace: {session.pace.toFixed(2)} min/mi (Δ {session.paceDelta.toFixed(2)})
+          </span>
+          <span>Expected Pace: {expected.toFixed(2)} min/mi</span>
+          <span>Heart Rate: {session.heartRate} bpm</span>
+          <span>
+            Weather: {session.condition}, {session.temperature}°F, {session.humidity}% hum, {session.wind} mph wind
+          </span>
+          <span>Confidence: {(session.confidence * 100).toFixed(0)}%</span>
+        </div>
+      )}
+    />
   )
 }
 
