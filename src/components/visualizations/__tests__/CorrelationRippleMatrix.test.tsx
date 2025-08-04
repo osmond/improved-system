@@ -18,17 +18,21 @@ vi.mock('recharts', async () => {
 })
 
 describe('CorrelationRippleMatrix', () => {
-  it('shows detail chart on cell click', async () => {
+  it('shows tooltip on cell focus', async () => {
     const matrix = [
       [1, 0.5],
       [0.5, 1],
     ]
     const labels = ['A', 'B']
     const drilldown = {
-      '0-1': [
-        { x: 0, y: 1 },
-        { x: 1, y: 2 },
-      ],
+      '0-1': {
+        data: [
+          { x: 0, y: 1 },
+          { x: 1, y: 2 },
+        ],
+        pValue: 0.05,
+        insight: 'positive trend',
+      },
     }
     const { container } = render(
       <CorrelationRippleMatrix
@@ -41,11 +45,12 @@ describe('CorrelationRippleMatrix', () => {
 
     expect(container.querySelector('div.absolute')).not.toBeInTheDocument()
 
-    const cells = container.querySelectorAll('path.recharts-rectangle')
+    const cells = container.querySelectorAll('g[tabindex="0"]')
     expect(cells.length).toBeGreaterThan(1)
-    await userEvent.click(cells[1] as SVGPathElement, { skipHover: true })
+    const target = cells[1] as SVGGElement
+    target.focus()
     await waitFor(() =>
-      expect(container.querySelector('div.absolute')).toBeInTheDocument(),
+      expect(container.querySelector('[role="tooltip"]')).toBeInTheDocument(),
     )
   })
 })
