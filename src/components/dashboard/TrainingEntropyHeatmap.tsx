@@ -3,6 +3,14 @@ import ChartCard from "./ChartCard";
 import { ChartContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip } from "@/ui/chart";
 import { Skeleton } from "@/ui/skeleton";
 import useTrainingConsistency from "@/hooks/useTrainingConsistency";
+import {
+  TooltipProvider,
+  Tooltip,
+  TooltipTrigger,
+  TooltipContent,
+} from "@/ui/tooltip";
+import { Dialog, DialogContent } from "@/ui/dialog";
+import { useState, useMemo } from "react";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -18,7 +26,20 @@ export default function TrainingEntropyHeatmap() {
 
   if (!data) return <Skeleton className="h-64" />;
 
-  const { heatmap, weeklyEntropy } = data;
+  const { sessions, heatmap, weeklyEntropy } = data;
+
+  const [selected, setSelected] = useState<{
+    day: number;
+    hour: number;
+  } | null>(null);
+
+  const selectedSessions = useMemo(() => {
+    if (!selected) return [];
+    return sessions.filter((s) => {
+      const d = new Date(s.start ?? s.date);
+      return d.getDay() === selected.day && d.getHours() === selected.hour;
+    });
+  }, [selected, sessions]);
 
   const grid = Array.from({ length: 24 }, () =>
     Array.from({ length: 7 }, () => ({ count: 0 }))
@@ -48,13 +69,24 @@ export default function TrainingEntropyHeatmap() {
             {grid.map((row, hour) => (
               <div key={hour} className="grid grid-cols-7">
                 {row.map((cell, idx) => (
-                  <div
-                    key={idx}
-                    className="flex items-center justify-center border bg-accent text-accent-foreground h-4"
-                    style={{ opacity: max ? cell.count / max : 0 }}
-                    tabIndex={0}
-                    aria-label={`${dayLabels[idx]} hour ${hour}: ${cell.count} sessions`}
-                  />
+                  <TooltipProvider key={idx}>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <div
+                          className="flex items-center justify-center border bg-accent text-accent-foreground h-4"
+                          style={{ opacity: max ? cell.count / max : 0 }}
+                          tabIndex={0}
+                          aria-label={`${dayLabels[idx]} hour ${hour}: ${cell.count} sessions`}
+                          onClick={() => setSelected({ day: idx, hour })}
+                        />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {`${cell.count} sessions on ${dayLabels[idx]} at ${hour
+                          .toString()
+                          .padStart(2, "0")}:00`}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
                 ))}
               </div>
             ))}
@@ -69,6 +101,32 @@ export default function TrainingEntropyHeatmap() {
             </LineChart>
           </div>
         </div>
+        <Dialog
+          open={!!selected}
+          onOpenChange={(open) => {
+            if (!open) setSelected(null);
+          }}
+        >
+          <DialogContent>
+            <div className="space-y-2">
+              {selected && (
+                <p className="font-medium text-sm">
+                  {dayLabels[selected.day]} {selected.hour.toString().padStart(2, "0")}
+                  :00
+                </p>
+              )}
+              <ul className="list-disc pl-4">
+                {selectedSessions.length > 0 ? (
+                  selectedSessions.map((s) => (
+                    <li key={s.id}>Session {s.id}</li>
+                  ))
+                ) : (
+                  <li>No sessions</li>
+                )}
+              </ul>
+            </div>
+          </DialogContent>
+        </Dialog>
       </ChartContainer>
     </ChartCard>
   );
