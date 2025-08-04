@@ -13,7 +13,7 @@ export interface SessionPoint {
   pace: number
   paceDelta: number
   heartRate: number
-  /** Confidence in metrics like heart-rate stability (0-1) */
+  /** Baseline robustness from data completeness and weather accuracy (0-1) */
   confidence: number
   temperature: number
   humidity: number
@@ -109,6 +109,18 @@ function computeTrend(
   return result
 }
 
+function isPresent(v: unknown) {
+  return v !== null && v !== undefined && !(typeof v === 'number' && isNaN(v))
+}
+
+function baselineConfidence(s: RunningSession): number {
+  const baseFields = [s.pace, s.duration, s.heartRate, s.start ?? s.date, s.lat, s.lon]
+  const completeness = baseFields.filter(isPresent).length / baseFields.length
+  const weatherFields = [s.weather.temperature, s.weather.humidity, s.weather.wind]
+  const weatherAccuracy = weatherFields.filter(isPresent).length / weatherFields.length
+  return +(0.5 * completeness + 0.5 * weatherAccuracy).toFixed(2)
+}
+
 export function useRunningSessions(): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
@@ -156,10 +168,7 @@ export function useRunningSessions(): {
       const data = output.map(([x, y]: [number, number], idx: number) => {
         const expected = expectedPace(sessions[idx])
         const paceDelta = expected - sessions[idx].pace
-        const hrStability = Math.max(
-          0,
-          1 - Math.abs(sessions[idx].heartRate - 140) / 50,
-        )
+        const confidence = baselineConfidence(sessions[idx])
         const meta = getSessionMeta(sessions[idx].id)
         return {
           x,
@@ -170,7 +179,7 @@ export function useRunningSessions(): {
           pace: sessions[idx].pace,
           paceDelta,
           heartRate: sessions[idx].heartRate,
-          confidence: hrStability,
+          confidence,
           temperature: sessions[idx].weather.temperature,
           humidity: sessions[idx].weather.humidity,
           wind: sessions[idx].weather.wind,
