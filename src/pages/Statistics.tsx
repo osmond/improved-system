@@ -145,6 +145,15 @@ export default function StatisticsPage() {
     );
   }
 
+  const presets: Array<{
+    label: string;
+    sign: 'positive' | 'negative';
+    thresh: number;
+  }> = [
+    { label: 'Strong Positive', sign: 'positive', thresh: 0.6 },
+    { label: 'Moderate Negative', sign: 'negative', thresh: 0.4 },
+  ];
+
   return (
     <Card>
       <CardHeader>
@@ -216,16 +225,13 @@ export default function StatisticsPage() {
           </div>
         </div>
         <div className="flex flex-wrap gap-2">
-          {[
-            { label: "Strong Positive", sign: "positive", thresh: 0.6 },
-            { label: "Moderate Negative", sign: "negative", thresh: 0.4 },
-          ].map((p) => (
+          {presets.map((p) => (
             <Button
               key={p.label}
               variant="secondary"
               size="sm"
               onClick={() => {
-                setSignFilter(p.sign as any);
+                setSignFilter(p.sign);
                 setThreshold(p.thresh);
               }}
             >
