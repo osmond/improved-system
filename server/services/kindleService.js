@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { aggregateDailyReading } = require('../../src/services/readingStats');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -63,9 +64,25 @@ function getAchievements() {
   return parseCsv(filePath);
 }
 
+function getDailyStats() {
+  const filePath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'data',
+    'kindle',
+    'Kindle',
+    'Kindle.Devices.ReadingSession',
+    'Kindle.Devices.ReadingSession.csv',
+  );
+  const rows = parseCsv(filePath);
+  return aggregateDailyReading(rows);
+}
+
 module.exports = {
   getEvents,
   getPoints,
   getAchievements,
+  getDailyStats,
 };
 

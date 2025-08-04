@@ -1662,6 +1662,18 @@ export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
   });
 }
 
+export interface DailyReadingStat {
+  date: string;
+  minutes: number;
+  pages: number;
+}
+
+export async function getDailyReadingStats(): Promise<DailyReadingStat[]> {
+  const res = await fetch('/api/kindle/daily-stats');
+  if (!res.ok) throw new Error('Failed to fetch daily stats');
+  return res.json();
+}
+
 // ----- Focus sessions -----
 
 export type FocusLabel = "Deep Dive" | "Skim" | "Page Turn Panic";

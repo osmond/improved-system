@@ -25,4 +25,12 @@ describe('GET /api/kindle', () => {
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body[0]).toHaveProperty('AchievementName');
   });
+
+  it('returns daily stats data', async () => {
+    const res = await request(app).get('/api/kindle/daily-stats');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('date');
+    expect(res.body[0]).toHaveProperty('minutes');
+  });
 });
