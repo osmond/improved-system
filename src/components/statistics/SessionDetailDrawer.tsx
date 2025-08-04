@@ -5,6 +5,11 @@ import maplibregl from "maplibre-gl"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/ui/sheet"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import useSessionTimeseries from "@/hooks/useSessionTimeseries"
+import { Input } from "@/ui/input"
+import { Button } from "@/ui/button"
+import { Badge } from "@/ui/badge"
+import { useEffect, useState } from "react"
+import { getSessionMeta, updateSessionMeta } from "@/lib/sessionMeta"
 import {
   ChartContainer,
   LineChart,
@@ -25,6 +30,46 @@ interface SessionDetailDrawerProps {
 export default function SessionDetailDrawer({ session, onClose }: SessionDetailDrawerProps) {
   const series = useSessionTimeseries(session?.id ?? null)
   const baseline = session ? session.pace + session.paceDelta : 0
+  const [tagInput, setTagInput] = useState("")
+  const [tags, setTags] = useState<string[]>([])
+  const [isFalsePositive, setIsFalsePositive] = useState(false)
+
+  useEffect(() => {
+    if (!session) return
+    const meta = getSessionMeta(session.id)
+    setTags(meta.tags)
+    setIsFalsePositive(meta.isFalsePositive)
+  }, [session])
+
+  function saveMeta(nextTags: string[], nextFalse: boolean) {
+    if (!session) return
+    updateSessionMeta(session.id, { tags: nextTags, isFalsePositive: nextFalse })
+    window.dispatchEvent(new Event('sessionMetaUpdated'))
+  }
+
+  function addTag() {
+    if (!session) return
+    const t = tagInput.trim()
+    if (!t) return
+    const next = [...tags, t]
+    setTags(next)
+    setTagInput("")
+    saveMeta(next, isFalsePositive)
+  }
+
+  function removeTag(tag: string) {
+    if (!session) return
+    const next = tags.filter((t) => t !== tag)
+    setTags(next)
+    saveMeta(next, isFalsePositive)
+  }
+
+  function toggleFalsePositive() {
+    if (!session) return
+    const next = !isFalsePositive
+    setIsFalsePositive(next)
+    saveMeta(tags, next)
+  }
   const chartConfig = {
     actual: { label: "Actual", color: "hsl(var(--chart-1))" },
     expected: { label: "Expected", color: "hsl(var(--chart-2))" },
@@ -62,6 +107,29 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
               <span>Wind: {session.wind} mph</span>
               <span>Start Hour: {session.startHour}</span>
               <span>Duration: {session.duration} min</span>
+            </div>
+            <div className="space-y-2 text-sm">
+              <div className="flex flex-wrap gap-1">
+                {tags.map((t) => (
+                  <Badge key={t} variant="secondary" className="cursor-pointer" onClick={() => removeTag(t)}>
+                    {t}
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add tag"
+                  value={tagInput}
+                  onChange={(e) => setTagInput(e.target.value)}
+                  className="flex-1"
+                />
+                <Button size="sm" onClick={addTag}>
+                  Add
+                </Button>
+              </div>
+              <Button variant={isFalsePositive ? "default" : "outline"} size="sm" onClick={toggleFalsePositive}>
+                {isFalsePositive ? "Marked False Positive" : "Mark False Positive"}
+              </Button>
             </div>
             {series && (
               <ChartContainer config={chartConfig} className="h-40">
