@@ -14,22 +14,40 @@ import { usePaceDeltaBenchmark } from "@/hooks/usePaceDeltaBenchmark"
 interface GoodDayInsightsProps {
   sessions?: SessionPoint[] | null
   trend?: GoodDayTrendPoint[] | null
+  error?: Error | null
   onSelect?: (s: SessionPoint) => void
   onRangeChange?: (range: [string, string] | null) => void
   highlightDate?: string | null
 }
 
-export default function GoodDayInsights({
-  sessions: propSessions,
-  trend: propTrend,
+export default function GoodDayInsights(props: GoodDayInsightsProps) {
+  const { sessions: propSessions, trend: propTrend } = props
+  if (propSessions === undefined || propTrend === undefined) {
+    return <GoodDayInsightsWithHook {...props} />
+  }
+  return <GoodDayInsightsContent {...props} />
+}
+
+function GoodDayInsightsWithHook(props: GoodDayInsightsProps) {
+  const hookData = useRunningSessions()
+  return (
+    <GoodDayInsightsContent
+      {...props}
+      sessions={props.sessions ?? hookData.sessions}
+      trend={props.trend ?? hookData.trend}
+      error={props.error ?? hookData.error}
+    />
+  )
+}
+
+function GoodDayInsightsContent({
+  sessions,
+  trend,
+  error,
   onSelect,
   onRangeChange,
   highlightDate,
 }: GoodDayInsightsProps) {
-  const hookData = useRunningSessions()
-  const sessions = propSessions ?? hookData.sessions
-  const trend = propTrend ?? hookData.trend
-  const { error } = hookData
   const benchmark = usePaceDeltaBenchmark()
 
   if (error)
