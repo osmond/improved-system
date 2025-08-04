@@ -2,7 +2,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { dashboardRoutes, type DashboardRoute } from "@/routes";
 
-const routes: DashboardRoute[] = dashboardRoutes.flatMap((group) => group.items);
+const routes: DashboardRoute[] = dashboardRoutes
+  .flatMap((group) => group.items)
+  .filter((route) => route.to !== "/dashboard/all");
 
 export default function VisualizationsList() {
   return (

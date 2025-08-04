@@ -51,7 +51,7 @@ import BehavioralCharterMapPage from "@/pages/BehavioralCharterMap";
 import SidebarDemoPage from "@/pages/SidebarDemo";
 import VisualizationsList from "@/pages/VisualizationsList";
 
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 import { SelectionProvider } from "@/hooks/useSelection";
 
@@ -62,11 +62,15 @@ function App() {
         <SelectionProvider>
         <DashboardLayout>
           <Routes>
-            <Route path="/" element={<VisualizationsList />} />
-            <Route path="/visualizations" element={<VisualizationsList />} />
+            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+            <Route
+              path="/visualizations"
+              element={<Navigate to="/dashboard/all" replace />}
+            />
             <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
             <Route path="/dashboard" element={<Dashboard />}>
               <Route index element={<DashboardLanding />} />
+              <Route path="all" element={<VisualizationsList />} />
               <Route path="map" element={<MapPlaygroundPage />} />
               <Route path="route-similarity" element={<RouteSimilarityPage />} />
               <Route path="route-novelty" element={<RouteNoveltyPage />} />

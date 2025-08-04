@@ -4,12 +4,27 @@ import {
   BarChart3,
   Goal,
   Shield,
+  List,
 } from "lucide-react";
 import {
   withIcon,
   type DashboardRoute,
   type DashboardRouteGroup,
 } from "./types";
+
+export const allRoutes = withIcon(List, [
+  {
+    to: "/dashboard/all",
+    label: "All Visualizations",
+    description: "Browse all available visualizations",
+  },
+]);
+
+const allRouteGroup: DashboardRouteGroup = {
+  label: "All",
+  icon: List,
+  items: allRoutes,
+};
 
 export const mapsRoutes = withIcon(Map, [
   {
@@ -248,6 +263,7 @@ const privacyRouteGroup: DashboardRouteGroup = {
 };
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
+  allRouteGroup,
   mapsRouteGroup,
   trendsRouteGroup,
   analyticalRouteGroup,
