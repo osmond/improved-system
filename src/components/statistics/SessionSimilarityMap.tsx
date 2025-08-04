@@ -8,10 +8,10 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
-} from "@/components/ui/chart"
+} from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Skeleton } from "@/ui/skeleton"
 
 const colors = [
   "var(--chart-1)",

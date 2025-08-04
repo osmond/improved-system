@@ -2,10 +2,10 @@
 
 import React, { useState, useEffect } from "react";
 import MileageGlobe from "@/components/examples/MileageGlobe";
-import Slider from "@/components/ui/slider";
-import { Button } from "@/components/ui/button";
-import { SimpleSelect } from "@/components/ui/select";
-import { Card, CardContent } from "@/components/ui/card";
+import Slider from "@/ui/slider";
+import { Button } from "@/ui/button";
+import { SimpleSelect } from "@/ui/select";
+import { Card, CardContent } from "@/ui/card";
 import useWeeklyVolumeHistory from "@/hooks/useWeeklyVolumeHistory";
 
 export default function MileageGlobePage() {

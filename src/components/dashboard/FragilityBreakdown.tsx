@@ -1,6 +1,6 @@
 import React from 'react'
 import useFragilityIndex from '@/hooks/useFragilityIndex'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 
 export default function FragilityBreakdown() {
   const fragility = useFragilityIndex()

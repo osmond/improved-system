@@ -1,9 +1,9 @@
 "use client"
 
 import ChartCard from "@/components/dashboard/ChartCard"
-import { ChartContainer } from "@/components/ui/chart"
-import { Button } from "@/components/ui/button"
-import { Skeleton } from "@/components/ui/skeleton"
+import { ChartContainer } from "@/ui/chart"
+import { Button } from "@/ui/button"
+import { Skeleton } from "@/ui/skeleton"
 import useTrainingConsistency from "@/hooks/useTrainingConsistency"
 import { Link } from "react-router-dom"
 

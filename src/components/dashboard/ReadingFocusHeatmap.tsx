@@ -1,7 +1,7 @@
 "use client";
 import ChartCard from "./ChartCard";
-import { ChartContainer } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ChartContainer } from "@/ui/chart";
+import { Skeleton } from "@/ui/skeleton";
 import {
   useReadingHeatmapFromActivity,
   type HeatmapCell,

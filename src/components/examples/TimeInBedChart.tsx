@@ -12,15 +12,15 @@ import {
   ReferenceLine,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
-import type { ChartConfig } from '@/components/ui/chart'
+} from '@/ui/chart'
+import type { ChartConfig } from '@/ui/chart'
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
   CardDescription,
-} from '@/components/ui/card'
+} from '@/ui/card'
 
 // Generate mock sleep data for a month
 const sleepData = Array.from({ length: 30 }, (_, i) => {

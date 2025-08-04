@@ -11,9 +11,9 @@ import {
   YAxis,
   CartesianGrid,
   ChartTooltip,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 import { Cell } from 'recharts'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 import useLocationEfficiency from '@/hooks/useLocationEfficiency'
 import statesTopo from '@/lib/us-states.json'
 import CITY_COORDS from '@/lib/cityCoords'

@@ -1,8 +1,8 @@
 import React, { useMemo } from "react";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import useInsights from "@/hooks/useInsights";
-import { Badge } from "@/components/ui/badge";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Badge } from "@/ui/badge";
+import { Skeleton } from "@/ui/skeleton";
 
 export default function StateVisitSummary() {
   const { data: states, loading, error, refetch } = useStateVisits();

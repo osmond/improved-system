@@ -11,15 +11,15 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-} from "@/components/ui/chart"
+} from "@/ui/chart"
 import type { TooltipProps } from "recharts"
 import { Polygon, ReferenceDot } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Button } from "@/components/ui/button"
+import { Skeleton } from "@/ui/skeleton"
+import { Button } from "@/ui/button"
 import { scaleLinear } from "d3-scale"
-import type { ChartConfig } from "@/components/ui/chart"
+import type { ChartConfig } from "@/ui/chart"
 import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import { symbol, symbolStar } from "d3-shape"

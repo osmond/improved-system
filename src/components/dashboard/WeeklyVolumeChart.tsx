@@ -7,13 +7,13 @@ import {
   CartesianGrid,
   Brush,
   Tooltip as ChartTooltip,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 import useWeeklyVolume from "@/hooks/useWeeklyVolume";
 import { useChartSelection } from "./ChartSelectionContext";
 import { useEffect, useState } from "react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 function BrushHandle({ x, y, width, height, stroke }: any) {

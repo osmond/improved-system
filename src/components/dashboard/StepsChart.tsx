@@ -8,14 +8,14 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import { Cell, type TooltipProps } from "recharts";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 
 import type { GarminDay } from "@/lib/api";
 import { useGarminDaysLazy } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import { chartColors } from "@/lib/chartColors";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 

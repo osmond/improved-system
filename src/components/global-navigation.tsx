@@ -10,8 +10,8 @@ import {
   NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
-} from "@/components/ui/navigation-menu";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/components/ui/hover-card";
+} from "@/ui/navigation-menu";
+import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/ui/hover-card";
 import { FragilityPreviewSparkline } from "@/components/dashboard";
 import {
   analyticsRoutes,
@@ -24,7 +24,7 @@ import {
 import useFavorites from "@/hooks/useFavorites";
 import useRecentViews from "@/hooks/useRecentViews";
 import { cn } from "@/lib/utils";
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/ui/badge";
 
 function RouteList({
   routes,

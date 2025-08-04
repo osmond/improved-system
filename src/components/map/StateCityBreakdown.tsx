@@ -8,8 +8,8 @@ import {
   ChartTooltip,
   ChartTooltipContent,
   Cell,
-} from "@/components/ui/chart"
-import type { ChartConfig } from "@/components/ui/chart"
+} from "@/ui/chart"
+import type { ChartConfig } from "@/ui/chart"
 
 export interface CityBreakdownProps {
   cities: { name: string; days: number; miles: number }[]

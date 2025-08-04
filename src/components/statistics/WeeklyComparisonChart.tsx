@@ -9,10 +9,10 @@ import {
   ChartTooltip,
   ChartLegend,
   ChartLegendContent,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 import ChartCard from '@/components/dashboard/ChartCard'
 import useWeeklyComparison from '@/hooks/useWeeklyComparison'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 
 export default function WeeklyComparisonChart({
   metric,

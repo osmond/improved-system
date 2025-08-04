@@ -1,14 +1,14 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
-import ThemeToggle from "@/components/ui/theme-toggle";
-import CommandPalette from "@/components/ui/CommandPalette";
-import { Button } from "@/components/ui/button";
+import ThemeToggle from "@/ui/theme-toggle";
+import CommandPalette from "@/ui/CommandPalette";
+import { Button } from "@/ui/button";
 import {
   TooltipProvider,
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@/components/ui/tooltip";
+} from "@/ui/tooltip";
 import { Command, Download, Info, Save, Share2 } from "lucide-react";
 import GlobalNavigation from "@/components/global-navigation";
 import {

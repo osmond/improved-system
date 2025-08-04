@@ -8,10 +8,10 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "@/components/dashboard/ChartCard";
 import { useRunningStats } from "@/hooks/useRunningStats";
-import { SimpleSelect } from "@/components/ui/select";
+import { SimpleSelect } from "@/ui/select";
 
 interface PerfPoint {
   pace: number;

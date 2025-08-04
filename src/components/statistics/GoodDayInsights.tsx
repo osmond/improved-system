@@ -1,7 +1,7 @@
 "use client"
 
-import { Card } from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Card } from "@/ui/card"
+import { Skeleton } from "@/ui/skeleton"
 import GoodDaySparkline from "./GoodDaySparkline"
 import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions"
 

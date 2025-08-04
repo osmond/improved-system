@@ -3,7 +3,7 @@
 ## Project structure & imports
 Use the `src/components/ui` folder for all shared, “primitive” UI bits—buttons, cards, tabs, tooltips, charts, etc. This is where the Shadcn-CLI lives, and any one-off or feature-specific code goes elsewhere (e.g. `src/components/dashboard/StepsChart.tsx`).
 
-Import via your `@/` alias (`import { Card } from "@/components/ui/card"`) so paths stay short and portable.
+Import via your `@/` alias (`import { Card } from "@/ui/card"`) so paths stay short and portable.
 Make sure your `tsconfig.json` and `vite.config.ts` both have the same alias config:
 
 ```ts
@@ -51,7 +51,7 @@ The UI sidebar includes configurable behaviour:
 - `SIDEBAR_KEYBOARD_SHORTCUT` toggles the sidebar via a Cmd/Ctrl + key shortcut.
 - The open state persists in the `SIDEBAR_COOKIE_NAME` cookie; the `SidebarProvider` `defaultOpen` prop sets the initial state.
 
-See [`components/ui/sidebar.tsx`](components/ui/sidebar.tsx) for implementation details.
+See [`src/components/ui/sidebar.tsx`](src/components/ui/sidebar.tsx) for implementation details.
 
 ## State & data hooks
 Keep all API-specific logic (auth, fetch, shape/normalize) inside `src/hooks/useGarminData.ts`. That way components stay pure/presentational.

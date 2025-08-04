@@ -12,16 +12,16 @@ import {
   ChartLegendContent,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@/ui/card'
 
-import type { ChartConfig } from '@/components/ui/chart'
+import type { ChartConfig } from '@/ui/chart'
 
 export const description = 'A treadmill vs outdoor chart'
 

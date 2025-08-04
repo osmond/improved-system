@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/ui/button";
 import {
   getDailySteps,
   getDailySleep,
@@ -9,14 +9,14 @@ import {
   type GarminDay,
   type MetricDay,
 } from "@/lib/api";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import useCorrelationMatrix, { type MetricPoint } from "@/hooks/useCorrelationMatrix";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
-} from "@/components/ui/card";
+} from "@/ui/card";
 
 interface Metrics extends MetricPoint {
   steps: number;

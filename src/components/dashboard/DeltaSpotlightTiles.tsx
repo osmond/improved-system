@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Card } from '@/components/ui/card'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Card } from '@/ui/card'
+import { Skeleton } from '@/ui/skeleton'
 import {
   ChartContainer,
   LineChart,
@@ -10,7 +10,7 @@ import {
   YAxis,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 import type { MetricDelta } from '@/hooks/useTopMetricChanges'
 
 interface DeltaSpotlightTilesProps {

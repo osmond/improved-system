@@ -11,18 +11,18 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from '@/components/ui/card'
+} from '@/ui/card'
 import {
   ChartConfig,
   ChartContainer,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 
 export const description = 'A radial chart with a grid'
 
 import useReadingMediumTotals from '@/hooks/useReadingMediumTotals'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 
 const labels: Record<string, string> = {
   phone: 'Phone',

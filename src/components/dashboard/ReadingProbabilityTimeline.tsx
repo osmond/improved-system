@@ -11,11 +11,11 @@ import {
   ReferenceArea,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 import useReadingProbability from "@/hooks/useReadingProbability";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import type { TooltipProps } from "recharts";
 
 export default function ReadingProbabilityTimeline() {

@@ -10,10 +10,10 @@ import {
   ReferenceLine,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 import ChartCard from './ChartCard'
-import { Skeleton } from '@/components/ui/skeleton'
-import type { ChartConfig } from '@/components/ui/chart'
+import { Skeleton } from '@/ui/skeleton'
+import type { ChartConfig } from '@/ui/chart'
 import type { SleepSession } from '@/lib/api'
 import { getSleepSessions } from '@/lib/api'
 

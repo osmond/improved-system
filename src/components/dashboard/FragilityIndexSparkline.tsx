@@ -7,10 +7,10 @@ import {
   YAxis,
   ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
-import type { ChartConfig } from '@/components/ui/chart'
+} from '@/ui/chart'
+import type { ChartConfig } from '@/ui/chart'
 import useFragilityHistory from '@/hooks/useFragilityHistory'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 import { FRAGILITY_LEVELS, getFragilityLevel } from '@/lib/fragility'
 
 /**

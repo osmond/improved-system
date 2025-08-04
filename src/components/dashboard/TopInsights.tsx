@@ -1,7 +1,7 @@
 import React from "react";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
-import { Badge } from "@/components/ui/badge";
+import { Card } from "@/ui/card";
+import { Skeleton } from "@/ui/skeleton";
+import { Badge } from "@/ui/badge";
 import { Flame, HeartPulse, Moon, Pizza, BookOpen } from "lucide-react";
 import useInsights from "@/hooks/useInsights";
 
