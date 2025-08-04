@@ -54,7 +54,7 @@ export default function WeeklyVolumeChart() {
     if (data && range.start === null && range.end === null && data.length) {
       setRange({ start: data[0].week, end: data[data.length - 1].week });
     }
-  }, [data]);
+  }, [data, range.start, range.end, setRange]);
 
   if (!data) return <Skeleton className="h-64" />;
 
