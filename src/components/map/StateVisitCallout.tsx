@@ -27,7 +27,7 @@ interface StateVisitCalloutProps {
 export default function StateVisitCallout({
   onSelectState,
 }: StateVisitCalloutProps) {
-  const visits = useStateVisits();
+  const { data: visits, loading } = useStateVisits();
 
   const latest = useMemo(() => {
     if (!visits) return null;
@@ -59,7 +59,8 @@ export default function StateVisitCallout({
     return entry;
   }, [visits]);
 
-  if (!visits) return <Skeleton className="h-4 w-full" />;
+  if (loading) return <Skeleton className="h-4 w-full" />;
+  if (!visits) return null;
   if (!latest) return null;
 
   const { type, stateCode, stateName, formattedDate, formattedMiles } = latest;

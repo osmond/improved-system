@@ -29,28 +29,33 @@ vi.mock("recharts", async () => {
 });
 
 vi.mock("@/hooks/useStateVisits", () => ({
-  useStateVisits: () => [
-    {
-      stateCode: "CA",
-      visited: true,
-      totalDays: 10,
-      totalMiles: 100,
-      cities: [{ name: "LA", days: 4, miles: 40 }],
-      log: [
-        { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
-      ],
-    },
-    {
-      stateCode: "TX",
-      visited: true,
-      totalDays: 5,
-      totalMiles: 50,
-      cities: [{ name: "Austin", days: 5, miles: 50 }],
-      log: [
-        { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
-      ],
-    },
-  ],
+  useStateVisits: () => ({
+    data: [
+      {
+        stateCode: "CA",
+        visited: true,
+        totalDays: 10,
+        totalMiles: 100,
+        cities: [{ name: "LA", days: 4, miles: 40 }],
+        log: [
+          { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+        ],
+      },
+      {
+        stateCode: "TX",
+        visited: true,
+        totalDays: 5,
+        totalMiles: 50,
+        cities: [{ name: "Austin", days: 5, miles: 50 }],
+        log: [
+          { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+        ],
+      },
+    ],
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  }),
 }));
 
 vi.mock("@/hooks/useInsights", () => ({

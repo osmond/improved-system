@@ -38,7 +38,7 @@ const weatherKey =
   import.meta.env.VITE_WEATHER_KEY || "37744b6f778e02303a56b9cf3c6da8e0";
 
 export default function GeoActivityExplorer() {
-  const data = useStateVisits();
+  const { data, loading, error, refetch } = useStateVisits();
   const [expandedState, setExpandedState] = useState<string | null>(null);
   const [selectedState, setSelectedState] = useState<string | null>(null);
   const [hoveredState, setHoveredState] = useState<string | null>(null);
@@ -164,8 +164,23 @@ export default function GeoActivityExplorer() {
     [stateMarkers, filteredStates],
   )
 
-  if (!data) {
+  if (loading) {
     return <Skeleton className="h-60 w-full" />;
+  }
+
+  if (error) {
+    return (
+      <div className="flex h-60 w-full flex-col items-center justify-center text-sm">
+        <p>Failed to load state visits.</p>
+        <button className="underline" onClick={refetch}>
+          Retry
+        </button>
+      </div>
+    );
+  }
+
+  if (!data) {
+    return null;
   }
 
   const toggleState = (abbr: string) => {
