@@ -1,9 +1,8 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { dashboardRoutes, chartRouteGroups, type DashboardRoute, type DashboardRouteGroup } from "@/routes";
+import { dashboardRoutes, type DashboardRoute } from "@/routes";
 
-const routeGroups: DashboardRouteGroup[] = [...dashboardRoutes, ...chartRouteGroups];
-const routes: DashboardRoute[] = routeGroups.flatMap((group) => group.items);
+const routes: DashboardRoute[] = dashboardRoutes.flatMap((group) => group.items);
 
 export default function VisualizationsList() {
   return (
