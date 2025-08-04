@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { Star } from "lucide-react";
 import {
   NavigationMenu,
@@ -30,10 +30,12 @@ function RouteList({
   routes,
   favorites,
   toggleFavorite,
+  closeMenu,
 }: {
   routes: DashboardRoute[];
   favorites: string[];
   toggleFavorite: (to: string) => void;
+  closeMenu?: () => void;
 }) {
   return (
     <ul className="grid gap-3 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
@@ -47,6 +49,7 @@ function RouteList({
                     to={route.to}
                     className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
                     data-shortcut={route.to}
+                    onClick={closeMenu}
                   >
                     <route.icon className="mr-2 h-5 w-5" />
                     <div className="flex-1">
@@ -86,6 +89,7 @@ function RouteList({
                 to={route.to}
                 className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
                 data-shortcut={route.to}
+                onClick={closeMenu}
               >
                 <route.icon className="mr-2 h-5 w-5" />
                 <div className="flex-1">
@@ -124,8 +128,10 @@ function RouteList({
 export default function GlobalNavigation() {
   const { favorites, toggleFavorite } = useFavorites();
   const { recentViews } = useRecentViews();
+  const location = useLocation();
 
   const [menuValue, setMenuValue] = React.useState<string | undefined>();
+  const closeMenu = React.useCallback(() => setMenuValue(undefined), []);
 
   React.useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -137,6 +143,10 @@ export default function GlobalNavigation() {
     document.addEventListener("keydown", handleKeyDown);
     return () => document.removeEventListener("keydown", handleKeyDown);
   }, []);
+
+  React.useEffect(() => {
+    closeMenu();
+  }, [location.pathname, closeMenu]);
 
   const insightsRoutes = React.useMemo(
     () => dashboardRoutes.find((g) => g.label === "Privacy")?.items ?? [],
@@ -175,6 +185,7 @@ export default function GlobalNavigation() {
           routes={favoriteRoutes}
           favorites={favorites}
           toggleFavorite={toggleFavorite}
+          closeMenu={closeMenu}
         />
       </div>
     );
@@ -187,6 +198,7 @@ export default function GlobalNavigation() {
           routes={recentRoutes}
           favorites={favorites}
           toggleFavorite={toggleFavorite}
+          closeMenu={closeMenu}
         />
       </div>
     );
@@ -205,6 +217,7 @@ export default function GlobalNavigation() {
               routes={analyticsRoutes}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -224,6 +237,7 @@ export default function GlobalNavigation() {
                   routes={group.items}
                   favorites={favorites}
                   toggleFavorite={toggleFavorite}
+                  closeMenu={closeMenu}
                 />
               </div>
             ))}
@@ -240,6 +254,7 @@ export default function GlobalNavigation() {
               routes={mapRoutes}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -254,6 +269,7 @@ export default function GlobalNavigation() {
               routes={insightsRoutes}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -268,6 +284,7 @@ export default function GlobalNavigation() {
               routes={settingsRoutes}
               favorites={favorites}
               toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
             />
           </NavigationMenuContent>
         </NavigationMenuItem>
