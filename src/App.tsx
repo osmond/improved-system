@@ -7,6 +7,7 @@ import RouteSimilarityPage from "@/pages/RouteSimilarity";
 import RouteNoveltyPage from "@/pages/RouteNovelty";
 import MileageGlobePage from "@/pages/MileageGlobe";
 import FragilityPage from "@/pages/Fragility";
+import ClinicalFragilityDemoPage from "@/pages/ClinicalFragilityDemo";
 import SessionSimilarityPage from "@/pages/SessionSimilarity";
 import GoodDayPage from "@/pages/GoodDay";
 import HabitConsistencyPage from "@/pages/HabitConsistency";
@@ -71,6 +72,10 @@ function App() {
               <Route path="route-novelty" element={<RouteNoveltyPage />} />
               <Route path="mileage-globe" element={<MileageGlobePage />} />
               <Route path="fragility" element={<FragilityPage />} />
+              <Route
+                path="clinical-fragility-demo"
+                element={<ClinicalFragilityDemoPage />}
+              />
               <Route path="session-similarity" element={<SessionSimilarityPage />} />
               <Route path="good-day" element={<GoodDayPage />} />
               <Route path="habit-consistency" element={<HabitConsistencyPage />} />

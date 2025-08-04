@@ -1,3 +1,7 @@
+export function computePValue(a: number, b: number, c: number, d: number): number {
+  return pValue(a, b, c, d)
+}
+
 export function computeFragilityIndex(a: number, b: number, c: number, d: number): number {
   let flips = 0
   let p = pValue(a, b, c, d)
