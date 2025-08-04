@@ -274,18 +274,23 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
           <>
             <div ref={shareRef} className="space-y-4">
               <div className="h-48 w-full">
-              <Map
-                mapLib={maplibregl}
-                mapStyle="https://demotiles.maplibre.org/style.json"
-                initialViewState={{ longitude: session.lon, latitude: session.lat, zoom: 12 }}
-                attributionControl={false}
-                style={{ width: "100%", height: "100%" }}
-              >
-                <Marker longitude={session.lon} latitude={session.lat}>
-                  <circle r={4} fill="hsl(var(--primary))" />
-                </Marker>
-              </Map>
-            </div>
+                <Map
+                  mapLib={maplibregl}
+                  mapStyle="https://demotiles.maplibre.org/style.json"
+                  initialViewState={{ longitude: session.lon, latitude: session.lat, zoom: 12 }}
+                  attributionControl={false}
+                  dragPan={false}
+                  dragRotate={false}
+                  scrollZoom={false}
+                  doubleClickZoom={false}
+                  keyboard={false}
+                  style={{ width: "100%", height: "100%" }}
+                >
+                  <Marker longitude={session.lon} latitude={session.lat}>
+                    <circle r={4} fill="hsl(var(--primary))" />
+                  </Marker>
+                </Map>
+              </div>
             {summary && <p className="text-sm">{summary}</p>}
             <table className="w-full text-sm">
               <thead>
@@ -320,9 +325,15 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
               </div>
               <div className="flex gap-2">
                 <Input
-                  placeholder="Add tag"
+                  placeholder="Add tag or emoji"
                   value={tagInput}
                   onChange={(e) => setTagInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      e.preventDefault()
+                      addTag()
+                    }
+                  }}
                   className="flex-1"
                 />
                 <Button size="sm" onClick={addTag}>
