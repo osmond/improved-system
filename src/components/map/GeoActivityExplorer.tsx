@@ -179,8 +179,15 @@ export default function GeoActivityExplorer() {
     );
   }
 
-  if (!data) {
-    return null;
+  if (!data || data?.length === 0) {
+    return (
+      <div className="flex h-60 w-full flex-col items-center justify-center text-sm">
+        <p>No state visit data available.</p>
+        <button className="underline" onClick={refetch}>
+          Retry
+        </button>
+      </div>
+    );
   }
 
   const toggleState = (abbr: string) => {

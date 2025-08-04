@@ -28,34 +28,9 @@ vi.mock("recharts", async () => {
   };
 });
 
+const mockUseStateVisits = vi.fn();
 vi.mock("@/hooks/useStateVisits", () => ({
-  useStateVisits: () => ({
-    data: [
-      {
-        stateCode: "CA",
-        visited: true,
-        totalDays: 10,
-        totalMiles: 100,
-        cities: [{ name: "LA", days: 4, miles: 40 }],
-        log: [
-          { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
-        ],
-      },
-      {
-        stateCode: "TX",
-        visited: true,
-        totalDays: 5,
-        totalMiles: 50,
-        cities: [{ name: "Austin", days: 5, miles: 50 }],
-        log: [
-          { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
-        ],
-      },
-    ],
-    loading: false,
-    error: null,
-    refetch: vi.fn(),
-  }),
+  useStateVisits: (...args: any[]) => mockUseStateVisits(...args),
 }));
 
 vi.mock("@/hooks/useInsights", () => ({
@@ -71,8 +46,56 @@ vi.mock("@/hooks/useInsights", () => ({
   }),
 }));
 
+const defaultVisits = [
+  {
+    stateCode: "CA",
+    visited: true,
+    totalDays: 10,
+    totalMiles: 100,
+    cities: [{ name: "LA", days: 4, miles: 40 }],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+    ],
+  },
+  {
+    stateCode: "TX",
+    visited: true,
+    totalDays: 5,
+    totalMiles: 50,
+    cities: [{ name: "Austin", days: 5, miles: 50 }],
+    log: [
+      { date: new Date().toISOString().slice(0, 10), type: "run", miles: 1 },
+    ],
+  },
+];
+
+beforeEach(() => {
+  mockUseStateVisits.mockReturnValue({
+    data: defaultVisits,
+    loading: false,
+    error: null,
+    refetch: vi.fn(),
+  });
+});
+
 
 describe("GeoActivityExplorer", () => {
+  it("shows placeholder when no data", () => {
+    const refetch = vi.fn();
+    mockUseStateVisits.mockReturnValue({
+      data: [],
+      loading: false,
+      error: null,
+      refetch,
+    });
+    render(<GeoActivityExplorer />);
+    expect(
+      screen.getByText("No state visit data available."),
+    ).toBeInTheDocument();
+    fireEvent.click(screen.getByText("Retry"));
+    expect(refetch).toHaveBeenCalled();
+  });
+
   it("renders filter selects", () => {
     render(<GeoActivityExplorer />);
     expect(screen.getAllByLabelText("Activity").length).toBeGreaterThan(0);
