@@ -13,7 +13,7 @@ import {
   ChartLegendContent,
 } from "@/components/ui/chart"
 import type { TooltipProps } from "recharts"
-import { Polygon } from "recharts"
+import { Polygon, ReferenceDot } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/components/ui/skeleton"
@@ -187,12 +187,67 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
     return lower.concat(upper)
   }
 
-  const hulls = clusters
-    .map((c) => ({
-      cluster: c,
-      hull: convexHull(colored.filter((d) => d.cluster === c).map((d) => ({ x: d.x, y: d.y }))),
-    }))
-    .filter((h) => h.hull.length >= 3)
+  function polygonCentroid(points: { x: number; y: number }[]) {
+    let area = 0
+    let cx = 0
+    let cy = 0
+    const n = points.length
+    for (let i = 0; i < n; i++) {
+      const p0 = points[i]
+      const p1 = points[(i + 1) % n]
+      const f = p0.x * p1.y - p1.x * p0.y
+      area += f
+      cx += (p0.x + p1.x) * f
+      cy += (p0.y + p1.y) * f
+    }
+    area *= 0.5
+    if (area === 0) return { x: 0, y: 0 }
+    return { x: cx / (6 * area), y: cy / (6 * area) }
+  }
+
+  const clusterStats = clusters
+    .map((c) => {
+      const clusterSessions = colored.filter((d) => d.cluster === c)
+      const hull = convexHull(clusterSessions.map((d) => ({ x: d.x, y: d.y })))
+      if (hull.length < 3) return null
+      const meanDelta =
+        clusterSessions.reduce((sum, s) => sum + s.paceDelta, 0) /
+        clusterSessions.length
+      const count = clusterSessions.length
+      const conditionCounts = clusterSessions.reduce(
+        (acc, s) => {
+          acc[s.condition] = (acc[s.condition] || 0) + 1
+          return acc
+        },
+        {} as Record<string, number>,
+      )
+      const conditionLabel = Object.keys(conditionCounts).reduce((a, b) =>
+        conditionCounts[a] > conditionCounts[b] ? a : b,
+      )
+      const avgHour =
+        clusterSessions.reduce((sum, s) => sum + s.startHour, 0) / count
+      const timeLabel =
+        avgHour < 12 ? "Mornings" : avgHour < 18 ? "Afternoons" : "Evenings"
+      const centroid = polygonCentroid(hull)
+      return {
+        cluster: c,
+        hull,
+        centroid,
+        meanDelta,
+        count,
+        conditionLabel,
+        timeLabel,
+      }
+    })
+    .filter(Boolean) as {
+    cluster: number
+    hull: { x: number; y: number }[]
+    centroid: { x: number; y: number }
+    meanDelta: number
+    count: number
+    conditionLabel: string
+    timeLabel: string
+  }[]
 
   const clusterColors = [
     "hsl(var(--chart-1))",
@@ -271,7 +326,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
             ]}
             content={<ChartLegendContent />}
           />
-          {hulls.map(({ cluster, hull }) => (
+          {clusterStats.map(({ cluster, hull }) => (
             <Polygon
               key={cluster}
               points={hull}
@@ -281,6 +336,23 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
               strokeOpacity={0.4}
             />
           ))}
+          {clusterStats.map(
+            ({ cluster, centroid, meanDelta, count, conditionLabel, timeLabel }) => (
+              <ReferenceDot
+                key={`label-${cluster}`}
+                x={centroid.x}
+                y={centroid.y}
+                r={0}
+                isFront
+                label={{
+                  value: `${conditionLabel} ${timeLabel}: avg Δ ${meanDelta.toFixed(1)} min/mi, ${count} sessions`,
+                  position: "top",
+                  fontSize: 12,
+                  fill: "currentColor",
+                }}
+              />
+            ),
+          )}
           <Scatter
             key={animKey}
             data={colored}
