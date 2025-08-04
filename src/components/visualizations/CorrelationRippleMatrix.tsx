@@ -19,6 +19,7 @@ interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
+  groups?: { label: string; size: number }[]; // metric groups for background bands
 
   minValue?: number; // lower bound for color scale
   maxValue?: number; // upper bound for color scale
@@ -63,6 +64,7 @@ function createColorScale(
 export default function CorrelationRippleMatrix({
   matrix,
   labels,
+  groups,
   drilldown = {},
 
   minValue = -1,
@@ -78,6 +80,19 @@ export default function CorrelationRippleMatrix({
   const [hovered, setHovered] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
+
+  const groupBounds = groups
+    ? groups.reduce<{ label: string; size: number; start: number }[]>(
+        (acc, g) => {
+          const start = acc.length
+            ? acc[acc.length - 1].start + acc[acc.length - 1].size
+            : 0;
+          acc.push({ ...g, start });
+          return acc;
+        },
+        [],
+      )
+    : [];
 
   useEffect(() => {
     if (cellSizeProp !== undefined) return;
@@ -123,6 +138,50 @@ export default function CorrelationRippleMatrix({
   return (
     <div className="w-full">
       <div ref={containerRef} className="relative w-full aspect-square">
+        {groupBounds.length > 0 && (
+          <svg className="absolute inset-0 w-full h-full pointer-events-none">
+            {groupBounds.map((g, i) => (
+              <g key={g.label}>
+                <rect
+                  x={g.start * cellSize}
+                  y={0}
+                  width={g.size * cellSize}
+                  height={labels.length * cellSize}
+                  fill={i % 2 === 0 ? "#000" : "#fff"}
+                  opacity={0.03}
+                />
+                <rect
+                  x={0}
+                  y={g.start * cellSize}
+                  width={labels.length * cellSize}
+                  height={g.size * cellSize}
+                  fill={i % 2 === 0 ? "#000" : "#fff"}
+                  opacity={0.03}
+                />
+              </g>
+            ))}
+            {groupBounds.slice(1).map((g, i) => (
+              <g key={`line-${i}`}>
+                <line
+                  x1={g.start * cellSize}
+                  x2={g.start * cellSize}
+                  y1={0}
+                  y2={labels.length * cellSize}
+                  stroke="#bbb"
+                  strokeWidth={1}
+                />
+                <line
+                  x1={0}
+                  x2={labels.length * cellSize}
+                  y1={g.start * cellSize}
+                  y2={g.start * cellSize}
+                  stroke="#bbb"
+                  strokeWidth={1}
+                />
+              </g>
+            ))}
+          </svg>
+        )}
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}

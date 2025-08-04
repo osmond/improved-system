@@ -25,6 +25,33 @@ interface Metrics extends MetricPoint {
   calories: number;
 }
 
+interface MetricConfig {
+  key: keyof Metrics;
+  label: string;
+}
+
+interface MetricGroup {
+  label: string;
+  metrics: MetricConfig[];
+}
+
+const METRIC_GROUPS: MetricGroup[] = [
+  {
+    label: "Activity",
+    metrics: [
+      { key: "steps", label: "Steps" },
+      { key: "calories", label: "Calories" },
+    ],
+  },
+  {
+    label: "Recovery",
+    metrics: [
+      { key: "sleep", label: "Sleep" },
+      { key: "heartRate", label: "Heart Rate" },
+    ],
+  },
+];
+
 export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
   const [upperOnly, setUpperOnly] = useState(true);
@@ -64,9 +91,13 @@ export default function StatisticsPage() {
   }, []);
 
   const matrixObj = useCorrelationMatrix(points);
-  const labels = ["Steps", "Sleep", "Heart Rate", "Calories"];
-  const keys: (keyof Metrics)[] = ["steps", "sleep", "heartRate", "calories"];
+
+  const labels = METRIC_GROUPS.flatMap((g) => g.metrics.map((m) => m.label));
+  const keys: (keyof Metrics)[] = METRIC_GROUPS.flatMap((g) =>
+    g.metrics.map((m) => m.key),
+  );
   const matrix = keys.map((k1) => keys.map((k2) => matrixObj?.[k1]?.[k2] ?? 0));
+  const groups = METRIC_GROUPS.map((g) => ({ label: g.label, size: g.metrics.length }));
 
   if (!points.length) {
     return (
@@ -112,6 +143,7 @@ export default function StatisticsPage() {
         <CorrelationRippleMatrix
           matrix={matrix}
           labels={labels}
+          groups={groups}
           upperOnly={upperOnly}
           showValues={showValues}
           maxCellSize={80}
