@@ -19,8 +19,15 @@ import {
 } from "d3-scale-chromatic";
 import { rgb } from "d3-color";
 
+interface CorrelationCell {
+  value: number; // correlation value between -1 and 1
+  n: number; // sample size
+  p: number; // p-value
+  sparkline?: number[]; // optional rolling correlation values
+}
+
 interface CorrelationRippleMatrixProps {
-  matrix: number[][]; // correlation values between -1 and 1
+  matrix: CorrelationCell[][]; // correlation values and stats
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
   groups?: { label: string; size: number }[]; // metric groups for background bands
@@ -35,10 +42,9 @@ interface CorrelationRippleMatrixProps {
   cellGap?: number; // gap or border width between cells
 }
 
-interface CellData {
+interface CellData extends CorrelationCell {
   x: number; // column index
   y: number; // row index
-  value: number;
 }
 
 
@@ -209,7 +215,7 @@ export default function CorrelationRippleMatrix({
   }, [cellSizeProp, labels.length, maxCellSize]);
 
   const heatData: CellData[] = matrix
-    .flatMap((row, y) => row.map((value, x) => ({ x, y, value })))
+    .flatMap((row, y) => row.map((cell, x) => ({ x, y, ...cell })))
     .filter(({ x, y }) => {
       if (displayMode === "upper") return x >= y
       if (displayMode === "lower") return x <= y
@@ -359,9 +365,27 @@ export default function CorrelationRippleMatrix({
               const yLabel = labels[payload.y] ?? "";
               const isHighlighted =
                 hovered && (hovered.x === payload.x || hovered.y === payload.y);
-              const opacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
+              const significant = payload.p < 0.05;
+              const baseOpacity = significant ? 1 : 0.2;
+              const opacity = hovered
+                ? isHighlighted
+                  ? baseOpacity
+                  : baseOpacity * 0.3
+                : baseOpacity;
               const fillColor = colorScale(payload.value);
               const textColor = getTextColor(fillColor);
+              const spark = payload.sparkline as number[] | undefined;
+              const xStep = spark && spark.length > 1 ? cellSize / (spark.length - 1) : 0;
+              const sparkPoints =
+                spark && spark.length > 1
+                  ? spark
+                      .map((v: number, i: number) => {
+                        const sx = x + i * xStep;
+                        const sy = y + (1 - (v + 1) / 2) * cellSize;
+                        return `${sx},${sy}`;
+                      })
+                      .join(" ")
+                  : "";
               return (
                 <g>
                   <Rectangle
@@ -385,6 +409,16 @@ export default function CorrelationRippleMatrix({
                       }
                     }}
                   />
+                  {spark && spark.length > 1 && (
+                    <polyline
+                      points={sparkPoints}
+                      fill="none"
+                      stroke={textColor}
+                      strokeWidth={1}
+                      opacity={opacity}
+                      pointerEvents="none"
+                    />
+                  )}
                   {showValues && (
                     <text
                       x={cx}
@@ -412,7 +446,9 @@ export default function CorrelationRippleMatrix({
                   return (
                     <div className="bg-white p-2 border rounded shadow">
                       <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
-                      <div>{cell.value.toFixed(2)}</div>
+                      <div>r = {cell.value.toFixed(2)}</div>
+                      <div>n = {cell.n}</div>
+                      <div>p = {cell.p.toExponential(2)}</div>
                     </div>
                   );
                 }

@@ -16,10 +16,12 @@ describe('computeCorrelationMatrix', () => {
       { a: 5, b: 10, c: 1 },
     ]
     const matrix = computeCorrelationMatrix(points)
-    expect(matrix.a.a).toBeCloseTo(1)
-    expect(matrix.a.b).toBeCloseTo(1)
-    expect(matrix.a.c).toBeCloseTo(-1)
-    expect(matrix.b.c).toBeCloseTo(-1)
+    expect(matrix.a.a.value).toBeCloseTo(1)
+    expect(matrix.a.b.value).toBeCloseTo(1)
+    expect(matrix.a.c.value).toBeCloseTo(-1)
+    expect(matrix.b.c.value).toBeCloseTo(-1)
+    expect(matrix.a.b.n).toBe(points.length)
+    expect(matrix.a.b.p).toBeLessThan(0.05)
   })
 
   it('handles uncorrelated data', () => {
@@ -35,8 +37,9 @@ describe('computeCorrelationMatrix', () => {
       { a: 5, b: 2 },
     ]
     const matrix = computeCorrelationMatrix(points)
-    expect(matrix.a.b).toBeCloseTo(0)
-    expect(matrix.b.a).toBeCloseTo(0)
+    expect(matrix.a.b.value).toBeCloseTo(0)
+    expect(matrix.b.a.value).toBeCloseTo(0)
+    expect(matrix.a.b.p).toBeGreaterThan(0.5)
   })
 })
 

@@ -97,7 +97,11 @@ export default function StatisticsPage() {
   const keys: (keyof Metrics)[] = METRIC_GROUPS.flatMap((g) =>
     g.metrics.map((m) => m.key),
   );
-  const matrix = keys.map((k1) => keys.map((k2) => matrixObj?.[k1]?.[k2] ?? 0));
+  const matrix = keys.map((k1) =>
+    keys.map(
+      (k2) => matrixObj?.[k1]?.[k2] ?? { value: 0, n: 0, p: 1 },
+    ),
+  );
   const groups = METRIC_GROUPS.map((g) => ({ label: g.label, size: g.metrics.length }));
 
   const correlations = [] as {
@@ -106,7 +110,7 @@ export default function StatisticsPage() {
   }[];
   for (let i = 0; i < keys.length; i++) {
     for (let j = i + 1; j < keys.length; j++) {
-      const value = matrixObj?.[keys[i]]?.[keys[j]] ?? 0;
+      const value = matrixObj?.[keys[i]]?.[keys[j]]?.value ?? 0;
       correlations.push({ labels: [labels[i], labels[j]], value });
     }
   }
