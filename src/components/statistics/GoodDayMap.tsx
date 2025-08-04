@@ -17,7 +17,7 @@ import { ReferenceDot, Customized } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/ui/skeleton"
-import { Button } from "@/ui/button"
+import { Slider } from "@/ui/slider"
 import { scaleLinear } from "d3-scale"
 import type { ChartConfig } from "@/ui/chart"
 import { useState } from "react"
@@ -40,13 +40,13 @@ export default function GoodDayMap({
   onSelect,
   dateRange,
 }: GoodDayMapProps) {
-  const [sampleData, setSampleData] = useState<SessionPoint[] | null>(null)
+  const [requiredImprovement, setRequiredImprovement] = useState(0.5)
   const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
   const [active, setActive] = useState<SessionPoint | null>(null)
 
-  if (!data && !sampleData) return <Skeleton className="h-64" />
+  if (!data) return <Skeleton className="h-64" />
 
-  const sessions = sampleData ?? data ?? []
+  const sessions = data ?? []
 
   const inDateRange = (s: SessionPoint) => {
     if (!dateRange) return true
@@ -64,54 +64,28 @@ export default function GoodDayMap({
   )
 
   if (!goodSessions.length) {
-    const sampleSessions: SessionPoint[] = [
-      {
-        id: 1,
-        x: 1,
-        y: 2,
-        cluster: 0,
-        good: true,
-        pace: 7.5,
-        paceDelta: 0.3,
-        heartRate: 140,
-        confidence: 0.9,
-        temperature: 65,
-        humidity: 40,
-        wind: 5,
-        startHour: 8,
-        duration: 30,
-        lat: 0,
-        lon: 0,
-        condition: "Sunny",
-        start: new Date().toISOString(),
-        tags: [],
-        isFalsePositive: false,
-        factors: [],
-      },
-      {
-        id: 2,
-        x: 2,
-        y: 1.5,
-        cluster: 1,
-        good: true,
-        pace: 8,
-        paceDelta: 0.6,
-        heartRate: 150,
-        confidence: 0.7,
-        temperature: 70,
-        humidity: 50,
-        wind: 6,
-        startHour: 9,
-        duration: 40,
-        lat: 0,
-        lon: 0,
-        condition: "Cloudy",
-        start: new Date().toISOString(),
-        tags: [],
-        isFalsePositive: false,
-        factors: [],
-      },
-    ]
+    const goodData = (data ?? []).filter((s) => s.good)
+    const suggestions: string[] = []
+    if (goodData.length) {
+      if (condition && !goodData.some((s) => s.condition === condition)) {
+        const conditions = Array.from(new Set(goodData.map((s) => s.condition)))
+        suggestions.push(`Condition: ${conditions.join(", ")}`)
+      }
+      const minHour = Math.min(...goodData.map((s) => s.startHour))
+      const maxHour = Math.max(...goodData.map((s) => s.startHour))
+      if (hourRange[0] > minHour || hourRange[1] < maxHour) {
+        suggestions.push(`Hours: ${minHour}–${maxHour}`)
+      }
+      if (dateRange) {
+        const dates = goodData.map((s) => s.start.slice(0, 10))
+        const minDate = dates.reduce((a, b) => (a < b ? a : b))
+        const maxDate = dates.reduce((a, b) => (a > b ? a : b))
+        if (dateRange[0] > minDate || dateRange[1] < maxDate) {
+          suggestions.push(`Dates: ${minDate} to ${maxDate}`)
+        }
+      }
+    }
+    const star = symbol().type(symbolStar).size(80)()
     return (
       <ChartCard
         title="Good Day Sessions"
@@ -119,10 +93,36 @@ export default function GoodDayMap({
       >
         <div className="flex flex-col items-center justify-center gap-4 h-64 md:h-80 lg:h-96 text-sm text-muted-foreground text-center">
           <p>No sessions match the selected filters.</p>
-          <p>Record runs to build up history or load sample data to explore this chart.</p>
-          <Button size="sm" onClick={() => setSampleData(sampleSessions)}>
-            Load sample data
-          </Button>
+          <div className="flex flex-col items-center gap-2">
+            <p className="font-medium">Prototypical good day</p>
+            <svg width="48" height="48" viewBox="-24 -24 48 48">
+              <path d={star} fill="hsl(var(--chart-4))" stroke="hsl(var(--chart-4))" />
+            </svg>
+            <p className="text-xs">Pace: 7:30 min/mi</p>
+            <p className="text-xs">Δ Pace: {requiredImprovement.toFixed(1)} min/mi</p>
+          </div>
+          <div className="w-full max-w-xs">
+            <Slider
+              min={0}
+              max={1.5}
+              step={0.1}
+              value={[requiredImprovement]}
+              onValueChange={(v) => setRequiredImprovement(v[0])}
+            />
+            <p className="text-xs mt-2">
+              What if you improved by {requiredImprovement.toFixed(1)} min/mi?
+            </p>
+          </div>
+          {suggestions.length > 0 && (
+            <div className="text-xs">
+              <p>Suggested filters:</p>
+              <ul className="list-disc pl-4 text-left">
+                {suggestions.map((s, i) => (
+                  <li key={i}>{s}</li>
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </ChartCard>
     )
