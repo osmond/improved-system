@@ -1,5 +1,5 @@
 import React from "react";
-import { CircularFragilityRing, FragilityIndexSparkline, FragilityBreakdown } from "@/components/dashboard";
+import { FragilityIndexCard } from "@/components/dashboard";
 import { FRAGILITY_LEVELS } from "@/lib/fragility";
 
 export default function FragilityPage() {
@@ -20,15 +20,7 @@ export default function FragilityPage() {
           </li>
         ))}
       </ul>
-      <div className="flex flex-col items-center space-y-2">
-        <div className="flex items-center space-x-4">
-          <CircularFragilityRing />
-          <FragilityBreakdown />
-        </div>
-        <div className="w-full max-w-sm">
-          <FragilityIndexSparkline />
-        </div>
-      </div>
+      <FragilityIndexCard />
     </div>
   );
 }
