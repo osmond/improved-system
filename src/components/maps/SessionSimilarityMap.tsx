@@ -8,7 +8,10 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as ChartTooltip,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/ui/chart"
+import type { ChartConfig } from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/ui/skeleton"
@@ -42,7 +45,7 @@ export default function SessionSimilarityMap({
       acc[c] = { label: descriptor, color: colors[c % colors.length] }
       return acc
     },
-    {} as Record<number, { label: string; color: string }>,
+    {} as Record<string, { label: string; color: string }>,
   )
   const clusterDetails = clusters.map((c) => {
     const points = data.filter((d) => d.cluster === c)
@@ -57,10 +60,22 @@ export default function SessionSimilarityMap({
   })
   const goodRuns = data.filter((d) => d.good)
   const paceThreshold = percentile(goodRuns.map((d) => d.paceDelta), 0.9)
-  const config = {
+  const config: ChartConfig = {
     ...clusterConfig,
-    good: { label: "Good Day", color: "hsl(var(--chart-6))" },
+    good: {
+      label: "Good Day",
+      color: "hsl(var(--chart-6))",
+      icon: GoodRunLegendIcon,
+    },
+    pace: { label: "Size = Pace Δ", icon: SizeLegendIcon },
+    confidence: { label: "Halo = Confidence", icon: HaloLegendIcon },
   }
+
+  const legendPayload = Object.entries(config).map(([key, item]) => ({
+    dataKey: key,
+    value: key,
+    color: item.color,
+  }))
 
   return (
     <ChartCard
@@ -112,8 +127,15 @@ export default function SessionSimilarityMap({
               />
             }
           />
+          <ChartLegend
+            content={<ChartLegendContent payload={legendPayload} />}
+          />
         </ScatterChart>
       </ChartContainer>
+      <p className="mt-2 text-xs text-muted-foreground">
+        Points close together represent runs with similar pace, heart rate,
+        weather, and time.
+      </p>
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {clusters.map((c) => {
           const clusterData = data.filter((d) => d.cluster === c)
@@ -283,6 +305,50 @@ function GoodRunSymbol({ cx, cy, payload, paceThreshold }: any) {
         </text>
       )}
     </g>
+  )
+}
+
+function GoodRunLegendIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16">
+      <text x="8" y="3" textAnchor="middle" fontSize="8">
+        ✨
+      </text>
+      <circle
+        cx="8"
+        cy="8"
+        r="5"
+        fill="hsl(var(--chart-6))"
+        stroke="#fff"
+        strokeWidth="1"
+      />
+      <circle
+        cx="8"
+        cy="8"
+        r="7"
+        fill="none"
+        stroke="hsl(var(--chart-6))"
+        strokeWidth="2"
+      />
+    </svg>
+  )
+}
+
+function SizeLegendIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" className="text-muted-foreground">
+      <circle cx="5" cy="8" r="3" fill="currentColor" opacity="0.4" />
+      <circle cx="11" cy="8" r="5" fill="currentColor" />
+    </svg>
+  )
+}
+
+function HaloLegendIcon() {
+  return (
+    <svg width="16" height="16" viewBox="0 0 16 16" className="text-muted-foreground">
+      <circle cx="8" cy="8" r="3" fill="currentColor" />
+      <circle cx="8" cy="8" r="5" fill="none" stroke="currentColor" strokeWidth="2" />
+    </svg>
   )
 }
 
