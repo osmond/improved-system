@@ -3,7 +3,6 @@ import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRipp
 import { Button } from "@/ui/button";
 import { SimpleSelect } from "@/ui/select";
 import { Slider } from "@/ui/slider";
-import { Input } from "@/ui/input";
 import {
   getDailySteps,
   getDailySleep,
@@ -58,7 +57,7 @@ const METRIC_GROUPS: MetricGroup[] = [
 export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
   const [displayMode, setDisplayMode] = useState<"upper" | "lower" | "full">("upper");
-  const [showValues, setShowValues] = useState(false);
+  const [showValues, setShowValues] = useState(true);
   const [signFilter, setSignFilter] = useState<"all" | "positive" | "negative">(
     "all",
   );
@@ -121,6 +120,8 @@ export default function StatisticsPage() {
       correlations.push({ labels: [labels[i], labels[j]], value });
     }
   }
+
+  const maxPairs = correlations.length;
 
   let topPositive = correlations[0];
   let topNegative = correlations[0];
@@ -202,18 +203,35 @@ export default function StatisticsPage() {
             </span>
           </div>
           <div className="flex items-center gap-2">
-            <label className="text-sm font-medium" htmlFor="top-n">
-              Top N
-            </label>
-            <Input
-              id="top-n"
-              type="number"
+            <span className="text-sm font-medium">Top N</span>
+            <Slider
+              value={[topN]}
               min={0}
-              value={topN}
-              onChange={(e) => setTopN(Number(e.target.value))}
-              className="w-20"
+              max={maxPairs}
+              step={1}
+              className="w-32"
+              onValueChange={(v) => setTopN(v[0] ?? 0)}
             />
+            <span className="w-10 text-right text-sm">{topN}</span>
           </div>
+        </div>
+        <div className="flex flex-wrap gap-2">
+          {[
+            { label: "Strong Positive", sign: "positive", thresh: 0.6 },
+            { label: "Moderate Negative", sign: "negative", thresh: 0.4 },
+          ].map((p) => (
+            <Button
+              key={p.label}
+              variant="secondary"
+              size="sm"
+              onClick={() => {
+                setSignFilter(p.sign as any);
+                setThreshold(p.thresh);
+              }}
+            >
+              {p.label}
+            </Button>
+          ))}
         </div>
         <ul className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
           <li>

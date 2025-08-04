@@ -270,36 +270,11 @@ export default function CorrelationRippleMatrix({
 
   const renderXAxisTick = ({ x, y, payload }: any) => {
     const label = labels[payload.value] ?? "";
-    const lines = wrapText(label);
-    const rotate = lines.length === 1 && label.length > 10;
     return (
-      <g transform={`translate(${x},${y})`}>
-        {rotate ? (
-          <text
-            x={0}
-            y={0}
-            dy={16}
-            textAnchor="end"
-            transform="rotate(-45)"
-            title={label}
-          >
-            {label}
-          </text>
-        ) : (
-          <text
-            x={0}
-            y={0}
-            dy={16 - (lines.length - 1) * 6}
-            textAnchor="middle"
-            title={label}
-          >
-            {lines.map((line, idx) => (
-              <tspan key={idx} x={0} dy={idx === 0 ? 0 : 12}>
-                {line}
-              </tspan>
-            ))}
-          </text>
-        )}
+      <g transform={`translate(${x},${y}) rotate(-45)`}>
+        <text x={0} y={0} dy={16} textAnchor="end" title={label}>
+          {label}
+        </text>
       </g>
     );
   };
@@ -431,6 +406,7 @@ export default function CorrelationRippleMatrix({
                     width={cellSize}
                     height={cellSize}
                     fill={fillColor}
+                    radius={4}
                     stroke={cellGap > 0 ? "#f0f0f0" : undefined}
                     strokeWidth={cellGap}
                     opacity={opacity}
