@@ -8,8 +8,9 @@ import useSessionTimeseries from "@/hooks/useSessionTimeseries"
 import { Input } from "@/ui/input"
 import { Button } from "@/ui/button"
 import { Badge } from "@/ui/badge"
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { getSessionMeta, updateSessionMeta } from "@/lib/sessionMeta"
+import { toPng } from "html-to-image"
 import {
   ChartContainer,
   LineChart,
@@ -35,6 +36,7 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
   const [tagInput, setTagInput] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [isFalsePositive, setIsFalsePositive] = useState(false)
+  const shareRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     if (!session || !sessions) {
@@ -101,6 +103,46 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
     const next = !isFalsePositive
     setIsFalsePositive(next)
     saveMeta(tags, next)
+  }
+
+  async function handleShare() {
+    if (!session) return
+    const snippet = JSON.stringify(
+      {
+        delta: session.paceDelta,
+        weather: {
+          temperature: session.temperature,
+          humidity: session.humidity,
+          wind: session.wind,
+        },
+        route: { lat: session.lat, lon: session.lon },
+      },
+      null,
+      2,
+    )
+    try {
+      await navigator.clipboard.writeText(snippet)
+    } catch (e) {
+      console.error("copy failed", e)
+    }
+    const blob = new Blob([snippet], { type: "application/json" })
+    const jsonUrl = URL.createObjectURL(blob)
+    const jsonLink = document.createElement("a")
+    jsonLink.href = jsonUrl
+    jsonLink.download = `session-${session.id}.json`
+    jsonLink.click()
+    URL.revokeObjectURL(jsonUrl)
+    if (shareRef.current) {
+      try {
+        const dataUrl = await toPng(shareRef.current)
+        const link = document.createElement("a")
+        link.href = dataUrl
+        link.download = `session-${session.id}.png`
+        link.click()
+      } catch (e) {
+        console.error("image failed", e)
+      }
+    }
   }
   const chartConfig = {
     actual: { label: "Actual", color: "hsl(var(--chart-1))" },
@@ -189,8 +231,9 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
           <SheetTitle>Session Details</SheetTitle>
         </SheetHeader>
         {session && (
-          <div className="space-y-4">
-            <div className="h-48 w-full">
+          <>
+            <div ref={shareRef} className="space-y-4">
+              <div className="h-48 w-full">
               <Map
                 mapLib={maplibregl}
                 mapStyle="https://demotiles.maplibre.org/style.json"
@@ -249,41 +292,45 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
                 {isFalsePositive ? "Marked False Positive" : "Mark False Positive"}
               </Button>
             </div>
-            {series && (
-              <ChartContainer config={chartConfig} className="h-40">
-                <LineChart data={series}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="t" tickLine={false} axisLine={false} />
-                  <YAxis yAxisId="pace" tickLine={false} axisLine={false} />
-                  <YAxis yAxisId="temp" orientation="right" tickLine={false} axisLine={false} />
-                  <ChartTooltip />
-                  <Area
-                    yAxisId="temp"
-                    type="monotone"
-                    dataKey="temperature"
-                    stroke="none"
-                    fill="var(--color-temperature)"
-                    opacity={0.3}
-                  />
-                  <Line
-                    yAxisId="pace"
-                    type="monotone"
-                    dataKey="actual"
-                    stroke="var(--color-actual)"
-                    dot={false}
-                  />
-                  <Line
-                    yAxisId="pace"
-                    type="monotone"
-                    dataKey="expected"
-                    stroke="var(--color-expected)"
-                    strokeDasharray="4 2"
-                    dot={false}
-                  />
-                </LineChart>
-              </ChartContainer>
-            )}
-          </div>
+              {series && (
+                <ChartContainer config={chartConfig} className="h-40">
+                  <LineChart data={series}>
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="t" tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="pace" tickLine={false} axisLine={false} />
+                    <YAxis yAxisId="temp" orientation="right" tickLine={false} axisLine={false} />
+                    <ChartTooltip />
+                    <Area
+                      yAxisId="temp"
+                      type="monotone"
+                      dataKey="temperature"
+                      stroke="none"
+                      fill="var(--color-temperature)"
+                      opacity={0.3}
+                    />
+                    <Line
+                      yAxisId="pace"
+                      type="monotone"
+                      dataKey="actual"
+                      stroke="var(--color-actual)"
+                      dot={false}
+                    />
+                    <Line
+                      yAxisId="pace"
+                      type="monotone"
+                      dataKey="expected"
+                      stroke="var(--color-expected)"
+                      strokeDasharray="4 2"
+                      dot={false}
+                    />
+                  </LineChart>
+                </ChartContainer>
+              )}
+            </div>
+            <Button size="sm" onClick={handleShare}>
+              Share
+            </Button>
+          </>
         )}
       </SheetContent>
     </Sheet>
