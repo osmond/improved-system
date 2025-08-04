@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { GoodDayMap, GoodDayInsights } from "@/components/statistics"
+import { GoodDayMap, GoodDayInsights, GoodDayBadges } from "@/components/statistics"
 import SessionDetailDrawer from "@/components/statistics/SessionDetailDrawer"
 import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions"
 import { SimpleSelect } from "@/ui/select"
@@ -174,6 +174,7 @@ export default function GoodDayPage() {
       <p className="text-sm text-muted-foreground">
         Sessions that exceeded expectations are highlighted below.
       </p>
+      {sessions && <GoodDayBadges sessions={sessions} />}
       <div className="flex gap-2 flex-wrap">
         {allPresets.map((p) => (
           <Button
