@@ -97,7 +97,7 @@ export async function getSpotifyRecentPlays(
 
 export async function getSpotifyNowPlaying(): Promise<SpotifyNowPlaying | null> {
   try {
-    return fetchSpotify<SpotifyNowPlaying>('/me/player/currently-playing')
+    return await fetchSpotify<SpotifyNowPlaying>('/me/player/currently-playing')
   } catch {
     return null
   }
