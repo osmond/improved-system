@@ -3,7 +3,7 @@
 import Map, { Marker } from "react-map-gl/maplibre"
 import maplibregl from "maplibre-gl"
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/ui/sheet"
-import { SessionPoint } from "@/hooks/useRunningSessions"
+import { SessionPoint, useRunningSessions } from "@/hooks/useRunningSessions"
 import useSessionTimeseries from "@/hooks/useSessionTimeseries"
 import { Input } from "@/ui/input"
 import { Button } from "@/ui/button"
@@ -29,10 +29,42 @@ interface SessionDetailDrawerProps {
 
 export default function SessionDetailDrawer({ session, onClose }: SessionDetailDrawerProps) {
   const series = useSessionTimeseries(session?.id ?? null)
-  const baseline = session ? session.pace + session.paceDelta : 0
+  const sessions = useRunningSessions()
+  const [typical, setTypical] = useState<SessionPoint | null>(null)
+  const [nextBest, setNextBest] = useState<SessionPoint | null>(null)
   const [tagInput, setTagInput] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [isFalsePositive, setIsFalsePositive] = useState(false)
+
+  useEffect(() => {
+    if (!session || !sessions) {
+      setTypical(null)
+      setNextBest(null)
+      return
+    }
+    const others = sessions.filter((s) => s.id !== session.id)
+    if (others.length) {
+      let best = others[0]
+      let bestDist = Infinity
+      for (const s of others) {
+        const dist = Math.hypot(
+          s.temperature - session.temperature,
+          s.humidity - session.humidity,
+          s.startHour - session.startHour,
+          s.wind - session.wind,
+        )
+        if (dist < bestDist) {
+          bestDist = dist
+          best = s
+        }
+      }
+      setTypical(best)
+    } else {
+      setTypical(null)
+    }
+    const good = others.filter((s) => s.good && !s.isFalsePositive)
+    setNextBest(good.sort((a, b) => b.paceDelta - a.paceDelta)[0] ?? null)
+  }, [session, sessions])
 
   useEffect(() => {
     if (!session) return
@@ -75,6 +107,81 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
     expected: { label: "Expected", color: "hsl(var(--chart-2))" },
     temperature: { label: "Temp °F", color: "hsl(var(--chart-3))" },
   } satisfies ChartConfig
+
+  interface Metric {
+    label: string
+    accessor: (s: SessionPoint) => number
+    format: (n: number) => string
+    diff: number
+  }
+
+  const metrics: Metric[] = [
+    {
+      label: "Expected (min/mi)",
+      accessor: (s) => s.pace + s.paceDelta,
+      format: (n) => n.toFixed(2),
+      diff: 0.01,
+    },
+    {
+      label: "Actual (min/mi)",
+      accessor: (s) => s.pace,
+      format: (n) => n.toFixed(2),
+      diff: 0.01,
+    },
+    {
+      label: "Δ (min/mi)",
+      accessor: (s) => s.paceDelta,
+      format: (n) => n.toFixed(2),
+      diff: 0.01,
+    },
+    {
+      label: "Heart Rate (bpm)",
+      accessor: (s) => s.heartRate,
+      format: (n) => n.toString(),
+      diff: 1,
+    },
+    {
+      label: "Temp (°F)",
+      accessor: (s) => s.temperature,
+      format: (n) => n.toString(),
+      diff: 1,
+    },
+    {
+      label: "Humidity (%)",
+      accessor: (s) => s.humidity,
+      format: (n) => n.toString(),
+      diff: 1,
+    },
+    {
+      label: "Wind (mph)",
+      accessor: (s) => s.wind,
+      format: (n) => n.toString(),
+      diff: 1,
+    },
+    {
+      label: "Start Hour",
+      accessor: (s) => s.startHour,
+      format: (n) => n.toString(),
+      diff: 1,
+    },
+    {
+      label: "Duration (min)",
+      accessor: (s) => s.duration,
+      format: (n) => n.toString(),
+      diff: 1,
+    },
+  ]
+
+  function renderCell(base: number, comp: number, m: Metric) {
+    const delta = comp - base
+    const highlight = Math.abs(delta) >= m.diff
+    return (
+      <td className={highlight ? "font-semibold text-primary" : ""}>
+        {m.format(comp)}
+        {highlight ? ` (${delta > 0 ? "+" : ""}${m.format(Math.abs(delta))})` : ""}
+      </td>
+    )
+  }
   return (
     <Sheet open={!!session} onOpenChange={(open) => { if (!open) onClose() }}>
       <SheetContent side="right" className="w-80 sm:w-96">
@@ -96,18 +203,29 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
                 </Marker>
               </Map>
             </div>
-            <div className="grid grid-cols-2 gap-2 text-sm">
-              <span className="col-span-2">
-                Expected / Actual / Δ: {baseline.toFixed(2)} / {session.pace.toFixed(2)} / {session.paceDelta.toFixed(2)}
-                {' '}min/mi
-              </span>
-              <span>Heart Rate: {session.heartRate} bpm</span>
-              <span>Temp: {session.temperature}°F</span>
-              <span>Humidity: {session.humidity}%</span>
-              <span>Wind: {session.wind} mph</span>
-              <span>Start Hour: {session.startHour}</span>
-              <span>Duration: {session.duration} min</span>
-            </div>
+            <table className="w-full text-sm">
+              <thead>
+                <tr>
+                  <th className="text-left"></th>
+                  <th className="text-left">This Run</th>
+                  {typical && <th className="text-left">Typical</th>}
+                  {nextBest && <th className="text-left">Next Good</th>}
+                </tr>
+              </thead>
+              <tbody>
+                {metrics.map((m) => {
+                  const base = m.accessor(session)
+                  return (
+                    <tr key={m.label}>
+                      <td className="pr-2 font-medium">{m.label}</td>
+                      <td>{m.format(base)}</td>
+                      {typical ? renderCell(base, m.accessor(typical), m) : null}
+                      {nextBest ? renderCell(base, m.accessor(nextBest), m) : null}
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
             <div className="space-y-2 text-sm">
               <div className="flex flex-wrap gap-1">
                 {tags.map((t) => (
