@@ -5,6 +5,7 @@ import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSession
 import { SimpleSelect } from "@/ui/select"
 import Slider from "@/ui/slider"
 import { Button } from "@/ui/button"
+import { getWeatherForecast } from "@/lib/weatherApi"
 
 interface FilterPreset {
   name: string
@@ -40,6 +41,7 @@ export default function GoodDayPage() {
   const [dateRange, setDateRange] = useState<[string, string] | null>(null)
   const [highlightDate, setHighlightDate] = useState<string | null>(null)
   const [presets, setPresets] = useState<FilterPreset[]>([])
+  const [forecastMessage, setForecastMessage] = useState<string | null>(null)
 
   const conditions = useMemo(
     () => (sessions ? Array.from(new Set(sessions.map((s) => s.condition))) : []),
@@ -167,6 +169,40 @@ export default function GoodDayPage() {
 
   const allPresets = [...defaultPresets, ...suggestedPresets, ...presets]
 
+  useEffect(() => {
+    async function checkForecast() {
+      if (!sessions || sessions.length === 0) return
+      const good = sessions.filter((s) => s.good && !s.isFalsePositive)
+      if (good.length < 3) return
+      const top = [...good].sort((a, b) => b.paceDelta - a.paceDelta).slice(0, 5)
+      const avg = (arr: number[]) => arr.reduce((a, b) => a + b, 0) / arr.length
+      const avgTemp = avg(top.map((s) => s.temperature))
+      const avgHum = avg(top.map((s) => s.humidity))
+      const avgWind = avg(top.map((s) => s.wind))
+      const counts: Record<string, number> = {}
+      for (const s of top) counts[s.condition] = (counts[s.condition] || 0) + 1
+      const common = Object.entries(counts).sort((a, b) => b[1] - a[1])[0]?.[0]
+      const loc = top.find((s) => !isNaN(s.lat) && !isNaN(s.lon))
+      if (!loc || !common) return
+      try {
+        const forecast = await getWeatherForecast(loc.lat, loc.lon, 5)
+        const match = forecast.find(
+          (d) =>
+            Math.abs(d.temperature - avgTemp) <= 5 &&
+            Math.abs(d.humidity - avgHum) <= 10 &&
+            Math.abs(d.wind - avgWind) <= 2 &&
+            d.condition === common,
+        )
+        if (match) {
+          setForecastMessage(
+            `Upcoming conditions on ${new Date(match.date).toLocaleDateString()} resemble your best running days.`,
+          )
+        }
+      } catch {}
+    }
+    checkForecast()
+  }, [sessions])
+
 
   return (
     <div className="p-4 space-y-4">
@@ -174,6 +210,11 @@ export default function GoodDayPage() {
       <p className="text-sm text-muted-foreground">
         Sessions that exceeded expectations are highlighted below.
       </p>
+      {forecastMessage && (
+        <div className="p-2 bg-green-100 text-green-800 rounded">
+          {forecastMessage}
+        </div>
+      )}
       {sessions && <GoodDayBadges sessions={sessions} />}
       <div className="flex gap-2 flex-wrap">
         {allPresets.map((p) => (
