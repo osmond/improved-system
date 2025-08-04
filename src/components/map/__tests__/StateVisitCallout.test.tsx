@@ -1,11 +1,14 @@
 import { render, screen } from "@testing-library/react";
-import StateVisitCallout from "../StateVisitCallout";
-import { vi } from "vitest";
 import "@testing-library/jest-dom";
+import { vi } from "vitest";
+import StateVisitCallout from "../StateVisitCallout";
 
-vi.mock("@/hooks/useStateVisits", () => ({
-  useStateVisits: () => ({
-    data: [
+vi.mock("@/lib/api", () => ({ getStateVisits: vi.fn() }));
+import { getStateVisits } from "@/lib/api";
+
+describe("StateVisitCallout", () => {
+  it("shows latest activity", async () => {
+    (getStateVisits as any).mockResolvedValue([
       {
         stateCode: "CA",
         visited: true,
@@ -23,25 +26,16 @@ vi.mock("@/hooks/useStateVisits", () => ({
         totalDays: 0,
         totalMiles: 0,
         cities: [],
-        log: [
-          { date: "2024-12-31", type: "run", miles: 3 },
-        ],
+        log: [{ date: "2024-12-31", type: "run", miles: 3 }],
       },
-    ],
-    loading: false,
-    error: null,
-    refetch: vi.fn(),
-  }),
-}));
+    ]);
 
-describe("StateVisitCallout", () => {
-  it("shows latest activity", () => {
     render(
       <div className="relative h-10">
         <StateVisitCallout onSelectState={() => {}} />
       </div>
     );
-    expect(screen.getByText(/Feb 1, 2025/)).toBeInTheDocument();
+    expect(await screen.findByText(/Feb 1, 2025/)).toBeInTheDocument();
     expect(screen.getByText(/10mi in California/)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: /View/ })).toBeInTheDocument();
   });
