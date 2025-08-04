@@ -28,6 +28,7 @@ interface Metrics extends MetricPoint {
 export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
   const [upperOnly, setUpperOnly] = useState(true);
+  const [showValues, setShowValues] = useState(false);
 
   useEffect(() => {
     async function load() {
@@ -92,17 +93,27 @@ export default function StatisticsPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => setUpperOnly((p) => !p)}
-        >
-          {upperOnly ? "Show Full Matrix" : "Show Upper Triangle"}
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setUpperOnly((p) => !p)}
+          >
+            {upperOnly ? "Show Full Matrix" : "Show Upper Triangle"}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowValues((p) => !p)}
+          >
+            {showValues ? "Hide Values" : "Show Values"}
+          </Button>
+        </div>
         <CorrelationRippleMatrix
           matrix={matrix}
           labels={labels}
           upperOnly={upperOnly}
+          showValues={showValues}
           maxCellSize={80}
         />
       </CardContent>
