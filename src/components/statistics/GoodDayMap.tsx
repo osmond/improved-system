@@ -31,9 +31,15 @@ interface GoodDayMapProps {
   condition?: string | null
   hourRange?: [number, number]
   onSelect?: (s: SessionPoint) => void
+  dateRange?: [string, string] | null
 }
-
-export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSelect }: GoodDayMapProps) {
+export default function GoodDayMap({
+  data,
+  condition,
+  hourRange = [0, 23],
+  onSelect,
+  dateRange,
+}: GoodDayMapProps) {
   const [sampleData, setSampleData] = useState<SessionPoint[] | null>(null)
   const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
   const [active, setActive] = useState<SessionPoint | null>(null)
@@ -41,18 +47,25 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
 
   useEffect(() => {
     setAnimKey((k) => k + 1)
-  }, [condition, hourRange, sampleData])
+  }, [condition, hourRange, sampleData, dateRange])
 
   if (!data && !sampleData) return <Skeleton className="h-64" />
 
   const sessions = sampleData ?? data ?? []
+
+  const inDateRange = (s: SessionPoint) => {
+    if (!dateRange) return true
+    const d = s.start.slice(0, 10)
+    return d >= dateRange[0] && d <= dateRange[1]
+  }
 
   const goodSessions = sessions.filter(
     (d) =>
       d.good &&
       (!condition || d.condition === condition) &&
       d.startHour >= hourRange[0] &&
-      d.startHour <= hourRange[1],
+      d.startHour <= hourRange[1] &&
+      inDateRange(d),
   )
 
   if (!goodSessions.length) {
