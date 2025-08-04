@@ -1,0 +1,34 @@
+import { render, screen, fireEvent } from "@testing-library/react";
+import "@testing-library/jest-dom";
+import RouteList from "../RouteList";
+import type { DashboardRoute } from "@/routes";
+import { ChartBar } from "lucide-react";
+import { vi } from "vitest";
+import { NavigationMenu } from "@/ui/navigation-menu";
+import { MemoryRouter } from "react-router-dom";
+
+describe("RouteList", () => {
+  it("renders routes and toggles favorites", () => {
+    const routes: DashboardRoute[] = [
+      { to: "/foo", label: "Foo", description: "", icon: ChartBar },
+    ];
+    const toggle = vi.fn();
+    const { container } = render(
+      <MemoryRouter>
+        <NavigationMenu>
+          <RouteList
+            routes={routes}
+            favorites={[]}
+            toggleFavorite={toggle}
+          />
+        </NavigationMenu>
+      </MemoryRouter>,
+    );
+    expect(screen.getByText("Foo")).toBeInTheDocument();
+    const svgs = container.querySelectorAll("svg");
+    expect(svgs.length).toBeGreaterThan(1);
+    fireEvent.click(svgs[1]);
+    expect(toggle).toHaveBeenCalledWith("/foo");
+  });
+});
+

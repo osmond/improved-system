@@ -1,133 +1,28 @@
 import * as React from "react";
-import { Link, useLocation } from "react-router-dom";
-import { Star } from "lucide-react";
+import { useLocation } from "react-router-dom";
 import {
   NavigationMenu,
   NavigationMenuList,
   NavigationMenuItem,
   NavigationMenuTrigger,
   NavigationMenuContent,
-  NavigationMenuLink,
   NavigationMenuIndicator,
   NavigationMenuViewport,
 } from "@/ui/navigation-menu";
-import { HoverCard, HoverCardTrigger, HoverCardContent } from "@/ui/hover-card";
-import { FragilityPreviewSparkline } from "@/components/dashboard";
 import {
   analyticsRoutes,
   chartRouteGroups,
   mapRoutes,
   settingsRoutes,
   dashboardRoutes,
-  type DashboardRoute,
-} from "@/routes/index";
-import useFavorites from "@/hooks/useFavorites";
-import useRecentViews from "@/hooks/useRecentViews";
-import { cn } from "@/lib/utils";
-import { Badge } from "@/ui/badge";
-
-function RouteList({
-  routes,
-  favorites,
-  toggleFavorite,
-  closeMenu,
-}: {
-  routes: DashboardRoute[];
-  favorites: string[];
-  toggleFavorite: (to: string) => void;
-  closeMenu?: () => void;
-}) {
-  return (
-    <ul className="grid gap-3 md:w-[400px] lg:w-[500px] lg:grid-cols-2">
-      {routes.map((route) => (
-        <li key={route.to}>
-          {route.preview === 'fragility' ? (
-            <HoverCard>
-              <HoverCardTrigger asChild>
-                <NavigationMenuLink asChild>
-                  <Link
-                    to={route.to}
-                    className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
-                    data-shortcut={route.to}
-                    onClick={closeMenu}
-                  >
-                    <route.icon className="mr-2 h-5 w-5" />
-                    <div className="flex-1">
-                      <div className="text-sm font-medium leading-none flex items-center gap-2">
-                        {route.label}
-                        {route.badge && (
-                          <Badge variant={route.badge}>{route.badge}</Badge>
-                        )}
-                      </div>
-                      <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                        {route.description}
-                      </p>
-                    </div>
-                    <Star
-                      className={cn(
-                        "ml-2 h-4 w-4 shrink-0",
-                        favorites.includes(route.to)
-                          ? "fill-yellow-400 text-yellow-400"
-                          : "text-muted-foreground",
-                      )}
-                      onClick={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        toggleFavorite(route.to);
-                      }}
-                    />
-                  </Link>
-                </NavigationMenuLink>
-              </HoverCardTrigger>
-              <HoverCardContent>
-                <FragilityPreviewSparkline />
-              </HoverCardContent>
-            </HoverCard>
-          ) : (
-            <NavigationMenuLink asChild>
-              <Link
-                to={route.to}
-                className="flex rounded-md p-3 hover:bg-accent hover:text-accent-foreground"
-                data-shortcut={route.to}
-                onClick={closeMenu}
-              >
-                <route.icon className="mr-2 h-5 w-5" />
-                <div className="flex-1">
-                  <div className="text-sm font-medium leading-none flex items-center gap-2">
-                    {route.label}
-                    {route.badge && (
-                      <Badge variant={route.badge}>{route.badge}</Badge>
-                    )}
-                  </div>
-                  <p className="line-clamp-2 text-sm leading-snug text-muted-foreground">
-                    {route.description}
-                  </p>
-                </div>
-                <Star
-                  className={cn(
-                    "ml-2 h-4 w-4 shrink-0",
-                    favorites.includes(route.to)
-                      ? "fill-yellow-400 text-yellow-400"
-                      : "text-muted-foreground",
-                  )}
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    toggleFavorite(route.to);
-                  }}
-                />
-              </Link>
-            </NavigationMenuLink>
-          )}
-        </li>
-      ))}
-    </ul>
-  );
-}
+} from "@/routes";
+import RouteList from "@/components/navigation/RouteList";
+import RouteGroup from "@/components/navigation/RouteGroup";
+import FavoritesList from "@/components/navigation/FavoritesList";
+import useNavigationFavorites from "@/hooks/useNavigationFavorites";
+import useNavigationRecent from "@/hooks/useNavigationRecent";
 
 export default function GlobalNavigation() {
-  const { favorites, toggleFavorite } = useFavorites();
-  const { recentViews } = useRecentViews();
   const location = useLocation();
 
   const [menuValue, setMenuValue] = React.useState<string | undefined>();
@@ -166,47 +61,9 @@ export default function GlobalNavigation() {
     [],
   );
 
-  const favoriteRoutes = React.useMemo(
-    () =>
-      favorites
-        .map((to) => allRoutes.find((r) => r.to === to))
-        .filter(Boolean) as typeof allRoutes,
-    [favorites, allRoutes],
-  );
-
-  const recentRoutes = React.useMemo(
-    () =>
-      recentViews
-        .map((to) => allRoutes.find((r) => r.to === to))
-        .filter(Boolean) as typeof allRoutes,
-    [recentViews, allRoutes],
-  );
-
-  const renderFavorites = () =>
-    favoriteRoutes.length > 0 && (
-      <div className="mb-4">
-        <h4 className="mb-2 font-medium leading-none">Favorites</h4>
-        <RouteList
-          routes={favoriteRoutes}
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          closeMenu={closeMenu}
-        />
-      </div>
-    );
-
-  const renderRecent = () =>
-    recentRoutes.length > 0 && (
-      <div className="mb-4">
-        <h4 className="mb-2 font-medium leading-none">Recent</h4>
-        <RouteList
-          routes={recentRoutes}
-          favorites={favorites}
-          toggleFavorite={toggleFavorite}
-          closeMenu={closeMenu}
-        />
-      </div>
-    );
+  const { favorites, favoriteRoutes, toggleFavorite } =
+    useNavigationFavorites(allRoutes);
+  const { recentRoutes } = useNavigationRecent(allRoutes);
 
   return (
     <NavigationMenu value={menuValue} onValueChange={setMenuValue}>
@@ -216,8 +73,13 @@ export default function GlobalNavigation() {
             Analytics
           </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            {renderFavorites()}
-            {renderRecent()}
+            <FavoritesList
+              favoriteRoutes={favoriteRoutes}
+              recentRoutes={recentRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
+            />
             <RouteList
               routes={analyticsRoutes}
               favorites={favorites}
@@ -231,20 +93,22 @@ export default function GlobalNavigation() {
             Charts
           </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            {renderFavorites()}
-            {renderRecent()}
+            <FavoritesList
+              favoriteRoutes={favoriteRoutes}
+              recentRoutes={recentRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
+            />
             {chartRouteGroups.map((group) => (
-              <div key={group.label} className="mb-4 last:mb-0">
-                <h4 className="mb-2 font-medium leading-none">
-                  {group.label}
-                </h4>
-                <RouteList
-                  routes={group.items}
-                  favorites={favorites}
-                  toggleFavorite={toggleFavorite}
-                  closeMenu={closeMenu}
-                />
-              </div>
+              <RouteGroup
+                key={group.label}
+                label={group.label}
+                routes={group.items}
+                favorites={favorites}
+                toggleFavorite={toggleFavorite}
+                closeMenu={closeMenu}
+              />
             ))}
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -253,8 +117,13 @@ export default function GlobalNavigation() {
             Maps
           </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            {renderFavorites()}
-            {renderRecent()}
+            <FavoritesList
+              favoriteRoutes={favoriteRoutes}
+              recentRoutes={recentRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
+            />
             <RouteList
               routes={mapRoutes}
               favorites={favorites}
@@ -268,8 +137,13 @@ export default function GlobalNavigation() {
             Insights/Personal
           </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            {renderFavorites()}
-            {renderRecent()}
+            <FavoritesList
+              favoriteRoutes={favoriteRoutes}
+              recentRoutes={recentRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
+            />
             <RouteList
               routes={insightsRoutes}
               favorites={favorites}
@@ -283,8 +157,13 @@ export default function GlobalNavigation() {
             Settings/Tools
           </NavigationMenuTrigger>
           <NavigationMenuContent className="p-4">
-            {renderFavorites()}
-            {renderRecent()}
+            <FavoritesList
+              favoriteRoutes={favoriteRoutes}
+              recentRoutes={recentRoutes}
+              favorites={favorites}
+              toggleFavorite={toggleFavorite}
+              closeMenu={closeMenu}
+            />
             <RouteList
               routes={settingsRoutes}
               favorites={favorites}
@@ -299,3 +178,4 @@ export default function GlobalNavigation() {
     </NavigationMenu>
   );
 }
+
