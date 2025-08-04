@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRunningSessions, RunningSession } from '@/lib/api'
+import { getSessionMeta } from '@/lib/sessionMeta'
 import TSNE from 'tsne-js'
 
 export interface SessionPoint {
@@ -24,6 +25,8 @@ export interface SessionPoint {
   condition: string
   /** ISO timestamp when the session started */
   start: string
+  tags: string[]
+  isFalsePositive: boolean
 }
 
 function kMeans(data: number[][], k: number, iterations = 10): number[] {
@@ -107,35 +110,51 @@ export function useRunningSessions(): SessionPoint[] | null {
       model.run()
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
-      const data = output.map(
-        ([x, y]: [number, number], idx: number) => {
-          const expected = expectedPace(sessions[idx])
-          const paceDelta = expected - sessions[idx].pace
-          const hrStability = Math.max(0, 1 - Math.abs(sessions[idx].heartRate - 140) / 50)
-          return {
-            x,
-            y,
-            id: sessions[idx].id,
-            cluster: labels[idx],
-            good: paceDelta > 0,
-            pace: sessions[idx].pace,
-            paceDelta,
-            heartRate: sessions[idx].heartRate,
-            confidence: hrStability,
-            temperature: sessions[idx].weather.temperature,
-            humidity: sessions[idx].weather.humidity,
-            wind: sessions[idx].weather.wind,
-            startHour: new Date(sessions[idx].start ?? sessions[idx].date).getHours(),
-            duration: sessions[idx].duration,
-            lat: sessions[idx].lat,
-            lon: sessions[idx].lon,
-            condition: sessions[idx].weather.condition,
-            start: sessions[idx].start ?? sessions[idx].date,
-          }
-        },
-      )
+      const data = output.map(([x, y]: [number, number], idx: number) => {
+        const expected = expectedPace(sessions[idx])
+        const paceDelta = expected - sessions[idx].pace
+        const hrStability = Math.max(0, 1 - Math.abs(sessions[idx].heartRate - 140) / 50)
+        const meta = getSessionMeta(sessions[idx].id)
+        return {
+          x,
+          y,
+          id: sessions[idx].id,
+          cluster: labels[idx],
+          good: paceDelta > 0,
+          pace: sessions[idx].pace,
+          paceDelta,
+          heartRate: sessions[idx].heartRate,
+          confidence: hrStability,
+          temperature: sessions[idx].weather.temperature,
+          humidity: sessions[idx].weather.humidity,
+          wind: sessions[idx].weather.wind,
+          startHour: new Date(sessions[idx].start ?? sessions[idx].date).getHours(),
+          duration: sessions[idx].duration,
+          lat: sessions[idx].lat,
+          lon: sessions[idx].lon,
+          condition: sessions[idx].weather.condition,
+          start: sessions[idx].start ?? sessions[idx].date,
+          tags: meta.tags,
+          isFalsePositive: meta.isFalsePositive,
+        }
+      })
       setPoints(data)
     })
+  }, [])
+
+  useEffect(() => {
+    function onMetaUpdate() {
+      setPoints((prev) =>
+        prev
+          ? prev.map((p) => {
+              const meta = getSessionMeta(p.id)
+              return { ...p, tags: meta.tags, isFalsePositive: meta.isFalsePositive }
+            })
+          : prev,
+      )
+    }
+    window.addEventListener('sessionMetaUpdated', onMetaUpdate)
+    return () => window.removeEventListener('sessionMetaUpdated', onMetaUpdate)
   }, [])
 
   return points

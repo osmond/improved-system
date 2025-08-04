@@ -58,6 +58,7 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
   if (!goodSessions.length) {
     const sampleSessions: SessionPoint[] = [
       {
+        id: 1,
         x: 1,
         y: 2,
         cluster: 0,
@@ -74,8 +75,12 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
         lat: 0,
         lon: 0,
         condition: "Sunny",
+        start: new Date().toISOString(),
+        tags: [],
+        isFalsePositive: false,
       },
       {
+        id: 2,
         x: 2,
         y: 1.5,
         cluster: 1,
@@ -92,6 +97,9 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSel
         lat: 0,
         lon: 0,
         condition: "Cloudy",
+        start: new Date().toISOString(),
+        tags: [],
+        isFalsePositive: false,
       },
     ]
     return (
