@@ -47,6 +47,7 @@ import InterventionSettingsPage from "@/pages/InterventionSettings";
 
 import PrivacyDashboardPage from "@/pages/PrivacyDashboard";
 import BehavioralCharterMapPage from "@/pages/BehavioralCharterMap";
+import SidebarDemoPage from "@/pages/SidebarDemo";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
@@ -60,7 +61,8 @@ function App() {
         <Layout>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />}>
+            <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
+            <Route path="/dashboard" element={<Dashboard />}> 
               <Route index element={<DashboardLanding />} />
               <Route path="map" element={<MapPlaygroundPage />} />
               <Route path="route-similarity" element={<RouteSimilarityPage />} />
