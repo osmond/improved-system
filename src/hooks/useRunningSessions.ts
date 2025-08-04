@@ -12,6 +12,8 @@ export interface SessionPoint {
   pace: number
   paceDelta: number
   heartRate: number
+  /** Confidence in metrics like heart-rate stability (0-1) */
+  confidence: number
   temperature: number
   humidity: number
   wind: number
@@ -109,6 +111,7 @@ export function useRunningSessions(): SessionPoint[] | null {
         ([x, y]: [number, number], idx: number) => {
           const expected = expectedPace(sessions[idx])
           const paceDelta = expected - sessions[idx].pace
+          const hrStability = Math.max(0, 1 - Math.abs(sessions[idx].heartRate - 140) / 50)
           return {
             x,
             y,
@@ -118,6 +121,7 @@ export function useRunningSessions(): SessionPoint[] | null {
             pace: sessions[idx].pace,
             paceDelta,
             heartRate: sessions[idx].heartRate,
+            confidence: hrStability,
             temperature: sessions[idx].weather.temperature,
             humidity: sessions[idx].weather.humidity,
             wind: sessions[idx].weather.wind,
