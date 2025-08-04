@@ -2,7 +2,7 @@
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/ui/sheet";
 import { Button } from "@/ui/button";
-import { ChartContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, BarChart, Bar, ResponsiveContainer } from "@/ui/chart";
+import { ChartContainer, LineChart, Line, XAxis, YAxis, CartesianGrid, ChartTooltip as Tooltip, BarChart, Bar, ResponsiveContainer } from "@/ui/chart";
 import { Pin, PinOff } from "lucide-react";
 
 interface TimeseriesPoint {

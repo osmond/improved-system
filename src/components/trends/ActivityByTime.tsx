@@ -7,7 +7,7 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartTooltipContent,
 } from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"

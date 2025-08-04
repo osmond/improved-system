@@ -7,7 +7,7 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
 } from "@/ui/chart";
 import ChartCard from "@/components/dashboard/ChartCard";
 import { useRunningStats } from "@/hooks/useRunningStats";

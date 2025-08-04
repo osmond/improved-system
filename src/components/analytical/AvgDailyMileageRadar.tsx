@@ -7,7 +7,7 @@ import {
   PolarAngleAxis,
   PolarRadiusAxis,
   Radar,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartLegend,
   ChartLegendContent,
 } from "@/ui/chart"

@@ -8,7 +8,7 @@ import {
   CartesianGrid,
   YAxis,
   ReferenceLine,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/ui/chart'
 import ChartCard from './ChartCard'

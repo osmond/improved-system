@@ -6,7 +6,7 @@ import {
   YAxis,
   ReferenceArea,
   ReferenceDot,
-  Tooltip,
+  ChartTooltip as Tooltip,
   ChartContainer,
 } from "@/ui/chart";
 import useLowEndDevice from "@/hooks/useLowEndDevice";

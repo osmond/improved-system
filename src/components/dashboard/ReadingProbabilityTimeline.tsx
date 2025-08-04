@@ -9,7 +9,7 @@ import {
   YAxis,
   CartesianGrid,
   ReferenceArea,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartTooltipContent,
 } from "@/ui/chart";
 import ChartCard from "./ChartCard";

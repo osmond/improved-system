@@ -6,7 +6,7 @@ import {
   Bar,
   XAxis,
   CartesianGrid,
-  Tooltip as ChartTooltip,
+  ChartTooltip,
   ChartTooltipContent,
 } from '@/ui/chart'
 import Slider from '@/ui/slider'
