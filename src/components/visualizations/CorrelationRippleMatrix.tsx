@@ -20,12 +20,14 @@ interface CorrelationRippleMatrixProps {
   labels: string[]; // axis labels
   drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
 
-  minValue?: number; // lower bound for color scale
-  maxValue?: number; // upper bound for color scale
-  showValues?: boolean; // display correlation values in cells
-  cellSize?: number; // explicit cell size override
-  maxCellSize?: number; // maximum computed cell size
-  upperOnly?: boolean; // only render x >= y cells
+    minValue?: number; // lower bound for color scale
+    maxValue?: number; // upper bound for color scale
+    showValues?: boolean; // display correlation values in cells
+    cellSize?: number; // explicit cell size override
+    maxCellSize?: number; // maximum computed cell size
+    upperOnly?: boolean; // only render x >= y cells
+    signFilter?: "all" | "positive" | "negative"; // filter by sign
+    threshold?: number; // minimum absolute value to display
 
 }
 
@@ -61,21 +63,23 @@ function createColorScale(minValue = -1, maxValue = 1) {
     .clamp(true);
 }
 
-export default function CorrelationRippleMatrix({
-  matrix,
-  labels,
-  drilldown = {},
+  export default function CorrelationRippleMatrix({
+    matrix,
+    labels,
+    drilldown = {},
 
-  minValue = -1,
-  maxValue = 1,
-  showValues = false,
-  cellSize: cellSizeProp,
-  maxCellSize,
-  upperOnly = false,
+    minValue = -1,
+    maxValue = 1,
+    showValues = false,
+    cellSize: cellSizeProp,
+    maxCellSize,
+    upperOnly = false,
+    signFilter = "all",
+    threshold = 0,
 
-}: CorrelationRippleMatrixProps) {
-  const [active, setActive] = useState<CellData | null>(null);
-  const [hovered, setHovered] = useState<CellData | null>(null);
+  }: CorrelationRippleMatrixProps) {
+    const [active, setActive] = useState<CellData | null>(null);
+    const [hovered, setHovered] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
 
@@ -102,13 +106,42 @@ export default function CorrelationRippleMatrix({
 
   const heatData: CellData[] = matrix
     .flatMap((row, y) => row.map((value, x) => ({ x, y, value })))
-    .filter(({ x, y }) => !upperOnly || x >= y);
+    .filter(({ x, y }) => !upperOnly || x >= y)
+    .filter(({ value }) => {
+      if (signFilter === "positive") return value > 0;
+      if (signFilter === "negative") return value < 0;
+      return true;
+    })
+    .filter(({ value }) => Math.abs(value) >= threshold);
 
   const colorScale = createColorScale(minValue, maxValue);
 
   const handleCellClick = (cell: CellData) => {
-    setActive(cell);
+    if (active && active.x === cell.x && active.y === cell.y) {
+      setActive(null);
+    } else {
+      setActive(cell);
+    }
   };
+
+  useEffect(() => {
+    if (!active) return;
+    const value = matrix[active.y]?.[active.x];
+    const signOk =
+      signFilter === "positive"
+        ? value > 0
+        : signFilter === "negative"
+        ? value < 0
+        : true;
+    if (
+      value === undefined ||
+      !signOk ||
+      Math.abs(value) < threshold ||
+      (upperOnly && active.x < active.y)
+    ) {
+      setActive(null);
+    }
+  }, [active, matrix, signFilter, threshold, upperOnly]);
 
   const activeKey = active ? `${active.y}-${active.x}` : null;
   const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
@@ -152,9 +185,13 @@ export default function CorrelationRippleMatrix({
               const { cx, cy, payload } = props;
               const x = cx - cellSize / 2;
               const y = cy - cellSize / 2;
+              const highlight = hovered ?? active;
               const isHighlighted =
-                hovered && (hovered.x === payload.x || hovered.y === payload.y);
-              const opacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
+                highlight &&
+                (highlight.x === payload.x || highlight.y === payload.y);
+              const isPinned =
+                active && active.x === payload.x && active.y === payload.y;
+              const opacity = highlight ? (isHighlighted ? 1 : 0.3) : 1;
               return (
                 <g>
                   <Rectangle
@@ -163,7 +200,8 @@ export default function CorrelationRippleMatrix({
                     width={cellSize}
                     height={cellSize}
                     fill={colorScale(payload.value)}
-                    stroke="#ffffff"
+                    stroke={isPinned ? "#000000" : "#ffffff"}
+                    strokeWidth={isPinned ? 2 : 1}
                     opacity={opacity}
                     onClick={() => handleCellClick(payload as CellData)}
                     onMouseOver={() => setHovered(payload as CellData)}

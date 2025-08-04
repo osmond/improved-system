@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
 import { Button } from "@/components/ui/button";
+import { SimpleSelect } from "@/components/ui/select";
+import { Slider } from "@/components/ui/slider";
 import {
   getDailySteps,
   getDailySleep,
@@ -29,6 +31,8 @@ export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
   const [upperOnly, setUpperOnly] = useState(true);
   const [showValues, setShowValues] = useState(false);
+  const [signFilter, setSignFilter] = useState<"all" | "positive" | "negative">("all");
+  const [threshold, setThreshold] = useState(0);
 
   useEffect(() => {
     async function load() {
@@ -93,7 +97,7 @@ export default function StatisticsPage() {
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant="outline"
             size="sm"
@@ -108,6 +112,26 @@ export default function StatisticsPage() {
           >
             {showValues ? "Hide Values" : "Show Values"}
           </Button>
+          <SimpleSelect
+            value={signFilter}
+            onValueChange={(v) => setSignFilter(v)}
+            options={[
+              { value: "all", label: "All" },
+              { value: "positive", label: "Positive" },
+              { value: "negative", label: "Negative" },
+            ]}
+            label="Sign"
+          />
+          <div className="flex flex-col w-40">
+            <label className="text-sm">Min |r|: {threshold.toFixed(2)}</label>
+            <Slider
+              value={[threshold]}
+              min={0}
+              max={1}
+              step={0.05}
+              onValueChange={(vals) => setThreshold(vals[0])}
+            />
+          </div>
         </div>
         <CorrelationRippleMatrix
           matrix={matrix}
@@ -115,6 +139,8 @@ export default function StatisticsPage() {
           upperOnly={upperOnly}
           showValues={showValues}
           maxCellSize={80}
+          signFilter={signFilter}
+          threshold={threshold}
         />
       </CardContent>
     </Card>
