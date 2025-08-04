@@ -71,6 +71,20 @@ export default function MileageGlobePage() {
             onValueChange={handleScrub}
             className="w-64"
           />
+          <div className="relative w-64 h-2">
+            {weekly.slice(startWeek).map((w, i) => {
+              if (w.miles === 0) return null
+              const total = weekly.length - 1 - startWeek
+              const pos = (i / (total || 1)) * 100
+              return (
+                <span
+                  key={i}
+                  className="absolute top-0 w-0.5 h-2 bg-primary"
+                  style={{ left: `${pos}%`, transform: 'translateX(-50%)' }}
+                />
+              )
+            })}
+          </div>
           <div className="flex items-center gap-2">
             <Button
               size="sm"

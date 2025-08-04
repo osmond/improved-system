@@ -10,6 +10,8 @@ interface PathData {
   coordinates: [number, number][];
   date?: string;
   miles?: number;
+  /** Optional stroke color for rendering */
+  color?: string;
 }
 
 interface GlobeRendererProps {
@@ -134,10 +136,11 @@ export default function GlobeRenderer({
           className="activity-path"
           d={pathGenerator({ type: "LineString", coordinates: p.coordinates }) || undefined}
           fill="none"
-          stroke="var(--primary-foreground)"
+          stroke={p.color || "var(--primary-foreground)"}
           strokeWidth={strokeWidth}
           strokeLinecap="round"
           opacity={0.8}
+          style={{ transition: "stroke 0.3s ease" }}
           onMouseEnter={() => onPathMouseEnter?.(p)}
           onMouseLeave={() => onPathMouseLeave?.()}
         />
