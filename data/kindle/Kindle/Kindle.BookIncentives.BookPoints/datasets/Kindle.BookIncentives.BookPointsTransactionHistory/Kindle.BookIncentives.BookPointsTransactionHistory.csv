@@ -1,0 +1,14 @@
+﻿Event Type,Marketplace,Pending Balance (Points),Pending Balance Changed (Points),Posted Time,Running Balance (Points),Running Balance Changed (Points)
+clear balance,www.amazon.com,0,0,2025-04-02T11:04:51.537Z,0,-81
+earn,www.amazon.com,0,0,2024-12-15T08:19:47.691Z,81,21
+earn,www.amazon.com,0,0,2024-12-15T08:19:47.518Z,60,23
+earn,www.amazon.com,0,0,2024-12-15T08:19:47.332Z,37,20
+earn,www.amazon.com,0,0,2024-12-15T08:19:47.214Z,17,17
+clear balance,www.amazon.com,0,0,2024-04-02T04:57:37.539Z,0,-10
+earn,www.amazon.com,0,0,2023-12-27T05:19:12.011Z,10,10
+clear balance,www.amazon.com,0,0,2023-11-01T15:37:20.252Z,0,-5
+clear balance,www.amazon.com,0,0,2023-10-01T08:30:36.123Z,5,-5
+earn,www.amazon.com,0,0,2023-04-04T02:03:46.054Z,10,5
+earn,www.amazon.com,0,0,2023-03-31T20:09:07.644Z,5,5
+reversal,www.amazon.com,0,0,2022-11-17T19:35:34.613Z,0,-10
+earn,www.amazon.com,0,0,2022-11-13T06:45:28.864Z,10,10

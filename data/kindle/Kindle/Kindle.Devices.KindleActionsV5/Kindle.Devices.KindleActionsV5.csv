@@ -1,0 +1,14 @@
+﻿Created Timestamp,Preferred Marketplace ID,Country of Residence,Device Family,ASIN,Widget Position,Associated ASIN,App version,Action ID,Action Type,Action Source,Item Position,Event Page
+2023-02-28T19:20:08Z,www.amazon.com,US,Kindle for Android,Not Available,1,,1285441000,VIEW,SCROLL,sk-kfa-er-books-blurb,1,HOME
+2023-02-15T06:18:10Z,www.amazon.com,US,Kindle for Android,Not Available,12,B016I2A92C,1285428200,STORE,tap,BOOK_ENTITY_LIST_7,8,HOME
+2023-06-08T21:28:10Z,www.amazon.com,US,Kindle for Android,Not Available,1,,1285530600,STORE,tap,STRUCTURED_BROWSE_TOP_NAV_1,2,HOME
+2023-03-05T04:56:50Z,www.amazon.com,US,Kindle for Android,Not Available,13,,1285441000,WEB,tap,WEBVIEW_1,1,HOME
+2023-03-05T04:55:56Z,www.amazon.com,US,Kindle for Android,Not Available,1,,1285441000,VIEW,SCROLL,sk-kfa-er-books-blurb,1,HOME
+2023-02-15T06:01:48Z,www.amazon.com,US,Kindle for Android,Not Available,1,B0B5SR4KBR,1285428200,STORE,tap,BOOK_ENTITY_LIST_0,1,HOME
+2023-02-20T03:01:59Z,www.amazon.com,US,Kindle for Android,Not Available,7,,1285428200,VIEW,SCROLL,sk-kfa-er-books-blurb,1,HOME
+2023-10-07T01:15:36Z,www.amazon.com,US,Kindle for Android,Not Available,2,,1285620200,QUICKVIEWSUCCESS,tap,WEBVIEW_1,1,HOME
+2023-10-11T00:33:56Z,www.amazon.com,US,Kindle for Android,Not Available,10,,1285620200,STORE,tap,BUTTON_1,1,HOME
+2023-10-07T01:15:36Z,www.amazon.com,US,Kindle for Android,Not Available,2,,1285620200,QUICKVIEW,tap,WEBVIEW_1,1,HOME
+2023-08-07T21:27:13Z,www.amazon.com,US,Kindle for Android,Not Available,1,,1285556200,STREAK_CALENDAR,swipe,WEBVIEW_1,1,HOME
+2023-10-05T04:14:17Z,www.amazon.com,US,Kindle for Android,Not Available,1,,1285620200,STREAK_CALENDAR,swipe,WEBVIEW_1,1,HOME
+2023-10-11T00:34:28Z,www.amazon.com,US,Kindle for Android,Not Available,1,,1285620200,STORE,tap,STRUCTURED_BROWSE_TOP_NAV_1,2,HOME
