@@ -13,8 +13,12 @@ function getHourLabel(hour: number) {
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-export default function HabitConsistencyHeatmap() {
-  const { data, error } = useTrainingConsistency()
+export default function HabitConsistencyHeatmap({
+  timeframe,
+}: {
+  timeframe?: string
+}) {
+  const { data, error } = useTrainingConsistency(timeframe)
 
   if (error)
     return (

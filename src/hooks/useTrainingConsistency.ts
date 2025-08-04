@@ -62,7 +62,9 @@ function computeWeeklyEntropy(sessions: RunningSession[]): number[] {
     .map((k) => shannonEntropy(weeks[k]))
 }
 
-export default function useTrainingConsistency(): UseTrainingConsistencyResult {
+export default function useTrainingConsistency(
+  timeframe: string = 'all',
+): UseTrainingConsistencyResult {
   const [sessions, setSessions] = useState<RunningSession[] | null>(null)
   const [error, setError] = useState<Error | null>(null)
 
@@ -72,12 +74,23 @@ export default function useTrainingConsistency(): UseTrainingConsistencyResult {
 
   const data = useMemo(() => {
     if (!sessions) return null
+    const weeksMap: Record<string, number> = { '4w': 4, '12w': 12 }
+    const weeks = weeksMap[timeframe]
+    const cutoff =
+      weeks !== undefined
+        ? new Date(Date.now() - weeks * 7 * 24 * 60 * 60 * 1000)
+        : null
+    const filtered = cutoff
+      ? sessions.filter(
+          (s) => new Date(s.start ?? s.date).getTime() >= cutoff.getTime(),
+        )
+      : sessions
     return {
-      sessions,
-      heatmap: computeHeatmap(sessions),
-      weeklyEntropy: computeWeeklyEntropy(sessions),
+      sessions: filtered,
+      heatmap: computeHeatmap(filtered),
+      weeklyEntropy: computeWeeklyEntropy(filtered),
     }
-  }, [sessions])
+  }, [sessions, timeframe])
 
   return { data, error }
 }
