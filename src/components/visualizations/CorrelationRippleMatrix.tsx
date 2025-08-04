@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
 import { interpolateHcl } from "d3-interpolate";
+import Legend from "./Legend";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
@@ -116,8 +117,6 @@ export default function CorrelationRippleMatrix({
   const legendGradient = `linear-gradient(to right, ${colorScale(
     minValue
   )}, ${colorScale(0)}, ${colorScale(maxValue)})`;
-  const minLabel = Number(minValue).toFixed(1);
-  const maxLabel = Number(maxValue).toFixed(1);
 
   return (
     <div className="w-full">
@@ -230,17 +229,11 @@ export default function CorrelationRippleMatrix({
           }
         `}</style>
       </div>
-      <div className="mt-2">
-        <div
-          className="h-2 w-full rounded"
-          style={{ background: legendGradient }}
-        />
-        <div className="mt-1 flex justify-between text-[10px] text-muted-foreground">
-          <span>{minLabel}</span>
-          <span>0</span>
-          <span>{maxLabel}</span>
-        </div>
-      </div>
+      <Legend
+        minValue={minValue}
+        maxValue={maxValue}
+        gradient={legendGradient}
+      />
     </div>
   );
 }
