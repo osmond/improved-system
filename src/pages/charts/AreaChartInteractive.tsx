@@ -6,10 +6,27 @@ export default function AreaChartInteractivePage() {
   const { setActions } = useChartActions();
 
   React.useEffect(() => {
+    function handleSaveView() {
+      alert("View saved");
+    }
+
+    async function handleShare() {
+      try {
+        await navigator.clipboard.writeText(window.location.href);
+        alert("Link copied to clipboard");
+      } catch {
+        alert("Copy failed");
+      }
+    }
+
+    function handleExport() {
+      window.print();
+    }
+
     setActions({
-      onSaveView: () => console.log("Save view"),
-      onShare: () => console.log("Share"),
-      onExport: () => console.log("Export"),
+      onSaveView: handleSaveView,
+      onShare: handleShare,
+      onExport: handleExport,
       info: "Interactive area chart example",
     });
     return () => setActions({});
