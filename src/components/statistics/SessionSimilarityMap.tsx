@@ -54,6 +54,8 @@ export default function SessionSimilarityMap({
         ]
     return { cluster: c, points, hull, centroid }
   })
+  const goodRuns = data.filter((d) => d.good)
+  const paceThreshold = percentile(goodRuns.map((d) => d.paceDelta), 0.9)
   const config = {
     ...clusterConfig,
     good: { label: "Good Day", color: "hsl(var(--chart-6))" },
@@ -86,10 +88,20 @@ export default function SessionSimilarityMap({
               animationDuration={300}
             />
           ))}
+          <Customized
+            component={
+              <DeviationTrails points={goodRuns} clusters={clusterDetails} />
+            }
+          />
           <Scatter
-            data={data.filter((d) => d.good)}
+            data={goodRuns}
             fill="hsl(var(--chart-6))"
-            shape="star"
+            shape={(props) => (
+              <GoodRunSymbol
+                {...props}
+                paceThreshold={paceThreshold}
+              />
+            )}
           />
           <Customized
             component={
@@ -220,4 +232,77 @@ function ClusterCentroids({ clusters, clusterConfig, offset, xAxisMap, yAxisMap 
       })}
     </g>
   )
+}
+
+function DeviationTrails({ points, clusters, offset, xAxisMap, yAxisMap }: any) {
+  const xAxis = Object.values(xAxisMap)[0]
+  const yAxis = Object.values(yAxisMap)[0]
+  const xScale = xAxis.scale
+  const yScale = yAxis.scale
+
+  return (
+    <g>
+      {points.map((p: any) => {
+        const cluster = clusters.find((c: any) => c.cluster === p.cluster)
+        if (!cluster) return null
+        const [cx, cy] = cluster.centroid
+        const x1 = xScale(cx) + offset.left
+        const y1 = yScale(cy) + offset.top
+        const x2 = xScale(p.x) + offset.left
+        const y2 = yScale(p.y) + offset.top
+        return (
+          <line
+            key={`trail-${p.id}`}
+            x1={x1}
+            y1={y1}
+            x2={x2}
+            y2={y2}
+            stroke="hsl(var(--chart-6))"
+            strokeOpacity={0.2}
+            strokeWidth={1}
+          />
+        )
+      })}
+    </g>
+  )
+}
+
+function GoodRunSymbol({ cx, cy, payload, paceThreshold }: any) {
+  const size = 6 + Math.max(0, payload.paceDelta) * 3
+  const conf = payload.confidence ?? 0
+  const halo = size + 2
+
+  return (
+    <g>
+      <circle
+        cx={cx}
+        cy={cy}
+        r={halo}
+        fill="none"
+        stroke="hsl(var(--chart-6))"
+        strokeOpacity={conf}
+        strokeWidth={2}
+      />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={size}
+        fill="hsl(var(--chart-6))"
+        stroke="#fff"
+        strokeWidth={1}
+      />
+      {payload.paceDelta >= paceThreshold && (
+        <text x={cx} y={cy - size - 2} textAnchor="middle" fontSize={10}>
+          ✨
+        </text>
+      )}
+    </g>
+  )
+}
+
+function percentile(values: number[], p: number) {
+  if (values.length === 0) return 0
+  const sorted = [...values].sort((a, b) => a - b)
+  const idx = Math.floor((sorted.length - 1) * p)
+  return sorted[idx]
 }
