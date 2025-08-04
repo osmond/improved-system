@@ -12,6 +12,10 @@ import {
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/ui/skeleton"
+import { polygonHull, polygonCentroid } from "d3-polygon"
+import { contourDensity } from "d3-contour"
+import { geoPath } from "d3-geo"
+import { Customized, Polygon } from "recharts"
 
 const colors = [
   "var(--chart-1)",
@@ -39,6 +43,17 @@ export default function SessionSimilarityMap({
     },
     {} as Record<number, { label: string; color: string }>,
   )
+  const clusterDetails = clusters.map((c) => {
+    const points = data.filter((d) => d.cluster === c)
+    const hull = polygonHull(points.map((p) => [p.x, p.y]))
+    const centroid = hull
+      ? polygonCentroid(hull)
+      : [
+          points.reduce((sum, p) => sum + p.x, 0) / points.length,
+          points.reduce((sum, p) => sum + p.y, 0) / points.length,
+        ]
+    return { cluster: c, points, hull, centroid }
+  })
   const config = {
     ...clusterConfig,
     good: { label: "Good Day", color: "hsl(var(--chart-6))" },
@@ -55,6 +70,14 @@ export default function SessionSimilarityMap({
           <XAxis type="number" dataKey="x" name="X" />
           <YAxis type="number" dataKey="y" name="Y" />
           <ChartTooltip />
+          <Customized
+            component={
+              <ClusterBackground
+                clusters={clusterDetails}
+                clusterConfig={clusterConfig}
+              />
+            }
+          />
           {clusters.map((c) => (
             <Scatter
               key={c}
@@ -67,6 +90,14 @@ export default function SessionSimilarityMap({
             data={data.filter((d) => d.good)}
             fill="hsl(var(--chart-6))"
             shape="star"
+          />
+          <Customized
+            component={
+              <ClusterCentroids
+                clusters={clusterDetails}
+                clusterConfig={clusterConfig}
+              />
+            }
           />
         </ScatterChart>
       </ChartContainer>
@@ -98,5 +129,95 @@ export default function SessionSimilarityMap({
         })}
       </div>
     </ChartCard>
+  )
+}
+
+function ClusterBackground({
+  clusters,
+  clusterConfig,
+  width,
+  height,
+  offset,
+  xAxisMap,
+  yAxisMap,
+}: any) {
+  const xAxis = Object.values(xAxisMap)[0]
+  const yAxis = Object.values(yAxisMap)[0]
+  const xScale = xAxis.scale
+  const yScale = yAxis.scale
+  const path = geoPath()
+
+  return (
+    <g>
+      {clusters.map((cluster: any) => {
+        const color = clusterConfig[cluster.cluster].color
+        const density = contourDensity()
+          .x((d: any) => xScale(d.x) + offset.left)
+          .y((d: any) => yScale(d.y) + offset.top)
+          .size([width, height])
+          .bandwidth(20)(cluster.points)
+
+        const hullPoints = cluster.hull?.map(([x, y]: number[]) => ({
+          x: xScale(x) + offset.left,
+          y: yScale(y) + offset.top,
+        }))
+
+        return (
+          <g key={cluster.cluster}>
+            {density.map((contour: any, i: number) => (
+              <path
+                key={`density-${cluster.cluster}-${i}`}
+                d={path(contour) ?? undefined}
+                fill={color}
+                fillOpacity={0.05}
+                stroke="none"
+              />
+            ))}
+            {hullPoints && (
+              <Polygon
+                points={hullPoints}
+                stroke={color}
+                fill={color}
+                fillOpacity={0.1}
+              />
+            )}
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+function ClusterCentroids({ clusters, clusterConfig, offset, xAxisMap, yAxisMap }: any) {
+  const xAxis = Object.values(xAxisMap)[0]
+  const yAxis = Object.values(yAxisMap)[0]
+  const xScale = xAxis.scale
+  const yScale = yAxis.scale
+
+  return (
+    <g>
+      {clusters.map((cluster: any) => {
+        const color = clusterConfig[cluster.cluster].color
+        const [cx, cy] = cluster.centroid
+        const x = xScale(cx) + offset.left
+        const y = yScale(cy) + offset.top
+
+        return (
+          <g key={`centroid-${cluster.cluster}`}>
+            <circle
+              cx={x}
+              cy={y}
+              r={4}
+              fill={color}
+              stroke="#fff"
+              strokeWidth={1}
+            />
+            <text x={x + 6} y={y - 6} fill={color} fontSize={10}>
+              {clusterConfig[cluster.cluster].label}
+            </text>
+          </g>
+        )
+      })}
+    </g>
   )
 }
