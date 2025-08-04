@@ -99,6 +99,26 @@ export default function StatisticsPage() {
   const matrix = keys.map((k1) => keys.map((k2) => matrixObj?.[k1]?.[k2] ?? 0));
   const groups = METRIC_GROUPS.map((g) => ({ label: g.label, size: g.metrics.length }));
 
+  const correlations = [] as {
+    labels: [string, string];
+    value: number;
+  }[];
+  for (let i = 0; i < keys.length; i++) {
+    for (let j = i + 1; j < keys.length; j++) {
+      const value = matrixObj?.[keys[i]]?.[keys[j]] ?? 0;
+      correlations.push({ labels: [labels[i], labels[j]], value });
+    }
+  }
+
+  let topPositive = correlations[0];
+  let topNegative = correlations[0];
+  let mostChanging = correlations[0];
+  for (const corr of correlations) {
+    if (corr.value > topPositive.value) topPositive = corr;
+    if (corr.value < topNegative.value) topNegative = corr;
+    if (Math.abs(corr.value) > Math.abs(mostChanging.value)) mostChanging = corr;
+  }
+
   if (!points.length) {
     return (
       <Card>
@@ -140,6 +160,23 @@ export default function StatisticsPage() {
             {showValues ? "Hide Values" : "Show Values"}
           </Button>
         </div>
+        <ul className="grid grid-cols-1 gap-2 text-sm sm:grid-cols-3">
+          <li>
+            <span className="font-medium">Top Positive:</span> {topPositive.labels[0]} &
+            {" "}
+            {topPositive.labels[1]} ({topPositive.value.toFixed(2)})
+          </li>
+          <li>
+            <span className="font-medium">Top Negative:</span> {topNegative.labels[0]} &
+            {" "}
+            {topNegative.labels[1]} ({topNegative.value.toFixed(2)})
+          </li>
+          <li>
+            <span className="font-medium">Most Changing:</span> {mostChanging.labels[0]} &
+            {" "}
+            {mostChanging.labels[1]} ({mostChanging.value.toFixed(2)})
+          </li>
+        </ul>
         <CorrelationRippleMatrix
           matrix={matrix}
           labels={labels}
