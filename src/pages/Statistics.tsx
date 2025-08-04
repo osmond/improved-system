@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import CorrelationRippleMatrix from "@/components/visualizations/CorrelationRippleMatrix";
 import { Button } from "@/components/ui/button";
+import { SimpleSelect } from "@/components/ui/select";
 import {
   getDailySteps,
   getDailySleep,
@@ -27,7 +28,9 @@ interface Metrics extends MetricPoint {
 
 export default function StatisticsPage() {
   const [points, setPoints] = useState<Metrics[]>([]);
-  const [upperOnly, setUpperOnly] = useState(true);
+  const [displayMode, setDisplayMode] = useState<"upper" | "lower" | "full">(
+    "upper",
+  );
   const [showValues, setShowValues] = useState(false);
 
   useEffect(() => {
@@ -94,13 +97,18 @@ export default function StatisticsPage() {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => setUpperOnly((p) => !p)}
-          >
-            {upperOnly ? "Show Full Matrix" : "Show Upper Triangle"}
-          </Button>
+          <SimpleSelect
+            label="Display Mode"
+            value={displayMode}
+            onValueChange={(v) =>
+              setDisplayMode(v as "upper" | "lower" | "full")
+            }
+            options={[
+              { value: "upper", label: "Upper Triangle" },
+              { value: "lower", label: "Lower Triangle" },
+              { value: "full", label: "Full Matrix" },
+            ]}
+          />
           <Button
             variant="outline"
             size="sm"
@@ -112,7 +120,7 @@ export default function StatisticsPage() {
         <CorrelationRippleMatrix
           matrix={matrix}
           labels={labels}
-          upperOnly={upperOnly}
+          displayMode={displayMode}
           showValues={showValues}
           maxCellSize={80}
         />
