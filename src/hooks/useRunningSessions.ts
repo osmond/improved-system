@@ -2,6 +2,8 @@ import { useState, useEffect } from 'react'
 import { getRunningSessions, RunningSession } from '@/lib/api'
 import { getAllSessionMeta, getSessionMeta } from '@/lib/sessionStore'
 import TSNE from 'tsne-js'
+import { UMAP } from 'umap-js'
+import PCA from 'ml-pca'
 
 export interface SessionFactor {
   /** Human friendly description of what helped or hurt */
@@ -43,6 +45,12 @@ export interface GoodDayTrendPoint {
   avg: number
   lower: number
   upper: number
+}
+
+export interface PCAAxis {
+  feature: string
+  x: number
+  y: number
 }
 
 function kMeans(data: number[][], k: number, iterations = 10): number[] {
@@ -118,6 +126,21 @@ function computeTrend(
   return result
 }
 
+function scalePoints(points: number[][]): number[][] {
+  const xs = points.map((p) => p[0])
+  const ys = points.map((p) => p[1])
+  const minX = Math.min(...xs)
+  const maxX = Math.max(...xs)
+  const minY = Math.min(...ys)
+  const maxY = Math.max(...ys)
+  const rangeX = maxX - minX || 1
+  const rangeY = maxY - minY || 1
+  return points.map(([x, y]) => [
+    (x - minX) / rangeX,
+    (y - minY) / rangeY,
+  ])
+}
+
 function isPresent(v: unknown) {
   return v !== null && v !== undefined && !(typeof v === 'number' && isNaN(v))
 }
@@ -171,97 +194,135 @@ export function computeExpected(s: RunningSession): { expected: number; factors:
   }
 }
 
-export function useRunningSessions(): {
+export function useRunningSessions(
+  algo: 'tsne' | 'umap' = 'tsne',
+): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
+  axes: PCAAxis[] | null
   error: Error | null
 } {
+  const [raw, setRaw] = useState<RunningSession[] | null>(null)
   const [points, setPoints] = useState<SessionPoint[] | null>(null)
   const [trend, setTrend] = useState<GoodDayTrendPoint[] | null>(null)
+  const [axes, setAxes] = useState<PCAAxis[] | null>(null)
   const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
     async function load() {
       try {
         const sessions = await getRunningSessions()
-        const model = new TSNE({ dim: 2, perplexity: 5 })
-        const input = sessions.map((s) => [
-          s.weather.temperature,
-          s.weather.humidity,
-          new Date(s.start ?? s.date).getHours(),
-          s.heartRate,
-          s.pace,
-        ])
-        model.init({ data: input, type: 'dense' })
-        model.run()
-        const output = model.getOutputScaled()
-        const labels = kMeans(output, 3)
-        const metaMap = getAllSessionMeta()
-        const preliminary = output.map(([x, y]: [number, number], idx: number) => {
-          const session = sessions[idx]
-          const { expected, factors } = computeExpected(session)
-          const paceDelta = expected - session.pace
-          const confidence = baselineConfidence(session)
-          const meta = metaMap[session.id] || { tags: [], isFalsePositive: false }
-          return {
-            x,
-            y,
-            id: session.id,
-            cluster: labels[idx],
-            good: paceDelta > 0,
-            pace: session.pace,
-            paceDelta,
-            heartRate: session.heartRate,
-            confidence,
-            temperature: session.weather.temperature,
-            humidity: session.weather.humidity,
-            wind: session.weather.wind,
-            startHour: new Date(session.start ?? session.date).getHours(),
-            duration: session.duration,
-            lat: session.lat,
-            lon: session.lon,
-            condition: session.weather.condition,
-            start: session.start ?? session.date,
-            tags: meta.tags,
-            isFalsePositive: meta.isFalsePositive,
-            factors,
-          }
-        })
-
-        const descriptorMap: Record<number, string> = {}
-        const uniqueClusters = Array.from(new Set(labels))
-        for (const c of uniqueClusters) {
-          const clusterSessions = preliminary.filter((p) => p.cluster === c)
-          const conditionCounts = clusterSessions.reduce(
-            (acc, s) => {
-              acc[s.condition] = (acc[s.condition] || 0) + 1
-              return acc
-            },
-            {} as Record<string, number>,
-          )
-          const condition = Object.keys(conditionCounts).reduce((a, b) =>
-            conditionCounts[a] > conditionCounts[b] ? a : b,
-          )
-          const avgHour =
-            clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
-            clusterSessions.length
-          const timeLabel = avgHour < 12 ? 'AM' : 'PM'
-          descriptorMap[c] = `${condition} ${timeLabel} Cluster`
-        }
-
-        const data = preliminary.map((p) => ({
-          ...p,
-          descriptor: descriptorMap[p.cluster],
-        }))
-
-        setPoints(data)
-        setTrend(computeTrend(data))
+        setRaw(sessions)
       } catch (e) {
         setError(e instanceof Error ? e : new Error('Failed to load sessions'))
       }
     }
     load()
+    function onUpdate() {
+      load()
+    }
+    window.addEventListener('sessionsUpdated', onUpdate)
+    return () => window.removeEventListener('sessionsUpdated', onUpdate)
   }, [])
+
+  useEffect(() => {
+    if (!raw) return
+    const input = raw.map((s) => [
+      s.weather.temperature,
+      s.weather.humidity,
+      new Date(s.start ?? s.date).getHours(),
+      s.heartRate,
+      s.pace,
+    ])
+
+    // PCA for feature contributions
+    try {
+      const pca = new PCA(input, { center: true, scale: true })
+      const loadings = pca.getLoadings().to2DArray()
+      const features = ['temperature', 'humidity', 'startHour', 'heartRate', 'pace']
+      const axesData = features.map((f, i) => ({
+        feature: f,
+        x: loadings[i][0],
+        y: loadings[i][1],
+      }))
+      setAxes(axesData)
+    } catch {
+      setAxes(null)
+    }
+
+    let output: number[][]
+    if (algo === 'umap') {
+      const umap = new UMAP({ nComponents: 2, nNeighbors: 5, minDist: 0.1 })
+      output = umap.fit(input) as number[][]
+    } else {
+      const model = new TSNE({ dim: 2, perplexity: 5 })
+      model.init({ data: input, type: 'dense' })
+      model.run()
+      output = model.getOutput() as number[][]
+    }
+    const scaled = scalePoints(output)
+    const labels = kMeans(scaled, 3)
+    const metaMap = getAllSessionMeta()
+    const preliminary = scaled.map(([x, y]: [number, number], idx: number) => {
+      const session = raw[idx]
+      const { expected, factors } = computeExpected(session)
+      const paceDelta = expected - session.pace
+      const confidence = baselineConfidence(session)
+      const meta = metaMap[session.id] || { tags: [], isFalsePositive: false }
+      return {
+        x,
+        y,
+        id: session.id,
+        cluster: labels[idx],
+        good: paceDelta > 0,
+        pace: session.pace,
+        paceDelta,
+        heartRate: session.heartRate,
+        confidence,
+        temperature: session.weather.temperature,
+        humidity: session.weather.humidity,
+        wind: session.weather.wind,
+        startHour: new Date(session.start ?? session.date).getHours(),
+        duration: session.duration,
+        lat: session.lat,
+        lon: session.lon,
+        condition: session.weather.condition,
+        start: session.start ?? session.date,
+        tags: meta.tags,
+        isFalsePositive: meta.isFalsePositive,
+        factors,
+      }
+    })
+
+    const descriptorMap: Record<number, string> = {}
+    const uniqueClusters = Array.from(new Set(labels))
+    for (const c of uniqueClusters) {
+      const clusterSessions = preliminary.filter((p) => p.cluster === c)
+      const conditionCounts = clusterSessions.reduce(
+        (acc, s) => {
+          acc[s.condition] = (acc[s.condition] || 0) + 1
+          return acc
+        },
+        {} as Record<string, number>,
+      )
+      const condition = Object.keys(conditionCounts).reduce((a, b) =>
+        conditionCounts[a] > conditionCounts[b] ? a : b,
+      )
+      const avgHour =
+        clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
+        clusterSessions.length
+      const timeLabel = avgHour < 12 ? 'AM' : 'PM'
+      descriptorMap[c] = `${condition} ${timeLabel} Cluster`
+    }
+
+    const data = preliminary.map((p) => ({
+      ...p,
+      descriptor: descriptorMap[p.cluster],
+    }))
+
+    setPoints(data)
+    setTrend(computeTrend(data))
+  }, [raw, algo])
 
   useEffect(() => {
     function onMetaUpdate() {
@@ -279,5 +340,5 @@ export function useRunningSessions(): {
     return () => window.removeEventListener('sessionMetaUpdated', onMetaUpdate)
   }, [])
 
-  return { sessions: points, trend, error }
+  return { sessions: points, trend, axes, error }
 }

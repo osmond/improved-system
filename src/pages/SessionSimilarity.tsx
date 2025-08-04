@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { SessionSimilarityMap } from "@/components/maps";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
 
 export default function SessionSimilarityPage() {
-  const { sessions, error } = useRunningSessions();
+  const [algo, setAlgo] = useState<"tsne" | "umap">("tsne");
+  const { sessions, axes, error } = useRunningSessions(algo);
 
   return (
     <div className="p-4 space-y-4">
@@ -16,7 +17,12 @@ export default function SessionSimilarityPage() {
           Unable to load running sessions.
         </div>
       ) : (
-        <SessionSimilarityMap data={sessions} />
+        <SessionSimilarityMap
+          data={sessions}
+          axes={axes}
+          algo={algo}
+          onAlgoChange={setAlgo}
+        />
       )}
     </div>
   );

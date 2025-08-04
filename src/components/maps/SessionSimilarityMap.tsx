@@ -15,7 +15,7 @@ import {
 } from "@/ui/chart"
 import type { ChartConfig } from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
-import { SessionPoint } from "@/hooks/useRunningSessions"
+import { SessionPoint, PCAAxis } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/ui/skeleton"
 import { polygonHull, polygonCentroid } from "d3-polygon"
 import { contourDensity } from "d3-contour"
@@ -38,10 +38,16 @@ const colors = [
 
 interface SessionSimilarityMapProps {
   data: SessionPoint[] | null
+  axes: PCAAxis[] | null
+  algo: "tsne" | "umap"
+  onAlgoChange: (a: "tsne" | "umap") => void
 }
 
 export default function SessionSimilarityMap({
   data,
+  axes,
+  algo,
+  onAlgoChange,
 }: SessionSimilarityMapProps) {
   if (!data) return <Skeleton className="h-64" />
 
@@ -194,6 +200,23 @@ export default function SessionSimilarityMap({
             {new Date(sorted[playIndex].start).toLocaleDateString()}
           </span>
         </div>
+        <div className="flex items-center gap-2">
+          <span className="text-xs text-muted-foreground">Algorithm:</span>
+          <Button
+            size="sm"
+            variant={algo === "tsne" ? "default" : "outline"}
+            onClick={() => onAlgoChange("tsne")}
+          >
+            t-SNE
+          </Button>
+          <Button
+            size="sm"
+            variant={algo === "umap" ? "default" : "outline"}
+            onClick={() => onAlgoChange("umap")}
+          >
+            UMAP
+          </Button>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-muted-foreground">Weather:</span>
           <Button
@@ -282,6 +305,7 @@ export default function SessionSimilarityMap({
           <YAxis type="number" dataKey="y" name="Y" />
           <Brush dataKey="x" height={20} travellerWidth={10} />
           <ChartTooltip content={<SessionTooltip />} />
+          <Customized component={<AxisHints axes={axes} />} />
           <Customized
             component={
               <ClusterBackground
@@ -482,6 +506,45 @@ function ClusterCentroids({
             />
             <text x={x + 6} y={y - 6} fill={color} fontSize={10}>
               {clusterConfig[cluster.cluster].label}
+            </text>
+          </g>
+        )
+      })}
+    </g>
+  )
+}
+
+function AxisHints({ axes, offset, xAxisMap, yAxisMap }: any) {
+  if (!axes) return null
+  const xAxis = Object.values(xAxisMap)[0]
+  const yAxis = Object.values(yAxisMap)[0]
+  const xScale = xAxis.scale
+  const yScale = yAxis.scale
+  const originX = xScale(0.5) + offset.left
+  const originY = yScale(0.5) + offset.top
+  const scale = 0.4
+  return (
+    <g>
+      {axes.map((a: PCAAxis) => {
+        const x = xScale(0.5 + a.x * scale) + offset.left
+        const y = yScale(0.5 + a.y * scale) + offset.top
+        return (
+          <g key={a.feature}>
+            <line
+              x1={originX}
+              y1={originY}
+              x2={x}
+              y2={y}
+              stroke="hsl(var(--muted-foreground))"
+            />
+            <text
+              x={x}
+              y={y}
+              fill="hsl(var(--muted-foreground))"
+              fontSize={10}
+              textAnchor="middle"
+            >
+              {a.feature}
             </text>
           </g>
         )

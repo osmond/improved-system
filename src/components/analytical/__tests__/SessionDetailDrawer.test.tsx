@@ -51,7 +51,7 @@ const baseSession: SessionPoint = {
 
 describe('SessionDetailDrawer summary', () => {
   it('shows positive factors for good session', () => {
-    useRunningSessionsMock.mockReturnValue({ sessions: [baseSession], trend: null, error: null })
+    useRunningSessionsMock.mockReturnValue({ sessions: [baseSession], trend: null, axes: null, error: null })
     render(<SessionDetailDrawer session={baseSession} onClose={() => {}} />)
     expect(
       screen.getByText('Tailwind + Stable HR led to Δ 1.8 min/mi')
@@ -66,7 +66,7 @@ describe('SessionDetailDrawer summary', () => {
       paceDelta: -0.3,
       factors: [{ label: 'Heat', impact: -0.4 }],
     }
-    useRunningSessionsMock.mockReturnValue({ sessions: [miss], trend: null, error: null })
+    useRunningSessionsMock.mockReturnValue({ sessions: [miss], trend: null, axes: null, error: null })
     render(<SessionDetailDrawer session={miss} onClose={() => {}} />)
     expect(
       screen.getByText('Why not good? Heat added 0.3 min/mi')
@@ -80,7 +80,7 @@ describe('SessionDetailDrawer tags', () => {
   })
 
   it('allows adding emoji tags', async () => {
-    useRunningSessionsMock.mockReturnValue({ sessions: [baseSession], trend: null, error: null })
+    useRunningSessionsMock.mockReturnValue({ sessions: [baseSession], trend: null, axes: null, error: null })
     render(<SessionDetailDrawer session={baseSession} onClose={() => {}} />)
 
     const input = screen.getByPlaceholderText('Add tag or emoji')
