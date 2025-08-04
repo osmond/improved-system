@@ -29,15 +29,24 @@ export function computeCorrelationMatrix<T extends MetricPoint>(
 ): CorrelationMatrix<T> {
   if (!points.length) return {} as CorrelationMatrix<T>;
   const keys = Object.keys(points[0]) as (keyof T)[];
-  const series: Record<keyof T, number[]> = {} as any;
+  const series: Partial<Record<keyof T, number[]>> = {};
   for (const key of keys) {
     series[key] = points.map((p) => p[key]);
   }
+
+  for (const key of keys) {
+    if (!series[key]) {
+      throw new Error(`Series for key ${String(key)} is missing`);
+    }
+  }
+
   const matrix = {} as CorrelationMatrix<T>;
   for (const k1 of keys) {
+    const s1 = series[k1]!;
     matrix[k1] = {} as Record<keyof T, number>;
     for (const k2 of keys) {
-      matrix[k1][k2] = pearson(series[k1], series[k2]);
+      const s2 = series[k2]!;
+      matrix[k1][k2] = pearson(s1, s2);
     }
   }
   return matrix;
