@@ -8,17 +8,16 @@ import {
   XAxis,
   YAxis,
   Rectangle,
-  LineChart,
-  Line,
   Tooltip,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
 import { interpolateHcl } from "d3-interpolate";
+import CorrelationDetails from "./CorrelationDetails";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
   labels: string[]; // axis labels
-  drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
+  drilldown?: Record<string, { x: number; y: number; date?: string }[]>; // optional detailed data
 
   minValue?: number; // lower bound for color scale
   maxValue?: number; // upper bound for color scale
@@ -75,6 +74,8 @@ export default function CorrelationRippleMatrix({
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
+  const [open, setOpen] = useState(false);
+  const [pinned, setPinned] = useState(false);
   const [hovered, setHovered] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
@@ -108,6 +109,7 @@ export default function CorrelationRippleMatrix({
 
   const handleCellClick = (cell: CellData) => {
     setActive(cell);
+    setOpen(true);
   };
 
   const activeKey = active ? `${active.y}-${active.x}` : null;
@@ -205,31 +207,23 @@ export default function CorrelationRippleMatrix({
             />
           </ScatterChart>
         </ResponsiveContainer>
-        {active && chartData.length > 0 && (
-          <div
-            className="absolute bg-white border p-2 rounded shadow"
-            style={{
-              left: active.x * cellSize + cellSize / 2,
-              top: active.y * cellSize + cellSize / 2,
-              transform: "translate(-50%, -50%)",
-              animation: "ripple 0.3s ease-out",
-              pointerEvents: "auto",
-            }}
-            onClick={() => setActive(null)}
-          >
-            <LineChart width={150} height={80} data={chartData}>
-              <Line type="monotone" dataKey="y" stroke="#8884d8" dot={false} />
-              <Tooltip />
-            </LineChart>
-          </div>
-        )}
-        <style>{`
-          @keyframes ripple {
-            from { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
-            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-          }
-        `}</style>
       </div>
+      <CorrelationDetails
+        open={open && !!active}
+        onOpenChange={(o) => {
+          if (pinned && !o) return;
+          setOpen(o);
+          if (!o) {
+            setActive(null);
+            setPinned(false);
+          }
+        }}
+        xLabel={active ? labels[active.x] : ""}
+        yLabel={active ? labels[active.y] : ""}
+        data={chartData}
+        pinned={pinned}
+        onPinChange={setPinned}
+      />
       <div className="mt-2">
         <div
           className="h-2 w-full rounded"

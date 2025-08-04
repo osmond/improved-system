@@ -3,3 +3,4 @@ export type { Segment } from "./BehavioralCharterMap";
 export { default as TransitionMatrix } from "./TransitionMatrix";
 export { default as CorrelationRippleMatrix } from "./CorrelationRippleMatrix";
 export { default as FocusTimeline } from "./FocusTimeline";
+export { default as CorrelationDetails } from "./CorrelationDetails";
