@@ -52,12 +52,22 @@ export function SimpleSelect({
   onValueChange,
   options,
   label,
+  multiple = false,
 }: {
-  value: string
-  onValueChange: (val: string) => void
+  value: string | string[]
+  onValueChange: (val: any) => void
   options: { value: string; label: string }[]
   label?: string
+  multiple?: boolean
 }) {
+  const lastIndex = React.useRef<number | null>(null)
+  const selectedValues = Array.isArray(value) ? value : [value]
+  const display = multiple
+    ? options
+        .filter((o) => selectedValues.includes(o.value))
+        .map((o) => o.label)
+        .join(", ") || "Select options"
+    : undefined
   return (
     <div className="flex flex-col gap-1">
       {label && (
@@ -65,13 +75,22 @@ export function SimpleSelect({
           {label}
         </label>
       )}
-      <Select value={value} onValueChange={onValueChange}>
+      <Select
+        value={multiple ? "" : (value as string)}
+        onValueChange={(val) => {
+          if (!multiple) onValueChange(val)
+        }}
+      >
         <SelectTrigger
           id="simple-select"
           className="inline-flex items-center justify-between rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2"
           aria-label={label}
         >
-          <SelectValue placeholder="Select an option" />
+          {multiple ? (
+            <span className="truncate">{display}</span>
+          ) : (
+            <SelectValue placeholder="Select an option" />
+          )}
           <SelectIcon asChild>
             <ChevronsUpDown className="w-4 h-4 opacity-50" />
           </SelectIcon>
@@ -83,18 +102,57 @@ export function SimpleSelect({
             </SelectScrollUpButton>
             <SelectViewport>
               <SelectGroup>
-                {options.map((opt) => (
-                  <SelectItem
-                    key={opt.value}
-                    value={opt.value}
-                    className="relative flex cursor-default select-none items-center rounded-sm px-2 py-1 text-sm outline-none focus:bg-muted"
-                  >
-                    <SelectItemText>{opt.label}</SelectItemText>
-                    <SelectItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">
-                      <Check className="w-4 h-4" />
-                    </SelectItemIndicator>
-                  </SelectItem>
-                ))}
+                {options.map((opt, idx) => {
+                  const isSelected = selectedValues.includes(opt.value)
+                  return (
+                    <SelectItem
+                      key={opt.value}
+                      value={opt.value}
+                      onMouseDown={(e) => {
+                        if (!multiple) return
+                        e.preventDefault()
+                        let next = [...selectedValues]
+                        if (e.shiftKey && lastIndex.current !== null) {
+                          const [start, end] =
+                            idx > lastIndex.current
+                              ? [lastIndex.current, idx]
+                              : [idx, lastIndex.current]
+                          const range = options
+                            .slice(start, end + 1)
+                            .map((o) => o.value)
+                          range.forEach((v) => {
+                            if (!next.includes(v)) next.push(v)
+                          })
+                        } else if (e.ctrlKey || e.metaKey) {
+                          if (next.includes(opt.value)) {
+                            next = next.filter((v) => v !== opt.value)
+                          } else {
+                            next.push(opt.value)
+                          }
+                          lastIndex.current = idx
+                        } else {
+                          next = [opt.value]
+                          lastIndex.current = idx
+                        }
+                        onValueChange(next)
+                      }}
+                      onSelect={(e) => {
+                        if (multiple) e.preventDefault()
+                      }}
+                      className={cn(
+                        "relative flex cursor-default select-none items-center rounded-sm px-2 py-1 text-sm outline-none focus:bg-muted",
+                        multiple && isSelected ? "bg-muted" : "",
+                      )}
+                    >
+                      <SelectItemText>{opt.label}</SelectItemText>
+                      {(!multiple || isSelected) && (
+                        <SelectItemIndicator className="absolute left-0 inline-flex w-6 items-center justify-center">
+                          <Check className="w-4 h-4" />
+                        </SelectItemIndicator>
+                      )}
+                    </SelectItem>
+                  )
+                })}
               </SelectGroup>
             </SelectViewport>
             <SelectScrollDownButton className="flex items-center justify-center h-6">

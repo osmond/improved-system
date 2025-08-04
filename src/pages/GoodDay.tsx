@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react"
+import React, { useEffect, useMemo, useRef, useState } from "react"
 import {
   GoodDayMap,
   GoodDayInsights,
@@ -22,6 +22,9 @@ interface FilterPreset {
     route?: string
     gear?: string
     day?: string
+    hasRoute?: boolean
+    hasGear?: boolean
+    hasTags?: boolean
   }
 }
 
@@ -44,12 +47,17 @@ export default function GoodDayPage() {
   const [route, setRoute] = useState("all")
   const [gear, setGear] = useState("all")
   const [day, setDay] = useState("all")
+  const [hasRoute, setHasRoute] = useState(false)
+  const [hasGear, setHasGear] = useState(false)
+  const [hasTags, setHasTags] = useState(false)
   const [active, setActive] = useState<SessionPoint | null>(null)
   const [dateRange, setDateRange] = useState<[string, string] | null>(null)
   const [highlightDate, setHighlightDate] = useState<string | null>(null)
   const [presets, setPresets] = useState<FilterPreset[]>([])
   const [forecastMessage, setForecastMessage] = useState<string | null>(null)
   const [forecast, setForecast] = useState<{ date: string; probability: number }[]>([])
+  const [selectedPresets, setSelectedPresets] = useState<number[]>([])
+  const lastPresetIdx = useRef<number | null>(null)
 
   if (error) {
     return (
@@ -100,12 +108,20 @@ export default function GoodDayPage() {
   const filteredSessions = useMemo(() => {
     if (!sessions) return null
     return sessions.filter((s) => {
+      if (hasRoute && !getTag("route:", s)) return false
       if (route !== "all" && getTag("route:", s) !== route) return false
+      if (hasGear && !getTag("gear:", s)) return false
       if (gear !== "all" && getTag("gear:", s) !== gear) return false
+      if (
+        hasTags &&
+        s.tags.filter((t) => !t.startsWith("route:") && !t.startsWith("gear:"))
+          .length === 0
+      )
+        return false
       if (day !== "all" && DAY_NAMES[new Date(s.start).getDay()] !== day) return false
       return true
     })
-  }, [sessions, route, gear, day])
+  }, [sessions, route, gear, day, hasRoute, hasGear, hasTags])
 
   useEffect(() => {
     try {
@@ -117,6 +133,9 @@ export default function GoodDayPage() {
         setRoute(parsed.route ?? "all")
         setGear(parsed.gear ?? "all")
         setDay(parsed.day ?? "all")
+        setHasRoute(parsed.hasRoute ?? false)
+        setHasGear(parsed.hasGear ?? false)
+        setHasTags(parsed.hasTags ?? false)
       }
       const presetRaw = localStorage.getItem(PRESETS_KEY)
       if (presetRaw) setPresets(JSON.parse(presetRaw))
@@ -124,9 +143,18 @@ export default function GoodDayPage() {
   }, [])
 
   useEffect(() => {
-    const data = { condition, hourRange, route, gear, day }
+    const data = {
+      condition,
+      hourRange,
+      route,
+      gear,
+      day,
+      hasRoute,
+      hasGear,
+      hasTags,
+    }
     localStorage.setItem(FILTERS_KEY, JSON.stringify(data))
-  }, [condition, hourRange, route, gear, day])
+  }, [condition, hourRange, route, gear, day, hasRoute, hasGear, hasTags])
 
   useEffect(() => {
     localStorage.setItem(PRESETS_KEY, JSON.stringify(presets))
@@ -138,6 +166,9 @@ export default function GoodDayPage() {
     if (p.route) setRoute(p.route)
     if (p.gear) setGear(p.gear)
     if (p.day) setDay(p.day)
+    if (p.hasRoute !== undefined) setHasRoute(p.hasRoute)
+    if (p.hasGear !== undefined) setHasGear(p.hasGear)
+    if (p.hasTags !== undefined) setHasTags(p.hasTags)
   }
 
   const saveView = () => {
@@ -145,7 +176,16 @@ export default function GoodDayPage() {
     if (!name) return
     const next: FilterPreset = {
       name,
-      filters: { condition, hourRange, route, gear, day },
+      filters: {
+        condition,
+        hourRange,
+        route,
+        gear,
+        day,
+        hasRoute,
+        hasGear,
+        hasTags,
+      },
     }
     setPresets((prev) => [...prev, next])
   }
@@ -185,12 +225,26 @@ export default function GoodDayPage() {
 
   const allPresets = [...defaultPresets, ...suggestedPresets, ...presets]
 
+  useEffect(() => {
+    if (selectedPresets.length === 0) return
+    let merged: FilterPreset["filters"] = {}
+    selectedPresets.forEach((idx) => {
+      const p = allPresets[idx]
+      if (p) merged = { ...merged, ...p.filters }
+    })
+    applyPreset(merged)
+  }, [selectedPresets, allPresets])
+
   const resetFilters = () => {
     setCondition("all")
     setHourRange([0, 23])
     setRoute("all")
     setGear("all")
     setDay("all")
+    setHasRoute(false)
+    setHasGear(false)
+    setHasTags(false)
+    setSelectedPresets([])
   }
 
   const activeFilters = [
@@ -203,6 +257,15 @@ export default function GoodDayPage() {
     ...(gear !== "all"
       ? [{ label: `Gear: ${gear}`, onClear: () => setGear("all") }]
       : []),
+    ...(hasRoute
+      ? [{ label: "Has route", onClear: () => setHasRoute(false) }]
+      : []),
+    ...(hasGear
+      ? [{ label: "Has gear", onClear: () => setHasGear(false) }]
+      : []),
+    ...(hasTags
+      ? [{ label: "Has tags", onClear: () => setHasTags(false) }]
+      : []),
     ...(day !== "all"
       ? [{ label: `Day: ${day}`, onClear: () => setDay("all") }]
       : []),
@@ -210,6 +273,34 @@ export default function GoodDayPage() {
       ? [{ label: `Hours: ${hourRange[0]}-${hourRange[1]}`, onClear: () => setHourRange([0, 23]) }]
       : []),
   ]
+
+  const handlePresetClick = (
+    e: React.MouseEvent<HTMLButtonElement>,
+    idx: number,
+  ) => {
+    if (e.ctrlKey || e.metaKey || e.shiftKey) {
+      setSelectedPresets((prev) => {
+        let next = [...prev]
+        if (e.shiftKey && lastPresetIdx.current !== null) {
+          const [start, end] =
+            idx > lastPresetIdx.current
+              ? [lastPresetIdx.current, idx]
+              : [idx, lastPresetIdx.current]
+          for (let i = start; i <= end; i++) {
+            if (!next.includes(i)) next.push(i)
+          }
+        } else {
+          if (next.includes(idx)) next = next.filter((i) => i !== idx)
+          else next.push(idx)
+        }
+        lastPresetIdx.current = idx
+        return next
+      })
+    } else {
+      lastPresetIdx.current = idx
+      setSelectedPresets([idx])
+    }
+  }
 
   useEffect(() => {
     async function checkForecast() {
@@ -292,13 +383,13 @@ export default function GoodDayPage() {
         <GoodDayForecastCalendar data={forecast} />
       )}
       <div className="flex gap-2 flex-wrap">
-        {allPresets.map((p) => (
+        {allPresets.map((p, i) => (
           <Button
             key={p.name}
             size="sm"
-            variant="outline"
+            variant={selectedPresets.includes(i) ? "default" : "outline"}
             className="rounded-full"
-            onClick={() => applyPreset(p.filters)}
+            onClick={(e) => handlePresetClick(e, i)}
           >
             {p.name}
           </Button>
@@ -349,6 +440,27 @@ export default function GoodDayPage() {
               ...DAY_NAMES.map((d) => ({ value: d, label: d })),
             ]}
           />
+          <Button
+            size="sm"
+            variant={hasRoute ? "default" : "outline"}
+            onClick={() => setHasRoute((v) => !v)}
+          >
+            Has route
+          </Button>
+          <Button
+            size="sm"
+            variant={hasGear ? "default" : "outline"}
+            onClick={() => setHasGear((v) => !v)}
+          >
+            Has gear
+          </Button>
+          <Button
+            size="sm"
+            variant={hasTags ? "default" : "outline"}
+            onClick={() => setHasTags((v) => !v)}
+          >
+            Has tags
+          </Button>
           <div className="flex items-center gap-2">
             <label className="text-sm">Start Hour: {hourRange[0]}</label>
             <Slider
