@@ -141,17 +141,26 @@ export default function GoodDayMap({
   const maxDelta = Math.max(...goodSessions.map((d) => d.paceDelta))
   const colorScale = scaleLinear<string>().domain([minDelta, maxDelta]).range([start, end])
   const sizeScale = scaleLinear<number>().domain([minDelta, maxDelta]).range([40, 160])
-  const colored = goodSessions.map((s) => ({
-    ...s,
-    fill: colorScale(s.paceDelta),
-    pointSize: sizeScale(s.paceDelta),
-    opacity: hoverRange
-      ? s.paceDelta >= hoverRange[0] && s.paceDelta < hoverRange[1]
+  const highlightThreshold = 1
+  const colored = goodSessions.map((s) => {
+    const isHighlight = s.paceDelta >= highlightThreshold
+    return {
+      ...s,
+      fill: colorScale(s.paceDelta),
+      pointSize: sizeScale(s.paceDelta),
+      opacity: isHighlight
         ? 1
-        : 0.2
-      : 1,
-    benchmark: benchmarkSet.has(s.id),
-  }))
+        : hoverRange
+          ? s.paceDelta >= hoverRange[0] && s.paceDelta < hoverRange[1]
+            ? 1
+            : 0.2
+          : 1,
+      benchmark: benchmarkSet.has(s.id),
+      highlight: isHighlight,
+    }
+  })
+
+  const topSessions = [...colored].sort((a, b) => b.paceDelta - a.paceDelta).slice(0, 3)
 
   let bins: { start: number; end: number; count: number; color: string }[] = []
   if (minDelta === maxDelta) {
@@ -271,7 +280,11 @@ export default function GoodDayMap({
       cx?: number
       cy?: number
       fill?: string
-      payload?: SessionPoint & { benchmark?: boolean; pointSize?: number }
+      payload?: SessionPoint & {
+        benchmark?: boolean
+        pointSize?: number
+        highlight?: boolean
+      }
       onClick?: (data: SessionPoint) => void
     },
   ) => {
@@ -279,14 +292,23 @@ export default function GoodDayMap({
     const starPath = symbol().type(symbolStar).size(size)()
     const haloRadius = Math.sqrt(size)
     const haloWidth = 1 + 4 * ((payload as any)?.confidence ?? 0)
+    const isHighlight = (payload as any)?.highlight
     return (
       <motion.g
         key={(payload as any)?.id}
         transform={`translate(${cx}, ${cy})`}
         initial={{ scale: 0, opacity: 0 }}
-        animate={{ scale: 1, opacity: (payload as any)?.opacity ?? 1 }}
+        animate={
+          isHighlight
+            ? { scale: [1, 1.2, 1], opacity: (payload as any)?.opacity ?? 1 }
+            : { scale: 1, opacity: (payload as any)?.opacity ?? 1 }
+        }
         exit={{ scale: 0, opacity: 0 }}
-        transition={{ duration: 0.3 }}
+        transition={
+          isHighlight
+            ? { duration: 1.5, repeat: Infinity, ease: 'easeInOut' }
+            : { duration: 0.3 }
+        }
         whileHover={{
           scale: 1.1,
           filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.3))",
@@ -407,6 +429,21 @@ export default function GoodDayMap({
               />
             ),
           )}
+          {topSessions.map((s, i) => (
+            <ReferenceDot
+              key={`top-${s.id}`}
+              x={s.x}
+              y={s.y}
+              r={0}
+              isFront
+              label={{
+                value: `Top ${i + 1}: Δ ${s.paceDelta.toFixed(1)}`,
+                position: "top",
+                fontSize: 12,
+                fill: "currentColor",
+              }}
+            />
+          ))}
           <Scatter data={colored} shape={() => null} isAnimationActive={false} />
           <Customized
             component={({ xAxisMap, yAxisMap, offset }: any) => {
