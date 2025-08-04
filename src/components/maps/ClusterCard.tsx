@@ -22,11 +22,12 @@ import {
 import * as React from "react";
 
 interface ClusterCardProps {
-  data: any[];
-  color: string;
-  open?: boolean;
-  onOpenChange?: (open: boolean) => void;
-  onSelect?: () => void;
+  data: any[]
+  color: string
+  stability: number
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
+  onSelect?: () => void
 }
 
 function getAnnotation(avgTemp: number, avgStart: number) {
@@ -50,6 +51,7 @@ function getAnnotation(avgTemp: number, avgStart: number) {
 export default function ClusterCard({
   data,
   color,
+  stability,
   open,
   onOpenChange,
   onSelect,
@@ -71,7 +73,8 @@ export default function ClusterCard({
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm">{annotation}</CardTitle>
             <CardDescription className="text-xs">
-              Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h
+              Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h ·
+              Stability {(stability * 100).toFixed(0)}%
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0">
@@ -91,7 +94,8 @@ export default function ClusterCard({
       <DialogContent className="sm:max-w-md">
         <h3 className="mb-2 text-lg font-semibold">{annotation}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h
+          Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h ·
+          Stability {(stability * 100).toFixed(0)}%
         </p>
         <ChartContainer className="h-48 w-full" config={{}}>
           <ScatterChart>

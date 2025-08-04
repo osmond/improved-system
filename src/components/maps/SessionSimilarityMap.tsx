@@ -24,8 +24,10 @@ import { Customized, Polygon } from "recharts"
 import ClusterCard from "./ClusterCard"
 import RunComparisonPanel from "./RunComparisonPanel"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import Slider from "@/ui/slider"
+import { useState, useEffect, useMemo } from "react"
 import type { TooltipProps } from "recharts"
+import { computeClusterStability } from "@/lib/clusterStability"
 
 const colors = [
   "var(--chart-1)",
@@ -42,6 +44,39 @@ export default function SessionSimilarityMap({
   data,
 }: SessionSimilarityMapProps) {
   if (!data) return <Skeleton className="h-64" />
+
+  const sorted = useMemo(
+    () =>
+      data
+        .slice()
+        .sort(
+          (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
+        ),
+    [data],
+  )
+  const [playIndex, setPlayIndex] = useState(sorted.length - 1)
+  const [playing, setPlaying] = useState(false)
+
+  useEffect(() => {
+    setPlayIndex(sorted.length - 1)
+  }, [sorted.length])
+
+  useEffect(() => {
+    if (!playing) return
+    const id = setInterval(() => {
+      setPlayIndex((i) => {
+        if (i >= sorted.length - 1) {
+          setPlaying(false)
+          return i
+        }
+        return i + 1
+      })
+    }, 500)
+    return () => clearInterval(id)
+  }, [playing, sorted.length])
+
+  const timelineData = sorted.slice(0, playIndex + 1)
+  const stability = useMemo(() => computeClusterStability(data), [data])
 
   const getTag = (prefix: string, s: SessionPoint) =>
     s.tags.find((t) => t.startsWith(prefix))?.slice(prefix.length) || null
@@ -79,7 +114,7 @@ export default function SessionSimilarityMap({
     setPanelOpen(true)
   }
 
-  const filtered = data.filter((s) => {
+  const filtered = timelineData.filter((s) => {
     if (weather && s.condition !== weather) return false
     if (time && getTimeOfDay(s.startHour) !== time) return false
     if (route && getTag("route:", s) !== route) return false
@@ -106,7 +141,7 @@ export default function SessionSimilarityMap({
           points.reduce((sum, p) => sum + p.x, 0) / points.length,
           points.reduce((sum, p) => sum + p.y, 0) / points.length,
         ]
-    return { cluster: c, points, hull, centroid }
+    return { cluster: c, points, hull, centroid, stability: stability[c] ?? 0 }
   })
   const [activeCluster, setActiveCluster] = useState<number | null>(null)
   const goodRuns = filtered.filter(
@@ -136,6 +171,29 @@ export default function SessionSimilarityMap({
       description="Similarity of recent runs"
     >
       <div className="mb-4 space-y-2">
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setPlaying((p) => !p)}
+          >
+            {playing ? "Pause" : "Play"}
+          </Button>
+          <Slider
+            min={0}
+            max={sorted.length - 1}
+            step={1}
+            value={[playIndex]}
+            onValueChange={(v) => {
+              setPlayIndex(v[0])
+              setPlaying(false)
+            }}
+            className="w-64"
+          />
+          <span className="text-xs text-muted-foreground">
+            {new Date(sorted[playIndex].start).toLocaleDateString()}
+          </span>
+        </div>
         <div className="flex flex-wrap items-center gap-2">
           <span className="text-xs text-muted-foreground">Weather:</span>
           <Button
@@ -304,10 +362,11 @@ export default function SessionSimilarityMap({
               <ClusterCard
                 data={clusterData}
                 color={clusterConfig[c].color}
-                open={activeCluster === c}
-                onOpenChange={(o) =>
-                  setActiveCluster(o ? c : null)
+                stability={
+                  clusterDetails.find((d) => d.cluster === c)?.stability || 0
                 }
+                open={activeCluster === c}
+                onOpenChange={(o) => setActiveCluster(o ? c : null)}
                 onSelect={() => setActiveCluster(c)}
               />
             </div>
