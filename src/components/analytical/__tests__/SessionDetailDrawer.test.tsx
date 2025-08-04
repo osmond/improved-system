@@ -41,6 +41,7 @@ const baseSession: SessionPoint = {
   lon: 0,
   condition: 'Clear',
   start: '2024-01-01T08:00:00Z',
+  startTs: new Date('2024-01-01T08:00:00Z').getTime(),
   tags: [],
   isFalsePositive: false,
   factors: [

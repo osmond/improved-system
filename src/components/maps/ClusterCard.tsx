@@ -24,6 +24,7 @@ import * as React from "react";
 interface ClusterCardProps {
   data: any[];
   color: string;
+  stability?: number;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
   onSelect?: () => void;
@@ -50,6 +51,7 @@ function getAnnotation(avgTemp: number, avgStart: number) {
 export default function ClusterCard({
   data,
   color,
+  stability,
   open,
   onOpenChange,
   onSelect,
@@ -72,6 +74,7 @@ export default function ClusterCard({
             <CardTitle className="text-sm">{annotation}</CardTitle>
             <CardDescription className="text-xs">
               Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h
+              {stability !== undefined && ` · Stability ${stability.toFixed(2)}`}
             </CardDescription>
           </CardHeader>
           <CardContent className="p-4 pt-0">

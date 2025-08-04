@@ -33,6 +33,8 @@ export interface SessionPoint {
   condition: string
   /** ISO timestamp when the session started */
   start: string
+  /** Numeric timestamp for efficient comparisons */
+  startTs: number
   tags: string[]
   isFalsePositive: boolean
   factors: SessionFactor[]
@@ -222,6 +224,7 @@ export function useRunningSessions(): {
             lon: session.lon,
             condition: session.weather.condition,
             start: session.start ?? session.date,
+            startTs: new Date(session.start ?? session.date).getTime(),
             tags: meta.tags,
             isFalsePositive: meta.isFalsePositive,
             factors,

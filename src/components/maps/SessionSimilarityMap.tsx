@@ -22,7 +22,8 @@ import { geoPath } from "d3-geo"
 import { Customized, Polygon } from "recharts"
 import ClusterCard from "./ClusterCard"
 import { Button } from "@/components/ui/button"
-import { useState } from "react"
+import Slider from "@/ui/slider"
+import { useState, useEffect } from "react"
 
 const colors = [
   "var(--chart-1)",
@@ -33,6 +34,25 @@ const colors = [
 
 interface SessionSimilarityMapProps {
   data: SessionPoint[] | null
+}
+
+function computeStability(points: SessionPoint[], window = 5): number {
+  if (points.length <= window) return 1
+  const sorted = [...points].sort((a, b) => a.startTs - b.startTs)
+  const centroids: [number, number][] = []
+  for (let i = 0; i <= sorted.length - window; i++) {
+    const subset = sorted.slice(i, i + window)
+    const cx = subset.reduce((sum, p) => sum + p.x, 0) / window
+    const cy = subset.reduce((sum, p) => sum + p.y, 0) / window
+    centroids.push([cx, cy])
+  }
+  const meanX = centroids.reduce((s, [x]) => s + x, 0) / centroids.length
+  const meanY = centroids.reduce((s, [, y]) => s + y, 0) / centroids.length
+  const variance =
+    centroids.reduce((s, [x, y]) => s + (x - meanX) ** 2 + (y - meanY) ** 2, 0) /
+    centroids.length
+  const stability = 1 / (1 + variance)
+  return +stability.toFixed(2)
 }
 
 export default function SessionSimilarityMap({
@@ -76,18 +96,43 @@ export default function SessionSimilarityMap({
     return true
   })
 
-  const clusters = Array.from(new Set(filtered.map((d) => d.cluster)))
+  const timeSorted = [...filtered].sort((a, b) => a.startTs - b.startTs)
+  const [playIndex, setPlayIndex] = useState(Math.max(0, timeSorted.length - 1))
+  const [playing, setPlaying] = useState(false)
+  useEffect(() => {
+    setPlayIndex(Math.max(0, timeSorted.length - 1))
+  }, [filtered])
+  useEffect(() => {
+    if (!playing) return
+    const id = setInterval(() => {
+      setPlayIndex((i) => {
+        if (i >= timeSorted.length - 1) {
+          setPlaying(false)
+          return i
+        }
+        return i + 1
+      })
+    }, 500)
+    return () => clearInterval(id)
+  }, [playing, timeSorted.length])
+  const displayed = timeSorted.slice(0, playIndex + 1)
+  const handleScrub = (val: number[]) => {
+    setPlayIndex(val[0])
+    setPlaying(false)
+  }
+
+  const clusters = Array.from(new Set(displayed.map((d) => d.cluster)))
   const clusterConfig = clusters.reduce(
     (acc, c) => {
       const descriptor =
-        filtered.find((d) => d.cluster === c)?.descriptor ?? `Cluster ${c + 1}`
+        displayed.find((d) => d.cluster === c)?.descriptor ?? `Cluster ${c + 1}`
       acc[c] = { label: descriptor, color: colors[c % colors.length] }
       return acc
     },
     {} as Record<string, { label: string; color: string }>,
   )
   const clusterDetails = clusters.map((c) => {
-    const points = filtered.filter((d) => d.cluster === c)
+    const points = displayed.filter((d) => d.cluster === c)
     const hull = polygonHull(points.map((p) => [p.x, p.y]))
     const centroid = hull
       ? polygonCentroid(hull)
@@ -95,10 +140,10 @@ export default function SessionSimilarityMap({
           points.reduce((sum, p) => sum + p.x, 0) / points.length,
           points.reduce((sum, p) => sum + p.y, 0) / points.length,
         ]
-    return { cluster: c, points, hull, centroid }
+    return { cluster: c, points, hull, centroid, stability: computeStability(points) }
   })
   const [activeCluster, setActiveCluster] = useState<number | null>(null)
-  const goodRuns = filtered.filter(
+  const goodRuns = displayed.filter(
     (d) => d.good && (activeCluster === null || d.cluster === activeCluster),
   )
   const paceThreshold = percentile(goodRuns.map((d) => d.paceDelta), 0.9)
@@ -206,6 +251,30 @@ export default function SessionSimilarityMap({
           ))}
         </div>
       </div>
+      <div className="mb-4 space-y-2">
+        <label className="text-xs text-muted-foreground">
+          {timeSorted[playIndex]
+            ? new Date(timeSorted[playIndex].start).toLocaleDateString()
+            : ""}
+        </label>
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            onClick={() => setPlaying((p) => !p)}
+          >
+            {playing ? "Pause" : "Play"}
+          </Button>
+          <Slider
+            min={0}
+            max={Math.max(0, timeSorted.length - 1)}
+            step={1}
+            value={[Math.min(playIndex, Math.max(0, timeSorted.length - 1))]}
+            onValueChange={handleScrub}
+            className="w-40"
+          />
+        </div>
+      </div>
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
@@ -225,7 +294,7 @@ export default function SessionSimilarityMap({
           {clusters.map((c) => (
             <Scatter
               key={c}
-              data={filtered.filter((d) => d.cluster === c)}
+              data={displayed.filter((d) => d.cluster === c)}
               fill={clusterConfig[c].color}
               animationDuration={300}
               opacity={activeCluster === null || activeCluster === c ? 1 : 0.2}
@@ -276,7 +345,8 @@ export default function SessionSimilarityMap({
       </p>
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {clusters.map((c) => {
-          const clusterData = filtered.filter((d) => d.cluster === c)
+          const clusterInfo = clusterDetails.find((d) => d.cluster === c)
+          const clusterData = clusterInfo?.points ?? []
           return (
             <div
               key={c}
@@ -289,6 +359,7 @@ export default function SessionSimilarityMap({
               <ClusterCard
                 data={clusterData}
                 color={clusterConfig[c].color}
+                stability={clusterInfo?.stability}
                 open={activeCluster === c}
                 onOpenChange={(o) =>
                   setActiveCluster(o ? c : null)
