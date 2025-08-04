@@ -55,7 +55,7 @@ describe('computeRouteMetrics - overlap vs DTW dominance', () => {
   it('handles empty routes', () => {
     const metrics = computeRouteMetrics([], [])
     expect(metrics.overlapSimilarity).toBe(0)
-    expect(metrics.dtwSimilarity).toBeNaN()
-    expect(metrics.maxSimilarity).toBeNaN()
+    expect(metrics.dtwSimilarity).toBe(1)
+    expect(metrics.maxSimilarity).toBe(1)
   })
 })

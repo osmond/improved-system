@@ -39,7 +39,7 @@ function dtwDistance(a: LatLon[], b: LatLon[]): number {
   let m = b.length
   const lenSum = n + m
 
-  if (n === 0 && m === 0) return NaN
+  if (n === 0 && m === 0) return 0
   if (n === 0 || m === 0) return Infinity
 
   // Ensure `b` is the shorter sequence so we allocate only O(min(n, m)) memory
@@ -75,7 +75,8 @@ export function computeRouteMetrics(
   precision = 3,
 ): { overlapSimilarity: number; dtwSimilarity: number; maxSimilarity: number } {
   const overlapSimilarity = calculateRouteSimilarity(a, b, precision)
-  const dtwSimilarity = 1 / (1 + dtwDistance(a, b))
+  const distance = dtwDistance(a, b)
+  const dtwSimilarity = Number.isNaN(distance) ? 0 : 1 / (1 + distance)
   const maxSimilarity = Math.max(overlapSimilarity, dtwSimilarity)
   return { overlapSimilarity, dtwSimilarity, maxSimilarity }
 }
