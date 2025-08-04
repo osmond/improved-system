@@ -168,6 +168,14 @@ frequency and a weekly entropy trendline.
 ### Analytics fun page
 `src/pages/Examples.tsx` shows sample charts. It now renders an interactive area chart with a time-range select next to the bar chart demos.
 
+### Fragility Index
+The Fragility Index (FI) counts how many outcome flips are needed in a 2×2 trial to turn a statistically significant result non-significant.
+
+- **Low FI** – results hinge on one or two participants and may not be reliable.
+- **High FI** – findings remain significant after several flips, suggesting more robust evidence.
+
+FI grows with sample size and should complement, not replace, reported effect sizes or confidence intervals.
+
 ## Charts & Apps Overview
 
 ### Dashboard
