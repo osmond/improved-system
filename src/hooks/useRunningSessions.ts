@@ -174,85 +174,93 @@ export function computeExpected(s: RunningSession): { expected: number; factors:
 export function useRunningSessions(): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
+  error: Error | null
 } {
   const [points, setPoints] = useState<SessionPoint[] | null>(null)
   const [trend, setTrend] = useState<GoodDayTrendPoint[] | null>(null)
+  const [error, setError] = useState<Error | null>(null)
 
   useEffect(() => {
-    getRunningSessions().then((sessions: RunningSession[]) => {
-      const model = new TSNE({ dim: 2, perplexity: 5 })
-      const input = sessions.map((s) => [
-        s.weather.temperature,
-        s.weather.humidity,
-        new Date(s.start ?? s.date).getHours(),
-        s.heartRate,
-        s.pace,
-      ])
-      model.init({ data: input, type: 'dense' })
-      model.run()
-      const output = model.getOutputScaled()
-      const labels = kMeans(output, 3)
-      const metaMap = getAllSessionMeta()
-      const preliminary = output.map(([x, y]: [number, number], idx: number) => {
-        const session = sessions[idx]
-        const { expected, factors } = computeExpected(session)
-        const paceDelta = expected - session.pace
-        const confidence = baselineConfidence(session)
-        const meta = metaMap[session.id] || { tags: [], isFalsePositive: false }
-        return {
-          x,
-          y,
-          id: session.id,
-          cluster: labels[idx],
-          good: paceDelta > 0,
-          pace: session.pace,
-          paceDelta,
-          heartRate: session.heartRate,
-          confidence,
-          temperature: session.weather.temperature,
-          humidity: session.weather.humidity,
-          wind: session.weather.wind,
-          startHour: new Date(session.start ?? session.date).getHours(),
-          duration: session.duration,
-          lat: session.lat,
-          lon: session.lon,
-          condition: session.weather.condition,
-          start: session.start ?? session.date,
-          tags: meta.tags,
-          isFalsePositive: meta.isFalsePositive,
-          factors,
+    async function load() {
+      try {
+        const sessions = await getRunningSessions()
+        const model = new TSNE({ dim: 2, perplexity: 5 })
+        const input = sessions.map((s) => [
+          s.weather.temperature,
+          s.weather.humidity,
+          new Date(s.start ?? s.date).getHours(),
+          s.heartRate,
+          s.pace,
+        ])
+        model.init({ data: input, type: 'dense' })
+        model.run()
+        const output = model.getOutputScaled()
+        const labels = kMeans(output, 3)
+        const metaMap = getAllSessionMeta()
+        const preliminary = output.map(([x, y]: [number, number], idx: number) => {
+          const session = sessions[idx]
+          const { expected, factors } = computeExpected(session)
+          const paceDelta = expected - session.pace
+          const confidence = baselineConfidence(session)
+          const meta = metaMap[session.id] || { tags: [], isFalsePositive: false }
+          return {
+            x,
+            y,
+            id: session.id,
+            cluster: labels[idx],
+            good: paceDelta > 0,
+            pace: session.pace,
+            paceDelta,
+            heartRate: session.heartRate,
+            confidence,
+            temperature: session.weather.temperature,
+            humidity: session.weather.humidity,
+            wind: session.weather.wind,
+            startHour: new Date(session.start ?? session.date).getHours(),
+            duration: session.duration,
+            lat: session.lat,
+            lon: session.lon,
+            condition: session.weather.condition,
+            start: session.start ?? session.date,
+            tags: meta.tags,
+            isFalsePositive: meta.isFalsePositive,
+            factors,
+          }
+        })
+
+        const descriptorMap: Record<number, string> = {}
+        const uniqueClusters = Array.from(new Set(labels))
+        for (const c of uniqueClusters) {
+          const clusterSessions = preliminary.filter((p) => p.cluster === c)
+          const conditionCounts = clusterSessions.reduce(
+            (acc, s) => {
+              acc[s.condition] = (acc[s.condition] || 0) + 1
+              return acc
+            },
+            {} as Record<string, number>,
+          )
+          const condition = Object.keys(conditionCounts).reduce((a, b) =>
+            conditionCounts[a] > conditionCounts[b] ? a : b,
+          )
+          const avgHour =
+            clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
+            clusterSessions.length
+          const timeLabel = avgHour < 12 ? 'AM' : 'PM'
+          descriptorMap[c] = `${condition} ${timeLabel} Cluster`
         }
-      })
 
-      const descriptorMap: Record<number, string> = {}
-      const uniqueClusters = Array.from(new Set(labels))
-      for (const c of uniqueClusters) {
-        const clusterSessions = preliminary.filter((p) => p.cluster === c)
-        const conditionCounts = clusterSessions.reduce(
-          (acc, s) => {
-            acc[s.condition] = (acc[s.condition] || 0) + 1
-            return acc
-          },
-          {} as Record<string, number>,
-        )
-        const condition = Object.keys(conditionCounts).reduce((a, b) =>
-          conditionCounts[a] > conditionCounts[b] ? a : b,
-        )
-        const avgHour =
-          clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
-          clusterSessions.length
-        const timeLabel = avgHour < 12 ? 'AM' : 'PM'
-        descriptorMap[c] = `${condition} ${timeLabel} Cluster`
+        const data = preliminary.map((p) => ({
+          ...p,
+          descriptor: descriptorMap[p.cluster],
+        }))
+
+        setPoints(data)
+        setTrend(computeTrend(data))
+      } catch (e) {
+        setError(e instanceof Error ? e : new Error('Failed to load sessions'))
       }
-
-      const data = preliminary.map((p) => ({
-        ...p,
-        descriptor: descriptorMap[p.cluster],
-      }))
-
-      setPoints(data)
-      setTrend(computeTrend(data))
-    })
+    }
+    load()
   }, [])
 
   useEffect(() => {
@@ -271,5 +279,5 @@ export function useRunningSessions(): {
     return () => window.removeEventListener('sessionMetaUpdated', onMetaUpdate)
   }, [])
 
-  return { sessions: points, trend }
+  return { sessions: points, trend, error }
 }

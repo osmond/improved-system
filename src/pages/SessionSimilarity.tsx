@@ -3,7 +3,7 @@ import { SessionSimilarityMap } from "@/components/statistics";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
 
 export default function SessionSimilarityPage() {
-  const { sessions } = useRunningSessions();
+  const { sessions, error } = useRunningSessions();
 
   return (
     <div className="p-4 space-y-4">
@@ -11,7 +11,13 @@ export default function SessionSimilarityPage() {
       <p className="text-sm text-muted-foreground">
         Visualize how recent runs cluster based on their characteristics.
       </p>
-      <SessionSimilarityMap data={sessions} />
+      {error ? (
+        <div className="text-sm text-red-500">
+          Unable to load running sessions.
+        </div>
+      ) : (
+        <SessionSimilarityMap data={sessions} />
+      )}
     </div>
   );
 }

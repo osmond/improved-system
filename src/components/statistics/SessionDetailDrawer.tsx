@@ -30,7 +30,7 @@ interface SessionDetailDrawerProps {
 
 export default function SessionDetailDrawer({ session, onClose }: SessionDetailDrawerProps) {
   const series = useSessionTimeseries(session?.id ?? null)
-  const sessions = useRunningSessions()
+  const { sessions, error } = useRunningSessions()
   const [typical, setTypical] = useState<SessionPoint | null>(null)
   const [nextBest, setNextBest] = useState<SessionPoint | null>(null)
   const [tagInput, setTagInput] = useState("")
@@ -251,6 +251,19 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
       </td>
     )
   }
+  if (error) {
+    return (
+      <Sheet open={!!session} onOpenChange={(open) => { if (!open) onClose() }}>
+        <SheetContent side="right" className="w-80 sm:w-96">
+          <SheetHeader>
+            <SheetTitle>Session Details</SheetTitle>
+          </SheetHeader>
+          <p className="p-4 text-sm text-red-500">Unable to load session data.</p>
+        </SheetContent>
+      </Sheet>
+    )
+  }
+
   return (
     <Sheet open={!!session} onOpenChange={(open) => { if (!open) onClose() }}>
       <SheetContent side="right" className="w-80 sm:w-96">
