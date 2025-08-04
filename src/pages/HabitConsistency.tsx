@@ -49,6 +49,16 @@ export default function HabitConsistencyPage() {
     score: 1 - e / entropyMax,
   }));
 
+  const weekendSessions = data.sessions.filter((s) => {
+    const d = new Date(s.start ?? s.date);
+    const day = d.getDay();
+    return day === 0 || day === 6;
+  }).length;
+  let prompt: string | null = null;
+  if (weekendSessions === 0) {
+    prompt = "Consider adding weekend sessions.";
+  }
+
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Habit Consistency</h1>
@@ -74,6 +84,9 @@ export default function HabitConsistencyPage() {
           {data.preferredTrainingHour.toString().padStart(2, "0")}:00
         </div>
       </div>
+      {prompt && (
+        <p className="text-sm text-muted-foreground">{prompt}</p>
+      )}
       <HabitConsistencyHeatmap heatmap={data.heatmap} timeframe={timeframe} />
       <ChartContainer config={{}} className="h-32">
         <LineChart
