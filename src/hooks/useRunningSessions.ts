@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { getRunningSessions, RunningSession } from '@/lib/api'
-import { getSessionMeta } from '@/lib/sessionMeta'
+import { getAllSessionMeta, getSessionMeta } from '@/lib/sessionStore'
 import TSNE from 'tsne-js'
 
 export interface SessionFactor {
@@ -192,30 +192,32 @@ export function useRunningSessions(): {
       model.run()
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
+      const metaMap = getAllSessionMeta()
       const preliminary = output.map(([x, y]: [number, number], idx: number) => {
-        const { expected, factors } = computeExpected(sessions[idx])
-        const paceDelta = expected - sessions[idx].pace
-        const confidence = baselineConfidence(sessions[idx])
-        const meta = getSessionMeta(sessions[idx].id)
+        const session = sessions[idx]
+        const { expected, factors } = computeExpected(session)
+        const paceDelta = expected - session.pace
+        const confidence = baselineConfidence(session)
+        const meta = metaMap[session.id] || { tags: [], isFalsePositive: false }
         return {
           x,
           y,
-          id: sessions[idx].id,
+          id: session.id,
           cluster: labels[idx],
           good: paceDelta > 0,
-          pace: sessions[idx].pace,
+          pace: session.pace,
           paceDelta,
-          heartRate: sessions[idx].heartRate,
+          heartRate: session.heartRate,
           confidence,
-          temperature: sessions[idx].weather.temperature,
-          humidity: sessions[idx].weather.humidity,
-          wind: sessions[idx].weather.wind,
-          startHour: new Date(sessions[idx].start ?? sessions[idx].date).getHours(),
-          duration: sessions[idx].duration,
-          lat: sessions[idx].lat,
-          lon: sessions[idx].lon,
-          condition: sessions[idx].weather.condition,
-          start: sessions[idx].start ?? sessions[idx].date,
+          temperature: session.weather.temperature,
+          humidity: session.weather.humidity,
+          wind: session.weather.wind,
+          startHour: new Date(session.start ?? session.date).getHours(),
+          duration: session.duration,
+          lat: session.lat,
+          lon: session.lon,
+          condition: session.weather.condition,
+          start: session.start ?? session.date,
           tags: meta.tags,
           isFalsePositive: meta.isFalsePositive,
           factors,

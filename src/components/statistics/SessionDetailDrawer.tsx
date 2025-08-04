@@ -9,7 +9,7 @@ import { Input } from "@/ui/input"
 import { Button } from "@/ui/button"
 import { Badge } from "@/ui/badge"
 import { useEffect, useRef, useState } from "react"
-import { getSessionMeta, updateSessionMeta } from "@/lib/sessionMeta"
+import { getSessionMeta, updateSessionMeta } from "@/lib/sessionStore"
 import { toPng } from "html-to-image"
 import {
   ChartContainer,
