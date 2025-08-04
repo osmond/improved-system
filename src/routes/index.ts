@@ -1,137 +1,60 @@
-import type { LucideIcon } from "lucide-react";
 import {
   ChartArea,
   ChartBar,
-  ChartPie,
   Radar,
+  ChartPie,
   ChartLine,
-  FlaskConical,
   Shield,
   Settings,
 } from "lucide-react";
+import {
+  withIcon,
+  type DashboardRoute,
+  type DashboardRouteGroup,
+} from "./types";
+import {
+  analyticsRoutes,
+  analyticsRouteGroup,
+} from "@/features/analytics/routes";
+import {
+  playgroundRoutes,
+  playgroundRouteGroup,
+} from "@/features/playground/routes";
 
-export interface DashboardRoute {
-  to: string;
-  label: string;
-  icon: LucideIcon;
-  description: string;
-  tooltip?: string;
-  tags?: string[];
-  badge?: string;
-  preview?: 'fragility';
-}
+export const settingsRoutes = withIcon(Settings, [
+  {
+    to: "/dashboard/settings",
+    label: "Intervention Settings",
+    description: "Configure reminder preferences",
+  },
+]);
 
-export interface DashboardRouteGroup {
-  label: string;
-  icon: LucideIcon;
-  items: DashboardRoute[];
-}
+const settingsRouteGroup: DashboardRouteGroup = {
+  label: "Settings",
+  icon: Settings,
+  items: settingsRoutes,
+};
 
-function withIcon(
-  icon: LucideIcon,
-  routes: Omit<DashboardRoute, "icon">[],
-): DashboardRoute[] {
-  return routes.map((route) => ({ ...route, icon }));
-}
+export const privacyRoutes = withIcon(Shield, [
+  {
+    to: "/dashboard/privacy",
+    label: "Privacy Dashboard",
+    description: "Manage data retention and export/delete options",
+  },
+]);
 
+const privacyRouteGroup: DashboardRouteGroup = {
+  label: "Privacy",
+  icon: Shield,
+  items: privacyRoutes,
+};
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
-  {
-    label: "Playground",
-    icon: FlaskConical,
-    items: withIcon(FlaskConical, [
-      {
-        to: "/dashboard/map",
-        label: "State Visits Map",
-        description: "View visited states on an interactive map",
-        tags: ["map"],
-      },
-      {
-        to: "/dashboard/route-similarity",
-        label: "Route Similarity Analysis",
-        description: "Compare routes based on similarity metrics",
-        tags: ["map"],
-      },
-      {
-        to: "/dashboard/route-novelty",
-        label: "Route Novelty Analysis",
-        description: "Assess how unique a route is compared to known paths",
-        tags: ["map"],
-      },
-    ]),
-  },
-  {
-    label: "Analytics",
-    icon: ChartLine,
-    items: withIcon(ChartLine, [
-      {
-        to: "/dashboard/mileage-globe",
-        label: "Global Mileage Map",
-        description: "Visualize mileage across the world using a globe",
-        tags: ["map"],
-      },
-      {
-        to: "/dashboard/fragility",
-        label: "Fragility Analysis",
-        description: "Review training fragility indicators",
-        preview: 'fragility',
-      },
-      {
-        to: "/dashboard/session-similarity",
-        label: "Session Similarity Analysis",
-        description: "Find training sessions that resemble each other",
-      },
-      {
-        to: "/dashboard/good-day",
-        label: "Good Day Analysis",
-        description: "Identify patterns that contribute to positive days",
-      },
-      {
-        to: "/dashboard/habit-consistency",
-        label: "Habit Consistency Trend",
-        description: "Track how consistently habits are maintained over time",
-      },
-      {
-        to: "/dashboard/statistics",
-        label: "Metric Correlation Matrix",
-        description: "Explore correlations between daily metrics",
-      },
-      {
-        to: "/dashboard/focus-history",
-        label: "Focus History",
-        description: "Review past focus detections and interventions",
-      },
-      {
-        to: "/dashboard/behavioral-charter-map",
-        label: "Behavioral Charter Map",
-        description: "Timeline of activity segments with risk scores",
-      },
-    ]),
-  },
-  {
-    label: "Settings",
-    icon: Settings,
-    items: withIcon(Settings, [
-      {
-        to: "/dashboard/settings",
-        label: "Intervention Settings",
-        description: "Configure reminder preferences",
-      },
-    ]),
-  },
-  {
-    label: "Privacy",
-    icon: Shield,
-    items: withIcon(Shield, [
-      {
-        to: "/dashboard/privacy",
-        label: "Privacy Dashboard",
-        description: "Manage data retention and export/delete options",
-      },
-    ]),
-  },
+  playgroundRouteGroup,
+  analyticsRouteGroup,
+  settingsRouteGroup,
+  privacyRouteGroup,
 ];
-
 
 export const chartRouteGroups: DashboardRouteGroup[] = [
   {
@@ -288,12 +211,9 @@ export const chartRouteGroups: DashboardRouteGroup[] = [
 
 const allDashboardRoutes = dashboardRoutes.flatMap((group) => group.items);
 
-export const analyticsRoutes =
-  dashboardRoutes.find((g) => g.label === "Analytics")?.items ?? [];
-
-export const settingsRoutes =
-  dashboardRoutes.find((g) => g.label === "Settings")?.items ?? [];
-
 export const mapRoutes = allDashboardRoutes.filter((route) =>
-  route.tags?.includes("map")
+  route.tags?.includes("map"),
 );
+
+export { analyticsRoutes, playgroundRoutes };
+export type { DashboardRoute, DashboardRouteGroup } from "./types";
