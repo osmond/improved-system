@@ -1,5 +1,9 @@
 import { describe, it, expect } from 'vitest'
-import { computeCorrelationMatrix, type MetricPoint } from '../useCorrelationMatrix'
+import {
+  computeCorrelationMatrix,
+  hierarchicalCluster,
+  type MetricPoint,
+} from '../useCorrelationMatrix'
 
 describe('computeCorrelationMatrix', () => {
   it('computes correlations between metrics', () => {
@@ -37,6 +41,19 @@ describe('computeCorrelationMatrix', () => {
     const matrix = computeCorrelationMatrix(points)
     expect(matrix.a.b).toBeCloseTo(0)
     expect(matrix.b.a).toBeCloseTo(0)
+  })
+})
+
+describe('hierarchicalCluster', () => {
+  it('orders highly correlated metrics adjacently', () => {
+    const matrix = [
+      [1, 0.9, 0.2],
+      [0.9, 1, 0.1],
+      [0.2, 0.1, 1],
+    ]
+    const { order } = hierarchicalCluster(matrix)
+    // indices 0 and 1 are strongly correlated so should end up next to each other
+    expect(Math.abs(order.indexOf(0) - order.indexOf(1))).toBe(1)
   })
 })
 

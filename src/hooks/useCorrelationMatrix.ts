@@ -58,5 +58,79 @@ export function useCorrelationMatrix<T extends MetricPoint>(
   return useMemo(() => computeCorrelationMatrix(points), [points]);
 }
 
+export interface ClusterNode {
+  left?: ClusterNode;
+  right?: ClusterNode;
+  indices: number[];
+  distance: number;
+}
+
+export interface ClusterResult {
+  order: number[];
+  tree: ClusterNode;
+}
+
+/**
+ * Perform a simple agglomerative hierarchical clustering on a symmetric
+ * distance matrix. The matrix should represent similarities (e.g. correlation)
+ * where higher values mean closer points. The algorithm uses average linkage
+ * and returns both a dendrogram tree and the seriation order of leaves.
+ */
+export function hierarchicalCluster(matrix: number[][]): ClusterResult {
+  const n = matrix.length;
+  const clusters: ClusterNode[] = Array.from({ length: n }, (_, i) => ({
+    indices: [i],
+    distance: 0,
+  }));
+
+  const dist = (a: ClusterNode, b: ClusterNode) => {
+    let sum = 0;
+    let count = 0;
+    for (const i of a.indices) {
+      for (const j of b.indices) {
+        sum += 1 - matrix[i][j];
+        count++;
+      }
+    }
+    return sum / count;
+  };
+
+  while (clusters.length > 1) {
+    let bestI = 0;
+    let bestJ = 1;
+    let bestD = dist(clusters[0], clusters[1]);
+    for (let i = 0; i < clusters.length; i++) {
+      for (let j = i + 1; j < clusters.length; j++) {
+        const d = dist(clusters[i], clusters[j]);
+        if (d < bestD) {
+          bestD = d;
+          bestI = i;
+          bestJ = j;
+        }
+      }
+    }
+    const a = clusters[bestI];
+    const b = clusters[bestJ];
+    const merged: ClusterNode = {
+      left: a,
+      right: b,
+      indices: [...a.indices, ...b.indices],
+      distance: bestD,
+    };
+    // remove j first to not mess up indices
+    clusters.splice(bestJ, 1);
+    clusters.splice(bestI, 1);
+    clusters.push(merged);
+  }
+
+  const traverse = (node: ClusterNode): number[] =>
+    node.left && node.right
+      ? [...traverse(node.left), ...traverse(node.right)]
+      : node.indices;
+
+  const tree = clusters[0];
+  return { order: traverse(tree), tree };
+}
+
 export default useCorrelationMatrix;
 

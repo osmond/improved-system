@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   ResponsiveContainer,
   ScatterChart,
@@ -14,6 +14,7 @@ import {
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
 import { interpolateHcl } from "d3-interpolate";
+import { hierarchicalCluster, type ClusterNode } from "@/hooks/useCorrelationMatrix";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
@@ -27,6 +28,8 @@ interface CorrelationRippleMatrixProps {
   maxCellSize?: number; // maximum computed cell size
   upperOnly?: boolean; // only render x >= y cells
 
+  showDendrograms?: boolean; // render dendrograms along top/left
+
 }
 
 interface CellData {
@@ -37,6 +40,14 @@ interface CellData {
 
 
 const DEFAULT_CELL_SIZE = 24;
+const DENDROGRAM_SIZE = 20;
+
+interface DendrogramLine {
+  x1: number;
+  y1: number;
+  x2: number;
+  y2: number;
+}
 
 /**
  * Create a perceptually uniform diverging scale mapping:
@@ -61,6 +72,42 @@ function createColorScale(minValue = -1, maxValue = 1) {
     .clamp(true);
 }
 
+function buildDendrogramLines(
+  tree: ClusterNode,
+  order: number[],
+  cellSize: number,
+  height: number,
+): DendrogramLine[] {
+  if (!tree) return [];
+  const posByIndex: Record<number, number> = {};
+  order.forEach((idx, i) => {
+    posByIndex[idx] = i * cellSize + cellSize / 2;
+  });
+  const maxDist = tree.distance || 1;
+
+  const layout = (node: ClusterNode): { x: number; y: number; lines: DendrogramLine[] } => {
+    if (!node.left || !node.right) {
+      const idx = node.indices[0];
+      const x = posByIndex[idx];
+      return { x, y: height, lines: [] };
+    }
+    const left = layout(node.left);
+    const right = layout(node.right);
+    const y = height - (node.distance / maxDist) * height;
+    const x = (left.x + right.x) / 2;
+    const lines: DendrogramLine[] = [
+      ...left.lines,
+      ...right.lines,
+      { x1: left.x, y1: left.y, x2: left.x, y2: y },
+      { x1: right.x, y1: right.y, x2: right.x, y2: y },
+      { x1: left.x, y1: y, x2: right.x, y2: y },
+    ];
+    return { x, y, lines };
+  };
+
+  return layout(tree).lines;
+}
+
 export default function CorrelationRippleMatrix({
   matrix,
   labels,
@@ -72,8 +119,28 @@ export default function CorrelationRippleMatrix({
   cellSize: cellSizeProp,
   maxCellSize,
   upperOnly = false,
+  showDendrograms = false,
 
 }: CorrelationRippleMatrixProps) {
+  const { order, tree } = useMemo(() => hierarchicalCluster(matrix), [matrix]);
+  const orderedLabels = useMemo(() => order.map((i) => labels[i]), [labels, order]);
+  const orderedMatrix = useMemo(
+    () => order.map((i) => order.map((j) => matrix[i][j])),
+    [matrix, order],
+  );
+  const orderedDrilldown = useMemo(() => {
+    const res: Record<string, { x: number; y: number }[]> = {};
+    for (const key of Object.keys(drilldown)) {
+      const [y, x] = key.split("-").map(Number);
+      const newY = order.indexOf(y);
+      const newX = order.indexOf(x);
+      if (newY !== -1 && newX !== -1) {
+        res[`${newY}-${newX}`] = drilldown[key];
+      }
+    }
+    return res;
+  }, [drilldown, order]);
+
   const [active, setActive] = useState<CellData | null>(null);
   const [hovered, setHovered] = useState<CellData | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -84,7 +151,7 @@ export default function CorrelationRippleMatrix({
     const update = () => {
       if (containerRef.current) {
         const containerWidth = containerRef.current.clientWidth;
-        const computedSize = containerWidth / labels.length;
+        const computedSize = containerWidth / orderedLabels.length;
         const size =
           maxCellSize !== undefined
             ? Math.min(maxCellSize, computedSize)
@@ -98,11 +165,17 @@ export default function CorrelationRippleMatrix({
       observer.observe(containerRef.current);
     }
     return () => observer.disconnect();
-  }, [cellSizeProp, labels.length, maxCellSize]);
-
-  const heatData: CellData[] = matrix
+  }, [cellSizeProp, orderedLabels.length, maxCellSize]);
+  const heatData: CellData[] = orderedMatrix
     .flatMap((row, y) => row.map((value, x) => ({ x, y, value })))
     .filter(({ x, y }) => !upperOnly || x >= y);
+
+  const dendrogramLines = useMemo(() => {
+    if (!showDendrograms) return { top: [], left: [] };
+    const lines = buildDendrogramLines(tree, order, cellSize, DENDROGRAM_SIZE);
+    const left = lines.map((l) => ({ x1: l.y1, y1: l.x1, x2: l.y2, y2: l.x2 }));
+    return { top: lines, left };
+  }, [tree, order, cellSize, showDendrograms]);
 
   const colorScale = createColorScale(minValue, maxValue);
 
@@ -111,7 +184,7 @@ export default function CorrelationRippleMatrix({
   };
 
   const activeKey = active ? `${active.y}-${active.x}` : null;
-  const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
+  const chartData = activeKey && orderedDrilldown[activeKey] ? orderedDrilldown[activeKey] : [];
 
   const legendGradient = `linear-gradient(to right, ${colorScale(
     minValue
@@ -122,6 +195,44 @@ export default function CorrelationRippleMatrix({
   return (
     <div className="w-full">
       <div ref={containerRef} className="relative w-full aspect-square">
+        {showDendrograms && (
+          <>
+            <svg
+              className="absolute top-0 left-0 pointer-events-none"
+              width={orderedLabels.length * cellSize}
+              height={DENDROGRAM_SIZE}
+              style={{ transform: `translateY(-${DENDROGRAM_SIZE}px)` }}
+            >
+              {dendrogramLines.top.map((l, i) => (
+                <line
+                  key={`t-${i}`}
+                  x1={l.x1}
+                  y1={l.y1}
+                  x2={l.x2}
+                  y2={l.y2}
+                  stroke="#999"
+                />
+              ))}
+            </svg>
+            <svg
+              className="absolute top-0 left-0 pointer-events-none"
+              width={DENDROGRAM_SIZE}
+              height={orderedLabels.length * cellSize}
+              style={{ transform: `translateX(-${DENDROGRAM_SIZE}px)` }}
+            >
+              {dendrogramLines.left.map((l, i) => (
+                <line
+                  key={`l-${i}`}
+                  x1={l.x1}
+                  y1={l.y1}
+                  x2={l.x2}
+                  y2={l.y2}
+                  stroke="#999"
+                />
+              ))}
+            </svg>
+          </>
+        )}
         <ResponsiveContainer width="100%" height="100%">
           <ScatterChart
             margin={{ top: 20, right: 20, bottom: 20, left: 20 }}
@@ -130,8 +241,8 @@ export default function CorrelationRippleMatrix({
           <XAxis
             type="number"
             dataKey="x"
-            tickFormatter={(i) => labels[i] || ""}
-            ticks={labels.map((_, i) => i)}
+            tickFormatter={(i) => orderedLabels[i] || ""}
+            ticks={orderedLabels.map((_, i) => i)}
             interval={0}
             tickLine={false}
             axisLine={false}
@@ -140,8 +251,8 @@ export default function CorrelationRippleMatrix({
           <YAxis
             type="number"
             dataKey="y"
-            tickFormatter={(i) => labels[i] || ""}
-            ticks={labels.map((_, i) => i)}
+            tickFormatter={(i) => orderedLabels[i] || ""}
+            ticks={orderedLabels.map((_, i) => i)}
             interval={0}
             tickLine={false}
             axisLine={false}
@@ -191,8 +302,8 @@ export default function CorrelationRippleMatrix({
               content={({ active, payload }) => {
                 if (active && payload && payload.length) {
                   const cell = payload[0].payload as CellData;
-                  const xLabel = labels[cell.x] ?? "";
-                  const yLabel = labels[cell.y] ?? "";
+                  const xLabel = orderedLabels[cell.x] ?? "";
+                  const yLabel = orderedLabels[cell.y] ?? "";
                   return (
                     <div className="bg-white p-2 border rounded shadow">
                       <div className="font-medium">{`${xLabel} vs ${yLabel}`}</div>
