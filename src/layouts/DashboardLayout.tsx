@@ -4,11 +4,11 @@ import CommandPalette from "@/ui/CommandPalette";
 import { ChartActionsProvider } from "@/hooks/useChartActions";
 import useRecentViews from "@/hooks/useRecentViews";
 
-interface LayoutProps {
+interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
-export default function Layout({ children }: LayoutProps) {
+export default function DashboardLayout({ children }: DashboardLayoutProps) {
   const location = useLocation();
   const { addRecentView } = useRecentViews();
 

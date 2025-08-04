@@ -1,5 +1,5 @@
 import React from "react";
-import Layout from "@/components/layout/Layout";
+import DashboardLayout from "@/layouts/DashboardLayout";
 import Dashboard from "@/pages/Dashboard";
 import DashboardLanding from "@/pages/DashboardLanding";
 import MapPlaygroundPage from "@/pages/MapPlayground";
@@ -60,7 +60,7 @@ function App() {
     <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
       <DashboardFiltersProvider>
         <SelectionProvider>
-        <Layout>
+        <DashboardLayout>
           <Routes>
             <Route path="/" element={<VisualizationsList />} />
             <Route path="/visualizations" element={<VisualizationsList />} />
@@ -119,7 +119,7 @@ function App() {
               <Route path="behavioral-charter-map" element={<BehavioralCharterMapPage />} />
             </Route>
           </Routes>
-        </Layout>
+        </DashboardLayout>
         </SelectionProvider>
       </DashboardFiltersProvider>
     </BrowserRouter>
