@@ -32,6 +32,27 @@ export interface SpotifyNowPlaying {
   item: SpotifyTrackItem | null
 }
 
+export interface SpotifyAudioFeatures {
+  danceability: number
+  energy: number
+  key: number
+  loudness: number
+  mode: number
+  speechiness: number
+  acousticness: number
+  instrumentalness: number
+  liveness: number
+  valence: number
+  tempo: number
+  type: string
+  id: string
+  uri: string
+  track_href: string
+  analysis_url: string
+  duration_ms: number
+  time_signature: number
+}
+
 let accessToken: string | null = null
 let tokenExpiry = 0
 
@@ -103,8 +124,10 @@ export async function getSpotifyNowPlaying(): Promise<SpotifyNowPlaying | null> 
   }
 }
 
-export async function getAudioFeatures(trackId: string) {
-  return fetchSpotify<any>(`/audio-features/${trackId}`)
+export async function getAudioFeatures(
+  trackId: string,
+): Promise<SpotifyAudioFeatures> {
+  return fetchSpotify<SpotifyAudioFeatures>(`/audio-features/${trackId}`)
 }
 
 export function setSpotifyAccessToken(token: string, expiresIn = 3600) {
