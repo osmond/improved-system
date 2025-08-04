@@ -5,6 +5,7 @@ import MileageGlobe from "@/components/examples/MileageGlobe";
 import Slider from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { SimpleSelect } from "@/components/ui/select";
+import { Card, CardContent } from "@/components/ui/card";
 import useWeeklyVolumeHistory from "@/hooks/useWeeklyVolumeHistory";
 
 export default function MileageGlobePage() {
@@ -52,7 +53,7 @@ export default function MileageGlobePage() {
       : "";
 
   return (
-    <div className="space-y-4">
+    <div className="p-4 space-y-4">
       <h2 className="text-xl font-semibold">Mileage Globe</h2>
       <p className="text-sm text-muted-foreground">
         Explore your activities on an interactive 3D globe. Drag to rotate, and use your
@@ -100,14 +101,16 @@ export default function MileageGlobePage() {
           </div>
         </div>
       )}
-      <div className="mx-auto max-w-md space-y-2">
-        <MileageGlobe
-          weekRange={
-            startWeek !== null && playIndex !== null ? [startWeek, playIndex] : undefined
-          }
-          autoRotate={autoRotate}
-        />
-      </div>
+      <Card className="mx-auto max-w-md">
+        <CardContent className="space-y-2">
+          <MileageGlobe
+            weekRange={
+              startWeek !== null && playIndex !== null ? [startWeek, playIndex] : undefined
+            }
+            autoRotate={autoRotate}
+          />
+        </CardContent>
+      </Card>
     </div>
   );
 }
