@@ -102,6 +102,11 @@ export const analyticalRoutes = withIcon(BarChart3, [
     preview: "fragility",
   },
   {
+    to: "/dashboard/clinical-fragility-demo",
+    label: "Clinical Fragility Demo",
+    description: "Simulate outcome flips and fragility index",
+  },
+  {
     to: "/dashboard/session-similarity",
     label: "Session Similarity Analysis",
     description: "Find training sessions that resemble each other",
