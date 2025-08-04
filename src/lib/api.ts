@@ -1092,6 +1092,28 @@ export async function getGoodDaySessions(
     .map(({ isFalsePositive, ...rest }) => rest);
 }
 
+export interface PaceDeltaBenchmark {
+  p50: number;
+  p75: number;
+  p90: number;
+}
+
+export async function getPaceDeltaBenchmark(): Promise<PaceDeltaBenchmark> {
+  const sessions = await getGoodDaySessions();
+  const deltas = sessions.map((s) => s.paceDelta).sort((a, b) => a - b);
+
+  function quantile(p: number) {
+    if (deltas.length === 0) return 0;
+    const pos = (deltas.length - 1) * p;
+    const base = Math.floor(pos);
+    const rest = pos - base;
+    const next = deltas[base + 1] ?? deltas[base];
+    return +(deltas[base] + rest * (next - deltas[base])).toFixed(2);
+  }
+
+  return { p50: quantile(0.5), p75: quantile(0.75), p90: quantile(0.9) };
+}
+
 export interface PaceWeatherPoint {
   /** minutes from start */
   t: number;

@@ -9,6 +9,7 @@ import {
   type SessionPoint,
   type GoodDayTrendPoint,
 } from "@/hooks/useRunningSessions"
+import { usePaceDeltaBenchmark } from "@/hooks/usePaceDeltaBenchmark"
 
 interface GoodDayInsightsProps {
   sessions?: SessionPoint[] | null
@@ -29,6 +30,7 @@ export default function GoodDayInsights({
   const sessions = propSessions ?? hookData.sessions
   const trend = propTrend ?? hookData.trend
   const { error } = hookData
+  const benchmark = usePaceDeltaBenchmark()
 
   if (error)
     return (
@@ -73,6 +75,18 @@ export default function GoodDayInsights({
     : lastAvg
   const trendChange = lastAvg - prevAvg
 
+  let p50Pct = 0,
+    p75Pct = 0,
+    p90Pct = 0,
+    userPct = 0
+  if (benchmark) {
+    const max = Math.max(benchmark.p90, lastAvg)
+    p50Pct = (benchmark.p50 / max) * 100
+    p75Pct = (benchmark.p75 / max) * 100
+    p90Pct = (benchmark.p90 / max) * 100
+    userPct = (lastAvg / max) * 100
+  }
+
   const now = new Date()
   const trendData = Array.from({ length: 30 }, (_, i) => {
     const day = new Date(now)
@@ -91,6 +105,46 @@ export default function GoodDayInsights({
             {trendChange >= 0 ? "+" : ""}
             {trendChange.toFixed(2)} vs prev 7 runs)
           </div>
+          {benchmark && (
+            <div className="space-y-1">
+              <div className="relative h-2 bg-muted rounded">
+                <div
+                  className="absolute h-full"
+                  style={{
+                    width: `${p50Pct}%`,
+                    background: "hsl(var(--chart-4))",
+                  }}
+                />
+                <div
+                  className="absolute h-full"
+                  style={{
+                    left: `${p50Pct}%`,
+                    width: `${p75Pct - p50Pct}%`,
+                    background: "hsl(var(--chart-5))",
+                  }}
+                />
+                <div
+                  className="absolute h-full"
+                  style={{
+                    left: `${p75Pct}%`,
+                    width: `${p90Pct - p75Pct}%`,
+                    background: "hsl(var(--chart-6))",
+                  }}
+                />
+                <div
+                  className="absolute top-1/2 -translate-y-1/2"
+                  style={{ left: `${userPct}%` }}
+                >
+                  <div className="w-0.5 h-4 bg-primary -translate-x-1/2" />
+                </div>
+              </div>
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>{benchmark.p50.toFixed(2)}</span>
+                <span>{benchmark.p75.toFixed(2)}</span>
+                <span>{benchmark.p90.toFixed(2)}</span>
+              </div>
+            </div>
+          )}
         </div>
         <div className="sm:w-40 w-full space-y-2">
           <GoodDaySparkline
