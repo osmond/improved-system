@@ -140,17 +140,16 @@ export default function GoodDayMap({
   const style = getComputedStyle(document.documentElement)
   const start = `hsl(${style.getPropertyValue("--chart-4")})`
   const end = `hsl(${style.getPropertyValue("--chart-6")})`
-  const config = {
-    small: { label: "Smaller Δ", color: start },
-    large: { label: "Larger Δ", color: end },
-  } satisfies ChartConfig
+  const config = {} satisfies ChartConfig
 
   const minDelta = Math.min(...goodSessions.map((d) => d.paceDelta))
   const maxDelta = Math.max(...goodSessions.map((d) => d.paceDelta))
   const colorScale = scaleLinear<string>().domain([minDelta, maxDelta]).range([start, end])
+  const sizeScale = scaleLinear<number>().domain([minDelta, maxDelta]).range([40, 160])
   const colored = goodSessions.map((s) => ({
     ...s,
     fill: colorScale(s.paceDelta),
+    pointSize: sizeScale(s.paceDelta),
     opacity: hoverRange
       ? s.paceDelta >= hoverRange[0] && s.paceDelta < hoverRange[1]
         ? 1
@@ -279,8 +278,6 @@ export default function GoodDayMap({
     "hsl(var(--chart-4))",
   ]
 
-  const star = symbol().type(symbolStar).size(80)
-
   const AnimatedStar = (
     {
       cx,
@@ -293,43 +290,86 @@ export default function GoodDayMap({
       cx?: number
       cy?: number
       fill?: string
-      payload?: SessionPoint & { benchmark?: boolean }
+      payload?: SessionPoint & { benchmark?: boolean; pointSize?: number }
       onClick?: (data: SessionPoint) => void
     },
-  ) => (
-    <motion.g
-      transform={`translate(${cx}, ${cy})`}
-      initial={{ scale: 0, opacity: 0 }}
-      animate={{ scale: 1, opacity: (payload as any)?.opacity ?? 1 }}
-      transition={{ duration: 0.5 }}
-      role="button"
-      tabIndex={0}
-      aria-label={`Session with pace ${payload ? payload.pace.toFixed(2) : ''} min/mi`}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter' || e.key === ' ') {
-          e.preventDefault()
-          onClick?.(payload as SessionPoint)
-        }
-      }}
-      onClick={() => onClick?.(payload as SessionPoint)}
-      className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
-      {...rest}
-    >
-      <circle
-        r={8}
-        fill="none"
-        stroke={fill}
-        strokeOpacity={(payload as any)?.confidence ?? 0}
-        strokeWidth={3}
-      />
-      <path
-        d={star()}
-        fill={(payload as any)?.benchmark ? fill : 'none'}
-        stroke={fill}
-        strokeWidth={1}
-      />
-    </motion.g>
-  )
+  ) => {
+    const size = (payload as any)?.pointSize ?? 80
+    const starPath = symbol().type(symbolStar).size(size)()
+    const haloRadius = Math.sqrt(size)
+    const haloWidth = 1 + 4 * ((payload as any)?.confidence ?? 0)
+    return (
+      <motion.g
+        transform={`translate(${cx}, ${cy})`}
+        initial={{ scale: 0, opacity: 0 }}
+        animate={{ scale: 1, opacity: (payload as any)?.opacity ?? 1 }}
+        transition={{ duration: 0.5 }}
+        role="button"
+        tabIndex={0}
+        aria-label={`Session with pace ${payload ? payload.pace.toFixed(2) : ''} min/mi`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault()
+            onClick?.(payload as SessionPoint)
+          }
+        }}
+        onClick={() => onClick?.(payload as SessionPoint)}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 rounded"
+        {...rest}
+      >
+        <circle
+          r={haloRadius}
+          fill="none"
+          stroke={fill}
+          strokeOpacity={0.6}
+          strokeWidth={haloWidth}
+        />
+        <path
+          d={starPath}
+          fill={(payload as any)?.benchmark ? fill : 'none'}
+          stroke={fill}
+          strokeWidth={1}
+        />
+      </motion.g>
+    )
+  }
+
+  const DeltaLegend = () => {
+    const smallStar = symbol().type(symbolStar).size(40)()
+    const largeStar = symbol().type(symbolStar).size(160)()
+    const sampleStar = symbol().type(symbolStar).size(80)()
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <ChartLegendContent
+          variant="gradient"
+          min={
+            <div className="flex items-center gap-1">
+              <svg width="16" height="16" viewBox="-8 -8 16 16">
+                <path d={smallStar} fill={start} stroke={start} />
+              </svg>
+              <span>Smaller Δ</span>
+            </div>
+          }
+          max={
+            <div className="flex items-center gap-1">
+              <svg width="24" height="24" viewBox="-12 -12 24 24">
+                <path d={largeStar} fill={end} stroke={end} />
+              </svg>
+              <span>Larger Δ</span>
+            </div>
+          }
+          gradient={`linear-gradient(to right, ${start}, ${end})`}
+        />
+        <div className="flex items-center gap-1 text-muted-foreground">
+          <svg width="24" height="24" viewBox="-12 -12 24 24">
+            <circle cx="0" cy="0" r="8" fill="none" stroke="currentColor" strokeWidth="4" />
+            <path d={sampleStar} fill="currentColor" />
+          </svg>
+          <span>Halo thickness = confidence</span>
+        </div>
+      </div>
+    )
+  }
 
   return (
     <ChartCard
@@ -342,13 +382,7 @@ export default function GoodDayMap({
           <XAxis type="number" dataKey="x" name="X" />
           <YAxis type="number" dataKey="y" name="Y" />
           <ChartTooltip content={<GoodDayTooltip />} />
-          <ChartLegend
-            payload={[
-              { value: "small", type: "square", color: start, dataKey: "small" },
-              { value: "large", type: "square", color: end, dataKey: "large" },
-            ]}
-            content={<ChartLegendContent />}
-          />
+          <ChartLegend content={<DeltaLegend />} />
           {clusterStats.map(({ cluster, hull }) => (
             <Polygon
               key={cluster}
