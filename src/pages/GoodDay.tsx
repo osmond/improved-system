@@ -1,5 +1,10 @@
 import React, { useEffect, useMemo, useState } from "react"
-import { GoodDayMap, GoodDayInsights, GoodDayBadges } from "@/components/statistics"
+import {
+  GoodDayMap,
+  GoodDayInsights,
+  GoodDayBadges,
+  GoodDayForecastCalendar,
+} from "@/components/statistics"
 import SessionDetailDrawer from "@/components/statistics/SessionDetailDrawer"
 import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions"
 import { SimpleSelect } from "@/ui/select"
@@ -44,6 +49,7 @@ export default function GoodDayPage() {
   const [highlightDate, setHighlightDate] = useState<string | null>(null)
   const [presets, setPresets] = useState<FilterPreset[]>([])
   const [forecastMessage, setForecastMessage] = useState<string | null>(null)
+  const [forecast, setForecast] = useState<{ date: string; probability: number }[]>([])
 
   if (error) {
     return (
@@ -221,17 +227,19 @@ export default function GoodDayPage() {
       const loc = top.find((s) => !isNaN(s.lat) && !isNaN(s.lon))
       if (!loc || !common) return
       try {
-        const forecast = await getWeatherForecast(loc.lat, loc.lon, 5)
-        const match = forecast.find(
-          (d) =>
-            Math.abs(d.temperature - avgTemp) <= 5 &&
-            Math.abs(d.humidity - avgHum) <= 10 &&
-            Math.abs(d.wind - avgWind) <= 2 &&
-            d.condition === common,
-        )
-        if (match) {
+        const forecastData = await getWeatherForecast(loc.lat, loc.lon, 5)
+        const withProb = forecastData.map((d) => {
+          const t = Math.max(0, 1 - Math.abs(d.temperature - avgTemp) / 10)
+          const h = Math.max(0, 1 - Math.abs(d.humidity - avgHum) / 20)
+          const w = Math.max(0, 1 - Math.abs(d.wind - avgWind) / 5)
+          const c = d.condition === common ? 1 : 0
+          return { date: d.date, probability: (t + h + w + c) / 4 }
+        })
+        setForecast(withProb)
+        const best = [...withProb].sort((a, b) => b.probability - a.probability)[0]
+        if (best && best.probability > 0.6) {
           setForecastMessage(
-            `Upcoming conditions on ${new Date(match.date).toLocaleDateString()} resemble your best running days.`,
+            `High chance of a good session on ${new Date(best.date).toLocaleDateString()}.`,
           )
         }
       } catch {}
@@ -279,6 +287,9 @@ export default function GoodDayPage() {
         <div className="p-2 bg-green-100 text-green-800 rounded">
           {forecastMessage}
         </div>
+      )}
+      {forecast.length > 0 && (
+        <GoodDayForecastCalendar data={forecast} />
       )}
       <div className="flex gap-2 flex-wrap">
         {allPresets.map((p) => (
