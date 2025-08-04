@@ -19,9 +19,10 @@ vi.mock('recharts', async () => {
 
 describe('CorrelationRippleMatrix', () => {
   it('shows detail chart on cell click', async () => {
+    const cell = (v: number) => ({ value: v, n: 10, p: 0.01 })
     const matrix = [
-      [1, 0.5],
-      [0.5, 1],
+      [cell(1), cell(0.5)],
+      [cell(0.5), cell(1)],
     ]
     const labels = ['A', 'B']
     const drilldown = {
@@ -50,9 +51,10 @@ describe('CorrelationRippleMatrix', () => {
   })
 
   it('uses colorblind palette when specified', () => {
+    const cell = (v: number) => ({ value: v, n: 10, p: 0.01 })
     const matrix = [
-      [1, -1],
-      [-1, 1],
+      [cell(1), cell(-1)],
+      [cell(-1), cell(1)],
     ]
     const labels = ['A', 'B']
     const { container } = render(
@@ -71,9 +73,10 @@ describe('CorrelationRippleMatrix', () => {
   })
 
   it('supports viridis palette', () => {
+    const cell = (v: number) => ({ value: v, n: 10, p: 0.01 })
     const matrix = [
-      [1, -1],
-      [-1, 1],
+      [cell(1), cell(-1)],
+      [cell(-1), cell(1)],
     ]
     const labels = ['A', 'B']
     const { container } = render(
@@ -92,9 +95,10 @@ describe('CorrelationRippleMatrix', () => {
   })
 
   it('respects displayMode for lower triangle', () => {
+    const cell = (v: number) => ({ value: v, n: 10, p: 0.01 })
     const matrix = [
-      [1, 0.5],
-      [0.5, 1],
+      [cell(1), cell(0.5)],
+      [cell(0.5), cell(1)],
     ]
     const labels = ['A', 'B']
     const { container } = render(
@@ -113,6 +117,23 @@ describe('CorrelationRippleMatrix', () => {
       c.getAttribute('aria-label')?.includes('B vs A'),
     )
     expect(upperCell).toBeUndefined()
+  })
+
+  it('dims non-significant correlations', () => {
+    const cell = (v: number, p: number) => ({ value: v, n: 10, p })
+    const matrix = [
+      [cell(1, 0.01), cell(0.2, 0.6)],
+      [cell(0.2, 0.6), cell(1, 0.01)],
+    ]
+    const labels = ['A', 'B']
+    const { container } = render(
+      <CorrelationRippleMatrix matrix={matrix} labels={labels} cellSize={50} />,
+    )
+    const cells = container.querySelectorAll('path.recharts-rectangle')
+    const target = Array.from(cells).find((c) =>
+      c.getAttribute('aria-label')?.includes('0.20'),
+    ) as SVGPathElement
+    expect(target).toHaveAttribute('opacity', '0.2')
   })
 })
 
