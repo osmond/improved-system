@@ -41,8 +41,8 @@ export default function ChartBarLabelCustom() {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Location / Segment Breakdown</CardTitle>
-        <CardDescription>Mileage or sessions per custom category (e.g., favorite routes, segments, or surfaces)</CardDescription>
+        <CardTitle>Monthly Activity Breakdown</CardTitle>
+        <CardDescription>Run vs. Bike mileage split by month</CardDescription>
       </CardHeader>
       <CardContent>
         <ChartContainer config={chartConfig} className='h-60 md:h-80 lg:h-96'>
