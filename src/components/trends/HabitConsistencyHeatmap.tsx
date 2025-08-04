@@ -3,9 +3,8 @@
 import ChartCard from "@/components/dashboard/ChartCard"
 import { ChartContainer } from "@/ui/chart"
 import { Button } from "@/ui/button"
-import { Skeleton } from "@/ui/skeleton"
-import useTrainingConsistency from "@/hooks/useTrainingConsistency"
 import { Link } from "react-router-dom"
+import type { TrainingHeatmapCell } from "@/hooks/useTrainingConsistency"
 
 function getHourLabel(hour: number) {
   return `${hour.toString().padStart(2, "0")}:00`
@@ -13,19 +12,11 @@ function getHourLabel(hour: number) {
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-export default function HabitConsistencyHeatmap() {
-  const { data, error } = useTrainingConsistency()
-
-  if (error)
-    return (
-      <div className="h-64 flex items-center justify-center text-sm text-destructive">
-        Failed to load training data
-      </div>
-    )
-
-  if (!data) return <Skeleton className="h-64" />
-
-  const { heatmap } = data
+export default function HabitConsistencyHeatmap({
+  heatmap,
+}: {
+  heatmap: TrainingHeatmapCell[]
+}) {
 
   const grid = Array.from({ length: 24 }, () =>
     Array.from({ length: 7 }, () => ({ count: 0 })),
