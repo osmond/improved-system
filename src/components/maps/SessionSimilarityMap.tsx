@@ -10,6 +10,7 @@ import {
   ChartTooltip,
   ChartLegend,
   ChartLegendContent,
+  Brush,
 } from "@/ui/chart"
 import type { ChartConfig } from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
@@ -20,6 +21,8 @@ import { contourDensity } from "d3-contour"
 import { geoPath } from "d3-geo"
 import { Customized, Polygon } from "recharts"
 import ClusterCard from "./ClusterCard"
+import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 const colors = [
   "var(--chart-1)",
@@ -37,18 +40,54 @@ export default function SessionSimilarityMap({
 }: SessionSimilarityMapProps) {
   if (!data) return <Skeleton className="h-64" />
 
-  const clusters = Array.from(new Set(data.map((d) => d.cluster)))
+  const getTag = (prefix: string, s: SessionPoint) =>
+    s.tags.find((t) => t.startsWith(prefix))?.slice(prefix.length) || null
+
+  const weatherOptions = Array.from(new Set(data.map((d) => d.condition)))
+  const routeOptions = Array.from(
+    new Set(
+      data
+        .map((d) => getTag("route:", d))
+        .filter((v): v is string => Boolean(v)),
+    ),
+  )
+  const recoveryOptions = Array.from(
+    new Set(
+      data
+        .map((d) => getTag("recovery:", d))
+        .filter((v): v is string => Boolean(v)),
+    ),
+  )
+
+  const getTimeOfDay = (h: number) =>
+    h < 6 ? "Early" : h < 12 ? "Morning" : h < 18 ? "Afternoon" : "Evening"
+  const timeOptions = ["Early", "Morning", "Afternoon", "Evening"]
+
+  const [weather, setWeather] = useState<string | null>(null)
+  const [time, setTime] = useState<string | null>(null)
+  const [route, setRoute] = useState<string | null>(null)
+  const [recovery, setRecovery] = useState<string | null>(null)
+
+  const filtered = data.filter((s) => {
+    if (weather && s.condition !== weather) return false
+    if (time && getTimeOfDay(s.startHour) !== time) return false
+    if (route && getTag("route:", s) !== route) return false
+    if (recovery && getTag("recovery:", s) !== recovery) return false
+    return true
+  })
+
+  const clusters = Array.from(new Set(filtered.map((d) => d.cluster)))
   const clusterConfig = clusters.reduce(
     (acc, c) => {
       const descriptor =
-        data.find((d) => d.cluster === c)?.descriptor ?? `Cluster ${c + 1}`
+        filtered.find((d) => d.cluster === c)?.descriptor ?? `Cluster ${c + 1}`
       acc[c] = { label: descriptor, color: colors[c % colors.length] }
       return acc
     },
     {} as Record<string, { label: string; color: string }>,
   )
   const clusterDetails = clusters.map((c) => {
-    const points = data.filter((d) => d.cluster === c)
+    const points = filtered.filter((d) => d.cluster === c)
     const hull = polygonHull(points.map((p) => [p.x, p.y]))
     const centroid = hull
       ? polygonCentroid(hull)
@@ -58,7 +97,10 @@ export default function SessionSimilarityMap({
         ]
     return { cluster: c, points, hull, centroid }
   })
-  const goodRuns = data.filter((d) => d.good)
+  const [activeCluster, setActiveCluster] = useState<number | null>(null)
+  const goodRuns = filtered.filter(
+    (d) => d.good && (activeCluster === null || d.cluster === activeCluster),
+  )
   const paceThreshold = percentile(goodRuns.map((d) => d.paceDelta), 0.9)
   const config: ChartConfig = {
     ...clusterConfig,
@@ -82,31 +124,120 @@ export default function SessionSimilarityMap({
       title="Session Similarity"
       description="Similarity of recent runs"
     >
+      <div className="mb-4 space-y-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Weather:</span>
+          <Button
+            size="sm"
+            variant={weather === null ? "default" : "outline"}
+            onClick={() => setWeather(null)}
+          >
+            All
+          </Button>
+          {weatherOptions.map((w) => (
+            <Button
+              key={w}
+              size="sm"
+              variant={weather === w ? "default" : "outline"}
+              onClick={() => setWeather(w)}
+            >
+              {w}
+            </Button>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Time:</span>
+          <Button
+            size="sm"
+            variant={time === null ? "default" : "outline"}
+            onClick={() => setTime(null)}
+          >
+            All
+          </Button>
+          {timeOptions.map((t) => (
+            <Button
+              key={t}
+              size="sm"
+              variant={time === t ? "default" : "outline"}
+              onClick={() => setTime(t)}
+            >
+              {t}
+            </Button>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Route:</span>
+          <Button
+            size="sm"
+            variant={route === null ? "default" : "outline"}
+            onClick={() => setRoute(null)}
+          >
+            All
+          </Button>
+          {routeOptions.map((r) => (
+            <Button
+              key={r}
+              size="sm"
+              variant={route === r ? "default" : "outline"}
+              onClick={() => setRoute(r)}
+            >
+              {r}
+            </Button>
+          ))}
+        </div>
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-xs text-muted-foreground">Recovery:</span>
+          <Button
+            size="sm"
+            variant={recovery === null ? "default" : "outline"}
+            onClick={() => setRecovery(null)}
+          >
+            All
+          </Button>
+          {recoveryOptions.map((r) => (
+            <Button
+              key={r}
+              size="sm"
+              variant={recovery === r ? "default" : "outline"}
+              onClick={() => setRecovery(r)}
+            >
+              {r}
+            </Button>
+          ))}
+        </div>
+      </div>
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
         <ScatterChart>
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" dataKey="x" name="X" />
           <YAxis type="number" dataKey="y" name="Y" />
+          <Brush dataKey="x" height={20} travellerWidth={10} />
           <ChartTooltip />
           <Customized
             component={
               <ClusterBackground
                 clusters={clusterDetails}
                 clusterConfig={clusterConfig}
+                activeCluster={activeCluster}
               />
             }
           />
           {clusters.map((c) => (
             <Scatter
               key={c}
-              data={data.filter((d) => d.cluster === c)}
+              data={filtered.filter((d) => d.cluster === c)}
               fill={clusterConfig[c].color}
               animationDuration={300}
+              opacity={activeCluster === null || activeCluster === c ? 1 : 0.2}
             />
           ))}
           <Customized
             component={
-              <DeviationTrails points={goodRuns} clusters={clusterDetails} />
+              <DeviationTrails
+                points={goodRuns}
+                clusters={clusterDetails}
+                activeCluster={activeCluster}
+              />
             }
           />
           <Scatter
@@ -124,11 +255,18 @@ export default function SessionSimilarityMap({
               <ClusterCentroids
                 clusters={clusterDetails}
                 clusterConfig={clusterConfig}
+                activeCluster={activeCluster}
               />
             }
           />
           <ChartLegend
             content={<ChartLegendContent payload={legendPayload} />}
+            onClick={(item) => {
+              const c = Number(item.dataKey)
+              if (!Number.isNaN(c)) {
+                setActiveCluster((prev) => (prev === c ? null : c))
+              }
+            }}
           />
         </ScatterChart>
       </ChartContainer>
@@ -138,13 +276,26 @@ export default function SessionSimilarityMap({
       </p>
       <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {clusters.map((c) => {
-          const clusterData = data.filter((d) => d.cluster === c)
+          const clusterData = filtered.filter((d) => d.cluster === c)
           return (
-            <ClusterCard
+            <div
               key={c}
-              data={clusterData}
-              color={clusterConfig[c].color}
-            />
+              className={
+                activeCluster === null || activeCluster === c
+                  ? ""
+                  : "opacity-50"
+              }
+            >
+              <ClusterCard
+                data={clusterData}
+                color={clusterConfig[c].color}
+                open={activeCluster === c}
+                onOpenChange={(o) =>
+                  setActiveCluster(o ? c : null)
+                }
+                onSelect={() => setActiveCluster(c)}
+              />
+            </div>
           )
         })}
       </div>
@@ -160,6 +311,7 @@ function ClusterBackground({
   offset,
   xAxisMap,
   yAxisMap,
+  activeCluster,
 }: any) {
   const xAxis = Object.values(xAxisMap)[0]
   const yAxis = Object.values(yAxisMap)[0]
@@ -171,6 +323,8 @@ function ClusterBackground({
     <g>
       {clusters.map((cluster: any) => {
         const color = clusterConfig[cluster.cluster].color
+        const dimmed =
+          activeCluster !== null && activeCluster !== cluster.cluster
         const density = contourDensity()
           .x((d: any) => xScale(d.x) + offset.left)
           .y((d: any) => yScale(d.y) + offset.top)
@@ -189,7 +343,7 @@ function ClusterBackground({
                 key={`density-${cluster.cluster}-${i}`}
                 d={path(contour) ?? undefined}
                 fill={color}
-                fillOpacity={0.05}
+                fillOpacity={dimmed ? 0.02 : 0.05}
                 stroke="none"
               />
             ))}
@@ -198,7 +352,7 @@ function ClusterBackground({
                 points={hullPoints}
                 stroke={color}
                 fill={color}
-                fillOpacity={0.1}
+                fillOpacity={dimmed ? 0.05 : 0.1}
               />
             )}
           </g>
@@ -208,7 +362,14 @@ function ClusterBackground({
   )
 }
 
-function ClusterCentroids({ clusters, clusterConfig, offset, xAxisMap, yAxisMap }: any) {
+function ClusterCentroids({
+  clusters,
+  clusterConfig,
+  offset,
+  xAxisMap,
+  yAxisMap,
+  activeCluster,
+}: any) {
   const xAxis = Object.values(xAxisMap)[0]
   const yAxis = Object.values(yAxisMap)[0]
   const xScale = xAxis.scale
@@ -221,9 +382,11 @@ function ClusterCentroids({ clusters, clusterConfig, offset, xAxisMap, yAxisMap 
         const [cx, cy] = cluster.centroid
         const x = xScale(cx) + offset.left
         const y = yScale(cy) + offset.top
+        const dimmed =
+          activeCluster !== null && activeCluster !== cluster.cluster
 
         return (
-          <g key={`centroid-${cluster.cluster}`}>
+          <g key={`centroid-${cluster.cluster}`} opacity={dimmed ? 0.3 : 1}>
             <circle
               cx={x}
               cy={y}
@@ -242,7 +405,14 @@ function ClusterCentroids({ clusters, clusterConfig, offset, xAxisMap, yAxisMap 
   )
 }
 
-function DeviationTrails({ points, clusters, offset, xAxisMap, yAxisMap }: any) {
+function DeviationTrails({
+  points,
+  clusters,
+  offset,
+  xAxisMap,
+  yAxisMap,
+  activeCluster,
+}: any) {
   const xAxis = Object.values(xAxisMap)[0]
   const yAxis = Object.values(yAxisMap)[0]
   const xScale = xAxis.scale
@@ -250,27 +420,29 @@ function DeviationTrails({ points, clusters, offset, xAxisMap, yAxisMap }: any) 
 
   return (
     <g>
-      {points.map((p: any) => {
-        const cluster = clusters.find((c: any) => c.cluster === p.cluster)
-        if (!cluster) return null
-        const [cx, cy] = cluster.centroid
-        const x1 = xScale(cx) + offset.left
-        const y1 = yScale(cy) + offset.top
-        const x2 = xScale(p.x) + offset.left
-        const y2 = yScale(p.y) + offset.top
-        return (
-          <line
-            key={`trail-${p.id}`}
-            x1={x1}
-            y1={y1}
-            x2={x2}
-            y2={y2}
-            stroke="hsl(var(--chart-6))"
-            strokeOpacity={0.2}
-            strokeWidth={1}
-          />
-        )
-      })}
+      {points
+        .filter((p: any) => activeCluster === null || p.cluster === activeCluster)
+        .map((p: any) => {
+          const cluster = clusters.find((c: any) => c.cluster === p.cluster)
+          if (!cluster) return null
+          const [cx, cy] = cluster.centroid
+          const x1 = xScale(cx) + offset.left
+          const y1 = yScale(cy) + offset.top
+          const x2 = xScale(p.x) + offset.left
+          const y2 = yScale(p.y) + offset.top
+          return (
+            <line
+              key={`trail-${p.id}`}
+              x1={x1}
+              y1={y1}
+              x2={x2}
+              y2={y2}
+              stroke="hsl(var(--chart-6))"
+              strokeOpacity={0.2}
+              strokeWidth={1}
+            />
+          )
+        })}
     </g>
   )
 }
