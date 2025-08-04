@@ -1,4 +1,5 @@
 import { render, screen } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 import { vi } from 'vitest'
 import SessionDetailDrawer from '../SessionDetailDrawer'
 import type { SessionPoint } from '@/hooks/useRunningSessions'
@@ -70,5 +71,21 @@ describe('SessionDetailDrawer summary', () => {
     expect(
       screen.getByText('Why not good? Heat added 0.3 min/mi')
     ).toBeInTheDocument()
+  })
+})
+
+describe('SessionDetailDrawer tags', () => {
+  beforeEach(() => {
+    localStorage.clear()
+  })
+
+  it('allows adding emoji tags', async () => {
+    useRunningSessionsMock.mockReturnValue({ sessions: [baseSession], trend: null, error: null })
+    render(<SessionDetailDrawer session={baseSession} onClose={() => {}} />)
+
+    const input = screen.getByPlaceholderText('Add tag or emoji')
+    await userEvent.type(input, '🔥{enter}')
+
+    expect(await screen.findByText('🔥')).toBeInTheDocument()
   })
 })
