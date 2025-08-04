@@ -30,7 +30,7 @@ const FILTERS_KEY = "goodDayFilters"
 const PRESETS_KEY = "goodDayPresets"
 
 export default function GoodDayPage() {
-  const sessions = useRunningSessions()
+  const { sessions, trend } = useRunningSessions()
   const [condition, setCondition] = useState("all")
   const [hourRange, setHourRange] = useState<[number, number]>([0, 23])
   const [route, setRoute] = useState("all")
@@ -192,6 +192,7 @@ export default function GoodDayPage() {
       </div>
       <GoodDayInsights
         sessions={filteredSessions}
+        trend={trend}
         onSelect={setActive}
         onRangeChange={setDateRange}
         highlightDate={highlightDate}
