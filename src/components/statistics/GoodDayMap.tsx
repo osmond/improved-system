@@ -20,7 +20,7 @@ import { Skeleton } from "@/ui/skeleton"
 import { Slider } from "@/ui/slider"
 import { scaleLinear } from "d3-scale"
 import type { ChartConfig } from "@/ui/chart"
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { symbol, symbolStar } from "d3-shape"
 import SessionDetailDrawer from "./SessionDetailDrawer"
@@ -132,9 +132,22 @@ export default function GoodDayMap({
   const benchmarkCount = Math.max(1, Math.floor(sortedByDelta.length * benchmarkPercent))
   const benchmarkSet = new Set(sortedByDelta.slice(0, benchmarkCount).map((s) => s.id))
 
-  const style = getComputedStyle(document.documentElement)
-  const start = `hsl(${style.getPropertyValue("--chart-4")})`
-  const end = `hsl(${style.getPropertyValue("--chart-6")})`
+  const [colors, setColors] = useState({
+    start: "hsl(222 70% 60%)",
+    end: "hsl(230 70% 50%)",
+  })
+
+  useEffect(() => {
+    if (typeof document !== "undefined") {
+      const style = getComputedStyle(document.documentElement)
+      setColors({
+        start: `hsl(${style.getPropertyValue("--chart-4")})`,
+        end: `hsl(${style.getPropertyValue("--chart-6")})`,
+      })
+    }
+  }, [])
+
+  const { start, end } = colors
   const config = {} satisfies ChartConfig
 
   const minDelta = Math.min(...goodSessions.map((d) => d.paceDelta))
