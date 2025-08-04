@@ -5,6 +5,8 @@ import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSession
 import { SimpleSelect } from "@/ui/select"
 import Slider from "@/ui/slider"
 import { Button } from "@/ui/button"
+import { Badge } from "@/ui/badge"
+import { X } from "lucide-react"
 import { getWeatherForecast } from "@/lib/weatherApi"
 
 interface FilterPreset {
@@ -124,8 +126,8 @@ export default function GoodDayPage() {
     if (p.day) setDay(p.day)
   }
 
-  const savePreset = () => {
-    const name = prompt("Preset name?")
+  const saveView = () => {
+    const name = prompt("View name?")
     if (!name) return
     const next: FilterPreset = {
       name,
@@ -169,6 +171,32 @@ export default function GoodDayPage() {
 
   const allPresets = [...defaultPresets, ...suggestedPresets, ...presets]
 
+  const resetFilters = () => {
+    setCondition("all")
+    setHourRange([0, 23])
+    setRoute("all")
+    setGear("all")
+    setDay("all")
+  }
+
+  const activeFilters = [
+    ...(condition !== "all"
+      ? [{ label: `Condition: ${condition}`, onClear: () => setCondition("all") }]
+      : []),
+    ...(route !== "all"
+      ? [{ label: `Route: ${route}`, onClear: () => setRoute("all") }]
+      : []),
+    ...(gear !== "all"
+      ? [{ label: `Gear: ${gear}`, onClear: () => setGear("all") }]
+      : []),
+    ...(day !== "all"
+      ? [{ label: `Day: ${day}`, onClear: () => setDay("all") }]
+      : []),
+    ...(hourRange[0] !== 0 || hourRange[1] !== 23
+      ? [{ label: `Hours: ${hourRange[0]}-${hourRange[1]}`, onClear: () => setHourRange([0, 23]) }]
+      : []),
+  ]
+
   useEffect(() => {
     async function checkForecast() {
       if (!sessions || sessions.length === 0) return
@@ -206,7 +234,36 @@ export default function GoodDayPage() {
 
   return (
     <div className="p-4 space-y-4">
-      <h1 className="text-2xl font-bold">Good Day Sessions</h1>
+      <div className="-m-4 mb-4 sticky top-0 z-10 bg-background p-4 border-b">
+        <div className="flex items-center justify-between">
+          <h1 className="text-2xl font-bold">Good Day Sessions</h1>
+          <div className="flex gap-2">
+            <Button size="sm" variant="outline" onClick={resetFilters}>
+              Reset filters
+            </Button>
+            <Button size="sm" onClick={saveView}>
+              Save view
+            </Button>
+          </div>
+        </div>
+        {sessions && <GoodDayBadges sessions={sessions} />}
+        {activeFilters.length > 0 && (
+          <div className="mt-2 flex gap-2 flex-wrap">
+            {activeFilters.map((f) => (
+              <Badge
+                key={f.label}
+                variant="secondary"
+                className="flex items-center gap-1"
+              >
+                {f.label}
+                <button onClick={f.onClear} className="ml-1">
+                  <X className="h-3 w-3" />
+                </button>
+              </Badge>
+            ))}
+          </div>
+        )}
+      </div>
       <p className="text-sm text-muted-foreground">
         Sessions that exceeded expectations are highlighted below.
       </p>
@@ -215,7 +272,6 @@ export default function GoodDayPage() {
           {forecastMessage}
         </div>
       )}
-      {sessions && <GoodDayBadges sessions={sessions} />}
       <div className="flex gap-2 flex-wrap">
         {allPresets.map((p) => (
           <Button
@@ -228,9 +284,6 @@ export default function GoodDayPage() {
             {p.name}
           </Button>
         ))}
-        <Button size="sm" className="rounded-full" onClick={savePreset}>
-          Save preset
-        </Button>
       </div>
       <GoodDayInsights
         sessions={filteredSessions}
