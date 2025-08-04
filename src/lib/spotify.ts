@@ -5,6 +5,33 @@ export interface SpotifyTrack {
   uri: string
 }
 
+export interface SpotifyArtist {
+  name: string
+}
+
+export interface SpotifyImage {
+  url: string
+}
+
+export interface SpotifyTrackItem {
+  id: string
+  name: string
+  artists: SpotifyArtist[]
+  uri: string
+  album?: {
+    images?: SpotifyImage[]
+  }
+}
+
+export interface SpotifyRecentPlay {
+  track: SpotifyTrackItem
+  played_at: string
+}
+
+export interface SpotifyNowPlaying {
+  item: SpotifyTrackItem | null
+}
+
 let accessToken: string | null = null
 let tokenExpiry = 0
 
@@ -60,16 +87,17 @@ async function fetchSpotify<T>(endpoint: string): Promise<T> {
   return res.json() as Promise<T>
 }
 
-export async function getSpotifyRecentPlays(limit = 50) {
-  type Response = { items: { track: any; played_at: string }[] }
-  return fetchSpotify<Response>(
+export async function getSpotifyRecentPlays(
+  limit = 50,
+): Promise<{ items: SpotifyRecentPlay[] }> {
+  return fetchSpotify<{ items: SpotifyRecentPlay[] }>(
     `/me/player/recently-played?limit=${limit}`,
   )
 }
 
-export async function getSpotifyNowPlaying() {
+export async function getSpotifyNowPlaying(): Promise<SpotifyNowPlaying | null> {
   try {
-    return fetchSpotify<any>('/me/player/currently-playing')
+    return fetchSpotify<SpotifyNowPlaying>('/me/player/currently-playing')
   } catch {
     return null
   }
