@@ -18,7 +18,7 @@ vi.mock('recharts', async () => {
 })
 
 describe('CorrelationRippleMatrix', () => {
-  it('shows detail chart on cell click', async () => {
+  it('shows detail panel on cell click', async () => {
     const cell = (v: number) => ({ value: v, n: 10, p: 0.01 })
     const matrix = [
       [cell(1), cell(0.5)],
@@ -26,10 +26,21 @@ describe('CorrelationRippleMatrix', () => {
     ]
     const labels = ['A', 'B']
     const drilldown = {
-      '0-1': [
-        { x: 0, y: 1 },
-        { x: 1, y: 2 },
-      ],
+      '0-1': {
+        seriesX: [
+          { time: 0, value: 1 },
+          { time: 1, value: 2 },
+        ],
+        seriesY: [
+          { time: 0, value: 2 },
+          { time: 1, value: 3 },
+        ],
+        rolling: [
+          { time: 0, value: 0.5 },
+          { time: 1, value: 0.6 },
+        ],
+        breakdown: { weekday: 0.5, weekend: 0.3 },
+      },
     }
     const { container } = render(
       <CorrelationRippleMatrix
@@ -40,13 +51,17 @@ describe('CorrelationRippleMatrix', () => {
       />,
     )
 
-    expect(container.querySelector('[data-testid="detail-chart"]')).not.toBeInTheDocument()
+    expect(
+      document.querySelector('[data-testid="correlation-details"]'),
+    ).not.toBeInTheDocument()
 
     const cells = container.querySelectorAll('path.recharts-rectangle')
     expect(cells.length).toBeGreaterThan(1)
     await userEvent.click(cells[1] as SVGPathElement, { skipHover: true })
     await waitFor(() =>
-      expect(container.querySelector('[data-testid="detail-chart"]')).toBeInTheDocument(),
+      expect(
+        document.querySelector('[data-testid="correlation-details"]'),
+      ).toBeInTheDocument(),
     )
   })
 

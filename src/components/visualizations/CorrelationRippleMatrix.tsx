@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState, lazy, Suspense } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   ResponsiveContainer,
   ScatterChart,
@@ -18,6 +18,9 @@ import {
   interpolateMagma,
 } from "d3-scale-chromatic";
 import { rgb } from "d3-color";
+import CorrelationDetails, {
+  type CorrelationDrilldown,
+} from "./CorrelationDetails";
 
 interface CorrelationCell {
   value: number; // correlation value between -1 and 1
@@ -29,7 +32,7 @@ interface CorrelationCell {
 interface CorrelationRippleMatrixProps {
   matrix: CorrelationCell[][]; // correlation values and stats
   labels: string[]; // axis labels
-  drilldown?: Record<string, { x: number; y: number }[]>; // optional mini chart data
+  drilldown?: Record<string, CorrelationDrilldown>; // optional mini chart data
   groups?: { label: string; size: number }[]; // metric groups for background bands
 
   minValue?: number; // lower bound for color scale
@@ -61,7 +64,6 @@ const PALETTE_INTERPOLATORS: Record<PaletteOption, (t: number) => string> = {
 };
 
 const DEFAULT_CELL_SIZE = 24;
-const DetailChart = lazy(() => import("./CorrelationDetailChart"));
 
 /**
  * Create a diverging color scale that maps `minValue` → negative hue,
@@ -166,7 +168,7 @@ export default function CorrelationRippleMatrix({
   matrix,
   labels,
   groups,
-  drilldown = {},
+  drilldown = {} as Record<string, CorrelationDrilldown>,
 
   minValue = -1,
   maxValue = 1,
@@ -183,7 +185,7 @@ export default function CorrelationRippleMatrix({
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
   const [hovered, setHovered] = useState<CellData | null>(null);
-  const [pinned, setPinned] = useState<CellData | null>(null);
+  const [pinned, setPinned] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const [cellSize, setCellSize] = useState<number>(cellSizeProp ?? DEFAULT_CELL_SIZE);
 
@@ -246,18 +248,11 @@ export default function CorrelationRippleMatrix({
   const colorScale = createColorScale(minValue, maxValue, palette);
 
   const handleCellClick = (cell: CellData) => {
-    const same = pinned && pinned.x === cell.x && pinned.y === cell.y;
-    if (same) {
-      setActive(null);
-      setPinned(null);
-    } else {
-      setActive(cell);
-      setPinned(cell);
-    }
+    setActive(cell);
   };
 
   const activeKey = active ? `${active.y}-${active.x}` : null;
-  const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
+  const detailData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : undefined;
 
   // Legend reflects the selected palette across the value range
 
@@ -391,7 +386,7 @@ export default function CorrelationRippleMatrix({
               const y = cy - cellSize / 2;
               const xLabel = labels[payload.x] ?? "";
               const yLabel = labels[payload.y] ?? "";
-              const highlight = hovered || pinned;
+              const highlight = hovered || (pinned ? active : null);
               const isHighlighted =
                 highlight && (highlight.x === payload.x || highlight.y === payload.y);
               const significant = payload.p < 0.05;
@@ -486,33 +481,19 @@ export default function CorrelationRippleMatrix({
             />
           </ScatterChart>
         </ResponsiveContainer>
-        {active && chartData.length > 0 && (
-          <div
-            data-testid="detail-chart"
-            className="absolute bg-white border p-2 rounded shadow"
-            style={{
-              left: active.x * cellSize + cellSize / 2,
-              top: active.y * cellSize + cellSize / 2,
-              transform: "translate(-50%, -50%)",
-              animation: "ripple 0.3s ease-out",
-              pointerEvents: "auto",
-            }}
-            onClick={() => {
+        <CorrelationDetails
+          open={!!active}
+          xLabel={active ? labels[active.x] ?? "" : ""}
+          yLabel={active ? labels[active.y] ?? "" : ""}
+          data={detailData as any}
+          pinned={pinned}
+          onPinnedChange={(p) => setPinned(p)}
+          onOpenChange={(o) => {
+            if (!o) {
               setActive(null);
-              setPinned(null);
-            }}
-          >
-            <Suspense fallback={<div className="p-2 text-xs">Loading...</div>}>
-              <DetailChart data={chartData} />
-            </Suspense>
-          </div>
-        )}
-        <style>{`
-          @keyframes ripple {
-            from { transform: translate(-50%, -50%) scale(0.2); opacity: 0; }
-            to { transform: translate(-50%, -50%) scale(1); opacity: 1; }
-          }
-        `}</style>
+            }
+          }}
+        />
       </div>
       <Legend colorScale={colorScale} minValue={minValue} maxValue={maxValue} />
     </div>
