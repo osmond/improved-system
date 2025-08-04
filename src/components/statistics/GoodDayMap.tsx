@@ -30,9 +30,10 @@ interface GoodDayMapProps {
   data: SessionPoint[] | null
   condition?: string | null
   hourRange?: [number, number]
+  onSelect?: (s: SessionPoint) => void
 }
 
-export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: GoodDayMapProps) {
+export default function GoodDayMap({ data, condition, hourRange = [0, 23], onSelect }: GoodDayMapProps) {
   const [sampleData, setSampleData] = useState<SessionPoint[] | null>(null)
   const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
   const [active, setActive] = useState<SessionPoint | null>(null)
@@ -265,13 +266,13 @@ export default function GoodDayMap({ data, condition, hourRange = [0, 23] }: Goo
             data={colored}
             shape={AnimatedStar}
             isAnimationActive={false}
-            onClick={(data) => setActive(data as SessionPoint)}
+            onClick={(data) => (onSelect ? onSelect(data as SessionPoint) : setActive(data as SessionPoint))}
             cursor="pointer"
           />
         </ScatterChart>
       </ChartContainer>
       <PaceDeltaHistogram bins={bins} onHover={setHoverRange} />
-      <SessionDetailDrawer session={active} onClose={() => setActive(null)} />
+      {!onSelect && <SessionDetailDrawer session={active} onClose={() => setActive(null)} />}
     </ChartCard>
   )
 }

@@ -18,6 +18,8 @@ export interface SessionPoint {
   lat: number
   lon: number
   condition: string
+  /** ISO timestamp when the session started */
+  start: string
 }
 
 function kMeans(data: number[][], k: number, iterations = 10): number[] {
@@ -121,6 +123,7 @@ export function useRunningSessions(): SessionPoint[] | null {
             lat: sessions[idx].lat,
             lon: sessions[idx].lon,
             condition: sessions[idx].weather.condition,
+            start: sessions[idx].start ?? sessions[idx].date,
           }
         },
       )
