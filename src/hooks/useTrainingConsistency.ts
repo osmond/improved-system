@@ -24,6 +24,23 @@ export interface UseTrainingConsistencyResult {
   error: Error | null
 }
 
+export function filterSessionsByTimeframe(
+  sessions: RunningSession[],
+  timeframe: string,
+): RunningSession[] {
+  if (timeframe === 'all') return sessions
+  const match = timeframe.match(/(\d+)/)
+  if (!match) return sessions
+  const days = parseInt(match[1], 10)
+  if (isNaN(days)) return sessions
+  const cutoff = new Date()
+  cutoff.setDate(cutoff.getDate() - days)
+  return sessions.filter((s) => {
+    const d = new Date(s.start ?? s.date)
+    return d >= cutoff
+  })
+}
+
 function computeHeatmap(sessions: RunningSession[]): TrainingHeatmapCell[] {
   const bins = Array.from({ length: 7 }, () => Array.from({ length: 24 }, () => 0))
   sessions.forEach((s) => {
@@ -102,7 +119,9 @@ export function computePreferredTrainingHour(sessions: RunningSession[]): number
   return hourCounts.indexOf(Math.max(...hourCounts))
 }
 
-export default function useTrainingConsistency(): UseTrainingConsistencyResult {
+export default function useTrainingConsistency(
+  timeframe: string = 'all',
+): UseTrainingConsistencyResult {
   const [sessions, setSessions] = useState<RunningSession[] | null>(null)
   const [error, setError] = useState<Error | null>(null)
 
@@ -112,15 +131,16 @@ export default function useTrainingConsistency(): UseTrainingConsistencyResult {
 
   const data = useMemo(() => {
     if (!sessions) return null
+    const filtered = filterSessionsByTimeframe(sessions, timeframe)
     return {
-      sessions,
-      heatmap: computeHeatmap(sessions),
-      weeklyEntropy: computeWeeklyEntropy(sessions),
-      consistencyScore: computeConsistencyScore(sessions),
-      mostConsistentDay: computeMostConsistentDay(sessions),
-      preferredTrainingHour: computePreferredTrainingHour(sessions),
+      sessions: filtered,
+      heatmap: computeHeatmap(filtered),
+      weeklyEntropy: computeWeeklyEntropy(filtered),
+      consistencyScore: computeConsistencyScore(filtered),
+      mostConsistentDay: computeMostConsistentDay(filtered),
+      preferredTrainingHour: computePreferredTrainingHour(filtered),
     }
-  }, [sessions])
+  }, [sessions, timeframe])
 
   return { data, error }
 }

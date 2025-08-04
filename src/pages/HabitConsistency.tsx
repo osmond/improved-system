@@ -2,6 +2,7 @@ import React from "react";
 import { HabitConsistencyHeatmap } from "@/components/trends";
 import useTrainingConsistency from "@/hooks/useTrainingConsistency";
 import { Skeleton } from "@/ui/skeleton";
+import { SimpleSelect } from "@/ui/select";
 import {
   ChartContainer,
   LineChart,
@@ -15,7 +16,8 @@ import {
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
 export default function HabitConsistencyPage() {
-  const { data, error } = useTrainingConsistency();
+  const [timeframe, setTimeframe] = React.useState("30d");
+  const { data, error } = useTrainingConsistency(timeframe);
 
   if (error) {
     return (
@@ -53,6 +55,17 @@ export default function HabitConsistencyPage() {
       <p className="text-sm text-muted-foreground">
         Session counts by weekday and hour illustrate your training habits.
       </p>
+      <SimpleSelect
+        value={timeframe}
+        onValueChange={(v) => setTimeframe(v)}
+        options={[
+          { value: "7d", label: "Last 7 days" },
+          { value: "30d", label: "Last 30 days" },
+          { value: "90d", label: "Last 90 days" },
+          { value: "all", label: "All time" },
+        ]}
+        label="Timeframe"
+      />
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
         <div>Consistency Score: {data.consistencyScore.toFixed(2)}</div>
         <div>Most Consistent Day: {dayLabels[data.mostConsistentDay]}</div>
@@ -61,7 +74,7 @@ export default function HabitConsistencyPage() {
           {data.preferredTrainingHour.toString().padStart(2, "0")}:00
         </div>
       </div>
-      <HabitConsistencyHeatmap heatmap={data.heatmap} />
+      <HabitConsistencyHeatmap heatmap={data.heatmap} timeframe={timeframe} />
       <ChartContainer config={{}} className="h-32">
         <LineChart
           data={consistencySeries}
