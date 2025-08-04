@@ -39,13 +39,13 @@ describe('CorrelationRippleMatrix', () => {
       />,
     )
 
-    expect(container.querySelector('div.absolute')).not.toBeInTheDocument()
+    expect(container.querySelector('[data-testid="detail-chart"]')).not.toBeInTheDocument()
 
     const cells = container.querySelectorAll('path.recharts-rectangle')
     expect(cells.length).toBeGreaterThan(1)
     await userEvent.click(cells[1] as SVGPathElement, { skipHover: true })
     await waitFor(() =>
-      expect(container.querySelector('div.absolute')).toBeInTheDocument(),
+      expect(container.querySelector('[data-testid="detail-chart"]')).toBeInTheDocument(),
     )
   })
 
@@ -64,7 +64,7 @@ describe('CorrelationRippleMatrix', () => {
       />,
     )
 
-    const legend = container.querySelector('.mt-2 .h-2') as HTMLDivElement
+    const legend = container.querySelector('[data-testid="legend-gradient"]') as HTMLDivElement
     const bg = legend.style.background.replace(/\s/g, '')
     expect(bg).toContain('rgb(0,68,27)')
     expect(bg).toContain('rgb(64,0,75)')
@@ -85,7 +85,7 @@ describe('CorrelationRippleMatrix', () => {
       />, 
     )
 
-    const legend = container.querySelector('.mt-2 .h-2') as HTMLDivElement
+    const legend = container.querySelector('[data-testid="legend-gradient"]') as HTMLDivElement
     const bg = legend.style.background.replace(/\s/g, '')
     expect(bg).toContain('#440154')
     expect(bg).toContain('#fde725')
