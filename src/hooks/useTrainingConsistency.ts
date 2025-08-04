@@ -11,6 +11,12 @@ export interface TrainingConsistency {
   sessions: RunningSession[]
   heatmap: TrainingHeatmapCell[]
   weeklyEntropy: number[]
+  /** Overall schedule consistency on [0,1]; 1.0 means all sessions fall in a single hour slot */
+  consistencyScore: number
+  /** Day of week (0=Sunday) with the highest session count */
+  mostConsistentDay: number
+  /** Hour of day (0-23) with the highest session count */
+  preferredTrainingHour: number
 }
 
 export interface UseTrainingConsistencyResult {
@@ -62,6 +68,40 @@ function computeWeeklyEntropy(sessions: RunningSession[]): number[] {
     .map((k) => shannonEntropy(weeks[k]))
 }
 
+// Consistency score uses Shannon entropy across 168 hourly bins in a week.
+// Formula: 1 - H / log2(168), where H is the entropy of session counts.
+export function computeConsistencyScore(sessions: RunningSession[]): number {
+  const counts = Array(168).fill(0)
+  sessions.forEach((s) => {
+    const d = new Date(s.start ?? s.date)
+    const idx = d.getDay() * 24 + d.getHours()
+    counts[idx] += 1
+  })
+  const entropy = shannonEntropy(counts)
+  const maxEntropy = Math.log2(168)
+  return maxEntropy ? 1 - entropy / maxEntropy : 0
+}
+
+// Returns the day of week (0=Sunday) with the highest session count.
+export function computeMostConsistentDay(sessions: RunningSession[]): number {
+  const dayCounts = Array(7).fill(0)
+  sessions.forEach((s) => {
+    const d = new Date(s.start ?? s.date)
+    dayCounts[d.getDay()] += 1
+  })
+  return dayCounts.indexOf(Math.max(...dayCounts))
+}
+
+// Returns the hour of day (0-23) with the highest session count.
+export function computePreferredTrainingHour(sessions: RunningSession[]): number {
+  const hourCounts = Array(24).fill(0)
+  sessions.forEach((s) => {
+    const d = new Date(s.start ?? s.date)
+    hourCounts[d.getHours()] += 1
+  })
+  return hourCounts.indexOf(Math.max(...hourCounts))
+}
+
 export default function useTrainingConsistency(): UseTrainingConsistencyResult {
   const [sessions, setSessions] = useState<RunningSession[] | null>(null)
   const [error, setError] = useState<Error | null>(null)
@@ -76,6 +116,9 @@ export default function useTrainingConsistency(): UseTrainingConsistencyResult {
       sessions,
       heatmap: computeHeatmap(sessions),
       weeklyEntropy: computeWeeklyEntropy(sessions),
+      consistencyScore: computeConsistencyScore(sessions),
+      mostConsistentDay: computeMostConsistentDay(sessions),
+      preferredTrainingHour: computePreferredTrainingHour(sessions),
     }
   }, [sessions])
 

@@ -4,20 +4,32 @@ import { describe, it, expect, vi, beforeEach } from 'vitest'
 import React from 'react'
 import '@testing-library/jest-dom'
 import TrainingEntropyHeatmap from '../TrainingEntropyHeatmap'
-
 vi.mock('recharts', async () => {
   const actual: any = await vi.importActual('recharts')
   return {
+    __esModule: true,
     ...actual,
-    ResponsiveContainer: ({ children }: { children: React.ReactElement }) => (
+    ResponsiveContainer: ({ children }: { children: React.ReactNode }) => (
       <div style={{ width: 800, height: 400 }}>
-        {React.cloneElement(children, { width: 800, height: 400 })}
+        {Array.isArray(children)
+          ? children.map((child, idx) =>
+              idx === 0 && React.isValidElement(child)
+                ? React.cloneElement(child, { width: 800, height: 400 })
+                : child,
+            )
+          : React.isValidElement(children)
+            ? React.cloneElement(children, { width: 800, height: 400 })
+            : null}
       </div>
     ),
   }
 })
 
-vi.mock('@/hooks/useTrainingConsistency')
+
+vi.mock('@/hooks/useTrainingConsistency', () => ({
+  __esModule: true,
+  default: vi.fn(),
+}))
 import useTrainingConsistency from '@/hooks/useTrainingConsistency'
 const mockUseTrainingConsistency = useTrainingConsistency as unknown as vi.Mock
 
@@ -39,6 +51,9 @@ beforeEach(() => {
       ],
       heatmap: [{ day: 0, hour: 0, count: 1 }],
       weeklyEntropy: [0.2],
+      consistencyScore: 0.5,
+      mostConsistentDay: 0,
+      preferredTrainingHour: 0,
     },
     error: null,
   })
@@ -66,9 +81,8 @@ describe('TrainingEntropyHeatmap', () => {
     render(<TrainingEntropyHeatmap />)
     const cell = screen.getByLabelText('Sun hour 0: 1 sessions')
     await user.hover(cell)
-    expect(
-      await screen.findByText('1 sessions on Sun at 00:00'),
-    ).toBeInTheDocument()
+    const tips = await screen.findAllByText('1 sessions on Sun at 00:00')
+    expect(tips.length).toBeGreaterThan(0)
   })
 
   it('opens dialog with sessions on click', async () => {

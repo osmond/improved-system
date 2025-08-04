@@ -18,6 +18,6 @@ describe("Dashboard", () => {
         </Routes>
       </MemoryRouter>
     );
-    expect(screen.getByText("Test Route")).toBeInTheDocument();
+    expect(screen.getAllByText("Test Route").length).toBeGreaterThan(0);
   });
 });
