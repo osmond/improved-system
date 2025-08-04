@@ -2,8 +2,10 @@
 
 import ChartCard from "@/components/dashboard/ChartCard"
 import { ChartContainer } from "@/components/ui/chart"
+import { Button } from "@/components/ui/button"
 import { Skeleton } from "@/components/ui/skeleton"
 import useTrainingConsistency from "@/hooks/useTrainingConsistency"
+import { Link } from "react-router-dom"
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
@@ -22,6 +24,22 @@ export default function HabitConsistencyHeatmap() {
     grid[c.hour][c.day] = c
     if (c.count > max) max = c.count
   })
+
+  if (max === 0) {
+    return (
+      <ChartCard
+        title="Habit Consistency"
+        description="Session count by weekday and hour"
+      >
+        <div className="flex flex-col items-center justify-center gap-4 h-64 md:h-80 lg:h-96 text-sm text-muted-foreground text-center">
+          <p>No session data yet.</p>
+          <Button asChild size="sm">
+            <Link to="/dashboard">Log a session</Link>
+          </Button>
+        </div>
+      </ChartCard>
+    )
+  }
 
   return (
     <ChartCard
