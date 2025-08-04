@@ -5,6 +5,7 @@ const {
   getAchievements,
   getDailyStats,
   getSessions,
+  getGenreHierarchy,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -46,6 +47,14 @@ router.get('/sessions', (req, res) => {
     res.json(getSessions());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load sessions' });
+  }
+});
+
+router.get('/genre-hierarchy', (req, res) => {
+  try {
+    res.json(getGenreHierarchy());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load genre hierarchy' });
   }
 });
 
