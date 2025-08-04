@@ -13,15 +13,15 @@ import {
   ChartLegendContent,
 } from "@/ui/chart"
 import type { TooltipProps } from "recharts"
-import { Polygon, ReferenceDot } from "recharts"
+import { ReferenceDot, Customized } from "recharts"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/ui/skeleton"
 import { Button } from "@/ui/button"
 import { scaleLinear } from "d3-scale"
 import type { ChartConfig } from "@/ui/chart"
-import { useEffect, useState } from "react"
-import { motion } from "framer-motion"
+import { useState } from "react"
+import { AnimatePresence, motion } from "framer-motion"
 import { symbol, symbolStar } from "d3-shape"
 import SessionDetailDrawer from "./SessionDetailDrawer"
 import PaceDeltaHistogram from "./PaceDeltaHistogram"
@@ -43,11 +43,6 @@ export default function GoodDayMap({
   const [sampleData, setSampleData] = useState<SessionPoint[] | null>(null)
   const [hoverRange, setHoverRange] = useState<[number, number] | null>(null)
   const [active, setActive] = useState<SessionPoint | null>(null)
-  const [animKey, setAnimKey] = useState(0)
-
-  useEffect(() => {
-    setAnimKey((k) => k + 1)
-  }, [condition, hourRange, sampleData, dateRange])
 
   if (!data && !sampleData) return <Skeleton className="h-64" />
 
@@ -300,10 +295,16 @@ export default function GoodDayMap({
     const haloWidth = 1 + 4 * ((payload as any)?.confidence ?? 0)
     return (
       <motion.g
+        key={(payload as any)?.id}
         transform={`translate(${cx}, ${cy})`}
         initial={{ scale: 0, opacity: 0 }}
         animate={{ scale: 1, opacity: (payload as any)?.opacity ?? 1 }}
-        transition={{ duration: 0.5 }}
+        exit={{ scale: 0, opacity: 0 }}
+        transition={{ duration: 0.3 }}
+        whileHover={{
+          scale: 1.1,
+          filter: "drop-shadow(0px 1px 2px rgba(0,0,0,0.3))",
+        }}
         role="button"
         tabIndex={0}
         aria-label={`Session with pace ${payload ? payload.pace.toFixed(2) : ''} min/mi`}
@@ -383,16 +384,26 @@ export default function GoodDayMap({
           <YAxis type="number" dataKey="y" name="Y" />
           <ChartTooltip content={<GoodDayTooltip />} />
           <ChartLegend content={<DeltaLegend />} />
-          {clusterStats.map(({ cluster, hull }) => (
-            <Polygon
-              key={cluster}
-              points={hull}
-              fill={clusterColors[cluster % clusterColors.length]}
-              fillOpacity={0.1}
-              stroke={clusterColors[cluster % clusterColors.length]}
-              strokeOpacity={0.4}
-            />
-          ))}
+          <AnimatePresence>
+            {clusterStats.map(({ cluster, hull }) => {
+              const hullPath = `M${hull.map((p) => `${p.x},${p.y}`).join("L")}Z`
+              const color = clusterColors[cluster % clusterColors.length]
+              return (
+                <motion.path
+                  key={cluster}
+                  d={hullPath}
+                  fill={color}
+                  stroke={color}
+                  fillOpacity={0.1}
+                  strokeOpacity={0.4}
+                  initial={{ opacity: 0, d: hullPath }}
+                  animate={{ opacity: 1, d: hullPath }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.5 }}
+                />
+              )
+            })}
+          </AnimatePresence>
           {clusterStats.map(
             ({ cluster, centroid, meanDelta, count, conditionLabel, timeLabel }) => (
               <ReferenceDot
@@ -410,13 +421,30 @@ export default function GoodDayMap({
               />
             ),
           )}
-          <Scatter
-            key={animKey}
-            data={colored}
-            shape={AnimatedStar}
-            isAnimationActive={false}
-            onClick={(data) => (onSelect ? onSelect(data as SessionPoint) : setActive(data as SessionPoint))}
-            cursor="pointer"
+          <Scatter data={colored} shape={() => null} isAnimationActive={false} />
+          <Customized
+            component={({ xAxisMap, yAxisMap, offset }: any) => {
+              const xKey = Object.keys(xAxisMap)[0]
+              const yKey = Object.keys(yAxisMap)[0]
+              const xScale = xAxisMap[xKey].scale
+              const yScale = yAxisMap[yKey].scale
+              return (
+                <AnimatePresence>
+                  {colored.map((s) => (
+                    <AnimatedStar
+                      key={s.id}
+                      cx={xScale(s.x) + offset.left}
+                      cy={yScale(s.y) + offset.top}
+                      fill={s.fill}
+                      payload={s}
+                      onClick={(d) =>
+                        onSelect ? onSelect(d) : setActive(d as SessionPoint)
+                      }
+                    />
+                  ))}
+                </AnimatePresence>
+              )
+            }}
           />
         </ScatterChart>
       </ChartContainer>
