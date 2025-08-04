@@ -12,11 +12,11 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-} from "@/components/ui/chart"
+} from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { useBenchmarkStats } from "@/hooks/useBenchmarkStats"
-import { Skeleton } from "@/components/ui/skeleton"
-import type { ChartConfig } from "@/components/ui/chart"
+import { Skeleton } from "@/ui/skeleton"
+import type { ChartConfig } from "@/ui/chart"
 
 export default function PeerBenchmarkBands() {
   const stats = useBenchmarkStats()

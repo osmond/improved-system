@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
 import type { LucideIcon } from "lucide-react";
 import { Zap, HeartPulse, Brain, ArrowUp, ArrowDown } from "lucide-react";
-import { Card } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/ui/card";
+import { Skeleton } from "@/ui/skeleton";
 
 interface ForecastItem {
   label: string;

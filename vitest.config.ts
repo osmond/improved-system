@@ -4,6 +4,7 @@ import path from 'path'
 export default defineConfig({
   resolve: {
     alias: {
+      '@/ui': path.resolve(__dirname, './src/components/ui'),
       '@': path.resolve(__dirname, './src'),
     },
   },

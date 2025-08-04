@@ -8,8 +8,8 @@ import {
   YAxis,
   ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart"
-import type { ChartConfig } from "@/components/ui/chart"
+} from "@/ui/chart"
+import type { ChartConfig } from "@/ui/chart"
 
 interface TrendPoint {
   date: string

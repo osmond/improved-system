@@ -3,7 +3,7 @@ import "@testing-library/jest-dom";
 import { Star } from "lucide-react";
 import NavSection from "../nav-section";
 import { slugify } from "@/lib/utils";
-import { SidebarProvider } from "@/components/ui/sidebar";
+import { SidebarProvider } from "@/ui/sidebar";
 import { MemoryRouter } from "react-router-dom";
 
 describe("NavSection contentId", () => {

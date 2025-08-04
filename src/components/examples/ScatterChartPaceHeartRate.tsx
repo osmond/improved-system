@@ -11,7 +11,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import {
   Card,
   CardHeader,
@@ -19,7 +19,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from "@/components/ui/card";
+} from "@/ui/card";
 
 // Generate demo data without per-point colouring
 const scatterData = Array.from({ length: 200 }, () => {

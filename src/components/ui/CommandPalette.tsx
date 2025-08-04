@@ -1,6 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Dialog, DialogContent } from "@/ui/dialog";
 import { dashboardRoutes } from "@/routes";
 
 interface CommandPaletteProps {

@@ -13,14 +13,14 @@ import {
   SidebarMenuSub,
   SidebarMenuSubItem,
   SidebarMenuSubButton,
-} from "@/components/ui/sidebar";
+} from "@/ui/sidebar";
 import { cn, slugify } from "@/lib/utils";
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
-} from "@/components/ui/tooltip";
-import { Badge } from "@/components/ui/badge";
+} from "@/ui/tooltip";
+import { Badge } from "@/ui/badge";
 import type { DashboardRoute, DashboardRouteGroup } from "@/routes";
 import usePersistedGroups from "@/hooks/usePersistedGroups";
 

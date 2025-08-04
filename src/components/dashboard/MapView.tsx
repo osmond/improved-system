@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import Map, { Source, Layer } from "react-map-gl/maplibre";
 import maplibregl from "maplibre-gl";
 import { getLocationVisits, type LocationVisit } from "@/lib/api";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 
 export default function MapView() {
   const [visits, setVisits] = useState<LocationVisit[] | null>(null);

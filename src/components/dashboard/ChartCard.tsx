@@ -1,4 +1,4 @@
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/ui/card";
 import type { ReactNode } from "react";
 import { cn, minutesSince } from "@/lib/utils";
 

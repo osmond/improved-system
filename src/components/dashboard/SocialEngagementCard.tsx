@@ -1,5 +1,5 @@
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent, CardHeader, CardTitle } from "@/ui/card";
+import { Skeleton } from "@/ui/skeleton";
 import useSocialEngagement from "@/hooks/useSocialEngagement";
 import useEngagementNudges from "@/hooks/useEngagementNudges";
 import {
@@ -11,7 +11,7 @@ import {
   ChartLegend,
   ChartLegendContent,
   type ChartConfig,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 
 export default function SocialEngagementCard() {
   const data = useSocialEngagement();

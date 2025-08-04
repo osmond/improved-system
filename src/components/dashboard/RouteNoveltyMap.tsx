@@ -20,12 +20,12 @@ import {
   Area,
   ReferenceLine,
   ReferenceArea,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import { Alert } from "@/components/ui/alert";
+import { Alert } from "@/ui/alert";
 import useRouteNovelty from "@/hooks/useRouteNovelty";
 import RouteNoveltyLegend from "./RouteNoveltyLegend";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/ui/card";
 
 export default function RouteNoveltyMap() {
   const [runs, trend, prolongedLow] = useRouteNovelty();

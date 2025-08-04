@@ -8,13 +8,13 @@ import {
   ChartLegend,
   ChartLegendContent,
   ResponsiveContainer,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import { Cell, Label, type TooltipProps } from "recharts";
 import { useState } from "react";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 import ChartCard from "./ChartCard";
 import useReadingMediumTotals from "@/hooks/useReadingMediumTotals";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import { type ReadingMedium } from "@/lib/api";
 import {
   Smartphone,

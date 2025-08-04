@@ -2,8 +2,8 @@ import React, { useMemo, useState } from "react";
 import { GoodDayMap, GoodDayInsights } from "@/components/statistics";
 import SessionDetailDrawer from "@/components/statistics/SessionDetailDrawer";
 import { useRunningSessions, type SessionPoint } from "@/hooks/useRunningSessions";
-import { SimpleSelect } from "@/components/ui/select";
-import Slider from "@/components/ui/slider";
+import { SimpleSelect } from "@/ui/select";
+import Slider from "@/ui/slider";
 
 export default function GoodDayPage() {
   const sessions = useRunningSessions();

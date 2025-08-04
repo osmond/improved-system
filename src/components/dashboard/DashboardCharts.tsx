@@ -4,7 +4,7 @@ import { DailyStepsChart } from "./DailyStepsChart";
 import { ActivitiesChart } from "./ActivitiesChart";
 import WeeklyVolumeChart from "./WeeklyVolumeChart";
 import { useGarminDays } from "@/hooks/useGarminData";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 
 export default function DashboardCharts() {
   const days = useGarminDays();

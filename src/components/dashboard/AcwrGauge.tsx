@@ -5,7 +5,7 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@/components/ui/tooltip";
+} from "@/ui/tooltip";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface AcwrGaugeProps {

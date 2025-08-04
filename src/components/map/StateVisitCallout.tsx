@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { Bike, Footprints } from "lucide-react";
 import { feature } from "topojson-client";
 import { useStateVisits } from "@/hooks/useStateVisits";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import statesTopo from "@/lib/us-states.json";
 import { fipsToAbbr } from "@/lib/stateCodes";
 import { formatDate, formatMiles } from "@/lib/format";

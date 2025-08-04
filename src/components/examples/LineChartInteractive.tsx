@@ -7,7 +7,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from '@/components/ui/card'
+} from '@/ui/card'
 import {
   ChartContainer,
   ChartTooltip,
@@ -16,8 +16,8 @@ import {
   Line,
   CartesianGrid,
   XAxis,
-} from '@/components/ui/chart'
-import type { ChartConfig } from '@/components/ui/chart'
+} from '@/ui/chart'
+import type { ChartConfig } from '@/ui/chart'
 
 const chartData = [
 

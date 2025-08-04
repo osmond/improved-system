@@ -9,12 +9,12 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 import { useGarminData } from "@/hooks/useGarminData";
 import useDashboardFilters from "@/hooks/useDashboardFilters";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import { chartColors } from "@/lib/chartColors";
 import useSelection from "@/hooks/useSelection";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";

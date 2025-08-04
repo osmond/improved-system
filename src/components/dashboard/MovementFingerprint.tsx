@@ -1,7 +1,7 @@
 "use client";
-import { ChartContainer } from "@/components/ui/chart";
+import { ChartContainer } from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import useMovementFingerprint from "@/hooks/useMovementFingerprint";
 
 export default function MovementFingerprint() {

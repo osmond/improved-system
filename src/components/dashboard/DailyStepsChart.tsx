@@ -7,9 +7,9 @@ import {
   XAxis,
   YAxis,
   CartesianGrid,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 import type { GarminDay } from "@/lib/api";
 import { Cell } from "recharts";
 

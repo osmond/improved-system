@@ -10,8 +10,8 @@ import {
   Tooltip,
   TooltipTrigger,
   TooltipContent,
-} from "@/components/ui/tooltip";
-import { Skeleton } from "@/components/ui/skeleton";
+} from "@/ui/tooltip";
+import { Skeleton } from "@/ui/skeleton";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface BedToRunGaugeProps {

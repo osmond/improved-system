@@ -1,7 +1,7 @@
 "use client";
 import ChartCard from "./ChartCard";
-import { ChartContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip } from "@/components/ui/chart";
-import { Skeleton } from "@/components/ui/skeleton";
+import { ChartContainer, LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip as ChartTooltip } from "@/ui/chart";
+import { Skeleton } from "@/ui/skeleton";
 import useTrainingConsistency from "@/hooks/useTrainingConsistency";
 
 const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];

@@ -8,7 +8,7 @@ import {
   ReferenceDot,
   Tooltip,
   ChartContainer,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import useLowEndDevice from "@/hooks/useLowEndDevice";
 import type { FocusEvent } from "@/hooks/useFocusHistory";
 

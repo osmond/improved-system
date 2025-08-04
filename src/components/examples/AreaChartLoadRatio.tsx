@@ -13,7 +13,7 @@ import {
   ChartTooltipContent,
   ReferenceArea,
   ReferenceLine,
-} from '@/components/ui/chart'
+} from '@/ui/chart'
 import {
   Card,
   CardHeader,
@@ -21,7 +21,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter,
-} from '@/components/ui/card'
+} from '@/ui/card'
 
 const loadData = Array.from({ length: 28 }, (_, i) => {
   const date = new Date()

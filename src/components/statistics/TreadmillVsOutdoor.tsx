@@ -7,7 +7,7 @@ import {
   Tooltip as ChartTooltip,
   ChartLegend,
   ResponsiveContainer,
-} from "@/components/ui/chart"
+} from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 import { Cell } from "recharts"
 

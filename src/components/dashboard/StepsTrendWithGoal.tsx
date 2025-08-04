@@ -10,16 +10,16 @@ import {
   YAxis,
   ReferenceLine,
   ReferenceArea,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "./ChartCard";
-import type { ChartConfig } from "@/components/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 import type { GarminDay } from "@/lib/api";
 import React, { useMemo } from "react";
 import { useSeasonalBaseline } from "@/hooks/useGarminData";
 import { useRunningStats } from "@/hooks/useRunningStats";
 import { Info } from "lucide-react";
 import type { TooltipProps } from "recharts";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Skeleton } from "@/ui/skeleton";
 import usePrefersReducedMotion from "@/hooks/usePrefersReducedMotion";
 
 export interface StepsTrendWithGoalProps {

@@ -7,7 +7,7 @@ import {
   CardTitle,
   CardDescription,
   CardContent,
-} from '@/components/ui/card'
+} from '@/ui/card'
 import {
   ChartContainer,
   ChartTooltip,
@@ -18,9 +18,9 @@ import {
   Area,
   CartesianGrid,
   XAxis,
-} from '@/components/ui/chart'
-import type { ChartConfig } from '@/components/ui/chart'
-import { SimpleSelect } from '@/components/ui/select'
+} from '@/ui/chart'
+import type { ChartConfig } from '@/ui/chart'
+import { SimpleSelect } from '@/ui/select'
 
 const chartData = [
 

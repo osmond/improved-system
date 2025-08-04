@@ -10,7 +10,7 @@ import {
   Tooltip as ChartTooltip,
   ChartLegend,
   ChartLegendContent,
-} from "@/components/ui/chart"
+} from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
 
 const dailyMileage = [

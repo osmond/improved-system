@@ -1,7 +1,7 @@
 import React from "react";
 import useFocusHistory from "@/hooks/useFocusHistory";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card } from "@/ui/card";
+import { Button } from "@/ui/button";
 import { FocusTimeline } from "@/components/visualizations";
 
 export default function FocusHistoryPage() {

@@ -8,13 +8,13 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from '@/components/ui/chart'
-import Slider from '@/components/ui/slider'
+} from '@/ui/chart'
+import Slider from '@/ui/slider'
 import { useState, useEffect } from 'react'
 import ChartCard from '@/components/dashboard/ChartCard'
-import type { ChartConfig } from '@/components/ui/chart'
+import type { ChartConfig } from '@/ui/chart'
 import useWeeklyVolumeHistory from '@/hooks/useWeeklyVolumeHistory'
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 import usePrefersReducedMotion from '@/hooks/usePrefersReducedMotion'
 
 export default function WeeklyVolumeHistoryChart() {

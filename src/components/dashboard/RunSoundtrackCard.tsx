@@ -1,4 +1,4 @@
-import { Skeleton } from '@/components/ui/skeleton'
+import { Skeleton } from '@/ui/skeleton'
 import useRunSoundtrack from '@/hooks/useRunSoundtrack'
 import { minutesSince } from '@/lib/utils'
 

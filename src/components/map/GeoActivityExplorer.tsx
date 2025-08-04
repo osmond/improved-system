@@ -14,9 +14,9 @@ import { scaleSequential } from "d3-scale";
 import { interpolateBlues } from "d3-scale-chromatic";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
-import { Skeleton } from "@/components/ui/skeleton";
-import { SimpleSelect } from "@/components/ui/select";
-import { Badge } from "@/components/ui/badge";
+import { Skeleton } from "@/ui/skeleton";
+import { SimpleSelect } from "@/ui/select";
+import { Badge } from "@/ui/badge";
 import StateVisitSummary from "./StateVisitSummary";
 import StateCityBreakdown from "./StateCityBreakdown";
 

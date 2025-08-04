@@ -1,8 +1,8 @@
 import React from "react";
 import useInterventionPreferences from "@/hooks/useInterventionPreferences";
-import { Card } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import Slider from "@/components/ui/slider";
+import { Card } from "@/ui/card";
+import { Button } from "@/ui/button";
+import Slider from "@/ui/slider";
 
 export default function InterventionSettingsPage() {
   const { prefs, setPrefs } = useInterventionPreferences();

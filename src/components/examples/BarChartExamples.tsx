@@ -9,8 +9,8 @@ import {
   CartesianGrid,
   ChartLegend,
   ChartLegendContent,
-} from "@/components/ui/chart";
-import type { ChartConfig } from "@/components/ui/chart";
+} from "@/ui/chart";
+import type { ChartConfig } from "@/ui/chart";
 
 const simpleData = [
   { name: "A", value: 12 },

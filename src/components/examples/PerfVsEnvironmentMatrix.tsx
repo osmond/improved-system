@@ -11,9 +11,9 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   ChartTooltipContent,
-} from "@/components/ui/chart";
+} from "@/ui/chart";
 import ChartCard from "@/components/dashboard/ChartCard";
-import { SimpleSelect } from "@/components/ui/select";
+import { SimpleSelect } from "@/ui/select";
 
 interface PerfPoint {
   pace: number;

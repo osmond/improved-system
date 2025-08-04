@@ -2,7 +2,7 @@
 
 import Map, { Marker } from "react-map-gl/maplibre"
 import maplibregl from "maplibre-gl"
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet"
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/ui/sheet"
 import { SessionPoint } from "@/hooks/useRunningSessions"
 import useSessionTimeseries from "@/hooks/useSessionTimeseries"
 import {
@@ -15,7 +15,7 @@ import {
   CartesianGrid,
   Tooltip as ChartTooltip,
   type ChartConfig,
-} from "@/components/ui/chart"
+} from "@/ui/chart"
 
 interface SessionDetailDrawerProps {
   session: SessionPoint | null
