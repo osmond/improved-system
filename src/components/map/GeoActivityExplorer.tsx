@@ -222,7 +222,10 @@ export default function GeoActivityExplorer() {
 
   return (
     <>
-      <p className="text-sm">This is a work in progress, Andy. It's going to be so rad.</p>
+      <p className="mb-2 text-sm text-muted-foreground">
+        Explore your activity across the United States. Use the map and filters
+        to dive into where you've been.
+      </p>
       <div className="flex flex-col text-xs rounded-md bg-card p-4 h-60 md:h-80 lg:h-96 space-y-6">
       <div className="flex gap-4 mb-4">
         <SimpleSelect
