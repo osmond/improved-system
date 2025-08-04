@@ -2,7 +2,7 @@ import React from "react";
 import useFocusHistory from "@/hooks/useFocusHistory";
 import { Card } from "@/ui/card";
 import { Button } from "@/ui/button";
-import { FocusTimeline } from "@/components/visualizations";
+import { FocusTimeline } from "@/components/trends";
 
 export default function FocusHistoryPage() {
   const { history, dismissEvent } = useFocusHistory();

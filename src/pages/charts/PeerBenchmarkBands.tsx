@@ -1,5 +1,5 @@
 import React from "react";
-import PeerBenchmarkBands from "@/components/statistics/PeerBenchmarkBands";
+import PeerBenchmarkBands from "@/components/analytical/PeerBenchmarkBands";
 
 export default function PeerBenchmarkBandsPage() {
   return (

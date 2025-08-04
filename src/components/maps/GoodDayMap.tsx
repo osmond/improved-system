@@ -23,7 +23,7 @@ import type { ChartConfig } from "@/ui/chart"
 import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { symbol, symbolStar } from "d3-shape"
-import SessionDetailDrawer from "./SessionDetailDrawer"
+import SessionDetailDrawer from "@/components/analytical/SessionDetailDrawer"
 import PaceDeltaHistogram from "./PaceDeltaHistogram"
 
 interface GoodDayMapProps {

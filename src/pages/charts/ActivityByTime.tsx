@@ -1,5 +1,5 @@
 import React from "react";
-import ActivityByTime from "@/components/statistics/ActivityByTime";
+import ActivityByTime from "@/components/trends/ActivityByTime";
 
 export default function ActivityByTimePage() {
   return (

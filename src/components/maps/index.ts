@@ -3,3 +3,7 @@ export { default as LocationEfficiencyComparison } from './LocationEfficiencyCom
 export { default as StateVisitSummary } from './StateVisitSummary'
 export { default as StateVisitCallout } from './StateVisitCallout'
 export { default as StateCityBreakdown } from './StateCityBreakdown'
+export { default as BehavioralCharterMap } from './BehavioralCharterMap'
+export type { Segment } from './BehavioralCharterMap'
+export { default as GoodDayMap } from './GoodDayMap'
+export { default as SessionSimilarityMap } from './SessionSimilarityMap'

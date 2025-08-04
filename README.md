@@ -151,7 +151,7 @@ Replace these stubs with real API calls when connecting to live Garmin data.
 ## Charts & maps
 All charts should be wrapped in Shadcn’s `<ChartContainer>` so they inherit CSS variables for colours and spacing. Include a <ChartHeader> for titles so typography stays consistent.
 
-Map components (Leaflet, Deck.GL) live under `src/components/map/...` and can reference shared styling from `ui/...`.
+Map components (Leaflet, Deck.GL) live under `src/components/maps/...` and can reference shared styling from `ui/...`.
 
 `useRunningSessions()` returns t-SNE coordinates for recent runs along with a rolling good-day frequency trendline. It feeds the `SessionSimilarityMap` scatter chart. A `good` flag marks sessions where pace beat the expected baseline.
 
