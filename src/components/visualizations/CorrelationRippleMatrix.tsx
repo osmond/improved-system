@@ -13,7 +13,7 @@ import {
   Tooltip,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
-import { interpolateHcl } from "d3-interpolate";
+import { interpolateRdBu, interpolatePRGn } from "d3-scale-chromatic";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
@@ -26,7 +26,7 @@ interface CorrelationRippleMatrixProps {
   cellSize?: number; // explicit cell size override
   maxCellSize?: number; // maximum computed cell size
   upperOnly?: boolean; // only render x >= y cells
-
+  palette?: "default" | "colorblind"; // color scheme for visualization
 }
 
 interface CellData {
@@ -39,22 +39,21 @@ interface CellData {
 const DEFAULT_CELL_SIZE = 24;
 
 /**
- * Create a perceptually uniform diverging scale mapping:
- *   minValue → blue (#2166ac),
- *   0       → white (#ffffff),
- *   maxValue → red (#b2182b).
- * Colors are interpolated in HCL space for smoother perception.
- * The returned scale clamps values outside the [minValue, maxValue] range.
+ * Create a diverging color scale that maps `minValue` → negative hue,
+ * `0` → white, and `maxValue` → positive hue. The palette can be
+ * switched between the default red/blue (`interpolateRdBu`) and a
+ * color-blind-friendly purple/green (`interpolatePRGn`) scheme.
+ * Values outside the [minValue, maxValue] range are clamped.
  */
-function createColorScale(minValue = -1, maxValue = 1) {
-  const blue = "#2166ac";
-  const white = "#ffffff";
-  const red = "#b2182b";
-
-  const interpolator = (t: number) =>
-    t < 0.5
-      ? interpolateHcl(blue, white)(t * 2)
-      : interpolateHcl(white, red)((t - 0.5) * 2);
+function createColorScale(
+  minValue = -1,
+  maxValue = 1,
+  palette: "default" | "colorblind" = "default"
+) {
+  const interpolator =
+    palette === "colorblind"
+      ? (t: number) => interpolatePRGn(1 - t)
+      : (t: number) => interpolateRdBu(1 - t);
 
   return scaleDiverging(interpolator)
     .domain([minValue, 0, maxValue])
@@ -72,6 +71,7 @@ export default function CorrelationRippleMatrix({
   cellSize: cellSizeProp,
   maxCellSize,
   upperOnly = false,
+  palette = "default",
 
 }: CorrelationRippleMatrixProps) {
   const [active, setActive] = useState<CellData | null>(null);
@@ -104,7 +104,7 @@ export default function CorrelationRippleMatrix({
     .flatMap((row, y) => row.map((value, x) => ({ x, y, value })))
     .filter(({ x, y }) => !upperOnly || x >= y);
 
-  const colorScale = createColorScale(minValue, maxValue);
+  const colorScale = createColorScale(minValue, maxValue, palette);
 
   const handleCellClick = (cell: CellData) => {
     setActive(cell);
@@ -113,6 +113,7 @@ export default function CorrelationRippleMatrix({
   const activeKey = active ? `${active.y}-${active.x}` : null;
   const chartData = activeKey && drilldown[activeKey] ? drilldown[activeKey] : [];
 
+  // Legend reflects the selected palette across the value range
   const legendGradient = `linear-gradient(to right, ${colorScale(
     minValue
   )}, ${colorScale(0)}, ${colorScale(maxValue)})`;
