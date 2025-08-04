@@ -1674,6 +1674,21 @@ export async function getDailyReadingStats(): Promise<DailyReadingStat[]> {
   return res.json();
 }
 
+export interface KindleSession {
+  start: string;
+  end: string;
+  asin: string;
+  title: string;
+  duration: number;
+  highlights: number;
+}
+
+export async function getKindleSessions(): Promise<KindleSession[]> {
+  const res = await fetch('/api/kindle/sessions');
+  if (!res.ok) throw new Error('Failed to fetch sessions');
+  return res.json();
+}
+
 // ----- Focus sessions -----
 
 export type FocusLabel = "Deep Dive" | "Skim" | "Page Turn Panic";

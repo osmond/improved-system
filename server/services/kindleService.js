@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 const { aggregateDailyReading } = require('../../src/services/readingStats');
+const { aggregateReadingSessions } = require('../../src/services/readingSessions');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -79,10 +80,50 @@ function getDailyStats() {
   return aggregateDailyReading(rows);
 }
 
+function getSessions() {
+  const sessionsPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'data',
+    'kindle',
+    'Kindle',
+    'Kindle.Devices.ReadingSession',
+    'Kindle.Devices.ReadingSession.csv',
+  );
+  const highlightsPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'data',
+    'kindle',
+    'Kindle',
+    'Kindle.Devices.kindleHighlightActions',
+    'Kindle.Devices.kindleHighlightActions.csv',
+  );
+  const ordersPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'data',
+    'kindle',
+    'Kindle',
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders.csv',
+  );
+  const sessions = parseCsv(sessionsPath);
+  const highlights = parseCsv(highlightsPath);
+  const orders = parseCsv(ordersPath);
+  return aggregateReadingSessions(sessions, highlights, orders);
+}
+
 module.exports = {
   getEvents,
   getPoints,
   getAchievements,
   getDailyStats,
+  getSessions,
 };
 
