@@ -90,5 +90,29 @@ describe('CorrelationRippleMatrix', () => {
     expect(bg).toContain('#440154')
     expect(bg).toContain('#fde725')
   })
+
+  it('respects displayMode for lower triangle', () => {
+    const matrix = [
+      [1, 0.5],
+      [0.5, 1],
+    ]
+    const labels = ['A', 'B']
+    const { container } = render(
+      <CorrelationRippleMatrix
+        matrix={matrix}
+        labels={labels}
+        displayMode="lower"
+        cellSize={50}
+      />,
+    )
+
+    // B vs A cell should not be rendered in lower mode
+    const cells = container.querySelectorAll('path.recharts-rectangle')
+    expect(cells.length).toBe(3)
+    const upperCell = Array.from(cells).find((c) =>
+      c.getAttribute('aria-label')?.includes('B vs A'),
+    )
+    expect(upperCell).toBeUndefined()
+  })
 })
 
