@@ -24,7 +24,7 @@ import { useEffect, useState } from "react"
 import { AnimatePresence, motion } from "framer-motion"
 import { symbol, symbolStar } from "d3-shape"
 import SessionDetailDrawer from "@/components/analytical/SessionDetailDrawer"
-import PaceDeltaHistogram from "./PaceDeltaHistogram"
+import PaceDeltaHistogram from "@/components/analytical/PaceDeltaHistogram"
 
 interface GoodDayMapProps {
   data: SessionPoint[] | null
