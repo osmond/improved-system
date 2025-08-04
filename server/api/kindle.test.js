@@ -48,4 +48,15 @@ describe('GET /api/kindle', () => {
     expect(res.body).toHaveProperty('name', 'root');
     expect(res.body).toHaveProperty('children');
   });
+
+  it('returns genre transitions data', async () => {
+    const res = await request(app).get('/api/kindle/genre-transitions');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    if (res.body.length > 0) {
+      expect(res.body[0]).toHaveProperty('source');
+      expect(res.body[0]).toHaveProperty('target');
+      expect(res.body[0]).toHaveProperty('count');
+    }
+  });
 });

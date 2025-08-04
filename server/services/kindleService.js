@@ -3,6 +3,7 @@ const path = require('path');
 const { aggregateDailyReading } = require('../../src/services/readingStats');
 const { aggregateReadingSessions } = require('../../src/services/readingSessions');
 const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
+const { calculateGenreTransitions } = require('../../src/services/genreTransitions');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -167,6 +168,39 @@ function getGenreHierarchy() {
   return buildGenreHierarchy(aggregated, genres, authors, tags);
 }
 
+function getGenreTransitions(start, end) {
+  const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
+
+  const sessionsPath = path.join(
+    base,
+    'Kindle.Devices.ReadingSession',
+    'Kindle.Devices.ReadingSession.csv'
+  );
+  const ordersPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders.csv'
+  );
+  const genresPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerGenres',
+    'Kindle.UnifiedLibraryIndex.CustomerGenres.csv'
+  );
+
+  const sessions = parseCsv(sessionsPath);
+  const orders = parseCsv(ordersPath);
+  const genres = parseCsv(genresPath);
+
+  let aggregated = aggregateReadingSessions(sessions, [], orders);
+  if (start) aggregated = aggregated.filter((s) => s.start >= start);
+  if (end) aggregated = aggregated.filter((s) => s.start <= end);
+  return calculateGenreTransitions(aggregated, genres);
+}
+
 module.exports = {
   getEvents,
   getPoints,
@@ -174,5 +208,6 @@ module.exports = {
   getDailyStats,
   getSessions,
   getGenreHierarchy,
+  getGenreTransitions,
 };
 
