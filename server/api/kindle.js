@@ -1,5 +1,9 @@
 const express = require('express');
-const { getEvents, getPoints, getAchievements } = require('../services/kindle');
+const {
+  getEvents,
+  getPoints,
+  getAchievements,
+} = require('../services/kindleService');
 
 const router = express.Router();
 
