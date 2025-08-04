@@ -14,6 +14,7 @@ describe("NavSection contentId", () => {
     toggleFavorite: () => {},
     highlighted: null as string | null,
     setHighlighted: () => {},
+    searchMatches: [] as string[],
   };
 
   const groups = [

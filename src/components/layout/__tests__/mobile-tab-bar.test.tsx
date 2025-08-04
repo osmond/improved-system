@@ -45,4 +45,22 @@ describe("MobileTabBar", () => {
       screen.getByRole("tab", { name: secondLabel })
     ).toHaveAttribute("aria-current", "page");
   });
+
+  it("highlights tabs from search results", async () => {
+    const user = userEvent.setup();
+    render(
+      <MemoryRouter
+        initialEntries={[firstPath]}
+        future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+      >
+        <MobileTabBar />
+      </MemoryRouter>
+    );
+    const input = screen.getByRole("searchbox", { name: /search routes/i });
+    await user.type(input, "fragility");
+    const analyticalTab = screen.getByRole("tab", { name: /Analytical/ });
+    expect(analyticalTab).toHaveClass("bg-accent");
+    await user.clear(input);
+    expect(analyticalTab).not.toHaveClass("bg-accent");
+  });
 });

@@ -1,6 +1,7 @@
 import React from "react";
 import { useLocation } from "react-router-dom";
 import NavSection from "@/components/nav-section";
+import SearchBar from "@/components/nav/SearchBar";
 import { SidebarContent } from "@/ui/sidebar";
 import { dashboardRoutes } from "@/routes";
 import useNavigationFavorites from "@/hooks/useNavigationFavorites";
@@ -16,9 +17,11 @@ export default function SidebarNavigation() {
     useNavigationFavorites(allRoutes);
   const { recentRoutes } = useNavigationRecent(allRoutes);
   const [highlighted, setHighlighted] = React.useState<string | null>(null);
+  const [searchMatches, setSearchMatches] = React.useState<string[]>([]);
 
   return (
     <SidebarContent>
+      <SearchBar routes={allRoutes} onResults={setSearchMatches} />
       {favoriteRoutes.length > 0 && (
         <NavSection
           label="Favorites"
@@ -28,6 +31,7 @@ export default function SidebarNavigation() {
           toggleFavorite={toggleFavorite}
           highlighted={highlighted}
           setHighlighted={setHighlighted}
+          searchMatches={searchMatches}
         />
       )}
       {recentRoutes.length > 0 && (
@@ -39,6 +43,7 @@ export default function SidebarNavigation() {
           toggleFavorite={toggleFavorite}
           highlighted={highlighted}
           setHighlighted={setHighlighted}
+          searchMatches={searchMatches}
         />
       )}
       {dashboardRoutes.map((group) => (
@@ -52,6 +57,7 @@ export default function SidebarNavigation() {
           toggleFavorite={toggleFavorite}
           highlighted={highlighted}
           setHighlighted={setHighlighted}
+          searchMatches={searchMatches}
         />
       ))}
     </SidebarContent>

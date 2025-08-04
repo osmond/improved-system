@@ -61,5 +61,16 @@ describe("SidebarNavigation", () => {
     expect(star).toHaveClass("fill-yellow-400");
     expect(screen.getByText("Favorites")).toBeInTheDocument();
   });
+
+  it("updates highlights based on search", async () => {
+    const user = userEvent.setup();
+    renderWithProviders();
+    const input = screen.getByRole("searchbox", { name: /search routes/i });
+    await user.type(input, "interactive");
+    const link = screen.getByText("State Visits Map").closest("a")!;
+    expect(link).toHaveClass("bg-accent");
+    await user.clear(input);
+    expect(link).not.toHaveClass("bg-accent");
+  });
 });
 
