@@ -20,7 +20,7 @@ import {
   settingsRoutes,
   dashboardRoutes,
   type DashboardRoute,
-} from "@/routes";
+} from "@/routes/index";
 import useFavorites from "@/hooks/useFavorites";
 import useRecentViews from "@/hooks/useRecentViews";
 import { cn } from "@/lib/utils";

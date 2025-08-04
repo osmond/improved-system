@@ -21,7 +21,7 @@ import {
   TooltipTrigger,
 } from "@/ui/tooltip";
 import { Badge } from "@/ui/badge";
-import type { DashboardRoute, DashboardRouteGroup } from "@/routes";
+import type { DashboardRoute, DashboardRouteGroup } from "@/routes/index";
 import usePersistedGroups from "@/hooks/usePersistedGroups";
 
 interface NavSectionProps {
