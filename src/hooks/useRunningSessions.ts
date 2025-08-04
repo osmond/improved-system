@@ -3,6 +3,13 @@ import { getRunningSessions, RunningSession } from '@/lib/api'
 import { getSessionMeta } from '@/lib/sessionMeta'
 import TSNE from 'tsne-js'
 
+export interface SessionFactor {
+  /** Human friendly description of what helped or hurt */
+  label: string
+  /** Impact on pace in min/mi (positive = faster, negative = slower) */
+  impact: number
+}
+
 export interface SessionPoint {
   x: number
   y: number
@@ -27,6 +34,7 @@ export interface SessionPoint {
   start: string
   tags: string[]
   isFalsePositive: boolean
+  factors: SessionFactor[]
 }
 
 export interface GoodDayTrendPoint {
@@ -121,6 +129,47 @@ function baselineConfidence(s: RunningSession): number {
   return +(0.5 * completeness + 0.5 * weatherAccuracy).toFixed(2)
 }
 
+export function computeExpected(s: RunningSession): { expected: number; factors: SessionFactor[] } {
+  const hour = new Date(s.start ?? s.date).getHours()
+  const temp = s.weather.temperature || 55
+  const humidity = s.weather.humidity || 50
+  const wind = s.weather.wind || 0
+  const tempAdj = (temp - 55) * 0.02
+  const humidAdj = (humidity - 50) * 0.01
+  const windAdj = wind * 0.01
+  const conditionAdjMap: Record<string, number> = {
+    Clear: -0.05,
+    Cloudy: 0.02,
+    Fog: 0.05,
+    Drizzle: 0.07,
+    Rain: 0.1,
+    Snow: 0.15,
+    Storm: 0.2,
+  }
+  const conditionAdj = conditionAdjMap[s.weather.condition] ?? 0
+  const timeAdj = Math.abs(hour - 8) * 0.03
+  const hrAdj = (s.heartRate - 140) * 0.015
+
+  const factors: SessionFactor[] = []
+  if (tempAdj !== 0)
+    factors.push({ label: tempAdj < 0 ? 'Cool temps' : 'Heat', impact: -tempAdj })
+  if (humidAdj !== 0)
+    factors.push({ label: humidAdj < 0 ? 'Dry air' : 'Humidity', impact: -humidAdj })
+  if (windAdj !== 0)
+    factors.push({ label: windAdj < 0 ? 'Tailwind' : 'Headwind', impact: -windAdj })
+  if (conditionAdj !== 0)
+    factors.push({ label: conditionAdj < 0 ? 'Clear skies' : s.weather.condition, impact: -conditionAdj })
+  if (timeAdj !== 0)
+    factors.push({ label: 'Timing', impact: -timeAdj })
+  if (hrAdj !== 0)
+    factors.push({ label: hrAdj < 0 ? 'Stable HR' : 'High HR', impact: -hrAdj })
+
+  return {
+    expected: 6.5 + tempAdj + humidAdj + windAdj + conditionAdj + timeAdj + hrAdj,
+    factors,
+  }
+}
+
 export function useRunningSessions(): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
@@ -129,29 +178,6 @@ export function useRunningSessions(): {
   const [trend, setTrend] = useState<GoodDayTrendPoint[] | null>(null)
 
   useEffect(() => {
-    function expectedPace(s: RunningSession): number {
-      const hour = new Date(s.start ?? s.date).getHours()
-      const temp = s.weather.temperature || 55
-      const humidity = s.weather.humidity || 50
-      const wind = s.weather.wind || 0
-      const tempAdj = (temp - 55) * 0.02
-      const humidAdj = (humidity - 50) * 0.01
-      const windAdj = wind * 0.01
-      const conditionAdjMap: Record<string, number> = {
-        Clear: -0.05,
-        Cloudy: 0.02,
-        Fog: 0.05,
-        Drizzle: 0.07,
-        Rain: 0.1,
-        Snow: 0.15,
-        Storm: 0.2,
-      }
-      const conditionAdj = conditionAdjMap[s.weather.condition] ?? 0
-      const timeAdj = Math.abs(hour - 8) * 0.03
-      const hrAdj = (s.heartRate - 140) * 0.015
-      return 6.5 + tempAdj + humidAdj + windAdj + conditionAdj + timeAdj + hrAdj
-    }
-
     getRunningSessions().then((sessions: RunningSession[]) => {
       const model = new TSNE({ dim: 2, perplexity: 5 })
       const input = sessions.map((s) => [
@@ -166,7 +192,7 @@ export function useRunningSessions(): {
       const output = model.getOutputScaled()
       const labels = kMeans(output, 3)
       const data = output.map(([x, y]: [number, number], idx: number) => {
-        const expected = expectedPace(sessions[idx])
+        const { expected, factors } = computeExpected(sessions[idx])
         const paceDelta = expected - sessions[idx].pace
         const confidence = baselineConfidence(sessions[idx])
         const meta = getSessionMeta(sessions[idx].id)
@@ -191,6 +217,7 @@ export function useRunningSessions(): {
           start: sessions[idx].start ?? sessions[idx].date,
           tags: meta.tags,
           isFalsePositive: meta.isFalsePositive,
+          factors,
         }
       })
       setPoints(data)

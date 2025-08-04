@@ -38,6 +38,27 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
   const [isFalsePositive, setIsFalsePositive] = useState(false)
   const shareRef = useRef<HTMLDivElement>(null)
 
+  const summary = session
+    ? (() => {
+        const boosts = session.factors
+          .filter((f) => f.impact > 0)
+          .sort((a, b) => b.impact - a.impact)
+        const drags = session.factors
+          .filter((f) => f.impact < 0)
+          .sort((a, b) => a.impact - b.impact)
+        if (session.good && boosts.length) {
+          const top = boosts.slice(0, 2).map((f) => f.label).join(" + ")
+          return `${top} led to Δ ${session.paceDelta.toFixed(1)} min/mi`
+        }
+        const nearMiss = !session.good && session.paceDelta > -0.5
+        if (nearMiss && drags.length) {
+          const top = drags.slice(0, 2).map((f) => f.label).join(" + ")
+          return `Why not good? ${top} added ${Math.abs(session.paceDelta).toFixed(1)} min/mi`
+        }
+        return null
+      })()
+    : null
+
   useEffect(() => {
     if (!session || !sessions) {
       setTypical(null)
@@ -252,6 +273,7 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
                 </Marker>
               </Map>
             </div>
+            {summary && <p className="text-sm">{summary}</p>}
             <table className="w-full text-sm">
               <thead>
                 <tr>

@@ -91,6 +91,7 @@ export default function GoodDayMap({
         start: new Date().toISOString(),
         tags: [],
         isFalsePositive: false,
+        factors: [],
       },
       {
         id: 2,
@@ -113,6 +114,7 @@ export default function GoodDayMap({
         start: new Date().toISOString(),
         tags: [],
         isFalsePositive: false,
+        factors: [],
       },
     ]
     return (
