@@ -12,6 +12,7 @@ import {
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
 import { interpolateRdBu, interpolatePRGn } from "d3-scale-chromatic";
+import { rgb } from "d3-color";
 
 interface CorrelationRippleMatrixProps {
   matrix: number[][]; // correlation values between -1 and 1
@@ -21,7 +22,7 @@ interface CorrelationRippleMatrixProps {
 
   minValue?: number; // lower bound for color scale
   maxValue?: number; // upper bound for color scale
-  showValues?: boolean; // display correlation values in cells
+  showValues?: boolean; // display correlation values in cells (default: true)
   cellSize?: number; // explicit cell size override
   maxCellSize?: number; // maximum computed cell size
   upperOnly?: boolean; // only render x >= y cells
@@ -77,6 +78,12 @@ function wrapText(label: string, maxChars = 10) {
   return lines;
 }
 
+function getTextColor(background: string) {
+  const { r, g, b } = rgb(background);
+  const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
+  return luminance > 0.5 ? "#000" : "#fff";
+}
+
 export default function CorrelationRippleMatrix({
   matrix,
   labels,
@@ -85,7 +92,7 @@ export default function CorrelationRippleMatrix({
 
   minValue = -1,
   maxValue = 1,
-  showValues = false,
+  showValues = true,
   cellSize: cellSizeProp,
   maxCellSize,
   upperOnly = false,
@@ -284,6 +291,8 @@ export default function CorrelationRippleMatrix({
               const isHighlighted =
                 hovered && (hovered.x === payload.x || hovered.y === payload.y);
               const opacity = hovered ? (isHighlighted ? 1 : 0.3) : 1;
+              const fillColor = colorScale(payload.value);
+              const textColor = getTextColor(fillColor);
               return (
                 <g>
                   <Rectangle
@@ -291,7 +300,7 @@ export default function CorrelationRippleMatrix({
                     y={y}
                     width={cellSize}
                     height={cellSize}
-                    fill={colorScale(payload.value)}
+                    fill={fillColor}
                     stroke="#ffffff"
                     opacity={opacity}
                     onClick={() => handleCellClick(payload as CellData)}
@@ -313,7 +322,8 @@ export default function CorrelationRippleMatrix({
                       textAnchor="middle"
                       dominantBaseline="central"
                       pointerEvents="none"
-                      className="fill-black text-[10px]"
+                      fill={textColor}
+                      className="text-[10px]"
                       opacity={opacity}
                     >
                       {payload.value.toFixed(2)}
