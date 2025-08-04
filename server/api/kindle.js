@@ -3,6 +3,7 @@ const {
   getEvents,
   getPoints,
   getAchievements,
+  getDailyStats,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -28,6 +29,14 @@ router.get('/achievements', (req, res) => {
     res.json(getAchievements());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load achievements' });
+  }
+});
+
+router.get('/daily-stats', (req, res) => {
+  try {
+    res.json(getDailyStats());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load daily stats' });
   }
 });
 
