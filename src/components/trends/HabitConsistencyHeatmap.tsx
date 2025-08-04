@@ -14,8 +14,10 @@ const dayLabels = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
 export default function HabitConsistencyHeatmap({
   heatmap,
+  timeframe,
 }: {
   heatmap: TrainingHeatmapCell[]
+  timeframe: string
 }) {
 
   const grid = Array.from({ length: 24 }, () =>
@@ -31,7 +33,9 @@ export default function HabitConsistencyHeatmap({
     return (
       <ChartCard
         title="Habit Consistency"
-        description="Session count by weekday and hour"
+        description={`Session count by weekday and hour${
+          timeframe !== 'all' ? ` (last ${timeframe})` : ''
+        }`}
       >
         <div className="flex flex-col items-center justify-center gap-4 h-64 md:h-80 lg:h-96 text-sm text-muted-foreground text-center">
           <p>No session data yet.</p>
@@ -46,7 +50,9 @@ export default function HabitConsistencyHeatmap({
   return (
     <ChartCard
       title="Habit Consistency"
-      description="Session count by weekday and hour"
+      description={`Session count by weekday and hour${
+        timeframe !== 'all' ? ` (last ${timeframe})` : ''
+      }`}
     >
       <ChartContainer config={{}} className="h-64 md:h-80 lg:h-96">
         <div className="flex h-full flex-col">
