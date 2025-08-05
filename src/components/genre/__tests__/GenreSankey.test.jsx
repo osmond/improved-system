@@ -76,7 +76,7 @@ describe('GenreSankey', () => {
     expect(texts[0].textContent).toBe('Literature & Fiction');
   });
 
-  it('shows a tooltip on link hover', async () => {
+  it('shows a tooltip with text and bar chart on link hover', async () => {
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
       expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
@@ -95,6 +95,9 @@ describe('GenreSankey', () => {
     expect(tooltip).toHaveTextContent(
       'Mystery, Thriller & Suspense → Science & Math: 10 sessions',
     );
+    const svg = tooltip.querySelector('svg');
+    expect(svg).toBeInTheDocument();
+    expect(svg.querySelectorAll('rect').length).toBe(12);
     fireEvent.mouseOut(link);
     await waitFor(() => {
       expect(tooltip).toHaveStyle({ display: 'none' });

@@ -2,271 +2,1027 @@
   {
     "source": "Mystery, Thriller & Suspense",
     "target": "Science & Math",
-    "count": 10
+    "count": 10,
+    "monthlyCounts": [
+      0,
+      4,
+      0,
+      1,
+      1,
+      1,
+      0,
+      2,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Unknown",
     "target": "Arts & Photography",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2
+    ]
   },
   {
     "source": "Mystery, Thriller & Suspense",
     "target": "Unknown",
-    "count": 63
+    "count": 63,
+    "monthlyCounts": [
+      7,
+      4,
+      3,
+      3,
+      2,
+      9,
+      7,
+      7,
+      8,
+      6,
+      0,
+      7
+    ]
   },
   {
     "source": "Biographies & Memoirs",
     "target": "Mystery, Thriller & Suspense",
-    "count": 9
+    "count": 9,
+    "monthlyCounts": [
+      0,
+      0,
+      5,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
   },
   {
     "source": "Biographies & Memoirs",
     "target": "Unknown",
-    "count": 7
+    "count": 7,
+    "monthlyCounts": [
+      1,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      1,
+      1,
+      0,
+      2,
+      0
+    ]
   },
   {
     "source": "Mystery, Thriller & Suspense",
     "target": "Children's Books",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      2,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Biographies & Memoirs",
     "target": "Science Fiction & Fantasy",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Science Fiction & Fantasy",
     "target": "Business & Money",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
   },
   {
     "source": "Business & Money",
     "target": "Science & Math",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Mystery, Thriller & Suspense",
-    "count": 12
+    "count": 12,
+    "monthlyCounts": [
+      1,
+      0,
+      5,
+      0,
+      4,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Mystery, Thriller & Suspense",
-    "count": 80
+    "count": 80,
+    "monthlyCounts": [
+      7,
+      12,
+      11,
+      5,
+      4,
+      0,
+      13,
+      8,
+      5,
+      8,
+      4,
+      3
+    ]
   },
   {
     "source": "History",
     "target": "Mystery, Thriller & Suspense",
-    "count": 19
+    "count": 19,
+    "monthlyCounts": [
+      2,
+      1,
+      4,
+      2,
+      3,
+      5,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Politics & Social Sciences",
     "target": "Mystery, Thriller & Suspense",
-    "count": 4
+    "count": 4,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      4,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Unknown",
-    "count": 56
+    "count": 56,
+    "monthlyCounts": [
+      6,
+      5,
+      4,
+      3,
+      3,
+      0,
+      7,
+      4,
+      3,
+      5,
+      6,
+      10
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Unknown",
-    "count": 10
+    "count": 10,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1,
+      2,
+      4,
+      1
+    ]
   },
   {
     "source": "Politics & Social Sciences",
     "target": "Literature & Fiction",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Biographies & Memoirs",
-    "count": 4
+    "count": 4,
+    "monthlyCounts": [
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Biographies & Memoirs",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      1,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Science Fiction & Fantasy",
-    "count": 10
+    "count": 10,
+    "monthlyCounts": [
+      1,
+      0,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      2,
+      3
+    ]
   },
   {
     "source": "Science Fiction & Fantasy",
     "target": "Unknown",
-    "count": 6
+    "count": 6,
+    "monthlyCounts": [
+      0,
+      0,
+      3,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      1
+    ]
   },
   {
     "source": "History",
     "target": "Literature & Fiction",
-    "count": 12
+    "count": 12,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      2,
+      5,
+      1,
+      2,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "History",
     "target": "Unknown",
-    "count": 11
+    "count": 11,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      3,
+      0,
+      4,
+      2,
+      0,
+      1,
+      1,
+      0,
+      0
+    ]
   },
   {
     "source": "History",
     "target": "Religion & Spirituality",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Religion & Spirituality",
     "target": "Literature & Fiction",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      1,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Mystery, Thriller & Suspense",
     "target": "Science Fiction & Fantasy",
-    "count": 15
+    "count": 15,
+    "monthlyCounts": [
+      0,
+      4,
+      2,
+      0,
+      3,
+      0,
+      1,
+      1,
+      1,
+      0,
+      1,
+      2
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Science & Math",
-    "count": 10
+    "count": 10,
+    "monthlyCounts": [
+      3,
+      1,
+      0,
+      3,
+      2,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Science & Math",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0
+    ]
   },
   {
     "source": "Unknown",
     "target": "Science & Math",
-    "count": 4
+    "count": 4,
+    "monthlyCounts": [
+      1,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      1,
+      1,
+      0,
+      0
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Business & Money",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Comics & Graphic Novels",
     "target": "Literature & Fiction",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Comics & Graphic Novels",
     "target": "Unknown",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Medical Books",
     "target": "Mystery, Thriller & Suspense",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Science Fiction & Fantasy",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Reference",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Reference",
     "target": "Unknown",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "History",
     "target": "Biographies & Memoirs",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Biographies & Memoirs",
     "target": "Teen & Young Adult",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Travel",
     "target": "Literature & Fiction",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "History",
     "target": "Science & Math",
-    "count": 4
+    "count": 4,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      1,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Humor & Entertainment",
     "target": "History",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "History",
     "target": "Sports & Outdoors",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Cookbooks, Food & Wine",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Cookbooks, Food & Wine",
     "target": "Mystery, Thriller & Suspense",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Biographies & Memoirs",
     "target": "Science & Math",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Mystery, Thriller & Suspense",
     "target": "Self-Help",
-    "count": 18
+    "count": 18,
+    "monthlyCounts": [
+      2,
+      3,
+      7,
+      3,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Humor & Entertainment",
     "target": "Self-Help",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Mystery, Thriller & Suspense",
     "target": "Romance",
-    "count": 8
+    "count": 8,
+    "monthlyCounts": [
+      0,
+      0,
+      7,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Health, Fitness & Dieting",
     "target": "Mystery, Thriller & Suspense",
-    "count": 2
+    "count": 2,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      2,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Literature & Fiction",
     "target": "Medical Books",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Sports & Outdoors",
     "target": "Self-Help",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Travel",
     "target": "Mystery, Thriller & Suspense",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Health, Fitness & Dieting",
     "target": "Self-Help",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      1
+    ]
   },
   {
     "source": "Humor & Entertainment",
     "target": "Mystery, Thriller & Suspense",
-    "count": 1
+    "count": 1,
+    "monthlyCounts": [
+      0,
+      0,
+      1,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   },
   {
     "source": "Science Fiction & Fantasy",
     "target": "Science & Math",
-    "count": 3
+    "count": 3,
+    "monthlyCounts": [
+      0,
+      0,
+      0,
+      0,
+      3,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0,
+      0
+    ]
   }
 ]
