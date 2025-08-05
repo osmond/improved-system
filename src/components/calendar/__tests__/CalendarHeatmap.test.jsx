@@ -87,4 +87,18 @@ describe('CalendarHeatmap', () => {
     expect(svg2023.querySelector('rect.reading-scale-4')).not.toBeNull();
     expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
   });
+
+  it('can render a single heatmap when multiYear is false', () => {
+    const twoYearData = [
+      { date: '2023-12-31', minutes: 30, pages: 10 },
+      { date: '2024-01-01', minutes: 5, pages: 2 },
+    ];
+    const { container, queryByText } = render(
+      <CalendarHeatmap data={twoYearData} multiYear={false} />
+    );
+    const svgs = container.querySelectorAll('svg.react-calendar-heatmap');
+    expect(svgs.length).toBe(1);
+    expect(queryByText('2023')).toBeNull();
+    expect(queryByText('2024')).toBeNull();
+  });
 });

@@ -173,7 +173,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
   );
 }
 
-export default function CalendarHeatmap({ data: propData }) {
+export default function CalendarHeatmap({ data: propData, multiYear }) {
   const { data: hookData } = useDailyReading();
   const data = propData || hookData;
   if (!data || data.length === 0) return null;
@@ -188,6 +188,12 @@ export default function CalendarHeatmap({ data: propData }) {
   }, {});
 
   const years = Object.keys(dataByYear).sort();
+  const isMultiYear = multiYear ?? years.length > 1;
+
+  if (!isMultiYear) {
+    const year = years[0];
+    return <YearlyHeatmap data={dataByYear[year]} maxMinutes={maxMinutes} />;
+  }
 
   return (
     <div>
