@@ -141,7 +141,17 @@ export default function SessionSimilarityMap({
           points.reduce((sum, p) => sum + p.x, 0) / points.length,
           points.reduce((sum, p) => sum + p.y, 0) / points.length,
         ]
-    return { cluster: c, points, hull, centroid, stability: stability[c] ?? 0 }
+    const avgTemp = points.reduce((s, p) => s + p.temperature, 0) / points.length
+    const avgHour = points.reduce((s, p) => s + p.startHour, 0) / points.length
+    const avgDelta = points.reduce((s, p) => s + p.paceDelta, 0) / points.length
+    return {
+      cluster: c,
+      points,
+      hull,
+      centroid,
+      stability: stability[c] ?? 0,
+      centroidVec: { temperature: avgTemp, startHour: avgHour, paceDelta: avgDelta },
+    }
   })
   const [activeCluster, setActiveCluster] = useState<number | null>(null)
   const goodRuns = filtered.filter(
@@ -364,6 +374,10 @@ export default function SessionSimilarityMap({
                 color={clusterConfig[c].color}
                 stability={
                   clusterDetails.find((d) => d.cluster === c)?.stability || 0
+                }
+                label={clusterConfig[c].label}
+                centroid={
+                  clusterDetails.find((d) => d.cluster === c)?.centroidVec
                 }
                 open={activeCluster === c}
                 onOpenChange={(o) => setActiveCluster(o ? c : null)}
@@ -660,6 +674,7 @@ function SessionTooltip(props: TooltipProps<number, string>) {
       hideIndicator
       formatter={() => (
         <div className="grid gap-1">
+          <span>{session.descriptor}</span>
           <span>{new Date(session.start).toLocaleString()}</span>
           <span>
             Pace: {session.pace.toFixed(2)} min/mi (Δ {session.paceDelta.toFixed(2)})

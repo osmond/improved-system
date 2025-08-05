@@ -25,33 +25,19 @@ interface ClusterCardProps {
   data: any[]
   color: string
   stability: number
+  label: string
+  centroid?: { temperature: number; startHour: number; paceDelta: number }
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onSelect?: () => void
-}
-
-function getAnnotation(avgTemp: number, avgStart: number) {
-  const timeLabel =
-    avgStart < 6
-      ? "Early runs"
-      : avgStart < 12
-      ? "Morning runs"
-      : avgStart < 18
-      ? "Afternoon runs"
-      : "Evening runs";
-  const tempLabel =
-    avgTemp < 45
-      ? "cold temp"
-      : avgTemp < 65
-      ? "moderate temp"
-      : "warm temp";
-  return `${timeLabel}, ${tempLabel}`;
 }
 
 export default function ClusterCard({
   data,
   color,
   stability,
+  label,
+  centroid,
   open,
   onOpenChange,
   onSelect,
@@ -60,20 +46,18 @@ export default function ClusterCard({
     () => data.map((d, i) => ({ index: i, paceDelta: d.paceDelta })),
     [data],
   );
-  const avgTemp =
-    data.reduce((sum, d) => sum + d.temperature, 0) / data.length;
-  const avgStart =
-    data.reduce((sum, d) => sum + d.startHour, 0) / data.length;
-  const annotation = getAnnotation(avgTemp, avgStart);
+  const temp = centroid?.temperature ?? 0;
+  const start = centroid?.startHour ?? 0;
+  const delta = centroid?.paceDelta ?? 0;
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
         <Card className="cursor-pointer" onClick={onSelect}>
           <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-sm">{annotation}</CardTitle>
+            <CardTitle className="text-sm">{label}</CardTitle>
             <CardDescription className="text-xs">
-              Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h ·
+              {temp.toFixed(1)}°F · {start.toFixed(0)}h · Δ {delta.toFixed(2)} ·
               Stability {(stability * 100).toFixed(0)}%
             </CardDescription>
           </CardHeader>
@@ -85,16 +69,21 @@ export default function ClusterCard({
               <LineChart data={paceData}>
                 <XAxis dataKey="index" hide />
                 <YAxis dataKey="paceDelta" hide domain={["dataMin", "dataMax"]} />
-                <Line type="monotone" dataKey="paceDelta" stroke="var(--color-pace)" dot={false} />
+                <Line
+                  type="monotone"
+                  dataKey="paceDelta"
+                  stroke="var(--color-pace)"
+                  dot={false}
+                />
               </LineChart>
             </ChartContainer>
           </CardContent>
         </Card>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
-        <h3 className="mb-2 text-lg font-semibold">{annotation}</h3>
+        <h3 className="mb-2 text-lg font-semibold">{label}</h3>
         <p className="text-sm text-muted-foreground mb-4">
-          Avg temp {avgTemp.toFixed(1)}°F · Start {avgStart.toFixed(0)}h ·
+          {temp.toFixed(1)}°F · {start.toFixed(0)}h · Δ {delta.toFixed(2)} ·
           Stability {(stability * 100).toFixed(0)}%
         </p>
         <ChartContainer className="h-48 w-full" config={{}}>
