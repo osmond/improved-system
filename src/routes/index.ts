@@ -66,7 +66,7 @@ export const mapsRoutes = withIcon(Map, [
 ]);
 
 const mapsRouteGroup: DashboardRouteGroup = {
-  label: "Maps",
+  label: "Maps & Routes",
   icon: Map,
   items: mapsRoutes,
 };
@@ -117,7 +117,7 @@ export const trendsRoutes = withIcon(TrendingUp, [
 ]);
 
 const trendsRouteGroup: DashboardRouteGroup = {
-  label: "Trends",
+  label: "Trends & Comparisons",
   icon: TrendingUp,
   items: trendsRoutes,
 };
@@ -235,7 +235,7 @@ export const analyticalRoutes = withIcon(BarChart3, [
 ]);
 
 const analyticalRouteGroup: DashboardRouteGroup = {
-  label: "Analytical",
+  label: "Analytical Insights",
   icon: BarChart3,
   items: analyticalRoutes,
 };
@@ -280,7 +280,7 @@ export const goalsRoutes = withIcon(Goal, [
 ]);
 
 const goalsRouteGroup: DashboardRouteGroup = {
-  label: "Goals",
+  label: "Goals & Progress",
   icon: Goal,
   items: goalsRoutes,
 };
@@ -295,7 +295,7 @@ export const privacyRoutes = withIcon(Shield, [
 ]);
 
 const privacyRouteGroup: DashboardRouteGroup = {
-  label: "Privacy",
+  label: "Privacy & Settings",
   icon: Shield,
   items: privacyRoutes,
 };

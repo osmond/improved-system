@@ -35,7 +35,7 @@ describe("SidebarNavigation", () => {
 
   it("toggles group expansion", () => {
     renderWithProviders();
-    const trigger = screen.getByText("Maps");
+    const trigger = screen.getByText("Maps & Routes");
     expect(trigger).toHaveAttribute("aria-expanded", "true");
     fireEvent.click(trigger);
     return waitFor(() =>

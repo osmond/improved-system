@@ -58,7 +58,7 @@ describe("MobileTabBar", () => {
     );
     const input = screen.getByRole("searchbox", { name: /search routes/i });
     await user.type(input, "fragility");
-    const analyticalTab = screen.getByRole("tab", { name: /Analytical/ });
+    const analyticalTab = screen.getByRole("tab", { name: /Analytical Insights/ });
     expect(analyticalTab).toHaveClass("bg-accent");
     await user.clear(input);
     expect(analyticalTab).not.toHaveClass("bg-accent");
