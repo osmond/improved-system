@@ -1,6 +1,8 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
+import { area, curveCatmullRom } from 'd3-shape';
+import { mean, quantile } from 'd3-array';
 import readingSpeed from '@/data/kindle/reading-speed.json';
 
 export default function ReadingSpeedViolin() {
@@ -8,6 +10,7 @@ export default function ReadingSpeedViolin() {
   const [data, setData] = useState([]);
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
+  const [bandwidth, setBandwidth] = useState(500);
 
   useEffect(() => {
     setData(readingSpeed);
@@ -26,36 +29,12 @@ export default function ReadingSpeedViolin() {
     const allValues = periodOrder.flatMap((k) => periods[k]);
     if (allValues.length === 0) return;
 
-    // Helpers for quantile calculations
-    const quantile = (arr, q) => {
-      if (arr.length === 0) return 0;
-      const sorted = [...arr].sort((a, b) => a - b);
-      const pos = (sorted.length - 1) * q;
-      const base = Math.floor(pos);
-      const rest = pos - base;
-      return sorted[base + 1] !== undefined
-        ? sorted[base] + rest * (sorted[base + 1] - sorted[base])
-        : sorted[base];
-    };
-
     const min = Math.min(...allValues);
     const max = Math.max(...allValues);
-    const bins = 20;
-    const binSize = (max - min) / bins;
 
-    const countsByPeriod = {};
     const stats = {};
-    let maxCount = 0;
     periodOrder.forEach((period) => {
       const values = periods[period];
-      const counts = new Array(bins).fill(0);
-      values.forEach((v) => {
-        const idx = Math.min(bins - 1, Math.floor((v - min) / binSize));
-        counts[idx] += 1;
-      });
-      countsByPeriod[period] = counts;
-      maxCount = Math.max(maxCount, ...counts);
-
       stats[period] = {
         median: quantile(values, 0.5),
         q1: quantile(values, 0.25),
@@ -66,41 +45,59 @@ export default function ReadingSpeedViolin() {
     const width = 400;
     const height = 300;
     const violinWidth = width / periodOrder.length;
-    const x = scaleLinear().domain([0, maxCount]).range([0, violinWidth / 2]);
     const y = scaleLinear().domain([min, max]).range([height, 0]);
+    const yTicks = y.ticks(40);
+
+    const kernelDensityEstimator = (kernel, X) => (V) =>
+      X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
+    const kernelEpanechnikov = (k) => (v) => {
+      v /= k;
+      return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+    };
+
+    const densities = {};
+    let maxDensity = 0;
+    periodOrder.forEach((period) => {
+      const density = kernelDensityEstimator(
+        kernelEpanechnikov(bandwidth),
+        yTicks
+      )(periods[period]);
+      densities[period] = density;
+      maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
+    });
+
+    const x = scaleLinear().domain([0, maxDensity]).range([0, violinWidth / 2]);
+    const areaGenerator = area()
+      .x0((d) => -x(d[1]))
+      .x1((d) => x(d[1]))
+      .y((d) => y(d[0]))
+      .curve(curveCatmullRom);
 
     const root = svg.attr('viewBox', `0 0 ${width} ${height}`).append('g');
 
     periodOrder.forEach((period, i) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
-      const counts = countsByPeriod[period];
+      const density = densities[period];
       const center = violinWidth * (i + 0.5);
       const g = root
         .append('g')
         .attr('transform', `translate(${center},0)`)
         .style('display', show ? null : 'none');
 
-      counts.forEach((c, j) => {
-        const y0 = y(min + j * binSize);
-        const y1 = y(min + (j + 1) * binSize);
-        const w = x(c);
-        g
-          .append('rect')
-          .attr('x', -w)
-          .attr('y', y1)
-          .attr('width', w * 2)
-          .attr('height', y0 - y1)
-          .attr('fill', 'var(--chart-network-node)');
-      });
+      g
+        .append('path')
+        .datum(density)
+        .attr('d', areaGenerator)
+        .attr('fill', 'var(--chart-network-node)');
 
       const { q1, q3, median } = stats[period];
       const q1Y = y(q1);
       const q3Y = y(q3);
       const medianY = y(median);
-      const boxWidth = x(maxCount) * 0.3;
+      const boxWidth = x(maxDensity) * 0.3;
       const medianHeight = 10;
-      const jitterWidth = x(maxCount) * 0.3;
+      const jitterWidth = x(maxDensity) * 0.3;
 
       // Interquartile range box
       g
@@ -134,7 +131,7 @@ export default function ReadingSpeedViolin() {
           .attr('fill-opacity', 0.6);
       });
     });
-  }, [data, showMorning, showEvening]);
+  }, [data, showMorning, showEvening, bandwidth]);
 
   return (
     <div>
@@ -157,6 +154,19 @@ export default function ReadingSpeedViolin() {
         </label>
       </div>
       <svg ref={svgRef} width="400" height="300" />
+      <div>
+        <label>
+          Bandwidth
+          <input
+            type="range"
+            min="100"
+            max="3000"
+            step="100"
+            value={bandwidth}
+            onChange={(e) => setBandwidth(Number(e.target.value))}
+          />
+        </label>
+      </div>
     </div>
   );
 }
