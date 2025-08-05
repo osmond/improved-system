@@ -8,6 +8,7 @@ vi.mock('@/hooks/useDailyReading', () => ({
     data: [
       { date: '2024-01-01', minutes: 5, pages: 2 },
       { date: '2024-01-02', minutes: 10, pages: 4 },
+      { date: '2024-02-01', minutes: 20, pages: 8 },
     ],
     error: null,
     isLoading: false,
@@ -29,12 +30,21 @@ describe('CalendarHeatmap', () => {
     expect(legend).not.toBeNull();
 
     const rects = container.querySelectorAll('svg.react-calendar-heatmap rect');
-    expect(rects[0].classList.contains('reading-scale-2')).toBe(true);
-    expect(rects[1].classList.contains('reading-scale-4')).toBe(true);
+    expect(container.querySelector('rect.reading-scale-1')).not.toBeNull();
+    expect(container.querySelector('rect.reading-scale-2')).not.toBeNull();
+    expect(container.querySelector('rect.reading-scale-4')).not.toBeNull();
 
     const swatches = legend.querySelectorAll('div');
     expect(swatches.length).toBe(5);
     expect(swatches[0].classList.contains('reading-scale-0')).toBe(true);
     expect(swatches[4].classList.contains('reading-scale-4')).toBe(true);
+  });
+
+  it('renders month labels and totals', () => {
+    const { getByText } = render(<CalendarHeatmap />);
+    getByText('Jan');
+    getByText('Feb');
+    getByText('15');
+    getByText('20');
   });
 });
