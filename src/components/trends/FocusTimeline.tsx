@@ -23,8 +23,8 @@ interface Segment {
 }
 
 const stateColors: Record<Segment["state"], string> = {
-  focus: "#d1fae5", // green-100
-  distracted: "#fee2e2", // red-100
+  focus: "hsl(var(--chart-1) / 0.2)",
+  distracted: "hsl(var(--chart-2) / 0.2)",
 };
 
 export default function FocusTimeline({ events }: FocusTimelineProps) {
@@ -77,8 +77,8 @@ export default function FocusTimeline({ events }: FocusTimelineProps) {
         <defs>
           {!lowEnd && (
             <linearGradient id="confidenceGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#3b82f6" stopOpacity={0} />
+              <stop offset="5%" stopColor="hsl(var(--chart-1))" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="hsl(var(--chart-1))" stopOpacity={0} />
             </linearGradient>
           )}
         </defs>
@@ -103,8 +103,8 @@ export default function FocusTimeline({ events }: FocusTimelineProps) {
         <Area
           type="monotone"
           dataKey="confidence"
-          stroke="#3b82f6"
-          fill={lowEnd ? "#3b82f6" : "url(#confidenceGradient)"}
+          stroke="hsl(var(--chart-1))"
+          fill={lowEnd ? "hsl(var(--chart-1))" : "url(#confidenceGradient)"}
           isAnimationActive={!lowEnd}
         />
         {!lowEnd &&
@@ -114,7 +114,7 @@ export default function FocusTimeline({ events }: FocusTimelineProps) {
               x={b.time}
               y={1}
               r={6}
-              fill="#ef4444"
+              fill="hsl(var(--chart-2))"
               stroke="none"
             />
           ))}

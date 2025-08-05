@@ -11,7 +11,7 @@ export default function CorrelationDetailChart({ data }: CorrelationDetailChartP
       <XAxis type="number" dataKey="x" hide />
       <YAxis type="number" dataKey="y" hide />
       <Tooltip />
-      <Scatter data={data} fill="#8884d8" />
+      <Scatter data={data} fill="hsl(var(--chart-1))" />
     </ScatterChart>
   );
 }
