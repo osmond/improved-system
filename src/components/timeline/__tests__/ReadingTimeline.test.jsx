@@ -10,7 +10,7 @@ const sessions = [
     end: '2025-01-01T00:30:00Z',
     asin: 'B001',
     title: 'Test Book 1',
-    duration: 30,
+    duration: 20,
     highlights: 2,
   },
   {
@@ -18,7 +18,7 @@ const sessions = [
     end: '2025-01-01T01:00:00Z',
     asin: 'B002',
     title: 'Test Book 2',
-    duration: 30,
+    duration: 40,
     highlights: 1,
   },
 ];
@@ -50,5 +50,14 @@ describe('ReadingTimeline', () => {
     rect = svg.querySelector('rect');
     const resetWidth = Number(rect.getAttribute('width'));
     expect(resetWidth).toBeCloseTo(initialWidth);
+  });
+
+  it('renders axis ticks and annotations', () => {
+    const { container } = render(<ReadingTimeline sessions={sessions} />);
+    const svg = container.querySelector('svg');
+    const ticks = svg.querySelectorAll('.x-axis .tick');
+    expect(ticks.length).toBeGreaterThan(0);
+    expect(svg.querySelector('.annotation-longest')).toBeInTheDocument();
+    expect(svg.querySelector('.annotation-shortest')).toBeInTheDocument();
   });
 });
