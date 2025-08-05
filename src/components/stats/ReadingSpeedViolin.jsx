@@ -28,7 +28,12 @@ export default function ReadingSpeedViolin() {
         const json = await res.json();
         setData(json);
       } catch (err) {
-        setError('Error loading reading speed data');
+        try {
+          const local = await import('@/data/kindle/reading-speed.json');
+          setData(local.default);
+        } catch {
+          setError('Error loading reading speed data');
+        }
       } finally {
         setLoading(false);
       }
@@ -208,6 +213,9 @@ export default function ReadingSpeedViolin() {
     <div style={{ position: 'relative' }}>
       {loading && <p>Loading reading speed data...</p>}
       {error && !loading && <p role="alert">{error}</p>}
+      {!loading && !error && data.length === 0 && (
+        <p>No reading speed data available.</p>
+      )}
       <div>
         <label>
           <input
