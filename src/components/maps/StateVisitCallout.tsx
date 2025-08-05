@@ -27,7 +27,7 @@ interface StateVisitCalloutProps {
 export default function StateVisitCallout({
   onSelectState,
 }: StateVisitCalloutProps) {
-  const { data: visits, loading } = useStateVisits();
+  const { data: visits, loading, error, refetch } = useStateVisits();
 
   const latest = useMemo(() => {
     if (!visits) return null;
@@ -60,7 +60,15 @@ export default function StateVisitCallout({
   }, [visits]);
 
   if (loading) return <Skeleton className="h-4 w-full" />;
-  if (!visits) return null;
+  if (error || !visits)
+    return (
+      <div className="text-xs">
+        Failed to load state visits.
+        <button className="underline" onClick={refetch}>
+          Retry
+        </button>
+      </div>
+    );
   if (!latest) return null;
 
   const { type, stateCode, stateName, formattedDate, formattedMiles } = latest;
