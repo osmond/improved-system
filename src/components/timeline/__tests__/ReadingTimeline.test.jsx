@@ -41,7 +41,7 @@ const overlapping = [
   {
     start: '2025-01-01T00:15:00Z',
     end: '2025-01-01T00:45:00Z',
-    asin: 'B002',
+    asin: 'B001',
     title: 'Overlap 2',
     duration: 25,
     highlights: 3,

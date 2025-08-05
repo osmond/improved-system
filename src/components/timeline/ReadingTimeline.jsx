@@ -20,17 +20,30 @@ export default function ReadingTimeline({ sessions = [] }) {
   const brushRef = useRef(null);
   const [zoomed, setZoomed] = useState(false);
 
-  const laneMap = useMemo(() => {
-    const map = new Map();
-    sessions.forEach((s) => {
-      if (!map.has(s.asin)) {
-        map.set(s.asin, map.size);
+  const { parsedSessions, lanes } = useMemo(() => {
+    const parsed = sessions
+      .map((s) => ({
+        ...s,
+        startDate: new Date(s.start),
+        endDate: new Date(s.end),
+      }))
+      .sort((a, b) => a.startDate - b.startDate);
+
+    const laneEnds = [];
+    parsed.forEach((s) => {
+      let lane = laneEnds.findIndex((end) => end <= s.startDate);
+      if (lane === -1) {
+        lane = laneEnds.length;
+        laneEnds.push(s.endDate);
+      } else {
+        laneEnds[lane] = s.endDate;
       }
+      s.lane = lane;
     });
-    return map;
+
+    return { parsedSessions: parsed, lanes: laneEnds.length || 1 };
   }, [sessions]);
 
-  const lanes = laneMap.size || 1;
   const height = lanes * LANE_HEIGHT + LANE_PADDING;
 
   const genres = useMemo(
@@ -45,18 +58,20 @@ export default function ReadingTimeline({ sessions = [] }) {
   useEffect(() => {
     const svg = select(ref.current);
     svg.selectAll('*').remove();
-    if (!sessions.length) return;
+    if (!parsedSessions.length) return;
 
-    const parsed = sessions.map((s) => ({
-      ...s,
-      startDate: new Date(s.start),
-      endDate: new Date(s.end),
-      lane: laneMap.get(s.asin),
-    }));
-    const longest = parsed.reduce((a, b) => (a.duration > b.duration ? a : b));
-    const shortest = parsed.reduce((a, b) => (a.duration < b.duration ? a : b));
-    const min = Math.min(...parsed.map((d) => d.startDate.getTime()));
-    const max = Math.max(...parsed.map((d) => d.endDate.getTime()));
+    const longest = parsedSessions.reduce((a, b) =>
+      a.duration > b.duration ? a : b,
+    );
+    const shortest = parsedSessions.reduce((a, b) =>
+      a.duration < b.duration ? a : b,
+    );
+    const min = Math.min(
+      ...parsedSessions.map((d) => d.startDate.getTime()),
+    );
+    const max = Math.max(
+      ...parsedSessions.map((d) => d.endDate.getTime()),
+    );
     const initialDomain = [min, max];
     const x = scaleTime().domain(initialDomain).range([0, WIDTH]);
 
@@ -76,7 +91,7 @@ export default function ReadingTimeline({ sessions = [] }) {
       barsG.selectAll('*').remove();
       const bars = barsG
         .selectAll('rect')
-        .data(parsed)
+        .data(parsedSessions)
         .enter()
         .append('rect')
         .attr('x', (d) => x(d.startDate))
@@ -137,7 +152,7 @@ export default function ReadingTimeline({ sessions = [] }) {
     // expose brush for tests
     ref.current.__brush = brush;
     brushRef.current = brush;
-  }, [sessions, laneMap, height]);
+  }, [parsedSessions, height, colorScale]);
 
   const reset = () => {
     if (brushRef.current && ref.current) {
