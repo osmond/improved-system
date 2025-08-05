@@ -14,9 +14,11 @@ import { interpolateYlOrRd } from 'd3-scale-chromatic';
 import locationsData from '@/data/kindle/locations.json';
 import statesTopo from '@/lib/us-states.json';
 import worldTopo from '@/lib/world-countries.json';
+import { Skeleton } from '@/ui/skeleton';
 
 export default function ReadingMap() {
   const [locations, setLocations] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [title, setTitle] = useState('');
@@ -36,6 +38,7 @@ export default function ReadingMap() {
         (a, b) => new Date(a.start) - new Date(b.start)
       )
     );
+    setLoading(false);
   }, []);
 
   const filtered = useMemo(() => {
@@ -124,6 +127,9 @@ export default function ReadingMap() {
     () => scaleSequential(interpolateYlOrRd).domain([0, maxCount || 1]),
     [maxCount]
   );
+
+  if (loading)
+    return <Skeleton className="h-[480px] w-full" data-testid="loading" />;
 
   return (
     <div>
