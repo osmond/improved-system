@@ -61,7 +61,7 @@ export interface AxisHint {
   y: number
 }
 
-function computeClusterMetrics(
+export function computeClusterMetrics(
   points: SessionPoint[],
 ): Record<number, ClusterMetrics> {
   const clusters = Array.from(new Set(points.map((p) => p.cluster)))
