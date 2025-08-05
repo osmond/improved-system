@@ -1020,6 +1020,14 @@ export async function getRunningSessions(): Promise<RunningSession[]> {
   return sessions;
 }
 
+export function addRunningSession(run: RunningSession): void {
+  if (sessionCache) sessionCache = [...sessionCache, run];
+  else sessionCache = [run];
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new Event("runningSessionsUpdated"));
+  }
+}
+
 function isPresent(v: unknown) {
   return v !== null && v !== undefined && !(typeof v === "number" && isNaN(v));
 }

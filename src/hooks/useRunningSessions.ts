@@ -1,7 +1,8 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { getRunningSessions, RunningSession } from '@/lib/api'
 import { getAllSessionMeta, getSessionMeta } from '@/lib/sessionStore'
 import TSNE from 'tsne-js'
+import { UMAP } from 'umap-js'
 import { getClusterLabel, setClusterLabel } from '@/lib/clusterLabelStore'
 
 export interface SessionFactor {
@@ -50,6 +51,12 @@ export interface ClusterMetrics {
   goodRuns: number
   variance: number
   boundaryBreaches: number
+}
+
+export interface AxisHint {
+  label: string
+  x: number
+  y: number
 }
 
 function computeClusterMetrics(
@@ -111,6 +118,63 @@ function kMeans(data: number[][], k: number, iterations = 10): number[] {
   }
 
   return labels
+}
+
+function computePCA(data: number[][]): AxisHint[] {
+  const n = data.length
+  const m = data[0].length
+  const means = Array(m).fill(0)
+  for (const row of data) for (let j = 0; j < m; j++) means[j] += row[j]
+  for (let j = 0; j < m; j++) means[j] /= n
+  const centered = data.map((row) => row.map((v, j) => v - means[j]))
+  const cov = Array.from({ length: m }, () => Array(m).fill(0))
+  for (const row of centered) {
+    for (let i = 0; i < m; i++) {
+      for (let j = i; j < m; j++) {
+        cov[i][j] += row[i] * row[j]
+      }
+    }
+  }
+  for (let i = 0; i < m; i++) {
+    for (let j = i; j < m; j++) {
+      cov[i][j] /= n - 1
+      cov[j][i] = cov[i][j]
+    }
+  }
+  function powerIteration(mat: number[][]): { vec: number[]; val: number } {
+    let vec = Array(m)
+      .fill(0)
+      .map(() => Math.random())
+    for (let iter = 0; iter < 50; iter++) {
+      const next = mat.map((row) => row.reduce((s, v, j) => s + v * vec[j], 0))
+      const norm = Math.hypot(...next)
+      vec = next.map((v) => v / norm)
+    }
+    const val = vec.reduce(
+      (s, v, i) => s + v * mat[i].reduce((r, w, j) => r + w * vec[j], 0),
+      0,
+    )
+    return { vec, val }
+  }
+  const comps: number[][] = []
+  let mat = cov.map((row) => row.slice())
+  for (let k = 0; k < 2; k++) {
+    const { vec, val } = powerIteration(mat)
+    comps.push(vec)
+    for (let i = 0; i < m; i++)
+      for (let j = 0; j < m; j++) mat[i][j] -= val * vec[i] * vec[j]
+  }
+  const features = ['Temperature', 'Humidity', 'Hour', 'HeartRate', 'Pace']
+  const hints = features.map((label, i) => ({
+    label,
+    x: comps[0][i],
+    y: comps[1][i],
+  }))
+  const max = Math.max(
+    ...hints.map((h) => Math.max(Math.abs(h.x), Math.abs(h.y))),
+    1,
+  )
+  return hints.map((h) => ({ label: h.label, x: h.x / max, y: h.y / max }))
 }
 
 function computeTrend(
@@ -222,10 +286,13 @@ function makeClusterLabel(t: number, h: number, d: number): string {
   return `${tempLabel(t)} ${hourLabel(h)} ${deltaLabel(d)}`
 }
 
-export function useRunningSessions(): {
+export function useRunningSessions(
+  method: 'tsne' | 'umap' = 'tsne',
+): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
   clusterStats: Record<number, ClusterMetrics> | null
+  axisHints: AxisHint[] | null
   error: Error | null
 } {
   const [points, setPoints] = useState<SessionPoint[] | null>(null)
@@ -233,13 +300,17 @@ export function useRunningSessions(): {
   const [clusterStats, setClusterStats] = useState<
     Record<number, ClusterMetrics> | null
   >(null)
+  const [axisHints, setAxisHints] = useState<AxisHint[] | null>(null)
   const [error, setError] = useState<Error | null>(null)
+  const lastCount = useRef(0)
 
   useEffect(() => {
+    lastCount.current = 0
     async function load() {
       try {
         const sessions = await getRunningSessions()
-        const model = new TSNE({ dim: 2, perplexity: 5 })
+        if (sessions.length === lastCount.current && points) return
+        lastCount.current = sessions.length
         const input = sessions.map((s) => [
           s.weather.temperature,
           s.weather.humidity,
@@ -247,9 +318,26 @@ export function useRunningSessions(): {
           s.heartRate,
           s.pace,
         ])
-        model.init({ data: input, type: 'dense' })
-        model.run()
-        const output = model.getOutputScaled()
+        let output: number[][]
+        if (method === 'umap') {
+          const umap = new UMAP({ nComponents: 2 })
+          const raw = umap.fit(input)
+          const xs = raw.map((p) => p[0])
+          const ys = raw.map((p) => p[1])
+          const xMin = Math.min(...xs)
+          const xMax = Math.max(...xs)
+          const yMin = Math.min(...ys)
+          const yMax = Math.max(...ys)
+          output = raw.map(([x, y]) => [
+            ((x - xMin) / (xMax - xMin)) * 2 - 1,
+            ((y - yMin) / (yMax - yMin)) * 2 - 1,
+          ])
+        } else {
+          const model = new TSNE({ dim: 2, perplexity: 5 })
+          model.init({ data: input, type: 'dense' })
+          model.run()
+          output = model.getOutputScaled()
+        }
         const labels = kMeans(output, 3)
         const metaMap = getAllSessionMeta()
         const preliminary = output.map(([x, y]: [number, number], idx: number) => {
@@ -310,12 +398,19 @@ export function useRunningSessions(): {
         setPoints(data)
         setTrend(computeTrend(data))
         setClusterStats(computeClusterMetrics(data))
+        setAxisHints(computePCA(input))
       } catch (e) {
         setError(e instanceof Error ? e : new Error('Failed to load sessions'))
       }
     }
     load()
-  }, [])
+    function onUpdate() {
+      lastCount.current = 0
+      load()
+    }
+    window.addEventListener('runningSessionsUpdated', onUpdate)
+    return () => window.removeEventListener('runningSessionsUpdated', onUpdate)
+  }, [method])
 
   useEffect(() => {
     function onMetaUpdate() {
@@ -334,5 +429,5 @@ export function useRunningSessions(): {
     return () => window.removeEventListener('sessionMetaUpdated', onMetaUpdate)
   }, [])
 
-  return { sessions: points, trend, clusterStats, error }
+  return { sessions: points, trend, clusterStats, axisHints, error }
 }

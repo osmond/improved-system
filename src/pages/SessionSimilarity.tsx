@@ -1,10 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 import { SessionSimilarityMap } from "@/components/maps";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
 import { useSessionInsights } from "@/hooks/useSessionInsights";
 
 export default function SessionSimilarityPage() {
-  const { sessions, clusterStats, error } = useRunningSessions();
+  const [method, setMethod] = useState<"tsne" | "umap">("tsne");
+  const { sessions, clusterStats, axisHints, error } = useRunningSessions(method);
   const insights = useSessionInsights(clusterStats);
 
   return (
@@ -20,12 +21,24 @@ export default function SessionSimilarityPage() {
       <p className="text-sm text-muted-foreground">
         Visualize how recent runs cluster based on their characteristics.
       </p>
+      <div className="flex items-center gap-2 text-sm">
+        <label htmlFor="embed">Embedding:</label>
+        <select
+          id="embed"
+          value={method}
+          onChange={(e) => setMethod(e.target.value as "tsne" | "umap")}
+          className="border rounded p-1"
+        >
+          <option value="tsne">t-SNE</option>
+          <option value="umap">UMAP</option>
+        </select>
+      </div>
       {error ? (
         <div className="text-sm text-red-500">
           Unable to load running sessions.
         </div>
       ) : (
-        <SessionSimilarityMap data={sessions} />
+        <SessionSimilarityMap data={sessions} axisHints={axisHints} />
       )}
     </div>
   );
