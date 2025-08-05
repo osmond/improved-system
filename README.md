@@ -29,6 +29,8 @@ All colours, spacings, radii, etc. should come from your CSS variables in `globa
 
 Add new tokens (e.g. `--chart-6`–`--chart-10`) in the same `:root { … }` block so everything—charts, rings, cards—uses the same palette.
 
+Charts share a unified palette exposed as `--chart-1` through `--chart-10`. Use them in components via `hsl(var(--chart-n))` so every visualisation draws from the same source.
+
 Dark mode is driven via the `<html class="dark">` class and the corresponding `.dark { … }` overrides in `globals.css`.
 
 ## Component conventions

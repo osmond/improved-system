@@ -5,7 +5,11 @@ import { brushX } from 'd3-brush';
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
-import { schemeTableau10 } from 'd3-scale-chromatic';
+
+const CHART_COLORS = Array.from(
+  { length: 10 },
+  (_, i) => `hsl(var(--chart-${i + 1}))`,
+);
 
 const WIDTH = 600;
 const BAR_HEIGHT = 30;
@@ -51,7 +55,7 @@ export default function ReadingTimeline({ sessions = [] }) {
     [sessions],
   );
   const colorScale = useMemo(
-    () => scaleOrdinal().domain(genres).range(schemeTableau10),
+    () => scaleOrdinal().domain(genres).range(CHART_COLORS),
     [genres],
   );
 

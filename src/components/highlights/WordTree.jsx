@@ -10,7 +10,11 @@ import highlights from '@/data/kindle/highlights.json';
 const sentimentAnalyzer = new Sentiment();
 const sentimentColor = scaleLinear()
   .domain([-5, 0, 5])
-  .range(['#d73027', '#ffffbf', '#1a9850']);
+  .range([
+    'hsl(var(--chart-1))',
+    'hsl(var(--chart-5))',
+    'hsl(var(--chart-9))',
+  ]);
 
 function getExpansions(word) {
   const counts = {};
@@ -127,7 +131,7 @@ export default function WordTree() {
           enter
             .append('path')
             .attr('fill', 'none')
-            .attr('stroke', 'var(--chart-network-link)')
+            .attr('stroke', 'hsl(var(--chart-2))')
             .attr('d', d => {
               const o = { x: d.source.data.x0, y: d.source.data.y0 };
               return linkFn({ source: o, target: o });
@@ -162,7 +166,7 @@ export default function WordTree() {
     nodeEnter
       .append('circle')
       .attr('r', 0)
-      .attr('fill', 'var(--chart-wordtree-node)')
+      .attr('fill', 'hsl(var(--chart-6))')
       .transition(t)
       .attr('r', 4);
 
@@ -214,7 +218,7 @@ export default function WordTree() {
           .attr('y', -3)
           .attr('height', 6)
           .attr('width', scale(d.data.count))
-          .attr('fill', 'var(--chart-wordtree-bar)');
+          .attr('fill', 'hsl(var(--chart-3))');
       });
 
     nodes.forEach(d => {
@@ -268,13 +272,25 @@ export default function WordTree() {
       </form>
       <div className="mb-2 flex items-center gap-2 text-sm">
         <span className="flex items-center">
-          <span className="w-4 h-4 mr-1" style={{ background: '#d73027' }}></span>Negative
+          <span
+            className="w-4 h-4 mr-1"
+            style={{ background: 'hsl(var(--chart-1))' }}
+          ></span>
+          Negative
         </span>
         <span className="flex items-center">
-          <span className="w-4 h-4 mr-1 border" style={{ background: '#ffffbf' }}></span>Neutral
+          <span
+            className="w-4 h-4 mr-1 border"
+            style={{ background: 'hsl(var(--chart-5))' }}
+          ></span>
+          Neutral
         </span>
         <span className="flex items-center">
-          <span className="w-4 h-4 mr-1" style={{ background: '#1a9850' }}></span>Positive
+          <span
+            className="w-4 h-4 mr-1"
+            style={{ background: 'hsl(var(--chart-9))' }}
+          ></span>
+          Positive
         </span>
       </div>
       <svg ref={svgRef} width={layout === 'linear' ? 800 : 400} height={400}></svg>
