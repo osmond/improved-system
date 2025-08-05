@@ -1,6 +1,6 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
-import ReadingSpeedViolin from '../ReadingSpeedViolin';
+import ReadingSpeedViolin, { color } from '../ReadingSpeedViolin';
 import '@testing-library/jest-dom';
 
 describe('ReadingSpeedViolin', () => {
@@ -15,17 +15,33 @@ describe('ReadingSpeedViolin', () => {
     });
   });
 
-  it('applies network node border color via CSS variable', async () => {
+  it('applies period-specific colors', async () => {
     const { container } = render(<ReadingSpeedViolin />);
 
     await waitFor(() => {
       expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
     });
 
-    const usesVar = Array.from(container.querySelectorAll('rect')).some(
-      (el) => el.getAttribute('stroke') === 'var(--chart-network-node-border)'
-    );
+    const colors = Object.values(color);
 
-    expect(usesVar).toBe(true);
+    const pathFills = Array.from(container.querySelectorAll('path')).map((el) =>
+      el.getAttribute('fill')
+    );
+    colors.forEach((c) => {
+      expect(pathFills).toContain(c);
+    });
+
+    Array.from(container.querySelectorAll('rect')).forEach((el) => {
+      expect(colors).toContain(el.getAttribute('stroke'));
+      expect(colors).toContain(el.getAttribute('fill'));
+    });
+
+    Array.from(container.querySelectorAll('line')).forEach((el) => {
+      expect(colors).toContain(el.getAttribute('stroke'));
+    });
+
+    Array.from(container.querySelectorAll('circle')).forEach((el) => {
+      expect(colors).toContain(el.getAttribute('fill'));
+    });
   });
 });

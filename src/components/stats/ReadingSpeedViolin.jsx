@@ -5,6 +5,11 @@ import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import readingSpeed from '@/data/kindle/reading-speed.json';
 
+export const color = {
+  morning: '#FFA500',
+  evening: '#1E90FF',
+};
+
 export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
   const [data, setData] = useState([]);
@@ -84,12 +89,13 @@ export default function ReadingSpeedViolin() {
         .append('g')
         .attr('transform', `translate(${center},0)`)
         .style('display', show ? null : 'none');
+      const fill = color[period];
 
       g
         .append('path')
         .datum(density)
         .attr('d', areaGenerator)
-        .attr('fill', 'var(--chart-network-node)');
+        .attr('fill', fill);
 
       const { q1, q3, median } = stats[period];
       const q1Y = y(q1);
@@ -106,9 +112,9 @@ export default function ReadingSpeedViolin() {
         .attr('y', q3Y)
         .attr('width', boxWidth)
         .attr('height', q1Y - q3Y)
-        .attr('fill', 'var(--chart-network-node-border)')
+        .attr('fill', fill)
         .attr('fill-opacity', 0.4)
-        .attr('stroke', 'var(--chart-network-node-border)');
+        .attr('stroke', fill);
 
       // Median line
       g
@@ -117,7 +123,7 @@ export default function ReadingSpeedViolin() {
         .attr('x2', 0)
         .attr('y1', medianY - medianHeight / 2)
         .attr('y2', medianY + medianHeight / 2)
-        .attr('stroke', 'var(--chart-network-node-border)')
+        .attr('stroke', fill)
         .attr('stroke-width', 2);
 
       // Plot individual reading speed points with slight horizontal jitter
@@ -127,7 +133,7 @@ export default function ReadingSpeedViolin() {
           .attr('cx', Math.random() * jitterWidth - jitterWidth / 2)
           .attr('cy', y(v))
           .attr('r', 3)
-          .attr('fill', 'var(--chart-network-node-border)')
+          .attr('fill', fill)
           .attr('fill-opacity', 0.6);
       });
     });
