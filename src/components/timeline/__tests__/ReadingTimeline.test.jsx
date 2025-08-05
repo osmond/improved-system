@@ -64,6 +64,12 @@ describe('ReadingTimeline', () => {
     let rect = svg.querySelector('rect');
     const initialWidth = Number(rect.getAttribute('width'));
 
+    let axisLabel = svg.querySelector('.x-axis .axis-label');
+    expect(axisLabel).toBeInTheDocument();
+    expect(axisLabel.textContent).toBe('Date');
+    let tickLines = svg.querySelectorAll('.x-axis .tick line');
+    expect(Number(tickLines[0].getAttribute('y2'))).toBeLessThan(0);
+
     act(() => {
       select(svg.querySelector('.brush')).call(brush.move, [0, viewWidth / 2]);
     });
@@ -71,6 +77,11 @@ describe('ReadingTimeline', () => {
     rect = svg.querySelector('rect');
     const zoomWidth = Number(rect.getAttribute('width'));
     expect(zoomWidth).toBeGreaterThan(initialWidth);
+
+    axisLabel = svg.querySelector('.x-axis .axis-label');
+    expect(axisLabel).toBeInTheDocument();
+    tickLines = svg.querySelectorAll('.x-axis .tick line');
+    expect(Number(tickLines[0].getAttribute('y2'))).toBeLessThan(0);
 
     const resetBtn = getByRole('button', { name: /reset/i });
     expect(resetBtn).toBeEnabled();
@@ -91,6 +102,12 @@ describe('ReadingTimeline', () => {
     expect(ticks.length).toBeGreaterThan(0);
     // axis uses monthly ticks with abbreviated month names
     expect(ticks[0].textContent).toMatch(/^[A-Za-z]{3}$/);
+    const axisLabel = svg.querySelector('.x-axis .axis-label');
+    expect(axisLabel).toBeInTheDocument();
+    expect(axisLabel.textContent).toBe('Date');
+    const tickLines = svg.querySelectorAll('.x-axis .tick line');
+    expect(tickLines.length).toBeGreaterThan(0);
+    expect(Number(tickLines[0].getAttribute('y2'))).toBeLessThan(0);
 
     const rects = svg.querySelectorAll('rect[height="30"]');
     const longestAnnot = svg.querySelector('.annotation-longest');
