@@ -3,8 +3,6 @@ import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { select } from 'd3-selection';
 import { act } from 'react';
-import { scaleOrdinal } from 'd3-scale';
-import { schemeTableau10 } from 'd3-scale-chromatic';
 import ReadingTimeline from '../ReadingTimeline.jsx';
 
 const sessions = [
@@ -124,10 +122,7 @@ describe('ReadingTimeline', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const rects = svg.querySelectorAll('rect[height="30"]');
-    const color = scaleOrdinal()
-      .domain(['Mystery', 'Fantasy'])
-      .range(schemeTableau10.slice(0, 2));
-    expect(rects[0].getAttribute('fill')).toBe(color(sessions[0].genre));
-    expect(rects[1].getAttribute('fill')).toBe(color(sessions[1].genre));
+    expect(rects[0].getAttribute('fill')).toBe('hsl(var(--chart-1))');
+    expect(rects[1].getAttribute('fill')).toBe('hsl(var(--chart-2))');
   });
 });

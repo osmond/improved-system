@@ -156,23 +156,23 @@ html, body {
 
 @layer utilities {
   .reading-scale-0 {
-    background-color: #ebedf0;
-    fill: #ebedf0;
+    background-color: hsl(var(--chart-1) / 0.1);
+    fill: hsl(var(--chart-1) / 0.1);
   }
   .reading-scale-1 {
-    background-color: #c6e48b;
-    fill: #c6e48b;
+    background-color: hsl(var(--chart-1) / 0.25);
+    fill: hsl(var(--chart-1) / 0.25);
   }
   .reading-scale-2 {
-    background-color: #7bc96f;
-    fill: #7bc96f;
+    background-color: hsl(var(--chart-1) / 0.5);
+    fill: hsl(var(--chart-1) / 0.5);
   }
   .reading-scale-3 {
-    background-color: #239a3b;
-    fill: #239a3b;
+    background-color: hsl(var(--chart-1) / 0.75);
+    fill: hsl(var(--chart-1) / 0.75);
   }
   .reading-scale-4 {
-    background-color: #196127;
-    fill: #196127;
+    background-color: hsl(var(--chart-1));
+    fill: hsl(var(--chart-1));
   }
 }
