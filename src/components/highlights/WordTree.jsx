@@ -192,30 +192,22 @@ export default function WordTree() {
       })
       .remove();
 
-    nodeMerge.select('rect').remove();
-
-    nodeMerge.each(d => {
-      if (d.parent) {
-        const counts = d.parent.children.map(c => c.data.count || 0);
-        d.siblingMax = Math.max(...counts);
-      }
+    nodeMerge.each(function (d) {
+      select(this).select('rect').remove();
+      if (!d.data.count) return;
+      const siblingMax = d.parent
+        ? Math.max(...d.parent.children.map(c => c.data.count || 0))
+        : d.data.count;
+      const textWidth = select(this).select('text').node().getBBox().width;
+      const scale = scaleLinear().domain([0, siblingMax]).range([0, 60]);
+      select(this)
+        .append('rect')
+        .attr('x', 8 + textWidth + 4)
+        .attr('y', -3)
+        .attr('height', 6)
+        .attr('width', scale(d.data.count))
+        .attr('fill', 'var(--chart-wordtree-bar)');
     });
-
-    nodeMerge
-      .filter(d => d.data.count)
-      .each(function (d) {
-        const textWidth = select(this).select('text').node().getBBox().width;
-        const scale = scaleLinear()
-          .domain([0, d.siblingMax || d.data.count])
-          .range([0, 60]);
-        select(this)
-          .append('rect')
-          .attr('x', 8 + textWidth + 4)
-          .attr('y', -3)
-          .attr('height', 6)
-          .attr('width', scale(d.data.count))
-          .attr('fill', 'var(--chart-wordtree-bar)');
-      });
 
     nodes.forEach(d => {
       d.data.x0 = d.x;
