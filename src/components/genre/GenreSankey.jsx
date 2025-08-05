@@ -3,11 +3,12 @@ import { select } from 'd3-selection';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
 import transitions from '@/data/kindle/genre-transitions.json';
+import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState(null);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
 
@@ -25,12 +26,15 @@ export default function GenreSankey() {
   };
 
   useEffect(() => {
-    setData(
-      transitions.map((d) => ({
-        ...d,
-        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
-      })),
-    );
+    const t = setTimeout(() => {
+      setData(
+        transitions.map((d) => ({
+          ...d,
+          monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+        })),
+      );
+    }, 0);
+    return () => clearTimeout(t);
   }, []);
 
   useEffect(() => {
@@ -55,6 +59,7 @@ export default function GenreSankey() {
       .map((name) => ({ name, outflow: outflows[name] || 0 }))
       .sort((a, b) => b.outflow - a.outflow);
 
+    const sortedGenres = nodes.map((d) => d.name);
     const indexByName = Object.fromEntries(nodes.map((d, i) => [d.name, i]));
 
     // rebuild links with indices matching sorted node order
@@ -68,6 +73,7 @@ export default function GenreSankey() {
     const { nodes: n, links: l } = sankey()
       .nodeWidth(15)
       .nodePadding(10)
+      .nodeSort((a, b) => b.outflow - a.outflow)
       .extent([
         [1, 1],
         [width - 1, height - 6],
@@ -162,7 +168,11 @@ export default function GenreSankey() {
         </label>
         <button onClick={fetchData}>Apply</button>
       </div>
-      <svg ref={svgRef} width="600" height="400" />
+      {(!data || data.length === 0) ? (
+        <Skeleton className="h-64 w-full" data-testid="genre-sankey-skeleton" />
+      ) : (
+        <svg ref={svgRef} width="600" height="400" />
+      )}
       <div
         ref={tooltipRef}
         data-testid="tooltip"
