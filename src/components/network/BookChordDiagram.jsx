@@ -4,22 +4,7 @@ import { chord, ribbon } from 'd3-chord';
 import { arc } from 'd3-shape';
 import { scaleOrdinal } from 'd3-scale';
 import graphData from '@/data/kindle/book-graph.json';
-
-function buildMatrix(nodes, links) {
-  const index = new Map(nodes.map((n, i) => [n.id, i]));
-  const size = nodes.length;
-  const matrix = Array.from({ length: size }, () => Array(size).fill(0));
-  links.forEach((l) => {
-    const i = index.get(l.source);
-    const j = index.get(l.target);
-    if (i != null && j != null) {
-      const w = l.weight || 1;
-      matrix[i][j] = w;
-      matrix[j][i] = w;
-    }
-  });
-  return matrix;
-}
+import buildChordMatrix from '@/services/chordMatrix.js';
 
 export default function BookChordDiagram({ data = graphData }) {
   const svgRef = useRef(null);
@@ -32,7 +17,7 @@ export default function BookChordDiagram({ data = graphData }) {
     const outerRadius = Math.min(width, height) / 2 - 30;
     const innerRadius = outerRadius - 20;
 
-    const matrix = buildMatrix(data.nodes, data.links);
+    const matrix = buildChordMatrix(data.nodes, data.links);
     const chords = chord().padAngle(0.05)(matrix);
     const chartColors = Array.from(
       { length: 10 },
