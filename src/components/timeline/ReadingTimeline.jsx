@@ -6,18 +6,21 @@ import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 
-const WIDTH = 600;
+const DEFAULT_WIDTH = 600;
 const BAR_HEIGHT = 30;
 const LANE_PADDING = 5;
 const LANE_HEIGHT = BAR_HEIGHT + LANE_PADDING;
 const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 40;
+const MIN_HEIGHT = 120;
 
 
 export default function ReadingTimeline({ sessions = [] }) {
   const ref = useRef(null);
+  const containerRef = useRef(null);
   const brushRef = useRef(null);
   const [zoomed, setZoomed] = useState(false);
+  const [width, setWidth] = useState(DEFAULT_WIDTH);
 
   const { parsedSessions, lanes } = useMemo(() => {
     const parsed = sessions
@@ -43,16 +46,34 @@ export default function ReadingTimeline({ sessions = [] }) {
     return { parsedSessions: parsed, lanes: laneEnds.length || 1 };
   }, [sessions]);
 
-  const height = lanes * LANE_HEIGHT + LANE_PADDING;
+  const height = Math.max(MIN_HEIGHT, lanes * LANE_HEIGHT + LANE_PADDING);
 
-  const genres = useMemo(
-    () => Array.from(new Set(sessions.map((s) => s.genre || 'Unknown'))),
+  const titles = useMemo(
+    () => Array.from(new Set(sessions.map((s) => s.title))),
     [sessions],
   );
   const colorScale = useMemo(() => {
     const colors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
-    return scaleOrdinal().domain(genres).range(colors);
-  }, [genres]);
+    return scaleOrdinal().domain(titles).range(colors);
+  }, [titles]);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.clientWidth || DEFAULT_WIDTH;
+        setWidth(w);
+      }
+    };
+    handleResize();
+    if (typeof ResizeObserver !== 'undefined') {
+      const observer = new ResizeObserver(handleResize);
+      if (containerRef.current) observer.observe(containerRef.current);
+      return () => observer.disconnect();
+    } else {
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   useEffect(() => {
     const svg = select(ref.current);
@@ -72,9 +93,9 @@ export default function ReadingTimeline({ sessions = [] }) {
       ...parsedSessions.map((d) => d.endDate.getTime()),
     );
     const initialDomain = [min, max];
-    const x = scaleTime().domain(initialDomain).range([0, WIDTH]);
+    const x = scaleTime().domain(initialDomain).range([0, width]);
 
-    svg.attr('viewBox', `0 0 ${WIDTH} ${height + BRUSH_HEIGHT + AXIS_HEIGHT}`);
+    svg.attr('viewBox', `0 0 ${width} ${height + BRUSH_HEIGHT + AXIS_HEIGHT}`);
 
     const barsG = svg.append('g').attr('transform', `translate(0,${BRUSH_HEIGHT})`);
     const axisG = svg
@@ -107,7 +128,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         .attr('y', (d) => d.lane * LANE_HEIGHT + LANE_PADDING)
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
         .attr('height', BAR_HEIGHT)
-        .attr('fill', (d) => colorScale(d.genre || 'Unknown'))
+        .attr('fill', (d) => colorScale(d.title))
         .attr('fill-opacity', (d) => opacityScale(d.duration))
         .attr('tabindex', 0)
         .attr(
@@ -132,7 +153,7 @@ export default function ReadingTimeline({ sessions = [] }) {
       axisG
         .append('text')
         .attr('class', 'axis-label')
-        .attr('x', WIDTH / 2)
+        .attr('x', width / 2)
         .attr('y', AXIS_HEIGHT - 5)
         .attr('text-anchor', 'middle')
         .text('Date');
@@ -162,7 +183,7 @@ export default function ReadingTimeline({ sessions = [] }) {
     const brush = brushX()
       .extent([
         [0, 0],
-        [WIDTH, BRUSH_HEIGHT],
+        [width, BRUSH_HEIGHT],
       ])
       .on('end', (event) => {
         if (event.selection) {
@@ -189,14 +210,14 @@ export default function ReadingTimeline({ sessions = [] }) {
   };
 
   return (
-    <div>
+    <div ref={containerRef}>
       <svg
         ref={ref}
         style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
       />
-      {genres.length > 0 && (
+      {titles.length > 0 && (
         <ul
-          aria-label="Genres"
+          aria-label="Books"
           style={{
             display: 'flex',
             flexWrap: 'wrap',
@@ -206,9 +227,9 @@ export default function ReadingTimeline({ sessions = [] }) {
             margin: '0.5rem 0',
           }}
         >
-          {genres.map((g) => (
+          {titles.map((t) => (
             <li
-              key={g}
+              key={t}
               style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
             >
               <span
@@ -216,11 +237,11 @@ export default function ReadingTimeline({ sessions = [] }) {
                 style={{
                   width: 12,
                   height: 12,
-                  backgroundColor: colorScale(g),
+                  backgroundColor: colorScale(t),
                   display: 'inline-block',
                 }}
               />
-              <span>{g}</span>
+              <span>{t}</span>
             </li>
           ))}
         </ul>
