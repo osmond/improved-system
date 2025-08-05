@@ -3,6 +3,8 @@ import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { select } from 'd3-selection';
 import { act } from 'react';
+import { scaleOrdinal } from 'd3-scale';
+import { schemeTableau10 } from 'd3-scale-chromatic';
 import ReadingTimeline from '../ReadingTimeline.jsx';
 
 const sessions = [
@@ -92,10 +94,22 @@ describe('ReadingTimeline', () => {
   it('places overlapping sessions in distinct vertical positions', () => {
     const { container } = render(<ReadingTimeline sessions={overlapping} />);
     const svg = container.querySelector('svg');
-    const rects = svg.querySelectorAll('rect[fill="steelblue"]');
+    const rects = svg.querySelectorAll('rect[height="30"]');
     expect(rects.length).toBe(2);
     const y1 = rects[0].getAttribute('y');
     const y2 = rects[1].getAttribute('y');
     expect(y1).not.toBe(y2);
+  });
+
+  it('assigns colors based on duration bucket', () => {
+    const { container } = render(<ReadingTimeline sessions={sessions} />);
+    const svg = container.querySelector('svg');
+    const rects = svg.querySelectorAll('rect[height="30"]');
+    const color = scaleOrdinal()
+      .domain(['short', 'medium', 'long'])
+      .range(schemeTableau10.slice(0, 3));
+    const bucket = (d) => (d < 30 ? 'short' : d < 60 ? 'medium' : 'long');
+    expect(rects[0].getAttribute('fill')).toBe(color(bucket(sessions[0].duration)));
+    expect(rects[1].getAttribute('fill')).toBe(color(bucket(sessions[1].duration)));
   });
 });
