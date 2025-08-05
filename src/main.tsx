@@ -3,6 +3,7 @@ import ReactDOM from "react-dom/client";
 import App from "./App";
 import "./styles/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
+import "leaflet/dist/leaflet.css";
 import { InterventionPreferencesProvider } from "@/hooks/useInterventionPreferences";
 import { FocusHistoryProvider } from "@/hooks/useFocusHistory";
 
