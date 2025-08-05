@@ -69,4 +69,16 @@ afterEach(() => {
       expect(colors).toContain(el.getAttribute('fill'));
     });
   });
+
+  it('falls back to local data when fetch fails', async () => {
+    global.fetch.mockRejectedValueOnce(new Error('Network error'));
+    render(<ReadingSpeedViolin />);
+
+    await waitFor(() => {
+      const paths = document.querySelectorAll('path');
+      expect(paths.length).toBeGreaterThan(0);
+    });
+
+    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
 });
