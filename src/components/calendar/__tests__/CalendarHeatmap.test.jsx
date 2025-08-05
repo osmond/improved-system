@@ -74,5 +74,9 @@ describe('CalendarHeatmap', () => {
     expect(svgs.length).toBe(2);
     getByText('2023');
     getByText('2024');
+
+    const [svg2023, svg2024] = svgs;
+    expect(svg2023.querySelector('rect.reading-scale-4')).not.toBeNull();
+    expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
   });
 });

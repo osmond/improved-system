@@ -53,7 +53,7 @@ const Sparkline = ({ series }) => {
   );
 };
 
-function YearlyHeatmap({ data }) {
+function YearlyHeatmap({ data, maxMinutes }) {
   const dates = data.map((d) => new Date(d.date));
   const minDate = new Date(Math.min(...dates));
   const startDate = new Date(minDate);
@@ -76,7 +76,6 @@ function YearlyHeatmap({ data }) {
     monthTotals[key] += d.minutes;
   });
 
-  const maxMinutes = Math.max(...data.map((d) => d.minutes), 0);
   const values = data.map((d) => ({ date: d.date, count: d.minutes }));
 
   const minutesByDate = data.reduce((acc, d) => {
@@ -174,6 +173,8 @@ export default function CalendarHeatmap({ data: propData }) {
   const data = propData || hookData;
   if (!data || data.length === 0) return null;
 
+  const maxMinutes = Math.max(...data.map((d) => d.minutes), 0);
+
   const dataByYear = data.reduce((acc, d) => {
     const year = new Date(d.date).getFullYear();
     if (!acc[year]) acc[year] = [];
@@ -188,7 +189,7 @@ export default function CalendarHeatmap({ data: propData }) {
       {years.map((year) => (
         <div key={year} className="mb-8">
           <div className="mb-2 font-semibold">{year}</div>
-          <YearlyHeatmap data={dataByYear[year]} />
+          <YearlyHeatmap data={dataByYear[year]} maxMinutes={maxMinutes} />
         </div>
       ))}
     </div>
