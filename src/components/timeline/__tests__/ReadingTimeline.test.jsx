@@ -87,8 +87,23 @@ describe('ReadingTimeline', () => {
     const svg = container.querySelector('svg');
     const ticks = svg.querySelectorAll('.x-axis .tick');
     expect(ticks.length).toBeGreaterThan(0);
-    expect(svg.querySelector('.annotation-longest')).toBeInTheDocument();
-    expect(svg.querySelector('.annotation-shortest')).toBeInTheDocument();
+    // axis uses monthly ticks with abbreviated month names
+    expect(ticks[0].textContent).toMatch(/^[A-Za-z]{3}$/);
+
+    const rects = svg.querySelectorAll('rect[height="30"]');
+    const longestAnnot = svg.querySelector('.annotation-longest');
+    const shortestAnnot = svg.querySelector('.annotation-shortest');
+    expect(longestAnnot).toBeInTheDocument();
+    expect(shortestAnnot).toBeInTheDocument();
+    expect(longestAnnot.textContent).toBe('Longest');
+    expect(shortestAnnot.textContent).toBe('Shortest');
+    // annotations should sit just above their respective bars
+    expect(Number(shortestAnnot.getAttribute('y'))).toBe(
+      Number(rects[0].getAttribute('y')) - 2,
+    );
+    expect(Number(longestAnnot.getAttribute('y'))).toBe(
+      Number(rects[1].getAttribute('y')) - 2,
+    );
   });
 
   it('places overlapping sessions in distinct vertical positions', () => {

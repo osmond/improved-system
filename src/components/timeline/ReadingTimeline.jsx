@@ -106,7 +106,10 @@ export default function ReadingTimeline({ sessions = [] }) {
           .append('text')
           .attr('class', `annotation ${cls}`)
           .attr('x', xPos)
-          .attr('y', 0)
+          .attr(
+            'y',
+            session.lane * LANE_HEIGHT + LANE_PADDING - 2,
+          )
           .attr('text-anchor', 'middle')
           .text(label);
       };
