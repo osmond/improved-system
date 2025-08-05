@@ -8,6 +8,7 @@ export default function ReadingTimelinePage() {
   if (isLoading) return <div>Loading...</div>;
   return (
     <div className="p-4">
+      <h1 className="text-xl font-bold mb-4">Reading Timeline</h1>
       <ReadingTimeline sessions={data || []} />
     </div>
   );
