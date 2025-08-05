@@ -49,7 +49,7 @@ export default function HabitConsistencyHeatmap({
         <div className="flex flex-col items-center justify-center gap-4 h-64 md:h-80 lg:h-96 text-sm text-muted-foreground text-center">
           <p>No session data yet.</p>
           <Button asChild size="sm">
-            <Link to="/dashboard">Log a session</Link>
+            <Link to="/">Log a session</Link>
           </Button>
         </div>
       </ChartCard>
