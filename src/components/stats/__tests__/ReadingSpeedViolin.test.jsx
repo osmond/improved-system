@@ -16,20 +16,29 @@ afterEach(() => {
   vi.restoreAllMocks();
 });
 
-describe('ReadingSpeedViolin', () => {
-  it('renders controls and chart', async () => {
-    render(<ReadingSpeedViolin />);
-    expect(screen.getByLabelText('Morning')).toBeInTheDocument();
-    expect(screen.getByLabelText('Evening')).toBeInTheDocument();
-    expect(screen.getByLabelText('Bandwidth')).toBeInTheDocument();
-    await waitFor(() => {
-      const paths = document.querySelectorAll('path');
-      expect(paths.length).toBeGreaterThan(0);
+  describe('ReadingSpeedViolin', () => {
+    it('renders controls and chart', async () => {
+      render(<ReadingSpeedViolin />);
+      expect(screen.getByLabelText('Morning')).toBeInTheDocument();
+      expect(screen.getByLabelText('Evening')).toBeInTheDocument();
+      expect(screen.getByLabelText('Bandwidth')).toBeInTheDocument();
+      await waitFor(() => {
+        const paths = document.querySelectorAll('path');
+        expect(paths.length).toBeGreaterThan(0);
+      });
     });
-  });
 
-  it('applies period-specific colors', async () => {
-    const { container } = render(<ReadingSpeedViolin />);
+    it('uses lower default bandwidth and slider range', () => {
+      render(<ReadingSpeedViolin />);
+      const slider = screen.getByLabelText('Bandwidth');
+      expect(slider).toHaveValue('150');
+      expect(slider).toHaveAttribute('min', '50');
+      expect(slider).toHaveAttribute('max', '1000');
+      expect(slider).toHaveAttribute('step', '50');
+    });
+
+    it('applies period-specific colors', async () => {
+      const { container } = render(<ReadingSpeedViolin />);
 
     await waitFor(() => {
       expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
