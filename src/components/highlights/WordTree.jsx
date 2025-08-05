@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { hierarchy, tree } from 'd3-hierarchy';
 import { select } from 'd3-selection';
 import { linkHorizontal } from 'd3-shape';
+import { scaleLinear } from 'd3-scale';
 import highlights from '@/data/kindle/highlights.json';
 
 function getExpansions(word) {
@@ -50,12 +51,37 @@ export default function WordTree() {
         d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
         setData({ ...data });
       });
+
+    node.each(d => {
+      if (d.parent) {
+        const counts = d.parent.children.map(c => c.data.count || 0);
+        d.siblingMax = Math.max(...counts);
+      }
+    });
+
     node.append('circle').attr('r', 4).attr('fill', 'var(--chart-wordtree-node)');
+
     node
       .append('text')
       .attr('x', 8)
       .attr('dy', '0.32em')
       .text(d => `${d.data.word}${d.data.count ? ` (${d.data.count})` : ''}`);
+
+    node
+      .filter(d => d.data.count)
+      .each(function (d) {
+        const textWidth = select(this).select('text').node().getBBox().width;
+        const scale = scaleLinear()
+          .domain([0, d.siblingMax || d.data.count])
+          .range([0, 60]);
+        select(this)
+          .append('rect')
+          .attr('x', 8 + textWidth + 4)
+          .attr('y', -3)
+          .attr('height', 6)
+          .attr('width', scale(d.data.count))
+          .attr('fill', 'var(--chart-wordtree-bar)');
+      });
   }, [data]);
 
   const handleSubmit = async e => {
