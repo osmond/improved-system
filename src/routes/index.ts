@@ -6,6 +6,7 @@ import {
   Shield,
   List,
   BookOpen,
+  FlaskConical,
 } from "lucide-react";
 import {
   withIcon,
@@ -114,6 +115,12 @@ export const trendsRoutes = withIcon(TrendingUp, [
     label: "Weekly Training Volume Trend",
     description: "Historical view of weekly training volume",
     component: "@/pages/charts/WeeklyVolumeHistoryChart",
+  },
+  {
+    to: "/dashboard/charts/line-chart-interactive",
+    label: "Interactive Metric Trend",
+    description: "Experiment with dynamic line chart interactions",
+    component: "@/pages/charts/LineChartInteractive",
   },
 ]);
 
@@ -233,12 +240,57 @@ export const analyticalRoutes = withIcon(BarChart3, [
     description: "Segment reading activity across categories",
     component: "@/pages/charts/ReadingStackSplit",
   },
+  {
+    to: "/dashboard/charts/ghost-self-rival-chart",
+    label: "Ghost vs Self vs Rival Comparison",
+    description: "Compare performance against a ghost, yourself, and a rival",
+    component: "@/pages/charts/GhostSelfRivalChart",
+  },
+  {
+    to: "/dashboard/charts/perf-vs-environment-matrix",
+    label: "Performance vs Environment Matrix",
+    description: "Matrix of performance across environmental factors",
+    component: "@/pages/charts/PerfVsEnvironmentMatrix",
+  },
+  {
+    to: "/dashboard/charts/training-entropy-heatmap",
+    label: "Training Entropy Heatmap",
+    description: "Visualize training variability using entropy",
+    component: "@/pages/charts/TrainingEntropyHeatmap",
+  },
+  {
+    to: "/dashboard/charts/scatter-chart-pace-heart-rate",
+    label: "Pace vs Heart Rate Scatter",
+    description: "Explore relationship between pace and heart rate",
+    component: "@/pages/charts/ScatterChartPaceHeartRate",
+  },
 ]);
 
 const analyticalRouteGroup: DashboardRouteGroup = {
   label: "Analytical Insights",
   icon: BarChart3,
   items: analyticalRoutes,
+};
+
+export const demoRoutes = withIcon(FlaskConical, [
+  {
+    to: "/dashboard/charts/compact-next-game-card",
+    label: "Next Game Summary Card",
+    description: "Compact card showing upcoming game details",
+    component: "@/pages/charts/CompactNextGameCard",
+  },
+  {
+    to: "/dashboard/charts/run-soundtrack-card-demo",
+    label: "Run Soundtrack Recommendation",
+    description: "Card demo of personalized run soundtrack",
+    component: "@/pages/charts/RunSoundtrackCardDemo",
+  },
+]);
+
+const demoRouteGroup: DashboardRouteGroup = {
+  label: "Component Demos",
+  icon: FlaskConical,
+  items: demoRoutes,
 };
 
 export const kindleRoutes = withIcon(BookOpen, [
@@ -371,6 +423,7 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
   mapsRouteGroup,
   trendsRouteGroup,
   analyticalRouteGroup,
+  demoRouteGroup,
   kindleRouteGroup,
   goalsRouteGroup,
   privacyRouteGroup,
