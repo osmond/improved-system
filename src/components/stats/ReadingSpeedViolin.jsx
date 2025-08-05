@@ -4,6 +4,7 @@ import { scaleLinear } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import readingSpeed from '@/data/kindle/reading-speed.json';
+import { Skeleton } from '@/ui/skeleton';
 
 export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
@@ -11,9 +12,11 @@ export default function ReadingSpeedViolin() {
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
   const [bandwidth, setBandwidth] = useState(500);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     setData(readingSpeed);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -153,7 +156,11 @@ export default function ReadingSpeedViolin() {
           Evening
         </label>
       </div>
-      <svg ref={svgRef} width="400" height="300" />
+      {loading ? (
+        <Skeleton className="h-[300px] w-[400px]" />
+      ) : (
+        <svg ref={svgRef} width="400" height="300" />
+      )}
       <div>
         <label>
           Bandwidth

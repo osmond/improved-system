@@ -3,23 +3,28 @@ import { select } from 'd3-selection';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
 import transitions from '@/data/kindle/genre-transitions.json';
+import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
   const [data, setData] = useState([]);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
+    setLoading(true);
     const res = await fetch(
       `/api/kindle/genre-transitions?start=${start}&end=${end}`,
     );
     const json = await res.json();
     setData(json);
+    setLoading(false);
   };
 
   useEffect(() => {
     setData(transitions);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -110,7 +115,11 @@ export default function GenreSankey() {
         </label>
         <button onClick={fetchData}>Apply</button>
       </div>
-      <svg ref={svgRef} width="600" height="400" />
+      {loading ? (
+        <Skeleton className="h-[400px] w-[600px]" />
+      ) : (
+        <svg ref={svgRef} width="600" height="400" />
+      )}
     </div>
   );
 }

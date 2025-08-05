@@ -29,9 +29,7 @@ describe("MileageGlobe", () => {
   it("renders loading placeholder when no data", () => {
     mockUseMileageTimeline.mockReturnValue(null);
     render(<MileageGlobe />);
-    expect(
-      screen.getByText(/Loading mileage globe.../i)
-    ).toBeInTheDocument();
+    expect(screen.getByTestId('loading')).toBeInTheDocument();
   });
 
   it("renders mileage path when data is available", async () => {

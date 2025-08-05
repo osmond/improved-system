@@ -4,6 +4,7 @@ import { feature } from 'topojson-client'
 import { geoInterpolate } from 'd3-geo'
 import useMileageTimeline, { CumulativeMileagePoint } from '@/hooks/useMileageTimeline'
 import GlobeRenderer from '@/components/GlobeRenderer'
+import { Skeleton } from '@/ui/skeleton'
 
 interface MileageGlobeProps {
   weekRange?: [number, number]
@@ -34,11 +35,7 @@ export default function MileageGlobe({ weekRange, autoRotate = false }: MileageG
   }, [])
 
   if (!data) {
-    return (
-      <div className='flex items-center justify-center h-96 w-full bg-muted text-muted-foreground rounded'>
-        Loading mileage globe...
-      </div>
-    )
+    return <Skeleton data-testid='loading' className='h-96 w-full' />
   }
   if (worldError) {
     return (
