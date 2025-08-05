@@ -26,14 +26,19 @@ export default function ReadingMap() {
   const [title, setTitle] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [basemap, setBasemap] = useState(
-    () => localStorage.getItem('basemap') || 'osm'
-  );
+  const [basemap, setBasemap] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('basemap') || 'osm';
+    }
+    return 'osm';
+  });
   const [zoom, setZoom] = useState(5);
   const [mode, setMode] = useState('auto');
 
   useEffect(() => {
-    localStorage.setItem('basemap', basemap);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('basemap', basemap);
+    }
   }, [basemap]);
 
   useEffect(() => {
@@ -145,6 +150,10 @@ export default function ReadingMap() {
   );
 
   const colorScale = useMemo(() => {
+    if (typeof document === 'undefined' || typeof window === 'undefined') {
+      const interpolator = interpolateHsl('hsl(0, 0%, 0%)', 'hsl(0, 0%, 100%)');
+      return scaleSequential(interpolator).domain([0, maxCount || 1]);
+    }
     const style = getComputedStyle(document.documentElement);
     const start = `hsl(${style
       .getPropertyValue('--chart-1')
