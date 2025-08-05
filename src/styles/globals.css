@@ -149,7 +149,30 @@
     --font-slab: "Georgia", "Times New Roman", serif;
   }
 
-  html, body {
-    @apply bg-background text-foreground;
+html, body {
+  @apply bg-background text-foreground;
+}
+}
+
+@layer utilities {
+  .reading-scale-0 {
+    background-color: #ebedf0;
+    fill: #ebedf0;
+  }
+  .reading-scale-1 {
+    background-color: #c6e48b;
+    fill: #c6e48b;
+  }
+  .reading-scale-2 {
+    background-color: #7bc96f;
+    fill: #7bc96f;
+  }
+  .reading-scale-3 {
+    background-color: #239a3b;
+    fill: #239a3b;
+  }
+  .reading-scale-4 {
+    background-color: #196127;
+    fill: #196127;
   }
 }
