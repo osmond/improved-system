@@ -4,6 +4,8 @@ import App from "./App";
 import "./styles/globals.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "leaflet/dist/leaflet.css";
+import "leaflet.markercluster/dist/MarkerCluster.css";
+import "leaflet.markercluster/dist/MarkerCluster.Default.css";
 import { InterventionPreferencesProvider } from "@/hooks/useInterventionPreferences";
 import { FocusHistoryProvider } from "@/hooks/useFocusHistory";
 
