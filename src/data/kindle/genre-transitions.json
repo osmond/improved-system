@@ -1,0 +1,4 @@
+[
+  { "source": "A", "target": "B", "count": 2 },
+  { "source": "B", "target": "C", "count": 1 }
+]

@@ -3,6 +3,7 @@ import { select } from 'd3-selection';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import transitions from '@/data/kindle/genre-transitions.json';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
@@ -10,18 +11,12 @@ export default function GenreSankey() {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
 
-  const fetchData = async () => {
-    const params = new URLSearchParams();
-    if (start) params.append('start', start);
-    if (end) params.append('end', end);
-    const res = await fetch(`/api/kindle/genre-transitions?${params.toString()}`);
-    const json = await res.json();
-    setData(json);
+  const fetchData = () => {
+    setData(transitions);
   };
 
   useEffect(() => {
-    fetchData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    setData(transitions);
   }, []);
 
   useEffect(() => {

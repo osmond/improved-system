@@ -1,0 +1,22 @@
+{
+  "name": "root",
+  "children": [
+    {
+      "name": "Fiction",
+      "children": [
+        {
+          "name": "Mystery",
+          "children": [
+            { "name": "Book One", "value": 30 }
+          ]
+        },
+        {
+          "name": "Fantasy",
+          "children": [
+            { "name": "Book Two", "value": 15 }
+          ]
+        }
+      ]
+    }
+  ]
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleLinear } from 'd3-scale';
+import readingSpeed from '@/data/kindle/reading-speed.json';
 
 export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
@@ -9,12 +10,7 @@ export default function ReadingSpeedViolin() {
   const [showEvening, setShowEvening] = useState(true);
 
   useEffect(() => {
-    const fetchData = async () => {
-      const res = await fetch('/api/kindle/reading-speed');
-      const json = await res.json();
-      setData(json);
-    };
-    fetchData();
+    setData(readingSpeed);
   }, []);
 
   useEffect(() => {
