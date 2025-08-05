@@ -56,7 +56,7 @@ export default function GenreSankey() {
       .data(l)
       .join('path')
       .attr('d', sankeyLinkHorizontal())
-      .attr('stroke', 'var(--chart-network-link)')
+      .attr('stroke', (d) => color(d.source.name))
       .attr('fill', 'none')
       .attr('stroke-width', (d) => Math.max(1, d.width));
 
