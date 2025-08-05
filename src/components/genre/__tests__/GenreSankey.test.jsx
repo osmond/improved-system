@@ -62,20 +62,26 @@ describe('GenreSankey', () => {
     expect(container.querySelectorAll('path').length).not.toBe(initialCount);
   });
 
-  it('renders at least one link sharing a node color', async () => {
+  it('renders link gradients transitioning between node colors', async () => {
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
       const links = container.querySelectorAll('path');
       const nodes = container.querySelectorAll('rect');
+      const gradients = container.querySelectorAll('linearGradient');
       expect(links.length).toBeGreaterThan(0);
       expect(nodes.length).toBeGreaterThan(0);
+      expect(gradients.length).toBeGreaterThan(0);
 
+      const stroke = links[0].getAttribute('stroke') || '';
+      const match = stroke.match(/url\(#(.*)\)/);
+      expect(match).not.toBeNull();
+      const gradient = container.querySelector(`#${match[1]}`);
+      expect(gradient).toBeInTheDocument();
+      const stopColors = Array.from(gradient.querySelectorAll('stop')).map((s) =>
+        s.getAttribute('stop-color'),
+      );
       const nodeColors = Array.from(nodes).map((n) => n.getAttribute('fill'));
-      const hasColoredLink = Array.from(links).some((link) => {
-        const stroke = link.getAttribute('stroke');
-        return stroke && stroke !== '#999' && nodeColors.includes(stroke);
-      });
-      expect(hasColoredLink).toBe(true);
+      stopColors.forEach((c) => expect(nodeColors).toContain(c));
     });
   });
 
@@ -91,7 +97,7 @@ describe('GenreSankey', () => {
       name: texts[i].textContent,
     }));
     nodes.sort((a, b) => a.x - b.x);
-    expect(nodes[0].name).toBe('Politics & Social Sciences');
+    expect(nodes[0].name).toBe('Self-Help');
   });
 
   it('shows a tooltip with text and bar chart on link hover', async () => {
@@ -100,6 +106,10 @@ describe('GenreSankey', () => {
       expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
     });
     const link = container.querySelector('path');
+    const label = link.getAttribute('aria-label') || '';
+    const [, from, to, count] = label.match(
+      /^From (.*) to (.*): (\d+) sessions$/,
+    );
     fireEvent.mouseOver(link, {
       clientX: 50,
       clientY: 50,
@@ -111,8 +121,9 @@ describe('GenreSankey', () => {
       expect(tooltip).toHaveStyle({ display: 'block' });
     });
     expect(tooltip).toHaveTextContent(
-      'Mystery, Thriller & Suspense → Science & Math: 10 sessions',
+      `${from} → ${to}: ${count} sessions`,
     );
+    expect(tooltip).toHaveTextContent('% of');
     const svg = tooltip.querySelector('svg');
     expect(svg).toBeInTheDocument();
     expect(svg.querySelectorAll('rect').length).toBe(12);
