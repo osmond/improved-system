@@ -11,7 +11,7 @@ const BAR_HEIGHT = 30;
 const LANE_PADDING = 5;
 const LANE_HEIGHT = BAR_HEIGHT + LANE_PADDING;
 const BRUSH_HEIGHT = 10;
-const AXIS_HEIGHT = 20;
+const AXIS_HEIGHT = 40;
 
 
 export default function ReadingTimeline({ sessions = [] }) {
@@ -83,7 +83,9 @@ export default function ReadingTimeline({ sessions = [] }) {
       .attr('transform', `translate(0,${BRUSH_HEIGHT + height})`);
     const xAxis = axisBottom(x)
       .ticks(timeMonth.every(1))
-      .tickFormat(timeFormat('%b'));
+      .tickFormat(timeFormat('%b'))
+      .tickSize(-height)
+      .tickSizeOuter(0);
 
     const renderBars = (domain = initialDomain) => {
       x.domain(domain);
@@ -107,6 +109,18 @@ export default function ReadingTimeline({ sessions = [] }) {
         );
 
       axisG.call(xAxis);
+      axisG
+        .selectAll('.tick line')
+        .attr('stroke', '#ccc')
+        .attr('stroke-opacity', 0.3);
+      axisG.selectAll('.axis-label').remove();
+      axisG
+        .append('text')
+        .attr('class', 'axis-label')
+        .attr('x', WIDTH / 2)
+        .attr('y', AXIS_HEIGHT - 5)
+        .attr('text-anchor', 'middle')
+        .text('Date');
 
       barsG.selectAll('.annotation').remove();
       const annotate = (session, cls, label) => {
