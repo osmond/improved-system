@@ -15,7 +15,7 @@ import {
 } from "@/ui/chart"
 import type { ChartConfig } from "@/ui/chart"
 import ChartCard from "@/components/dashboard/ChartCard"
-import { SessionPoint } from "@/hooks/useRunningSessions"
+import { SessionPoint, AxisHint } from "@/hooks/useRunningSessions"
 import { Skeleton } from "@/ui/skeleton"
 import { polygonHull, polygonCentroid } from "d3-polygon"
 import { contourDensity } from "d3-contour"
@@ -38,10 +38,12 @@ const colors = [
 
 interface SessionSimilarityMapProps {
   data: SessionPoint[] | null
+  axisHints?: AxisHint[] | null
 }
 
 export default function SessionSimilarityMap({
   data,
+  axisHints,
 }: SessionSimilarityMapProps) {
   if (!data) return <Skeleton className="h-64" />
 
@@ -290,6 +292,9 @@ export default function SessionSimilarityMap({
           <CartesianGrid strokeDasharray="3 3" />
           <XAxis type="number" dataKey="x" name="X" />
           <YAxis type="number" dataKey="y" name="Y" />
+          {axisHints && (
+            <Customized component={<AxisHintOverlay hints={axisHints} />} />
+          )}
           <Brush dataKey="x" height={20} travellerWidth={10} />
           <ChartTooltip content={<SessionTooltip />} />
           <Customized
@@ -399,6 +404,31 @@ export default function SessionSimilarityMap({
         allSessions={filtered}
       />
     </ChartCard>
+  )
+}
+
+function AxisHintOverlay({ hints, offset, xAxisMap, yAxisMap }: any) {
+  const xAxis = Object.values(xAxisMap)[0]
+  const yAxis = Object.values(yAxisMap)[0]
+  const xScale = xAxis.scale
+  const yScale = yAxis.scale
+  const originX = xScale(0) + offset.left
+  const originY = yScale(0) + offset.top
+  return (
+    <g>
+      {hints.map((h: AxisHint) => {
+        const x = xScale(h.x) + offset.left
+        const y = yScale(h.y) + offset.top
+        return (
+          <g key={h.label}>
+            <line x1={originX} y1={originY} x2={x} y2={y} stroke="#999" />
+            <text x={x} y={y} fill="#666" fontSize={10}>
+              {h.label}
+            </text>
+          </g>
+        )
+      })}
+    </g>
   )
 }
 
