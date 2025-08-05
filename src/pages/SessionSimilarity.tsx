@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { SessionSimilarityMap } from "@/components/maps";
 import { useRunningSessions } from "@/hooks/useRunningSessions";
-import { useSessionInsights } from "@/hooks/useSessionInsights";
 import {
   getSavedViews,
   saveView,
@@ -10,10 +9,11 @@ import {
 
 export default function SessionSimilarityPage() {
   const [method, setMethod] = useState<"tsne" | "umap">("tsne");
-  const { sessions, clusterStats, axisHints, error } = useRunningSessions(method);
-  const insights = useSessionInsights(clusterStats);
+  const { sessions, axisHints, error } = useRunningSessions(method);
   const [savedViews, setSavedViews] = useState<SavedView[]>([]);
   const [compareId, setCompareId] = useState<string>("");
+  const [narrative, setNarrative] = useState("");
+  const [tips, setTips] = useState<string[]>([]);
 
   useEffect(() => {
     setSavedViews(getSavedViews());
@@ -37,9 +37,10 @@ export default function SessionSimilarityPage() {
   return (
     <div className="p-4 space-y-4">
       <h1 className="text-2xl font-bold">Session Similarity</h1>
-      {insights.length > 0 && (
+      {narrative && <p className="text-sm font-medium">{narrative}</p>}
+      {tips.length > 0 && (
         <div className="space-y-1 text-sm text-muted-foreground">
-          {insights.map((i, idx) => (
+          {tips.map((i, idx) => (
             <p key={idx}>{i}</p>
           ))}
         </div>
@@ -94,10 +95,24 @@ export default function SessionSimilarityPage() {
             data={compare.sessions}
             axisHints={compare.axisHints}
           />
-          <SessionSimilarityMap data={sessions} axisHints={axisHints} />
+          <SessionSimilarityMap
+            data={sessions}
+            axisHints={axisHints}
+            onNarrative={(n, t) => {
+              setNarrative(n);
+              setTips(t);
+            }}
+          />
         </div>
       ) : (
-        <SessionSimilarityMap data={sessions} axisHints={axisHints} />
+        <SessionSimilarityMap
+          data={sessions}
+          axisHints={axisHints}
+          onNarrative={(n, t) => {
+            setNarrative(n);
+            setTips(t);
+          }}
+        />
       )}
     </div>
   );

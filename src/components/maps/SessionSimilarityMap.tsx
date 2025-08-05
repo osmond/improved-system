@@ -28,6 +28,8 @@ import Slider from "@/ui/slider"
 import { useState, useEffect, useMemo } from "react"
 import type { TooltipProps } from "recharts"
 import { computeClusterStability } from "@/lib/clusterStability"
+import { useSessionInsights } from "@/hooks/useSessionInsights"
+import { computeClusterMetrics } from "@/hooks/useRunningSessions"
 
 const colors = [
   "var(--chart-1)",
@@ -39,6 +41,7 @@ const colors = [
 interface SessionSimilarityMapProps {
   data: SessionPoint[] | null
   axisHints?: AxisHint[] | null
+  onNarrative?: (narrative: string, tips: string[]) => void
 }
 
 export default function SessionSimilarityMap({
@@ -78,7 +81,6 @@ export default function SessionSimilarityMap({
   }, [playing, sorted.length])
 
   const timelineData = sorted.slice(0, playIndex + 1)
-  const stability = useMemo(() => computeClusterStability(data), [data])
 
   const getTag = (prefix: string, s: SessionPoint) =>
     s.tags.find((t) => t.startsWith(prefix))?.slice(prefix.length) || null
@@ -124,6 +126,12 @@ export default function SessionSimilarityMap({
     return true
   })
 
+  const stability = useMemo(() => computeClusterStability(filtered), [filtered])
+  const clusterStats = useMemo(
+    () => computeClusterMetrics(filtered),
+    [filtered],
+  )
+
   const neighborOrder = useMemo(() => {
     if (!selected) return new Map<number, number>()
     const others = filtered
@@ -160,6 +168,7 @@ export default function SessionSimilarityMap({
     const goodFreq = points.filter((p) => p.good).length / points.length
     return {
       cluster: c,
+      descriptor: clusterConfig[c].label,
       points,
       hull,
       centroid,
@@ -168,6 +177,23 @@ export default function SessionSimilarityMap({
       goodDay: goodFreq > 0.6,
     }
   })
+  const nameMap = useMemo(
+    () =>
+      clusterDetails.reduce((acc, d) => {
+        acc[d.cluster] = d.descriptor
+        return acc
+      }, {} as Record<number, string>),
+    [clusterDetails],
+  )
+  const { narrative, tips } = useSessionInsights(
+    clusterStats,
+    stability,
+    nameMap,
+  )
+
+  useEffect(() => {
+    onNarrative?.(narrative, tips)
+  }, [narrative, tips, onNarrative])
   const [activeCluster, setActiveCluster] = useState<number | null>(null)
   const goodRuns = filtered.filter(
     (d) => d.good && (activeCluster === null || d.cluster === activeCluster),
