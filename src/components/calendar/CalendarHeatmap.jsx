@@ -8,6 +8,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from '@/ui/tooltip';
+import { Skeleton } from '@/ui/skeleton';
 import { getISOWeek, getISOWeekYear, getMonth, getYear } from 'date-fns';
 
 const monthNames = [
@@ -174,8 +175,11 @@ function YearlyHeatmap({ data, maxMinutes }) {
 }
 
 export default function CalendarHeatmap({ data: propData, multiYear }) {
-  const { data: hookData } = useDailyReading();
+  const { data: hookData, isLoading } = useDailyReading();
   const data = propData || hookData;
+  if (isLoading) {
+    return <Skeleton className="h-64" data-testid="calendar-heatmap-skeleton" />;
+  }
   if (!data || data.length === 0) return null;
 
   const maxMinutes = Math.max(...data.map((d) => d.minutes), 0);
