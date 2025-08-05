@@ -18,6 +18,8 @@ export interface SessionPoint {
   /** Unique session identifier */
   id: number
   cluster: number
+  /** Distance from this run to its cluster centroid */
+  distance: number
   descriptor: string
   good: boolean
   pace: number
@@ -372,6 +374,7 @@ export function useRunningSessions(
         })
 
         const descriptorMap: Record<number, string> = {}
+        const centroids: Record<number, { x: number; y: number }> = {}
         const uniqueClusters = Array.from(new Set(labels))
         for (const c of uniqueClusters) {
           const clusterSessions = preliminary.filter((p) => p.cluster === c)
@@ -384,6 +387,13 @@ export function useRunningSessions(
           const avgDelta =
             clusterSessions.reduce((sum, s) => sum + s.paceDelta, 0) /
             clusterSessions.length
+          const avgX =
+            clusterSessions.reduce((sum, s) => sum + s.x, 0) /
+            clusterSessions.length
+          const avgY =
+            clusterSessions.reduce((sum, s) => sum + s.y, 0) /
+            clusterSessions.length
+          centroids[c] = { x: avgX, y: avgY }
           const existing = getClusterLabel(c)
           const label = existing ?? makeClusterLabel(avgTemp, avgHour, avgDelta)
           descriptorMap[c] = label
@@ -393,6 +403,10 @@ export function useRunningSessions(
         const data = preliminary.map((p) => ({
           ...p,
           descriptor: descriptorMap[p.cluster],
+          distance: Math.hypot(
+            p.x - centroids[p.cluster].x,
+            p.y - centroids[p.cluster].y,
+          ),
         }))
 
         setPoints(data)
