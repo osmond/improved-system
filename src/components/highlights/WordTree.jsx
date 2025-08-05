@@ -28,8 +28,8 @@ const posColors = {
 
 function analyzeWord(word) {
   const sentiment = sentimentAnalyzer.analyze(word).score;
-  const data = nlp(word).terms().data()[0];
-  const pos = data?.terms?.[0]?.tags?.[0] || 'Unknown';
+  const term = nlp(word).terms().data()[0];
+  const pos = term?.tags?.[0] || 'Unknown';
   return { sentiment, pos };
 }
 
