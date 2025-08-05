@@ -114,18 +114,16 @@ function YearlyHeatmap({ data, maxMinutes }) {
     });
     const dayRect = React.cloneElement(element, { 'data-date': dateKey });
     const cell = (
-      <TooltipProvider>
-        <Tooltip>
-          <TooltipTrigger asChild>{dayRect}</TooltipTrigger>
-          <TooltipContent>
-            <div className="flex flex-col">
-              <span>{formatted}</span>
-              <span>{minutes} min</span>
-              <Sparkline series={series} />
-            </div>
-          </TooltipContent>
-        </Tooltip>
-      </TooltipProvider>
+      <Tooltip>
+        <TooltipTrigger asChild>{dayRect}</TooltipTrigger>
+        <TooltipContent>
+          <div className="flex flex-col">
+            <span>{formatted}</span>
+            <span>{minutes} min</span>
+            <Sparkline series={series} />
+          </div>
+        </TooltipContent>
+      </Tooltip>
     );
     if (date.getDate() === 1) {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
@@ -150,26 +148,28 @@ function YearlyHeatmap({ data, maxMinutes }) {
   const legendScale = [0, 1, 2, 3, 4];
 
   return (
-    <div>
-      <Heatmap
-        startDate={startDate}
-        endDate={endDate}
-        values={values}
-        classForValue={classForValue}
-        transformDayElement={transformDayElement}
-        showMonthLabels={false}
-      />
-      <div
-        className="flex items-center gap-1 mt-2 text-xs"
-        data-testid="reading-legend"
-      >
-        <span>Less</span>
-        {legendScale.map((level) => (
-          <div key={level} className={`w-3 h-3 reading-scale-${level}`} />
-        ))}
-        <span>More</span>
+    <TooltipProvider>
+      <div>
+        <Heatmap
+          startDate={startDate}
+          endDate={endDate}
+          values={values}
+          classForValue={classForValue}
+          transformDayElement={transformDayElement}
+          showMonthLabels={false}
+        />
+        <div
+          className="flex items-center gap-1 mt-2 text-xs"
+          data-testid="reading-legend"
+        >
+          <span>Less</span>
+          {legendScale.map((level) => (
+            <div key={level} className={`w-3 h-3 reading-scale-${level}`} />
+          ))}
+          <span>More</span>
+        </div>
       </div>
-    </div>
+    </TooltipProvider>
   );
 }
 

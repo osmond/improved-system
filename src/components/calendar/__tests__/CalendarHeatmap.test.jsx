@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
@@ -64,11 +64,10 @@ describe('CalendarHeatmap', () => {
     const day = container.querySelector('rect[data-date="2024-01-02"]');
     expect(day).not.toBeNull();
     await user.hover(day);
-    const dateTexts = await screen.findAllByText('Jan 2, 2024');
-    expect(dateTexts.length).toBeGreaterThan(0);
-    const minuteTexts = await screen.findAllByText('10 min');
-    expect(minuteTexts.length).toBeGreaterThan(0);
-    expect(screen.getAllByTestId('sparkline').length).toBeGreaterThan(0);
+    const tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 2, 2024');
+    within(tooltip).getByText('10 min');
+    within(tooltip).getByTestId('sparkline');
   });
 
   it('renders separate heatmaps for each year', () => {
