@@ -4,6 +4,7 @@ const { aggregateDailyReading } = require('../../src/services/readingStats');
 const { aggregateReadingSessions } = require('../../src/services/readingSessions');
 const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
 const { calculateGenreTransitions } = require('../../src/services/genreTransitions');
+const { buildHighlightIndex, getExpansions } = require('../../src/services/highlightIndex');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -201,6 +202,21 @@ function getGenreTransitions(start, end) {
   return calculateGenreTransitions(aggregated, genres);
 }
 
+let highlightTrie = null;
+function getHighlightTrie() {
+  if (!highlightTrie) {
+    const filePath = path.join(__dirname, '..', '..', 'data', 'kindle', 'highlights.json');
+    const texts = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    highlightTrie = buildHighlightIndex(texts);
+  }
+  return highlightTrie;
+}
+
+function getHighlightExpansions(keyword) {
+  const trie = getHighlightTrie();
+  return getExpansions(trie, keyword);
+}
+
 module.exports = {
   getEvents,
   getPoints,
@@ -209,5 +225,6 @@ module.exports = {
   getSessions,
   getGenreHierarchy,
   getGenreTransitions,
+  getHighlightExpansions,
 };
 

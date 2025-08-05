@@ -59,4 +59,12 @@ describe('GET /api/kindle', () => {
       expect(res.body[0]).toHaveProperty('count');
     }
   });
+
+  it('returns highlight expansions', async () => {
+    const res = await request(app).get('/api/kindle/highlights/search?keyword=the');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('word', 'quick');
+    expect(res.body[0]).toHaveProperty('count', 2);
+  });
 });
