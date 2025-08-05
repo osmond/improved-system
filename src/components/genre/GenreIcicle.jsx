@@ -5,6 +5,7 @@ import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { hsl } from 'd3-color';
 import { interpolate } from 'd3-interpolate';
 import 'd3-transition';
+import { Skeleton } from '@/ui/skeleton';
 
 const WIDTH = 600;
 const HEIGHT = 400;
@@ -89,6 +90,15 @@ export default function GenreIcicle({ data }) {
       .append('title')
       .text((d) => d.data.name);
   }, [data, zoomTo]);
+
+  if (!data) {
+    return (
+      <Skeleton
+        className="h-[400px] w-full"
+        data-testid="genre-icicle-skeleton"
+      />
+    );
+  }
 
   const ancestors = currentNode ? currentNode.ancestors().reverse() : [];
 

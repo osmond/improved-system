@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
@@ -24,6 +24,28 @@ import { hsl as d3hsl } from 'd3-color';
     const root = document.documentElement;
     root.style.setProperty('--chart-1', '210 100% 45%');
     root.style.setProperty('--chart-2', '214 90% 50%');
+  });
+
+    it('renders a skeleton before data resolves', async () => {
+    function Wrapper() {
+      const [d, setD] = React.useState(null);
+      React.useEffect(() => {
+        setTimeout(() => setD(data), 0);
+      }, []);
+      return <GenreSunburst data={d} />;
+    }
+
+    render(<Wrapper />);
+
+    expect(
+      screen.getByTestId('genre-sunburst-skeleton')
+    ).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('genre-sunburst-skeleton')
+      ).not.toBeInTheDocument();
+    });
   });
 
     it('updates breadcrumb and zooms on interactions', async () => {
