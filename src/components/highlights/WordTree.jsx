@@ -38,7 +38,7 @@ export default function WordTree() {
       .data(root.links())
       .join('path')
       .attr('fill', 'none')
-      .attr('stroke', '#999')
+      .attr('stroke', 'var(--chart-network-link)')
       .attr('d', link);
     const node = svg
       .selectAll('g')
@@ -50,7 +50,7 @@ export default function WordTree() {
         d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
         setData({ ...data });
       });
-    node.append('circle').attr('r', 4).attr('fill', '#555');
+    node.append('circle').attr('r', 4).attr('fill', 'var(--chart-wordtree-node)');
     node
       .append('text')
       .attr('x', 8)

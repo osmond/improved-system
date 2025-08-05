@@ -49,7 +49,7 @@ export default function ReadingSpeedViolin() {
         .attr('y', y1)
         .attr('width', w * 2)
         .attr('height', y0 - y1)
-        .attr('fill', '#69b3a2');
+        .attr('fill', 'var(--chart-network-node)');
     });
   }, [data, showMorning, showEvening]);
 

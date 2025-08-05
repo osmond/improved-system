@@ -1,0 +1,22 @@
+@layer base {
+  :root {
+    --chart-network-node: #69b3a2;
+    --chart-network-link: #999;
+    --chart-network-node-border: #fff;
+    --chart-wordtree-node: #555;
+  }
+
+  .dark {
+    --chart-network-node: #69b3a2;
+    --chart-network-link: #999;
+    --chart-network-node-border: #fff;
+    --chart-wordtree-node: #bbb;
+  }
+
+  .contrast {
+    --chart-network-node: #69b3a2;
+    --chart-network-link: #fff;
+    --chart-network-node-border: #000;
+    --chart-wordtree-node: #fff;
+  }
+}
