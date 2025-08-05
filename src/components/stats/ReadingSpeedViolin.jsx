@@ -17,12 +17,14 @@ export default function ReadingSpeedViolin() {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
 
-    // Group values by period according to visibility toggles
-    const periods = {};
-    if (showMorning) periods.morning = data.filter((d) => d.period === 'morning').map((d) => d.wpm);
-    if (showEvening) periods.evening = data.filter((d) => d.period === 'evening').map((d) => d.wpm);
-    const periodKeys = Object.keys(periods);
-    if (periodKeys.length === 0) return;
+    // Pre-compute values for each period so scales stay consistent
+    const periods = {
+      morning: data.filter((d) => d.period === 'morning').map((d) => d.wpm),
+      evening: data.filter((d) => d.period === 'evening').map((d) => d.wpm),
+    };
+    const periodOrder = ['morning', 'evening'];
+    const allValues = periodOrder.flatMap((k) => periods[k]);
+    if (allValues.length === 0) return;
 
     // Helpers for quantile calculations
     const quantile = (arr, q) => {
@@ -36,8 +38,6 @@ export default function ReadingSpeedViolin() {
         : sorted[base];
     };
 
-    // Compute global min/max and stats per period
-    const allValues = periodKeys.flatMap((k) => periods[k]);
     const min = Math.min(...allValues);
     const max = Math.max(...allValues);
     const bins = 20;
@@ -46,7 +46,7 @@ export default function ReadingSpeedViolin() {
     const countsByPeriod = {};
     const stats = {};
     let maxCount = 0;
-    periodKeys.forEach((period) => {
+    periodOrder.forEach((period) => {
       const values = periods[period];
       const counts = new Array(bins).fill(0);
       values.forEach((v) => {
@@ -65,17 +65,22 @@ export default function ReadingSpeedViolin() {
 
     const width = 400;
     const height = 300;
-    const violinWidth = width / periodKeys.length;
+    const violinWidth = width / periodOrder.length;
     const x = scaleLinear().domain([0, maxCount]).range([0, violinWidth / 2]);
     const y = scaleLinear().domain([min, max]).range([height, 0]);
 
     const root = svg.attr('viewBox', `0 0 ${width} ${height}`).append('g');
 
-    periodKeys.forEach((period, i) => {
+    periodOrder.forEach((period, i) => {
+      const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
       const counts = countsByPeriod[period];
       const center = violinWidth * (i + 0.5);
-      const g = root.append('g').attr('transform', `translate(${center},0)`);
+      const g = root
+        .append('g')
+        .attr('transform', `translate(${center},0)`)
+        .style('display', show ? null : 'none');
+
       counts.forEach((c, j) => {
         const y0 = y(min + j * binSize);
         const y1 = y(min + (j + 1) * binSize);
