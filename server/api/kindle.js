@@ -8,6 +8,7 @@ const {
   getGenreHierarchy,
   getGenreTransitions,
   getHighlightExpansions,
+  getLocations,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -76,6 +77,14 @@ router.get('/highlights/search', (req, res) => {
     res.json(getHighlightExpansions(keyword));
   } catch (err) {
     res.status(500).json({ error: 'Failed to search highlights' });
+  }
+});
+
+router.get('/locations', (req, res) => {
+  try {
+    res.json(getLocations());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load locations' });
   }
 });
 

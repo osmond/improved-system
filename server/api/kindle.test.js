@@ -67,4 +67,12 @@ describe('GET /api/kindle', () => {
     expect(res.body[0]).toHaveProperty('word', 'quick');
     expect(res.body[0]).toHaveProperty('count', 2);
   });
+
+  it('returns location data', async () => {
+    const res = await request(app).get('/api/kindle/locations');
+    expect(res.status).toBe(200);
+    expect(Array.isArray(res.body)).toBe(true);
+    expect(res.body[0]).toHaveProperty('latitude');
+    expect(res.body[0]).toHaveProperty('longitude');
+  });
 });
