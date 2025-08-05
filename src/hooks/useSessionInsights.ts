@@ -30,6 +30,13 @@ export function useSessionInsights(
       `${clusterName(Number(maxBreach))} has most boundary breaches.`,
     )
 
+    const totalFlagged = entries.reduce(
+      (sum, [, v]) => sum + v.flaggedRuns,
+      0,
+    )
+    if (totalFlagged > 0)
+      tips.push(`${totalFlagged} runs felt harder or were surprising.`)
+
     let narrative = ''
     if (stability) {
       const stEntries = Object.entries(stability)

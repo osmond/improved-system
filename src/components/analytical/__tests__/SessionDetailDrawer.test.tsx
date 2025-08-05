@@ -44,6 +44,7 @@ const baseSession: SessionPoint = {
   start: '2024-01-01T08:00:00Z',
   tags: [],
   isFalsePositive: false,
+  feltHarder: false,
   factors: [
     { label: 'Tailwind', impact: 1 },
     { label: 'Stable HR', impact: 0.8 },
