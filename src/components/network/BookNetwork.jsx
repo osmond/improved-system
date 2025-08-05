@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { select } from 'd3-selection';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
@@ -6,24 +6,77 @@ import { scaleOrdinal } from 'd3-scale';
 import { schemeTableau10 } from 'd3-scale-chromatic';
 import graphData from '@/data/kindle/book-graph.json';
 
-export default function BookNetwork() {
+export default function BookNetwork({ data = graphData }) {
   const svgRef = useRef(null);
   const [graph, setGraph] = useState({ nodes: [], links: [] });
   const [tag, setTag] = useState('');
   const [author, setAuthor] = useState('');
+  const [selected, setSelected] = useState(null);
+  const [highlightedNodes, setHighlightedNodes] = useState(new Set());
+  const [highlightedLinks, setHighlightedLinks] = useState(new Set());
 
   useEffect(() => {
-    setGraph(graphData);
-  }, []);
+    setGraph(data);
+  }, [data]);
 
-  const filteredNodes = graph.nodes.filter(
-    (n) =>
-      (!tag || n.tags.includes(tag)) && (!author || n.authors.includes(author))
-  );
-  const nodeIds = new Set(filteredNodes.map((n) => n.id));
-  const filteredLinks = graph.links.filter(
-    (l) => nodeIds.has(l.source) && nodeIds.has(l.target)
-  );
+  const adjacency = useMemo(() => {
+    const map = new Map();
+    graph.links.forEach((l) => {
+      if (!map.has(l.source)) map.set(l.source, []);
+      if (!map.has(l.target)) map.set(l.target, []);
+      map.get(l.source).push(l.target);
+      map.get(l.target).push(l.source);
+    });
+    return map;
+  }, [graph]);
+
+  useEffect(() => {
+    if (!selected || (!tag && !author)) {
+      setHighlightedNodes(new Set(selected ? [selected] : []));
+      setHighlightedLinks(new Set());
+      return;
+    }
+
+    const targets = graph.nodes.filter(
+      (n) =>
+        (tag && n.tags.includes(tag)) ||
+        (author && n.authors.includes(author))
+    );
+
+    const prev = {};
+    const queue = [selected];
+    const visited = new Set([selected]);
+
+    while (queue.length) {
+      const node = queue.shift();
+      for (const neigh of adjacency.get(node) || []) {
+        if (!visited.has(neigh)) {
+          visited.add(neigh);
+          prev[neigh] = node;
+          queue.push(neigh);
+        }
+      }
+    }
+
+    const nodesSet = new Set([selected]);
+    const linksSet = new Set();
+    const edgeKey = (a, b) => (a < b ? `${a}-${b}` : `${b}-${a}`);
+
+    targets.forEach((t) => {
+      let curr = t.id;
+      if (!prev[curr] && curr !== selected) return;
+      nodesSet.add(curr);
+      while (curr !== selected) {
+        const p = prev[curr];
+        nodesSet.add(p);
+        linksSet.add(edgeKey(curr, p));
+        curr = p;
+      }
+    });
+
+    setHighlightedNodes(nodesSet);
+    setHighlightedLinks(linksSet);
+  }, [tag, author, selected, adjacency, graph]);
 
   useEffect(() => {
     const svg = select(svgRef.current);
@@ -32,11 +85,17 @@ export default function BookNetwork() {
     const height = 400;
 
     const color = scaleOrdinal(schemeTableau10);
+    const edgeKey = (a, b) => (a < b ? `${a}-${b}` : `${b}-${a}`);
+    const edgeFromLink = (d) => {
+      const s = typeof d.source === 'object' ? d.source.id : d.source;
+      const t = typeof d.target === 'object' ? d.target.id : d.target;
+      return edgeKey(s, t);
+    };
 
-    const simulation = forceSimulation(filteredNodes)
+    const simulation = forceSimulation(graph.nodes)
       .force(
         'link',
-        forceLink(filteredLinks).id((d) => d.id).distance(100)
+        forceLink(graph.links).id((d) => d.id).distance(100)
       )
       .force('charge', forceManyBody().strength(-200))
       .force('center', forceCenter(width / 2, height / 2));
@@ -46,21 +105,38 @@ export default function BookNetwork() {
       .attr('stroke', 'var(--chart-network-link)')
       .attr('stroke-opacity', 0.6)
       .selectAll('line')
-      .data(filteredLinks)
+      .data(graph.links)
       .join('line')
-      .attr('stroke-width', (d) => Math.sqrt(d.weight));
+      .attr('stroke-width', (d) =>
+        highlightedLinks.has(edgeFromLink(d)) ? 3 : Math.sqrt(d.weight)
+      )
+      .attr('stroke', (d) =>
+        highlightedLinks.has(edgeFromLink(d))
+          ? 'red'
+          : 'var(--chart-network-link)'
+      )
+      .attr('data-highlighted', (d) =>
+        highlightedLinks.has(edgeFromLink(d)) ? 'true' : null
+      );
 
     const node = svg
       .append('g')
-      .attr('stroke', 'var(--chart-network-node-border)')
-      .attr('stroke-width', 1.5)
       .selectAll('circle')
-      .data(filteredNodes)
+      .data(graph.nodes)
       .join('circle')
-      .attr('r', 5)
+      .attr('r', (d) => (highlightedNodes.has(d.id) ? 8 : 5))
       .attr('fill', (d) => color(d.community))
+      .attr('stroke', (d) =>
+        highlightedNodes.has(d.id)
+          ? 'red'
+          : 'var(--chart-network-node-border)'
+      )
+      .attr('stroke-width', (d) => (highlightedNodes.has(d.id) ? 3 : 1.5))
       .attr('data-testid', 'node')
-      .attr('data-community', (d) => d.community)
+      .attr('data-id', (d) => d.id)
+      .attr('data-highlighted', (d) =>
+        highlightedNodes.has(d.id) ? 'true' : null
+      )
       .call(
         drag()
           .on('start', (event, d) => {
@@ -77,7 +153,8 @@ export default function BookNetwork() {
             d.fx = null;
             d.fy = null;
           })
-      );
+      )
+      .on('click', (event, d) => setSelected(d.id));
 
     node.append('title').text((d) => d.title);
 
@@ -92,7 +169,7 @@ export default function BookNetwork() {
     });
 
     return () => simulation.stop();
-  }, [filteredNodes, filteredLinks]);
+  }, [graph, highlightedNodes, highlightedLinks]);
 
   return (
     <div>
