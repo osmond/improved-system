@@ -1,5 +1,6 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
+import TopNavigation from "@/components/layout/TopNavigation";
 import CommandPalette from "@/ui/CommandPalette";
 import { ChartActionsProvider } from "@/hooks/useChartActions";
 import useRecentViews from "@/hooks/useRecentViews";
@@ -13,8 +14,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
   const { addRecentView } = useRecentViews();
   const [commandOpen, setCommandOpen] = React.useState(false);
 
-  const isDashboard = location.pathname.startsWith("/dashboard");
-
   React.useEffect(() => {
     addRecentView(location.pathname);
   }, [location.pathname, addRecentView]);
@@ -22,11 +21,9 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <ChartActionsProvider>
       <CommandPalette open={commandOpen} setOpen={setCommandOpen} />
-      {!isDashboard && (
+      <div className="flex min-h-screen flex-col">
         <header className="flex items-center justify-between border-b p-4">
-          <Link to="/dashboard" className="font-semibold">
-            Home
-          </Link>
+          <TopNavigation />
           <button
             type="button"
             onClick={() => setCommandOpen(true)}
@@ -36,8 +33,8 @@ export default function RootLayout({ children }: RootLayoutProps) {
             Search
           </button>
         </header>
-      )}
-      <main className="flex-1 p-4">{children}</main>
+        <main className="flex-1 p-4">{children}</main>
+      </div>
     </ChartActionsProvider>
   );
 }
