@@ -1,5 +1,14 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { MapContainer, TileLayer, CircleMarker, useMap } from 'react-leaflet';
+import {
+  MapContainer,
+  TileLayer,
+  CircleMarker,
+  useMap,
+  useMapEvents,
+} from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+import L from 'leaflet';
+import 'leaflet.heat';
 import locationsData from '@/data/kindle/locations.json';
 
 export default function ReadingMap() {
@@ -9,6 +18,9 @@ export default function ReadingMap() {
   const [title, setTitle] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [zoom, setZoom] = useState(5);
+  const [mode, setMode] = useState('cluster');
+  const [userToggled, setUserToggled] = useState(false);
 
   useEffect(() => {
     setLocations(
@@ -59,6 +71,25 @@ export default function ReadingMap() {
     return null;
   }
 
+  function ZoomHandler() {
+    useMapEvents({
+      zoomend: (e) => setZoom(e.target.getZoom()),
+    });
+    return null;
+  }
+
+  function HeatmapLayer({ points }) {
+    const map = useMap();
+    useEffect(() => {
+      if (!map) return;
+      const heat = L.heatLayer(points, { radius: 25 }).addTo(map);
+      return () => {
+        map.removeLayer(heat);
+      };
+    }, [map, points]);
+    return null;
+  }
+
   return (
     <div>
       <div style={{ marginBottom: '1rem' }}>
@@ -93,7 +124,40 @@ export default function ReadingMap() {
           {playing ? 'Pause' : 'Play'}
         </button>
       </div>
-      <MapContainer center={center} zoom={2} style={{ height: '400px', width: '100%' }}>
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          <input
+            type="radio"
+            name="mode"
+            value="cluster"
+            checked={mode === 'cluster'}
+            onChange={(e) => {
+              setMode(e.target.value);
+              setUserToggled(true);
+            }}
+          />
+          Cluster
+        </label>
+        <label style={{ marginLeft: '0.5rem' }}>
+          <input
+            type="radio"
+            name="mode"
+            value="heatmap"
+            checked={mode === 'heatmap'}
+            onChange={(e) => {
+              setMode(e.target.value);
+              setUserToggled(true);
+            }}
+          />
+          Heatmap
+        </label>
+      </div>
+      <MapContainer
+        center={center}
+        zoom={5}
+        style={{ height: '400px', width: '100%' }}
+      >
+        <ZoomHandler />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -103,14 +167,42 @@ export default function ReadingMap() {
             position={[filtered[currentIndex].latitude, filtered[currentIndex].longitude]}
           />
         )}
-        {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
-          <CircleMarker
-            key={idx}
-            center={[loc.latitude, loc.longitude]}
-            radius={5}
-            pathOptions={{ color: 'red' }}
-          />
-        ))}
+        {(() => {
+          const points = filtered
+            .slice(0, currentIndex + 1)
+            .map((loc) => [loc.latitude, loc.longitude]);
+          const zoomThreshold = 8;
+          const lowZoom = 4;
+          let displayMode = 'cluster';
+          if (zoom >= zoomThreshold) displayMode = 'markers';
+          else if (zoom < lowZoom && !userToggled) displayMode = 'heatmap';
+          else displayMode = mode;
+          if (displayMode === 'markers') {
+            return filtered.slice(0, currentIndex + 1).map((loc, idx) => (
+              <CircleMarker
+                key={idx}
+                center={[loc.latitude, loc.longitude]}
+                radius={5}
+                pathOptions={{ color: 'red' }}
+              />
+            ));
+          }
+          if (displayMode === 'heatmap') {
+            return <HeatmapLayer points={points} />;
+          }
+          return (
+            <MarkerClusterGroup>
+              {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
+                <CircleMarker
+                  key={idx}
+                  center={[loc.latitude, loc.longitude]}
+                  radius={5}
+                  pathOptions={{ color: 'red' }}
+                />
+              ))}
+            </MarkerClusterGroup>
+          );
+        })()}
       </MapContainer>
     </div>
   );
