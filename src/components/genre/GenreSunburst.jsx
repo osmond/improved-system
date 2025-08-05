@@ -4,6 +4,7 @@ import { hierarchy, partition } from 'd3-hierarchy';
 import { arc } from 'd3-shape';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { schemeCategory10 } from 'd3-scale-chromatic';
+import { hsl } from 'd3-color';
 import { interpolate } from 'd3-interpolate';
 import 'd3-transition';
 
@@ -48,6 +49,17 @@ export default function GenreSunburst({ data }) {
 
     const color = scaleOrdinal(schemeCategory10);
 
+    const getColor = (d) => {
+      if (d.color) return d.color;
+      const top = d.ancestors().find((a) => a.depth === 1) || d;
+      const base = hsl(color(top.data.name));
+      const depth = d.depth - 1;
+      base.s = Math.max(0, base.s - depth * 0.15);
+      base.l = Math.min(1, base.l + depth * 0.1);
+      d.color = base.toString();
+      return d.color;
+    };
+
     const g = svg
       .attr('viewBox', `${-RADIUS} ${-RADIUS} ${SIZE} ${SIZE}`)
       .append('g');
@@ -57,7 +69,13 @@ export default function GenreSunburst({ data }) {
       .join('path')
       .attr('d', (d) => arcGen.current(d))
       .attr('data-name', (d) => d.data.name)
-      .attr('fill', (d) => color(d.ancestors().map((d) => d.data.name).join('-')))
+      .attr('fill', (d) => getColor(d))
+      .on('mouseover', function (_event, d) {
+        select(this).attr('fill', getColor(d));
+      })
+      .on('mouseout', function (_event, d) {
+        select(this).attr('fill', getColor(d));
+      })
       .on('click', (_event, d) => {
         setCurrentNode(d);
         zoomTo(d);
