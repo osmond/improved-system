@@ -54,4 +54,24 @@ describe('BookNetwork component', () => {
     expect(radiusB).toBeGreaterThan(radiusA);
     expect(radiusA).toBeCloseTo(radiusC);
   });
+
+  it('uses chart CSS variables for node and link styles', async () => {
+    const { container } = render(<BookNetwork data={createMockGraph()} />);
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
+      expect(container.querySelectorAll('line').length).toBe(2);
+    });
+
+    const nodeUsesVar = Array.from(
+      container.querySelectorAll('[data-testid="node"]')
+    ).some((el) => el.getAttribute('stroke') === 'var(--chart-network-node-border)');
+
+    const linkUsesVar = Array.from(container.querySelectorAll('line')).some(
+      (el) => el.getAttribute('stroke') === 'var(--chart-network-link)'
+    );
+
+    expect(nodeUsesVar).toBe(true);
+    expect(linkUsesVar).toBe(true);
+  });
 });

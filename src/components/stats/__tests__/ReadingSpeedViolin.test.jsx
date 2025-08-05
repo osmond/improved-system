@@ -14,4 +14,18 @@ describe('ReadingSpeedViolin', () => {
       expect(paths.length).toBeGreaterThan(0);
     });
   });
+
+  it('applies network node border color via CSS variable', async () => {
+    const { container } = render(<ReadingSpeedViolin />);
+
+    await waitFor(() => {
+      expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
+    });
+
+    const usesVar = Array.from(container.querySelectorAll('rect')).some(
+      (el) => el.getAttribute('stroke') === 'var(--chart-network-node-border)'
+    );
+
+    expect(usesVar).toBe(true);
+  });
 });
