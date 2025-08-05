@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import {
   MapContainer,
   TileLayer,
+  LayersControl,
   CircleMarker,
   useMap,
   useMapEvents,
@@ -21,6 +22,13 @@ export default function ReadingMap() {
   const [zoom, setZoom] = useState(5);
   const [mode, setMode] = useState('cluster');
   const [userToggled, setUserToggled] = useState(false);
+  const [basemap, setBasemap] = useState(
+    () => localStorage.getItem('basemap') || 'osm'
+  );
+
+  useEffect(() => {
+    localStorage.setItem('basemap', basemap);
+  }, [basemap]);
 
   useEffect(() => {
     setLocations(
@@ -158,10 +166,48 @@ export default function ReadingMap() {
         style={{ height: '400px', width: '100%' }}
       >
         <ZoomHandler />
-        <TileLayer
-          attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        />
+        <LayersControl position="topright">
+          <LayersControl.BaseLayer
+            checked={basemap === 'osm'}
+            name="OpenStreetMap"
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+              eventHandlers={{ add: () => setBasemap('osm') }}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer
+            checked={basemap === 'stamen'}
+            name="Stamen Terrain"
+          >
+            <TileLayer
+              attribution='Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="https://creativecommons.org/licenses/by/3.0">CC BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.stamen.com/terrain/{z}/{x}/{y}.jpg"
+              eventHandlers={{ add: () => setBasemap('stamen') }}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer
+            checked={basemap === 'carto'}
+            name="Carto Dark"
+          >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'
+              url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
+              eventHandlers={{ add: () => setBasemap('carto') }}
+            />
+          </LayersControl.BaseLayer>
+          <LayersControl.BaseLayer
+            checked={basemap === 'esri'}
+            name="ESRI Satellite"
+          >
+            <TileLayer
+              attribution='Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community'
+              url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
+              eventHandlers={{ add: () => setBasemap('esri') }}
+            />
+          </LayersControl.BaseLayer>
+        </LayersControl>
         {filtered[currentIndex] && (
           <CenterMap
             position={[filtered[currentIndex].latitude, filtered[currentIndex].longitude]}
