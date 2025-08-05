@@ -36,8 +36,11 @@ describe('ReadingSpeedViolin', () => {
       expect(colors).toContain(el.getAttribute('fill'));
     });
 
-    Array.from(container.querySelectorAll('line')).forEach((el) => {
-      expect(colors).toContain(el.getAttribute('stroke'));
+    const lineStrokes = Array.from(container.querySelectorAll('line')).map(
+      (el) => el.getAttribute('stroke')
+    );
+    colors.forEach((c) => {
+      expect(lineStrokes).toContain(c);
     });
 
     Array.from(container.querySelectorAll('circle')).forEach((el) => {

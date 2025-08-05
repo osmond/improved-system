@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
-import { scaleLinear } from 'd3-scale';
+import { scaleLinear, scaleBand } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
+import { axisLeft, axisBottom } from 'd3-axis';
 import readingSpeed from '@/data/kindle/reading-speed.json';
 
 export const color = {
@@ -49,8 +50,15 @@ export default function ReadingSpeedViolin() {
 
     const width = 400;
     const height = 300;
-    const violinWidth = width / periodOrder.length;
-    const y = scaleLinear().domain([min, max]).range([height, 0]);
+    const margin = { top: 10, right: 10, bottom: 40, left: 60 };
+    const innerWidth = width - margin.left - margin.right;
+    const innerHeight = height - margin.top - margin.bottom;
+    const xCat = scaleBand()
+      .domain(periodOrder)
+      .range([0, innerWidth])
+      .paddingInner(0.1);
+    const violinWidth = xCat.bandwidth();
+    const y = scaleLinear().domain([min, max]).range([innerHeight, 0]);
     const yTicks = y.ticks(40);
 
     const kernelDensityEstimator = (kernel, X) => (V) =>
@@ -78,13 +86,38 @@ export default function ReadingSpeedViolin() {
       .y((d) => y(d[0]))
       .curve(curveCatmullRom);
 
-    const root = svg.attr('viewBox', `0 0 ${width} ${height}`).append('g');
+    const root = svg
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .append('g')
+      .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    periodOrder.forEach((period, i) => {
+    // axes
+    root.append('g').call(axisLeft(y));
+    root
+      .append('g')
+      .attr('transform', `translate(0,${innerHeight})`)
+      .call(axisBottom(xCat));
+
+    // axis labels
+    root
+      .append('text')
+      .attr('transform', 'rotate(-90)')
+      .attr('x', -innerHeight / 2)
+      .attr('y', -margin.left + 20)
+      .attr('text-anchor', 'middle')
+      .text('Words per Minute');
+    root
+      .append('text')
+      .attr('x', innerWidth / 2)
+      .attr('y', innerHeight + margin.bottom - 10)
+      .attr('text-anchor', 'middle')
+      .text('Reading Period');
+
+    periodOrder.forEach((period) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
       const density = densities[period];
-      const center = violinWidth * (i + 0.5);
+      const center = xCat(period) + violinWidth / 2;
       const g = root
         .append('g')
         .attr('transform', `translate(${center},0)`)
