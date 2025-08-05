@@ -56,7 +56,18 @@ export default function ClusterCard({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Card className="cursor-pointer" onClick={onSelect}>
+        <Card
+          role="button"
+          tabIndex={0}
+          className="cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          onClick={onSelect}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" || e.key === " ") {
+              e.preventDefault()
+              ;(e.currentTarget as HTMLElement).click()
+            }
+          }}
+        >
           <CardHeader className="p-4 pb-2">
             <CardTitle className="text-sm flex items-center gap-2">
               {label}
