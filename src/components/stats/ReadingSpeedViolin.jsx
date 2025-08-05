@@ -13,6 +13,7 @@ export const color = {
 
 export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
+  const tooltipRef = useRef(null);
   const [data, setData] = useState([]);
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
@@ -28,11 +29,11 @@ export default function ReadingSpeedViolin() {
 
     // Pre-compute values for each period so scales stay consistent
     const periods = {
-      morning: data.filter((d) => d.period === 'morning').map((d) => d.wpm),
-      evening: data.filter((d) => d.period === 'evening').map((d) => d.wpm),
+      morning: data.filter((d) => d.period === 'morning'),
+      evening: data.filter((d) => d.period === 'evening'),
     };
     const periodOrder = ['morning', 'evening'];
-    const allValues = periodOrder.flatMap((k) => periods[k]);
+    const allValues = periodOrder.flatMap((k) => periods[k].map((d) => d.wpm));
     if (allValues.length === 0) return;
 
     const min = Math.min(...allValues);
@@ -40,7 +41,7 @@ export default function ReadingSpeedViolin() {
 
     const stats = {};
     periodOrder.forEach((period) => {
-      const values = periods[period];
+      const values = periods[period].map((d) => d.wpm);
       stats[period] = {
         median: quantile(values, 0.5),
         q1: quantile(values, 0.25),
@@ -74,7 +75,7 @@ export default function ReadingSpeedViolin() {
       const density = kernelDensityEstimator(
         kernelEpanechnikov(bandwidth),
         yTicks
-      )(periods[period]);
+      )(periods[period].map((d) => d.wpm));
       densities[period] = density;
       maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
     });
@@ -160,20 +161,38 @@ export default function ReadingSpeedViolin() {
         .attr('stroke-width', 2);
 
       // Plot individual reading speed points with slight horizontal jitter
+      const tooltip = select(tooltipRef.current);
       values.forEach((v) => {
         g
           .append('circle')
           .attr('cx', Math.random() * jitterWidth - jitterWidth / 2)
-          .attr('cy', y(v))
+          .attr('cy', y(v.wpm))
           .attr('r', 3)
           .attr('fill', fill)
-          .attr('fill-opacity', 0.6);
+          .attr('fill-opacity', 0.6)
+          .on('mouseover', (event) => {
+            const rect = svgRef.current.getBoundingClientRect();
+            tooltip
+              .style('opacity', 1)
+              .html(
+                `WPM: ${v.wpm}<br/>${new Date(v.start).toLocaleString()}`
+              )
+              .style('left', event.clientX - rect.left + 10 + 'px')
+              .style('top', event.clientY - rect.top + 10 + 'px');
+          })
+          .on('mousemove', (event) => {
+            const rect = svgRef.current.getBoundingClientRect();
+            tooltip
+              .style('left', event.clientX - rect.left + 10 + 'px')
+              .style('top', event.clientY - rect.top + 10 + 'px');
+          })
+          .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
   }, [data, showMorning, showEvening, bandwidth]);
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <div>
         <label>
           <input
@@ -193,6 +212,18 @@ export default function ReadingSpeedViolin() {
         </label>
       </div>
       <svg ref={svgRef} width="400" height="300" />
+      <div
+        ref={tooltipRef}
+        style={{
+          position: 'absolute',
+          pointerEvents: 'none',
+          opacity: 0,
+          background: 'white',
+          border: '1px solid #ccc',
+          padding: '4px',
+          borderRadius: '4px',
+        }}
+      />
       <div>
         <label>
           Bandwidth
