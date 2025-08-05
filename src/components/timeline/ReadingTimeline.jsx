@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useMemo } from 'react';
+import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime } from 'd3-scale';
 import { brushX } from 'd3-brush';
@@ -15,6 +15,8 @@ const AXIS_HEIGHT = 20;
 
 export default function ReadingTimeline({ sessions = [] }) {
   const ref = useRef(null);
+  const brushRef = useRef(null);
+  const [zoomed, setZoomed] = useState(false);
 
   const laneMap = useMemo(() => {
     const map = new Map();
@@ -109,8 +111,10 @@ export default function ReadingTimeline({ sessions = [] }) {
         if (event.selection) {
           const [x0, x1] = event.selection.map(x.invert);
           renderBars([x0, x1]);
+          setZoomed(true);
         } else {
           renderBars(initialDomain);
+          setZoomed(false);
         }
       });
 
@@ -118,12 +122,24 @@ export default function ReadingTimeline({ sessions = [] }) {
 
     // expose brush for tests
     ref.current.__brush = brush;
+    brushRef.current = brush;
   }, [sessions, laneMap, height]);
 
+  const reset = () => {
+    if (brushRef.current && ref.current) {
+      select(ref.current).select('.brush').call(brushRef.current.move, null);
+    }
+  };
+
   return (
-    <svg
-      ref={ref}
-      style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
-    />
+    <div>
+      <svg
+        ref={ref}
+        style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
+      />
+      <button onClick={reset} disabled={!zoomed} aria-label="Reset zoom">
+        Reset
+      </button>
+    </div>
   );
 }

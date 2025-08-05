@@ -1,7 +1,8 @@
 import React from 'react';
-import { render } from '@testing-library/react';
+import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { select } from 'd3-selection';
+import { act } from 'react';
 import ReadingTimeline from '../ReadingTimeline.jsx';
 
 const sessions = [
@@ -50,8 +51,8 @@ describe('ReadingTimeline', () => {
     expect(svg.querySelector('.brush')).toBeInTheDocument();
   });
 
-  it('updates bar widths when brushed', () => {
-    const { container } = render(<ReadingTimeline sessions={sessions} />);
+  it('updates bar widths when brushed and resets via control', () => {
+    const { container, getByRole } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const brush = svg.__brush;
     const viewWidth = Number(svg.getAttribute('viewBox').split(' ')[2]);
@@ -59,16 +60,24 @@ describe('ReadingTimeline', () => {
     let rect = svg.querySelector('rect');
     const initialWidth = Number(rect.getAttribute('width'));
 
-    select(svg.querySelector('.brush')).call(brush.move, [0, viewWidth / 2]);
+    act(() => {
+      select(svg.querySelector('.brush')).call(brush.move, [0, viewWidth / 2]);
+    });
 
     rect = svg.querySelector('rect');
     const zoomWidth = Number(rect.getAttribute('width'));
     expect(zoomWidth).toBeGreaterThan(initialWidth);
 
-    select(svg.querySelector('.brush')).call(brush.move, null);
+    const resetBtn = getByRole('button', { name: /reset/i });
+    expect(resetBtn).toBeEnabled();
+    act(() => {
+      fireEvent.click(resetBtn);
+    });
+
     rect = svg.querySelector('rect');
     const resetWidth = Number(rect.getAttribute('width'));
     expect(resetWidth).toBeCloseTo(initialWidth);
+    expect(resetBtn).toBeDisabled();
   });
 
   it('renders axis ticks and annotations', () => {
