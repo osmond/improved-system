@@ -5,6 +5,12 @@ export interface DashboardRoute {
   label: string;
   icon: LucideIcon;
   description: string;
+  /**
+   * Resolvable module path for the React component that should render this
+   * route. The path is used with a dynamic `import()` call so it should be a
+   * valid module specifier (e.g. "@/pages/Foo").
+   */
+  component?: string;
   tooltip?: string;
   tags?: string[];
   badge?: string;
