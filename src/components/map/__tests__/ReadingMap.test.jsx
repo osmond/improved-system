@@ -44,6 +44,18 @@ vi.mock('../HeatmapLayer', () => ({
   default: () => null,
 }));
 
+vi.mock('@/services/locationData', () => ({
+  fetchSessionLocations: () =>
+    Promise.resolve([
+      {
+        start: '2020-01-01T00:00:00Z',
+        title: 'Test',
+        latitude: 0,
+        longitude: 0,
+      },
+    ]),
+}));
+
 describe('ReadingMap', () => {
   it('renders map with controls', async () => {
     render(<ReadingMap />);

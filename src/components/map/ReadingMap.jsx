@@ -15,7 +15,7 @@ import { feature } from 'topojson-client';
 import { geoContains } from 'd3-geo';
 import { scaleSequential } from 'd3-scale';
 import { interpolateHsl } from 'd3-interpolate';
-import locationsData from '@/data/kindle/locations.json';
+import { fetchSessionLocations } from '@/services/locationData';
 import statesTopo from '@/lib/us-states.json';
 import worldTopo from '@/lib/world-countries.json';
 import { Skeleton } from '@/ui/skeleton';
@@ -23,6 +23,7 @@ import { Skeleton } from '@/ui/skeleton';
 export default function ReadingMap() {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [title, setTitle] = useState('');
@@ -44,12 +45,16 @@ export default function ReadingMap() {
   }, [basemap]);
 
   useEffect(() => {
-    setLocations(
-      [...locationsData].sort(
-        (a, b) => new Date(a.start) - new Date(b.start)
-      )
-    );
-    setLoading(false);
+    fetchSessionLocations()
+      .then((data) => {
+        const sorted = [...data].sort(
+          (a, b) => new Date(a.start) - new Date(b.start)
+        );
+        setLocations(sorted);
+        if (!data.length) setError('No location data available');
+      })
+      .catch(() => setError('Failed to load location data'))
+      .finally(() => setLoading(false));
   }, []);
 
   const filtered = useMemo(() => {
@@ -223,6 +228,13 @@ export default function ReadingMap() {
 
   if (loading)
     return <Skeleton className="h-[480px] w-full" data-testid="loading" />;
+
+  if (error)
+    return (
+      <div data-testid="error" role="alert">
+        {error}
+      </div>
+    );
 
   return (
     <div>
