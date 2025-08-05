@@ -29,12 +29,12 @@ interface BehavioralCharterMapProps {
   riskThresholds?: number[];
 }
 
-// Updated palette with modern hues
+// Updated palette using theme tokens
 const stateColors: Record<string, string> = {
-  reading: "#14b8a6", // teal
-  writing: "#8b5cf6", // violet
-  idle: "#f59e0b", // amber
-  other: "#a1a1aa",
+  reading: "hsl(var(--reading-5))",
+  writing: "hsl(var(--chart-5))",
+  idle: "hsl(var(--chart-3))",
+  other: "hsl(var(--muted))",
 };
 
 export default function BehavioralCharterMap({
@@ -51,7 +51,9 @@ export default function BehavioralCharterMap({
   const svgHeight = riskHeight + overlayHeight + height;
   const segmentWidth = width / segments.length;
 
-  const probColor = scaleLinear<string>().domain([0, 1]).range(["#e0f2fe", "#1e3a8a"]);
+const probColor = scaleLinear<string>()
+  .domain([0, 1])
+  .range(["hsl(var(--reading-1))", "hsl(var(--reading-5))"]);
   const riskScale = scaleLinear().domain([0, 1]).range([riskHeight, 0]);
 
   const riskLine = d3Line<Segment>()
@@ -109,7 +111,7 @@ export default function BehavioralCharterMap({
     <div key={s} className="flex items-center gap-1 text-xs">
       <span
         className="w-3 h-3 inline-block rounded-sm"
-        style={{ background: stateColors[s] || "#ccc" }}
+        style={{ background: stateColors[s] || "hsl(var(--muted))" }}
       />
       {s}
     </div>
@@ -183,7 +185,7 @@ export default function BehavioralCharterMap({
             x2={width}
             y1={riskHeight + overlayHeight - (i * overlayHeight) / 4}
             y2={riskHeight + overlayHeight - (i * overlayHeight) / 4}
-            stroke="#e5e7eb"
+            stroke="hsl(var(--border))"
             strokeWidth={0.5}
           />
         ))}
@@ -191,7 +193,7 @@ export default function BehavioralCharterMap({
         {riskArea(segments) && (
           <path
             d={riskArea(segments)!}
-            fill="rgba(30,64,175,0.2)"
+            fill="hsl(var(--reading-5) / 0.2)"
             style={{ transition: "d 0.3s" }}
           />
         )}
@@ -199,7 +201,7 @@ export default function BehavioralCharterMap({
         {riskLine(segments) && (
           <path
             d={riskLine(segments)!}
-            stroke="#1e40af"
+            stroke="hsl(var(--reading-5))"
             strokeWidth={2}
             fill="none"
             style={{ transition: "d 0.3s" }}
@@ -210,7 +212,7 @@ export default function BehavioralCharterMap({
           cx={maxRiskIdx * segmentWidth + segmentWidth / 2}
           cy={riskScale(segments[maxRiskIdx].risk)}
           r={3}
-          fill="#ef4444"
+          fill="hsl(var(--destructive))"
         />
         {/* threshold markers */}
         {riskThresholds?.map((t, i) => (
@@ -220,7 +222,7 @@ export default function BehavioralCharterMap({
             x2={width}
             y1={riskScale(t)}
             y2={riskScale(t)}
-            stroke="#ef4444"
+            stroke="hsl(var(--destructive))"
             strokeDasharray="4 2"
           />
         ))}
@@ -232,7 +234,7 @@ export default function BehavioralCharterMap({
               width={segmentWidth}
               height={height}
               fill={stateColors[seg.state] || stateColors.other}
-              stroke="#fff"
+              stroke="hsl(var(--background))"
               strokeWidth={0.5}
               style={{ transition: "fill 0.3s" }}
               onMouseEnter={(e) => handleHover(i, e)}
@@ -244,7 +246,7 @@ export default function BehavioralCharterMap({
               width={segmentWidth}
               height={overlayHeight}
               fill={probColor(seg.probability)}
-              stroke="#fff"
+              stroke="hsl(var(--background))"
               strokeWidth={0.5}
               style={{ transition: "fill 0.3s" }}
             />
@@ -253,7 +255,7 @@ export default function BehavioralCharterMap({
         </svg>
         {/* peak risk callout */}
         <div
-          className="absolute bg-white border text-xs p-1 rounded shadow"
+          className="absolute bg-card border text-xs p-1 rounded shadow"
           style={{ left: peakX + 5, top: peakY - 40 }}
         >
           <div className="font-semibold">
@@ -268,7 +270,7 @@ export default function BehavioralCharterMap({
         </div>
         {tooltip && (
           <div
-            className="absolute bg-white border p-2 text-xs rounded shadow"
+            className="absolute bg-card border p-2 text-xs rounded shadow"
             style={{ left: tooltip.x + 10, top: tooltip.y + 10 }}
           >
             <div className="flex items-center justify-between gap-2">
@@ -279,12 +281,12 @@ export default function BehavioralCharterMap({
                 <div
                   className="absolute inset-0 rounded-full"
                   style={{
-                    background: `conic-gradient(#1e3a8a ${
+                    background: `conic-gradient(hsl(var(--reading-5)) ${
                       tooltip.segment.probability * 360
-                    }deg, #e5e7eb 0deg)`,
+                    }deg, hsl(var(--muted)) 0deg)`,
                   }}
                 />
-                <div className="absolute inset-1 bg-white rounded-full text-[10px] flex items-center justify-center">
+                <div className="absolute inset-1 bg-background rounded-full text-[10px] flex items-center justify-center">
                   {(tooltip.segment.probability * 100).toFixed(0)}%
                 </div>
               </div>
@@ -293,9 +295,9 @@ export default function BehavioralCharterMap({
               <div className="mt-1">
                 <div>Risk: {tooltip.meta.risk?.toFixed(2)}</div>
                 {tooltip.meta.ciLow !== undefined && tooltip.meta.ciHigh !== undefined && (
-                  <div className="relative w-32 h-2 bg-gray-200 mt-1">
+                  <div className="relative w-32 h-2 bg-muted mt-1">
                     <div
-                      className="absolute h-full bg-red-300"
+                      className="absolute h-full bg-destructive/30"
                       style={{
                         left: `${(tooltip.meta.ciLow || 0) * 100}%`,
                         width: `${((tooltip.meta.ciHigh || 0) - (tooltip.meta.ciLow || 0)) * 100}%`,
@@ -303,7 +305,7 @@ export default function BehavioralCharterMap({
                     />
                     {tooltip.meta.risk !== undefined && (
                       <div
-                        className="absolute h-full bg-red-600"
+                        className="absolute h-full bg-destructive"
                         style={{ left: `${tooltip.meta.risk * 100}%`, width: "2%" }}
                       />
                     )}

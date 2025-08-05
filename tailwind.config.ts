@@ -41,7 +41,14 @@ export default {
           8: "hsl(var(--chart-8))",
           9: "hsl(var(--chart-9))",
           10: "hsl(var(--chart-10))",
-        }
+        },
+        reading: {
+          1: "hsl(var(--reading-1))",
+          2: "hsl(var(--reading-2))",
+          3: "hsl(var(--reading-3))",
+          4: "hsl(var(--reading-4))",
+          5: "hsl(var(--reading-5))",
+        },
       },
       fontFamily: {
         sans: ["Inter", ...fontFamily.sans],

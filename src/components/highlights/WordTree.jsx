@@ -12,14 +12,18 @@ import { Skeleton } from '@/ui/skeleton';
 const sentimentAnalyzer = new Sentiment();
 const sentimentColor = scaleLinear()
   .domain([-5, 0, 5])
-  .range(['#d73027', '#ffffbf', '#1a9850']);
+  .range([
+    'hsl(var(--destructive))',
+    'hsl(var(--muted))',
+    'hsl(var(--reading-5))',
+  ]);
 
 const posColors = {
-  Noun: '#1f77b4',
-  Verb: '#ff7f0e',
-  Adjective: '#2ca02c',
-  Adverb: '#d62728',
-  Unknown: '#7f7f7f',
+  Noun: 'hsl(var(--chart-1))',
+  Verb: 'hsl(var(--chart-5))',
+  Adjective: 'hsl(var(--chart-3))',
+  Adverb: 'hsl(var(--chart-4))',
+  Unknown: 'hsl(var(--muted-foreground))',
 };
 
 function analyzeWord(word) {
@@ -306,15 +310,15 @@ export default function WordTree() {
       {mode === 'sentiment' ? (
         <div className="mb-2 flex items-center gap-2 text-sm">
           <span className="flex items-center">
-            <span className="w-4 h-4 mr-1" style={{ background: '#d73027' }}></span>
+            <span className="w-4 h-4 mr-1" style={{ background: 'hsl(var(--destructive))' }}></span>
             Negative
           </span>
           <span className="flex items-center">
-            <span className="w-4 h-4 mr-1 border" style={{ background: '#ffffbf' }}></span>
+            <span className="w-4 h-4 mr-1 border" style={{ background: 'hsl(var(--muted))' }}></span>
             Neutral
           </span>
           <span className="flex items-center">
-            <span className="w-4 h-4 mr-1" style={{ background: '#1a9850' }}></span>
+            <span className="w-4 h-4 mr-1" style={{ background: 'hsl(var(--reading-5))' }}></span>
             Positive
           </span>
         </div>
