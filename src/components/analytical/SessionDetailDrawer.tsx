@@ -36,6 +36,7 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
   const [tagInput, setTagInput] = useState("")
   const [tags, setTags] = useState<string[]>([])
   const [isFalsePositive, setIsFalsePositive] = useState(false)
+  const [feltHarder, setFeltHarder] = useState(false)
   const shareRef = useRef<HTMLDivElement>(null)
 
   const summary = session
@@ -94,11 +95,16 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
     const meta = getSessionMeta(session.id)
     setTags(meta.tags)
     setIsFalsePositive(meta.isFalsePositive)
+    setFeltHarder(meta.feltHarder)
   }, [session])
 
-  function saveMeta(nextTags: string[], nextFalse: boolean) {
+  function saveMeta(nextTags: string[], nextFalse: boolean, nextHard: boolean) {
     if (!session) return
-    updateSessionMeta(session.id, { tags: nextTags, isFalsePositive: nextFalse })
+    updateSessionMeta(session.id, {
+      tags: nextTags,
+      isFalsePositive: nextFalse,
+      feltHarder: nextHard,
+    })
     window.dispatchEvent(new Event('sessionMetaUpdated'))
   }
 
@@ -109,21 +115,28 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
     const next = [...tags, t]
     setTags(next)
     setTagInput("")
-    saveMeta(next, isFalsePositive)
+    saveMeta(next, isFalsePositive, feltHarder)
   }
 
   function removeTag(tag: string) {
     if (!session) return
     const next = tags.filter((t) => t !== tag)
     setTags(next)
-    saveMeta(next, isFalsePositive)
+    saveMeta(next, isFalsePositive, feltHarder)
   }
 
   function toggleFalsePositive() {
     if (!session) return
     const next = !isFalsePositive
     setIsFalsePositive(next)
-    saveMeta(tags, next)
+    saveMeta(tags, next, feltHarder)
+  }
+
+  function toggleFeltHarder() {
+    if (!session) return
+    const next = !feltHarder
+    setFeltHarder(next)
+    saveMeta(tags, isFalsePositive, next)
   }
 
   async function handleShare() {
@@ -342,6 +355,9 @@ export default function SessionDetailDrawer({ session, onClose }: SessionDetailD
               </div>
               <Button variant={isFalsePositive ? "default" : "outline"} size="sm" onClick={toggleFalsePositive}>
                 {isFalsePositive ? "Marked False Positive" : "Mark False Positive"}
+              </Button>
+              <Button variant={feltHarder ? "default" : "outline"} size="sm" onClick={toggleFeltHarder}>
+                {feltHarder ? "Marked Felt Harder" : "Mark Felt Harder"}
               </Button>
             </div>
               {series && (

@@ -39,6 +39,7 @@ export interface SessionPoint {
   start: string
   tags: string[]
   isFalsePositive: boolean
+  feltHarder: boolean
   factors: SessionFactor[]
 }
 
@@ -53,6 +54,7 @@ export interface ClusterMetrics {
   goodRuns: number
   variance: number
   boundaryBreaches: number
+  flaggedRuns: number
 }
 
 export interface AxisHint {
@@ -76,14 +78,21 @@ export function computeClusterMetrics(
     const boundaryBreaches = pts.filter(
       (p) => Math.abs(p.paceDelta - mean) > 2 * std,
     ).length
-    result[c] = { goodRuns, variance, boundaryBreaches }
+    const flaggedRuns = pts.filter((p) => p.feltHarder).length
+    result[c] = { goodRuns, variance, boundaryBreaches, flaggedRuns }
   }
   return result
 }
 
-function kMeans(data: number[][], k: number, iterations = 10): number[] {
+function kMeans(
+  data: number[][],
+  k: number,
+  iterations = 10,
+  weights: number[] = [],
+): number[] {
   let centroids = data.slice(0, k).map((p) => [...p])
   const labels = new Array(data.length).fill(0)
+  const w = weights.length ? weights : new Array(data.length).fill(1)
 
   for (let iter = 0; iter < iterations; iter++) {
     for (let i = 0; i < data.length; i++) {
@@ -107,9 +116,10 @@ function kMeans(data: number[][], k: number, iterations = 10): number[] {
 
     for (let i = 0; i < data.length; i++) {
       const label = labels[i]
-      sums[label][0] += data[i][0]
-      sums[label][1] += data[i][1]
-      counts[label]++
+      const weight = w[i]
+      sums[label][0] += data[i][0] * weight
+      sums[label][1] += data[i][1] * weight
+      counts[label] += weight
     }
 
     for (let j = 0; j < k; j++) {
@@ -340,14 +350,21 @@ export function useRunningSessions(
           model.run()
           output = model.getOutputScaled()
         }
-        const labels = kMeans(output, 3)
         const metaMap = getAllSessionMeta()
+        const weights = sessions.map((s) =>
+          metaMap[s.id]?.feltHarder ? 1.5 : 1,
+        )
+        const labels = kMeans(output, 3, 10, weights)
         const preliminary = output.map(([x, y]: [number, number], idx: number) => {
           const session = sessions[idx]
           const { expected, factors } = computeExpected(session)
           const paceDelta = expected - session.pace
           const confidence = baselineConfidence(session)
-          const meta = metaMap[session.id] || { tags: [], isFalsePositive: false }
+          const meta = metaMap[session.id] || {
+            tags: [],
+            isFalsePositive: false,
+            feltHarder: false,
+          }
           return {
             x,
             y,
@@ -369,6 +386,7 @@ export function useRunningSessions(
             start: session.start ?? session.date,
             tags: meta.tags,
             isFalsePositive: meta.isFalsePositive,
+            feltHarder: meta.feltHarder,
             factors,
           }
         })
@@ -378,21 +396,35 @@ export function useRunningSessions(
         const uniqueClusters = Array.from(new Set(labels))
         for (const c of uniqueClusters) {
           const clusterSessions = preliminary.filter((p) => p.cluster === c)
+          const weightSum = clusterSessions.reduce(
+            (sum, s) => sum + (s.feltHarder ? 1.5 : 1),
+            0,
+          )
           const avgTemp =
-            clusterSessions.reduce((sum, s) => sum + s.temperature, 0) /
-            clusterSessions.length
+            clusterSessions.reduce(
+              (sum, s) => sum + s.temperature * (s.feltHarder ? 1.5 : 1),
+              0,
+            ) / weightSum
           const avgHour =
-            clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
-            clusterSessions.length
+            clusterSessions.reduce(
+              (sum, s) => sum + s.startHour * (s.feltHarder ? 1.5 : 1),
+              0,
+            ) / weightSum
           const avgDelta =
-            clusterSessions.reduce((sum, s) => sum + s.paceDelta, 0) /
-            clusterSessions.length
+            clusterSessions.reduce(
+              (sum, s) => sum + s.paceDelta * (s.feltHarder ? 1.5 : 1),
+              0,
+            ) / weightSum
           const avgX =
-            clusterSessions.reduce((sum, s) => sum + s.x, 0) /
-            clusterSessions.length
+            clusterSessions.reduce(
+              (sum, s) => sum + s.x * (s.feltHarder ? 1.5 : 1),
+              0,
+            ) / weightSum
           const avgY =
-            clusterSessions.reduce((sum, s) => sum + s.y, 0) /
-            clusterSessions.length
+            clusterSessions.reduce(
+              (sum, s) => sum + s.y * (s.feltHarder ? 1.5 : 1),
+              0,
+            ) / weightSum
           centroids[c] = { x: avgX, y: avgY }
           const existing = getClusterLabel(c)
           const label = existing ?? makeClusterLabel(avgTemp, avgHour, avgDelta)
@@ -432,7 +464,12 @@ export function useRunningSessions(
         if (!prev) return prev
         const updated = prev.map((p) => {
           const meta = getSessionMeta(p.id)
-          return { ...p, tags: meta.tags, isFalsePositive: meta.isFalsePositive }
+          return {
+            ...p,
+            tags: meta.tags,
+            isFalsePositive: meta.isFalsePositive,
+            feltHarder: meta.feltHarder,
+          }
         })
         setTrend(computeTrend(updated))
         setClusterStats(computeClusterMetrics(updated))

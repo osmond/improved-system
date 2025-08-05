@@ -6,6 +6,7 @@
 export interface SessionMeta {
   tags: string[]
   isFalsePositive: boolean
+  feltHarder: boolean
 }
 
 const STORAGE_KEY = 'session_meta'
@@ -30,7 +31,7 @@ function writeAll(data: Record<number, SessionMeta>): void {
  */
 export function getSessionMeta(id: number): SessionMeta {
   const all = readAll()
-  return all[id] || { tags: [], isFalsePositive: false }
+  return all[id] || { tags: [], isFalsePositive: false, feltHarder: false }
 }
 
 /**

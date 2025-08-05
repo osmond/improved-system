@@ -1079,7 +1079,11 @@ export async function getGoodDaySessions(
   const metaMap = getAllSessionMeta();
   return sessions
     .map((s) => {
-      const meta = metaMap[s.id] || { tags: [], isFalsePositive: false };
+      const meta = metaMap[s.id] || {
+        tags: [],
+        isFalsePositive: false,
+        feltHarder: false,
+      };
       const paceDelta = +(expectedPace(s) - s.pace).toFixed(2);
       return {
         id: s.id,
