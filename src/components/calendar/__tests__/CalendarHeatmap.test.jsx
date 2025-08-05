@@ -9,18 +9,34 @@ const mockData = [
   { date: '2024-02-01', minutes: 20, pages: 8 },
 ];
 
-vi.mock('@/hooks/useDailyReading', () => ({
-  __esModule: true,
-  default: () => ({
+const useDailyReadingMock = vi.hoisted(() =>
+  vi.fn(() => ({
     data: mockData,
     error: null,
     isLoading: false,
-  }),
+  }))
+);
+
+vi.mock('@/hooks/useDailyReading', () => ({
+  __esModule: true,
+  default: useDailyReadingMock,
 }));
+
+import useDailyReading from '@/hooks/useDailyReading';
 
 import CalendarHeatmap from '../CalendarHeatmap';
 
 describe('CalendarHeatmap', () => {
+  it('renders a skeleton while loading', () => {
+    useDailyReading.mockReturnValueOnce({
+      data: null,
+      error: null,
+      isLoading: true,
+    });
+    render(<CalendarHeatmap />);
+    expect(screen.getByTestId('calendar-heatmap-skeleton')).not.toBeNull();
+  });
+
   it('renders heatmap cells', () => {
     const { container } = render(<CalendarHeatmap />);
     const svg = container.querySelector('svg.react-calendar-heatmap');
