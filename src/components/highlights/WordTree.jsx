@@ -166,6 +166,15 @@ export default function WordTree() {
 
     const node = nodeGroup.selectAll('g').data(nodes, d => d.data.id);
 
+    // Precompute maximum counts for each set of siblings so bars can scale
+    const siblingMax = new Map();
+    nodes.forEach(n => {
+      const key = n.parent ? n.parent.data.id : null;
+      const current = siblingMax.get(key) || 0;
+      const value = n.data.count || 0;
+      if (value > current) siblingMax.set(key, value);
+    });
+
     const nodeEnter = node
       .enter()
       .append('g')
@@ -216,11 +225,10 @@ export default function WordTree() {
     nodeMerge.each(function (d) {
       select(this).select('rect').remove();
       if (!d.data.count) return;
-      const siblingMax = d.parent
-        ? Math.max(...d.parent.children.map(c => c.data.count || 0))
-        : d.data.count;
+      const key = d.parent ? d.parent.data.id : null;
+      const max = siblingMax.get(key) || d.data.count;
       const textWidth = select(this).select('text').node().getBBox().width;
-      const scale = scaleLinear().domain([0, siblingMax]).range([0, 60]);
+      const scale = scaleLinear().domain([0, max]).range([0, 60]);
       select(this)
         .append('rect')
         .attr('x', 8 + textWidth + 4)
