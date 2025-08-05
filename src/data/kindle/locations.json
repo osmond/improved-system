@@ -1,3 +1,5 @@
 [
-  { "start": "2020-01-01", "latitude": 1, "longitude": 2, "title": "A" }
+  { "start": "2018-01-13T03:49:45Z", "title": "B01A4AXM3W", "latitude": 37.7749, "longitude": -122.4194 },
+  { "start": "2018-03-25T22:21:24Z", "title": "B071Y385Q1", "latitude": 40.7128, "longitude": -74.0060 },
+  { "start": "2018-03-26T13:49:01Z", "title": "B071Y385Q1", "latitude": 34.0522, "longitude": -118.2437 }
 ]
