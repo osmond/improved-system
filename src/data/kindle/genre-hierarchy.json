@@ -2,18 +2,3466 @@
   "name": "root",
   "children": [
     {
-      "name": "Fiction",
+      "name": "Mystery, Thriller & Suspense",
       "children": [
         {
-          "name": "Mystery",
+          "name": "Unknown",
           "children": [
-            { "name": "Book One", "value": 30 }
+            {
+              "name": "Moore, Graham",
+              "children": [
+                {
+                  "name": "B01A4AXM3W",
+                  "value": 44.16499999999999
+                }
+              ]
+            },
+            {
+              "name": "Freeman, Brian",
+              "children": [
+                {
+                  "name": "B01LXZZ1L5",
+                  "value": 95.80166666666666
+                }
+              ]
+            },
+            {
+              "name": "Child, Lee",
+              "children": [
+                {
+                  "name": "B000OZ0NXA",
+                  "value": 581.6266666666668
+                },
+                {
+                  "name": "B001FXK8XU",
+                  "value": 542.8783333333332
+                },
+                {
+                  "name": "B004DI7JNG",
+                  "value": 279.3416666666666
+                },
+                {
+                  "name": "B000FBJDF2",
+                  "value": 528.0316666666666
+                },
+                {
+                  "name": "B000FC1MBO",
+                  "value": 523.5350000000001
+                },
+                {
+                  "name": "B000FCK5PI",
+                  "value": 10.028333333333334
+                },
+                {
+                  "name": "B000GCFG7E",
+                  "value": 129.06
+                },
+                {
+                  "name": "B000QCQ8Y4",
+                  "value": 4.126666666666667
+                },
+                {
+                  "name": "B000YJ54DU",
+                  "value": 43.90333333333333
+                },
+                {
+                  "name": "B001NLL8LA",
+                  "value": 565.4583333333333
+                },
+                {
+                  "name": "B0036S4CWA",
+                  "value": 35.57333333333333
+                },
+                {
+                  "name": "B003EY7IWC",
+                  "value": 2.185
+                },
+                {
+                  "name": "B004P8JPS6",
+                  "value": 1.7733333333333334
+                },
+                {
+                  "name": "B07NCNVZ5P",
+                  "value": 65.32166666666666
+                },
+                {
+                  "name": "B08SBMCSQQ",
+                  "value": 114.37666666666667
+                },
+                {
+                  "name": "B0CW1J3Y5G",
+                  "value": 297.3883333333332
+                }
+              ]
+            },
+            {
+              "name": "Mason, Tim",
+              "children": [
+                {
+                  "name": "B07GNX99VJ",
+                  "value": 15.1
+                }
+              ]
+            },
+            {
+              "name": "Lovesey, Peter",
+              "children": [
+                {
+                  "name": "B081Y4J7LD",
+                  "value": 405.7883333333334
+                }
+              ]
+            },
+            {
+              "name": "Nesbo, Jo",
+              "children": [
+                {
+                  "name": "B08478T2CK",
+                  "value": 309.9333333333333
+                }
+              ]
+            },
+            {
+              "name": "Graff, Andrew J.",
+              "children": [
+                {
+                  "name": "B08BLMJ576",
+                  "value": 71.28999999999999
+                }
+              ]
+            },
+            {
+              "name": "French, Tana",
+              "children": [
+                {
+                  "name": "B08681BNKV",
+                  "value": 642.4683333333334
+                },
+                {
+                  "name": "B000U913EI",
+                  "value": 666.2116666666666
+                },
+                {
+                  "name": "B0C7729CF8",
+                  "value": 437.49333333333334
+                }
+              ]
+            },
+            {
+              "name": "Thor, Brad",
+              "children": [
+                {
+                  "name": "B000FC0R7O",
+                  "value": 685.5416666666669
+                }
+              ]
+            },
+            {
+              "name": "Towles, Amor",
+              "children": [
+                {
+                  "name": "B08WRH53MY",
+                  "value": 213.3216666666667
+                },
+                {
+                  "name": "B01COJUEZ0",
+                  "value": 212.31500000000003
+                }
+              ]
+            },
+            {
+              "name": "Hawley, Noah",
+              "children": [
+                {
+                  "name": "B093ZQCS29",
+                  "value": 151.365
+                }
+              ]
+            },
+            {
+              "name": "Korelitz, Jean Hanff",
+              "children": [
+                {
+                  "name": "B08JKC299M",
+                  "value": 441.45
+                },
+                {
+                  "name": "B0CQHM2KL5",
+                  "value": 68.95666666666666
+                }
+              ]
+            },
+            {
+              "name": "Prose, Nita",
+              "children": [
+                {
+                  "name": "B091Y4KGFH",
+                  "value": 509.62333333333333
+                },
+                {
+                  "name": "B0C5LRCM2F",
+                  "value": 447.73166666666657
+                },
+                {
+                  "name": "B0D9F3KFPM",
+                  "value": 185.95166666666665
+                }
+              ]
+            },
+            {
+              "name": "Goldman, Matt",
+              "children": [
+                {
+                  "name": "B01NBJMMRR",
+                  "value": 452.68
+                },
+                {
+                  "name": "B0756J4NRG",
+                  "value": 475.62666666666667
+                }
+              ]
+            },
+            {
+              "name": "Michaelides, Alex",
+              "children": [
+                {
+                  "name": "B07D2C6J4K",
+                  "value": 377.4833333333334
+                },
+                {
+                  "name": "B0BXTB6HSN",
+                  "value": 286.355
+                }
+              ]
+            },
+            {
+              "name": "Foley, Lucy",
+              "children": [
+                {
+                  "name": "B098QS47D3",
+                  "value": 573.1766666666665
+                },
+                {
+                  "name": "B07WG8L7WC",
+                  "value": 355.515
+                },
+                {
+                  "name": "B0CL3FMNKJ",
+                  "value": 352.715
+                }
+              ]
+            },
+            {
+              "name": "Heller, Peter",
+              "children": [
+                {
+                  "name": "B08P98PVY2",
+                  "value": 456.0283333333333
+                },
+                {
+                  "name": "B0BL6YQ61Y",
+                  "value": 4.36
+                }
+              ]
+            },
+            {
+              "name": "Osman, Richard",
+              "children": [
+                {
+                  "name": "B084M663VB",
+                  "value": 568.7666666666667
+                },
+                {
+                  "name": "B0BQLKNTYR",
+                  "value": 476.5700000000001
+                },
+                {
+                  "name": "B0CQJHF3HQ",
+                  "value": 249.33999999999997
+                }
+              ]
+            },
+            {
+              "name": "Kestrel, James",
+              "children": [
+                {
+                  "name": "B08THH7R49",
+                  "value": 608.4116666666667
+                }
+              ]
+            },
+            {
+              "name": "Hawkins, Paula",
+              "children": [
+                {
+                  "name": "B08PC3SZHX",
+                  "value": 15.158333333333335
+                }
+              ]
+            },
+            {
+              "name": "Swanson, Peter",
+              "children": [
+                {
+                  "name": "B097769VDM",
+                  "value": 330.81333333333333
+                },
+                {
+                  "name": "B0B3989NDF",
+                  "value": 363.6016666666667
+                }
+              ]
+            },
+            {
+              "name": "Krueger, William Kent",
+              "children": [
+                {
+                  "name": "B000FC0QBQ",
+                  "value": 465.36
+                },
+                {
+                  "name": "B008J2G5Y6",
+                  "value": 363.7549999999999
+                }
+              ]
+            },
+            {
+              "name": "Lipsyte, Sam",
+              "children": [
+                {
+                  "name": "B09RX2WQ3M",
+                  "value": 34.260000000000005
+                }
+              ]
+            },
+            {
+              "name": "Braverman, Blair",
+              "children": [
+                {
+                  "name": "B09R21YVLM",
+                  "value": 308.5966666666667
+                }
+              ]
+            },
+            {
+              "name": "Nguyen, Viet Thanh",
+              "children": [
+                {
+                  "name": "B00PSSG4MM",
+                  "value": 64.08666666666667
+                }
+              ]
+            },
+            {
+              "name": "Butler, Nickolas",
+              "children": [
+                {
+                  "name": "B08NT2VSWF",
+                  "value": 482.96166666666664
+                }
+              ]
+            },
+            {
+              "name": "Santlofer, Jonathan",
+              "children": [
+                {
+                  "name": "B08QXTPXPH",
+                  "value": 464.37166666666667
+                }
+              ]
+            },
+            {
+              "name": "Kirwan, J.F.",
+              "children": [
+                {
+                  "name": "B01HLY0Z0W",
+                  "value": 66.44333333333333
+                }
+              ]
+            },
+            {
+              "name": "McAllister, Gillian",
+              "children": [
+                {
+                  "name": "B09NW4FN2R",
+                  "value": 174.90166666666667
+                }
+              ]
+            },
+            {
+              "name": "Coben, Harlan",
+              "children": [
+                {
+                  "name": "B07TYBQJBM",
+                  "value": 5.81
+                }
+              ]
+            },
+            {
+              "name": "Raybourn, Deanna",
+              "children": [
+                {
+                  "name": "B09N6VX4K7",
+                  "value": 461.0533333333333
+                }
+              ]
+            },
+            {
+              "name": "Laestadius, Ann-Helén",
+              "children": [
+                {
+                  "name": "B0B3Y8DJFJ",
+                  "value": 289.6716666666667
+                }
+              ]
+            },
+            {
+              "name": "Tuomainen, Antti",
+              "children": [
+                {
+                  "name": "B075SPBQDV",
+                  "value": 369.0233333333333
+                },
+                {
+                  "name": "B07HB5DKQX",
+                  "value": 210.0883333333333
+                }
+              ]
+            },
+            {
+              "name": "Herron, Mick",
+              "children": [
+                {
+                  "name": "B004HW7DZ2",
+                  "value": 32.053333333333335
+                }
+              ]
+            },
+            {
+              "name": "Carlsson, Christoffer",
+              "children": [
+                {
+                  "name": "B09XL59MJX",
+                  "value": 564.275
+                }
+              ]
+            },
+            {
+              "name": "Catton, Eleanor",
+              "children": [
+                {
+                  "name": "B09Y46DSD7",
+                  "value": 37.695
+                }
+              ]
+            },
+            {
+              "name": "Elkin, Stanley",
+              "children": [
+                {
+                  "name": "B00AG8GXVQ",
+                  "value": 29.568333333333335
+                }
+              ]
+            },
+            {
+              "name": "Moriarty, Liane",
+              "children": [
+                {
+                  "name": "B08PG6CKZJ",
+                  "value": 933.9666666666666
+                }
+              ]
+            },
+            {
+              "name": "Hallett, Janice",
+              "children": [
+                {
+                  "name": "B098433CGQ",
+                  "value": 18.08
+                }
+              ]
+            },
+            {
+              "name": "Frazier, Charles",
+              "children": [
+                {
+                  "name": "B0B6JSJQLH",
+                  "value": 31.251666666666665
+                }
+              ]
+            },
+            {
+              "name": "Bayard, Louis",
+              "children": [
+                {
+                  "name": "B000GCFX6S",
+                  "value": 518.7533333333333
+                }
+              ]
+            },
+            {
+              "name": "Williams, Katie",
+              "children": [
+                {
+                  "name": "B0BHCXVWGT",
+                  "value": 401.1783333333333
+                }
+              ]
+            },
+            {
+              "name": "Ware, Ruth",
+              "children": [
+                {
+                  "name": "B0BHTN6TL6",
+                  "value": 521.99
+                },
+                {
+                  "name": "B084G9Z5C3",
+                  "value": 502.2683333333335
+                },
+                {
+                  "name": "B0CL5G23ZF",
+                  "value": 14.121666666666666
+                },
+                {
+                  "name": "B0DJM99D77",
+                  "value": 36.38166666666667
+                }
+              ]
+            },
+            {
+              "name": "Lehane, Dennis",
+              "children": [
+                {
+                  "name": "B0B7NDZNDV",
+                  "value": 481.30833333333334
+                },
+                {
+                  "name": "B000JMKNV0",
+                  "value": 443.2433333333333
+                }
+              ]
+            },
+            {
+              "name": "Hendricks, Greer",
+              "children": [
+                {
+                  "name": "B092T947PJ",
+                  "value": 484.8983333333333
+                }
+              ]
+            },
+            {
+              "name": "Smirnoff, Karin",
+              "children": [
+                {
+                  "name": "B0BLY7J9DC",
+                  "value": 106.08333333333331
+                }
+              ]
+            },
+            {
+              "name": "Clarke, Amy Suiter",
+              "children": [
+                {
+                  "name": "B09721CTG1",
+                  "value": 25.30666666666667
+                }
+              ]
+            },
+            {
+              "name": "Sims, Laura",
+              "children": [
+                {
+                  "name": "B0BJNKTFGH",
+                  "value": 320.6449999999999
+                }
+              ]
+            },
+            {
+              "name": "Rankin, Ian",
+              "children": [
+                {
+                  "name": "B0CBW58P3J",
+                  "value": 124.39333333333333
+                }
+              ]
+            },
+            {
+              "name": "Rosenfield, Kat",
+              "children": [
+                {
+                  "name": "B08SMFSLVQ",
+                  "value": 40.305
+                }
+              ]
+            },
+            {
+              "name": "Gillmor, Don",
+              "children": [
+                {
+                  "name": "B0BKH7G2X8",
+                  "value": 430.30833333333334
+                }
+              ]
+            },
+            {
+              "name": "Kim, Un-su",
+              "children": [
+                {
+                  "name": "B07CWDMQ45",
+                  "value": 211.09833333333333
+                }
+              ]
+            },
+            {
+              "name": "Hepworth, Sally",
+              "children": [
+                {
+                  "name": "B09Y467GZY",
+                  "value": 316.82666666666665
+                }
+              ]
+            },
+            {
+              "name": "Feeney, Alice",
+              "children": [
+                {
+                  "name": "B0BST5X6GS",
+                  "value": 21.9
+                }
+              ]
+            },
+            {
+              "name": "Offutt, Chris",
+              "children": [
+                {
+                  "name": "B08TF1VTGX",
+                  "value": 316.4533333333333
+                }
+              ]
+            },
+            {
+              "name": "Jewell, Lisa",
+              "children": [
+                {
+                  "name": "B0BDMPQ2FC",
+                  "value": 425.35833333333335
+                }
+              ]
+            },
+            {
+              "name": "Higashino, Keigo",
+              "children": [
+                {
+                  "name": "B0044781ZQ",
+                  "value": 528.2566666666667
+                },
+                {
+                  "name": "B007RMYE9M",
+                  "value": 79.30666666666666
+                }
+              ]
+            },
+            {
+              "name": "Pease, Amy",
+              "children": [
+                {
+                  "name": "B0C7RPT9B3",
+                  "value": 486.71833333333336
+                }
+              ]
+            },
+            {
+              "name": "Stevenson, Benjamin",
+              "children": [
+                {
+                  "name": "B0C6KMGND1",
+                  "value": 224.99833333333336
+                }
+              ]
+            },
+            {
+              "name": "Osborne, Cayce",
+              "children": [
+                {
+                  "name": "B0BJP5QFFM",
+                  "value": 372.79833333333335
+                }
+              ]
+            },
+            {
+              "name": "Onda, Riku",
+              "children": [
+                {
+                  "name": "B07QN87LQB",
+                  "value": 152.375
+                }
+              ]
+            },
+            {
+              "name": "Maxwell, Jessa",
+              "children": [
+                {
+                  "name": "B0B3Y9JVMK",
+                  "value": 461.8300000000001
+                }
+              ]
+            },
+            {
+              "name": "Finn, A. J",
+              "children": [
+                {
+                  "name": "B078R46LCY",
+                  "value": 143.125
+                }
+              ]
+            },
+            {
+              "name": "Draine, Betsy",
+              "children": [
+                {
+                  "name": "B0DMDYK6Y6",
+                  "value": 343.39833333333337
+                }
+              ]
+            },
+            {
+              "name": "Manchette, Jean-Patrick",
+              "children": [
+                {
+                  "name": "B081M4F8GH",
+                  "value": 245.14666666666665
+                }
+              ]
+            },
+            {
+              "name": "Lamb, Wally",
+              "children": [
+                {
+                  "name": "B0DHDF2RDL",
+                  "value": 698.1083333333333
+                }
+              ]
+            }
           ]
-        },
+        }
+      ]
+    },
+    {
+      "name": "Science & Math",
+      "children": [
         {
-          "name": "Fantasy",
+          "name": "Unknown",
           "children": [
-            { "name": "Book Two", "value": 15 }
+            {
+              "name": "de Grasse Tyson, Neil",
+              "children": [
+                {
+                  "name": "B01MAWT2MO",
+                  "value": 117.32500000000002
+                }
+              ]
+            },
+            {
+              "name": "Prum, Richard O.",
+              "children": [
+                {
+                  "name": "B01KE61LPW",
+                  "value": 0.3016666666666667
+                }
+              ]
+            },
+            {
+              "name": "McEvoy, J.P.",
+              "children": [
+                {
+                  "name": "B00KFEK0I8",
+                  "value": 0.9933333333333333
+                }
+              ]
+            },
+            {
+              "name": "Miller, Lulu",
+              "children": [
+                {
+                  "name": "B07THBZ4VD",
+                  "value": 0.2633333333333333
+                }
+              ]
+            },
+            {
+              "name": "Mary, Roach",
+              "children": [
+                {
+                  "name": "B08XP24KR8",
+                  "value": 237.88500000000002
+                }
+              ]
+            },
+            {
+              "name": "Ellenberg, Jordan",
+              "children": [
+                {
+                  "name": "B08PF965W9",
+                  "value": 291.785
+                }
+              ]
+            },
+            {
+              "name": "Dettmer, Philipp",
+              "children": [
+                {
+                  "name": "B08XTNHRR5",
+                  "value": 35.50833333333334
+                }
+              ]
+            },
+            {
+              "name": "Gregg, Justin",
+              "children": [
+                {
+                  "name": "B09QKTFZGR",
+                  "value": 41.63666666666666
+                }
+              ]
+            },
+            {
+              "name": "McRaney, David",
+              "children": [
+                {
+                  "name": "B093R2CP2V",
+                  "value": 66.98666666666666
+                }
+              ]
+            },
+            {
+              "name": "Leopold, Aldo",
+              "children": [
+                {
+                  "name": "B00BUP18U0",
+                  "value": 98.54999999999998
+                }
+              ]
+            },
+            {
+              "name": "Gee, Henry",
+              "children": [
+                {
+                  "name": "B092T8QDYW",
+                  "value": 105.345
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Unknown",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Unknown",
+              "children": [
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QTJTMFYwMEhJUktPR1MmbWFya2V0cGxhY2U9QVRWUERLSUtYMERFUiZhc2luPUIwMU1BV1QyTU8mZW5kdGltZT0xNTE4NTU2MzcwNzk3",
+                  "value": 0.075
+                },
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QTJIVUFEWUYyRkc3WlgmbWFya2V0cGxhY2U9QVRWUERLSUtYMERFUiZhc2luPUIwMUtFNjFMUFcmZW5kdGltZT0xNTE5MTUzMDMyNjQ2",
+                  "value": 0.07166666666666667
+                },
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QU9KUjBXMFRHVUJLQiZtYXJrZXRwbGFjZT1BVFZQREtJS1gwREVSJmFzaW49QjAxMjA4TzAwSyZlbmR0aW1lPTE1MjEyMjc1MjIyNzQ",
+                  "value": 0.11833333333333333
+                },
+                {
+                  "name": "B079ZLBXV6",
+                  "value": 3.48
+                },
+                {
+                  "name": "B074ST9DGK",
+                  "value": 16.913333333333334
+                },
+                {
+                  "name": "B07B2L77BJ",
+                  "value": 7.851666666666667
+                },
+                {
+                  "name": "B07B6W7GRQ",
+                  "value": 16.186666666666667
+                },
+                {
+                  "name": "B07B6NPXHV",
+                  "value": 6.523333333333333
+                },
+                {
+                  "name": "B079ZQBV4H",
+                  "value": 0.8216666666666667
+                },
+                {
+                  "name": "B07B9GK76Z",
+                  "value": 4.326666666666667
+                },
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QVpZVlgyNFVKSk1ZQSZtYXJrZXRwbGFjZT1BVFZQREtJS1gwREVSJmFzaW49QjA3Qlo0Rjc1VCZlbmR0aW1lPTE1NzQ4ODQ2Mzg2ODg",
+                  "value": 0.38
+                },
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QUozNk1KS0pFTk5LJm1hcmtldHBsYWNlPUFUVlBES0lLWDBERVImYXNpbj1CMDA0REk3Sk5HJmVuZHRpbWU9MTU4Mjc0NzI0MDA5OQ",
+                  "value": 7.266666666666667
+                },
+                {
+                  "name": "B003ODIZL6",
+                  "value": 9.431666666666667
+                },
+                {
+                  "name": "B085GKR5BL",
+                  "value": 0.7033333333333334
+                },
+                {
+                  "name": "B081NHX6LN",
+                  "value": 48.406666666666666
+                },
+                {
+                  "name": "B07ZG57WBH",
+                  "value": 36.946666666666665
+                },
+                {
+                  "name": "B089T77W63",
+                  "value": 1.6133333333333333
+                },
+                {
+                  "name": "B00AHC9PZW",
+                  "value": 5.625
+                },
+                {
+                  "name": "B08NHG3PKK",
+                  "value": 0.9450000000000001
+                },
+                {
+                  "name": "B086HB336Y",
+                  "value": 15.72
+                },
+                {
+                  "name": "B07VGYRGH4",
+                  "value": 15.483333333333333
+                },
+                {
+                  "name": "B098GBS3BH",
+                  "value": 3.6300000000000003
+                },
+                {
+                  "name": "B095YHMBSL",
+                  "value": 4.216666666666667
+                },
+                {
+                  "name": "B0987XFGZF",
+                  "value": 3.7266666666666666
+                },
+                {
+                  "name": "B09D3K2MCY",
+                  "value": 5.303333333333334
+                },
+                {
+                  "name": "B072KZWHW4",
+                  "value": 0.335
+                },
+                {
+                  "name": "B08LDL3PJ3",
+                  "value": 313.185
+                },
+                {
+                  "name": "B07FKB3V5S",
+                  "value": 3016.8483333333334
+                },
+                {
+                  "name": "B09F8RV343",
+                  "value": 21.60333333333333
+                },
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QTJJMlVDN0tPRUhFQk8mbWFya2V0cGxhY2U9QVRWUERLSUtYMERFUiZhc2luPUIwMEQwSzNGUUkmZW5kdGltZT0xNjMxODk2Njk3MjYx",
+                  "value": 0.455
+                },
+                {
+                  "name": "PSNL!KICSGurupaUS!bGlicmFyeS1leHBpcmU_aWQ9QTMwRDhOSkYyM0NKQzUmbWFya2V0cGxhY2U9QVRWUERLSUtYMERFUiZhc2luPUIwMDBGQzBSN08mZW5kdGltZT0xNjMyNTU0NTQyMzc5",
+                  "value": 0.3
+                },
+                {
+                  "name": "B005NY4QGM",
+                  "value": 26.674999999999997
+                },
+                {
+                  "name": "B09KKPHDHC",
+                  "value": 27.856666666666666
+                },
+                {
+                  "name": "B08WC6VC8S",
+                  "value": 18.558333333333334
+                },
+                {
+                  "name": "B0865Z9S5L",
+                  "value": 21.056666666666665
+                },
+                {
+                  "name": "B00MYEQGFI",
+                  "value": 0.6716666666666666
+                },
+                {
+                  "name": "B09GYVRQWF",
+                  "value": 19.42666666666667
+                },
+                {
+                  "name": "B07LGLF1JG",
+                  "value": 32.58833333333333
+                },
+                {
+                  "name": "B09887KBTZ",
+                  "value": 107.91666666666667
+                },
+                {
+                  "name": "B093B4BGRK",
+                  "value": 0.2533333333333333
+                },
+                {
+                  "name": "B013X9F1IK",
+                  "value": 5.576666666666667
+                },
+                {
+                  "name": "B0814JSV96",
+                  "value": 1.03
+                },
+                {
+                  "name": "B001NXK1XO",
+                  "value": 4.944999999999999
+                },
+                {
+                  "name": "B08478YC6V",
+                  "value": 5.81
+                },
+                {
+                  "name": "B07PK5RMPM",
+                  "value": 1.6149999999999998
+                },
+                {
+                  "name": "B09T9H87RB",
+                  "value": 11.916666666666666
+                },
+                {
+                  "name": "B094GQBBPQ",
+                  "value": 18.828333333333333
+                },
+                {
+                  "name": "B08FLLBBP9",
+                  "value": 25.001666666666665
+                },
+                {
+                  "name": "B0018ND8B6",
+                  "value": 65.56
+                },
+                {
+                  "name": "B09Z1Y1MG9",
+                  "value": 14.485
+                },
+                {
+                  "name": "B07GVCBVYC",
+                  "value": 0.31666666666666665
+                },
+                {
+                  "name": "B07WYSF921",
+                  "value": 2.1566666666666667
+                },
+                {
+                  "name": "B09Q1SQ567",
+                  "value": 0.20833333333333334
+                },
+                {
+                  "name": "B09QCX4JK7",
+                  "value": 0.11
+                },
+                {
+                  "name": "B096DH95W8",
+                  "value": 17.688333333333333
+                },
+                {
+                  "name": "B09P37M6P3",
+                  "value": 0.28833333333333333
+                },
+                {
+                  "name": "B0B5GC1ZR5",
+                  "value": 19.503333333333334
+                },
+                {
+                  "name": "B097T5JR84",
+                  "value": 23.92
+                },
+                {
+                  "name": "B09HCD24DJ",
+                  "value": 45.40833333333334
+                },
+                {
+                  "name": "B09G9C2WRT",
+                  "value": 10.631666666666666
+                },
+                {
+                  "name": "B0BCPF7HGJ",
+                  "value": 5.425000000000001
+                },
+                {
+                  "name": "B09NLPTNQ2",
+                  "value": 0.34500000000000003
+                },
+                {
+                  "name": "3IPAKSAWQQL2Z24WQQ2L3VFTRTUOXTTK",
+                  "value": 564.37
+                },
+                {
+                  "name": "2WHQ4RDHHZSUUDZRQBG52I7KS37FTVCT",
+                  "value": 138.64499999999998
+                },
+                {
+                  "name": "QSKJSE7YJTJXN5WGZEBZAJ3ZZEBKDEAX",
+                  "value": 86.43499999999999
+                },
+                {
+                  "name": "B003BRBCFG",
+                  "value": 51.565
+                },
+                {
+                  "name": "AQ3OABMEA2YURRI5PMD4TSHQZYWFTONB",
+                  "value": 261.0833333333333
+                },
+                {
+                  "name": "B0BKPPPQNV",
+                  "value": 15.879999999999999
+                },
+                {
+                  "name": "B09QPJKSXM",
+                  "value": 27.756666666666668
+                },
+                {
+                  "name": "N4LRBDHXLHWB6GQCAL74CNNNWOIWTPMJ",
+                  "value": 22.433333333333337
+                },
+                {
+                  "name": "B09RX45W14",
+                  "value": 50.58000000000001
+                },
+                {
+                  "name": "B0BQVLNL73",
+                  "value": 12.745
+                },
+                {
+                  "name": "B0BWMMN631",
+                  "value": 12.084999999999999
+                },
+                {
+                  "name": "B07MXCRB2F",
+                  "value": 0.26666666666666666
+                },
+                {
+                  "name": "B0C3QHMLGL",
+                  "value": 9.93
+                },
+                {
+                  "name": "B0BBCB6PFC",
+                  "value": 94.24333333333334
+                },
+                {
+                  "name": "B0B5SR4KBR",
+                  "value": 19.986666666666668
+                },
+                {
+                  "name": "B0BHY38ZPH",
+                  "value": 40.205
+                },
+                {
+                  "name": "B0BGJ3W5D3",
+                  "value": 30.845000000000002
+                },
+                {
+                  "name": "B0B7NGCGHG",
+                  "value": 9.245000000000001
+                },
+                {
+                  "name": "B0BP2HWMP6",
+                  "value": 5.783333333333333
+                },
+                {
+                  "name": "B0BBC9K8C3",
+                  "value": 28.24666666666667
+                },
+                {
+                  "name": "B0BP6S1S57",
+                  "value": 49.20166666666667
+                },
+                {
+                  "name": "B0CHWJCN94",
+                  "value": 22.758333333333333
+                },
+                {
+                  "name": "B09YRR8DB6",
+                  "value": 87.19166666666666
+                },
+                {
+                  "name": "B0B6B4WPSF",
+                  "value": 5.033333333333333
+                },
+                {
+                  "name": "B09S3WWY98",
+                  "value": 18.18166666666667
+                },
+                {
+                  "name": "B09Q2F1X14",
+                  "value": 2.6333333333333333
+                },
+                {
+                  "name": "B003XT60E0",
+                  "value": 64.70833333333334
+                },
+                {
+                  "name": "B0BL6271NP",
+                  "value": 42.041666666666664
+                },
+                {
+                  "name": "B0C7RK8P8K",
+                  "value": 14.063333333333334
+                },
+                {
+                  "name": "B002C7Z57C",
+                  "value": 8.368333333333332
+                },
+                {
+                  "name": "B0CGTHLBT9",
+                  "value": 29.623333333333335
+                },
+                {
+                  "name": "096E674F00DC4192A0B7E99C3AB4A388",
+                  "value": 259.95166666666665
+                },
+                {
+                  "name": "02A4171C317D47ABB064E2F24B3D5CFC",
+                  "value": 32.31666666666666
+                },
+                {
+                  "name": "9AB16AE6EC24449DBFB06E5EB1561B67",
+                  "value": 464.6383333333332
+                },
+                {
+                  "name": "C36A14E8EC2F4079AD3377ED35C616AE",
+                  "value": 489.66166666666663
+                },
+                {
+                  "name": "2C4B5A07F41247DAAF830F1590836876",
+                  "value": 448.8983333333334
+                },
+                {
+                  "name": "28C62463866C4CC99233564ED847A1A5",
+                  "value": 48.72833333333333
+                },
+                {
+                  "name": "15072C88D12543BE9BF38E06D831641A",
+                  "value": 69.03666666666666
+                },
+                {
+                  "name": "9CF67106DC3A4A8F90A685EE6DAA2B9F",
+                  "value": 209.655
+                },
+                {
+                  "name": "B0CQ38FNR9",
+                  "value": 20.233333333333334
+                },
+                {
+                  "name": "15DCD55913DF40F990711B36DCA2CC83",
+                  "value": 420.2316666666666
+                },
+                {
+                  "name": "6C1EF968A24F49B0BF68A0FC5BA314DC",
+                  "value": 491.3666666666667
+                },
+                {
+                  "name": "43CBE4C46DC444119BB4453B4EF2473B",
+                  "value": 1.0016666666666667
+                },
+                {
+                  "name": "3F18E7B1DE9B48E1B46CEBD543D9AD15",
+                  "value": 297.88666666666666
+                },
+                {
+                  "name": "0A7C416992574F5E9E06498F5AC4E33E",
+                  "value": 100.01333333333334
+                },
+                {
+                  "name": "A7E4563B33564CA4904BBD751938CA1C",
+                  "value": 6.158333333333333
+                },
+                {
+                  "name": "BBD0AD78686243CD9C5F343AFC7E83D6",
+                  "value": 0.10833333333333334
+                },
+                {
+                  "name": "3451C4DEA84A49DEBFFFDDA0092EC804",
+                  "value": 448.49333333333345
+                },
+                {
+                  "name": "05C4DA136A6A4FFC99DBA85BEE6FF300",
+                  "value": 108.31833333333336
+                },
+                {
+                  "name": "1C34F9A4E93C4F328ADA7053A8E3D219",
+                  "value": 113.30333333333333
+                },
+                {
+                  "name": "CFB210D125DE496195B7AE70BACDA51C",
+                  "value": 445.06499999999994
+                },
+                {
+                  "name": "5XMZNFFBFJGCDIF7CF2TJMLGHI2DH2MZ",
+                  "value": 672.5716666666665
+                },
+                {
+                  "name": "1D1B7C54B5BC44799C3596D902FF13AC",
+                  "value": 27.718333333333334
+                },
+                {
+                  "name": "ZPWKCGLPBBCYS2KJQQBLM6VSBP3NWID3",
+                  "value": 35.57833333333333
+                },
+                {
+                  "name": "AJRS4BNGDESXUY7M52PBWGHXN6W3VFMT",
+                  "value": 231.03666666666663
+                },
+                {
+                  "name": "2EUPLKIM7ATSLPXWBOUA4B2L66BXKDTV",
+                  "value": 556.2900000000001
+                },
+                {
+                  "name": "CQ3N5YSGGUHIX2SAY53DAX226KYAHXEQ",
+                  "value": 339.61833333333334
+                },
+                {
+                  "name": "Q2GMDSWTP3KRSTVF5WHAONVIHS325UHL",
+                  "value": 173.78
+                },
+                {
+                  "name": "N2GXACRU2Y75KKK7J7XPZLMLHHQJ3XEB",
+                  "value": 60.361666666666665
+                },
+                {
+                  "name": "RRN3W2L2FVRE27HZJJBTVE5KZTAMZNHN",
+                  "value": 218.1
+                },
+                {
+                  "name": "WHTDURZESVWW5KLTDUQAP5QTQ4MYV36N",
+                  "value": 357.2233333333334
+                },
+                {
+                  "name": "7FLHIN5CJDB2OBP4B47X3KKHBVS7DZHH",
+                  "value": 689.7916666666667
+                },
+                {
+                  "name": "AQRV2TZVKL2XDXB54TOUVW5PFQVAB7WU",
+                  "value": 185.76
+                },
+                {
+                  "name": "NKTH6XIJUZNFZ5PZSSWZ6BGQ6ZLGIKBQ",
+                  "value": 629.6016666666667
+                },
+                {
+                  "name": "D81BB38BBD7A4F42B0EE762A686912BA",
+                  "value": 165.74333333333334
+                },
+                {
+                  "name": "O2SJMZT5JBNX55LFEWETQP4C7RXJPGOT",
+                  "value": 11.585
+                },
+                {
+                  "name": "AHLCEKLOMNBI3WZAR2LXCRUBJ2OBWCFN",
+                  "value": 505.74666666666667
+                },
+                {
+                  "name": "B0CN8TPKSP",
+                  "value": 19.286666666666665
+                },
+                {
+                  "name": "B0CZXNTCFX",
+                  "value": 1.0216666666666667
+                },
+                {
+                  "name": "OOAZWAIV63UB2CXNZN7NGGRP3MSZBQBM",
+                  "value": 0.42166666666666663
+                },
+                {
+                  "name": "B0CH9KQYHS",
+                  "value": 18.053333333333335
+                },
+                {
+                  "name": "JZLZQO3Y3EPKB7K2WUG7MGTYPVYOZWJS",
+                  "value": 519.0833333333334
+                },
+                {
+                  "name": "LH2FCVKSFLIA3RE4365AAGYFG76TA7UI",
+                  "value": 319.4833333333334
+                },
+                {
+                  "name": "6LUZMQAT5HFFSBK25OZR3TWRUJ5BDIZS",
+                  "value": 408.7866666666667
+                },
+                {
+                  "name": "2CTL27BREQN7JTZSLXXAM2YMSI6DZDZV",
+                  "value": 34.435
+                },
+                {
+                  "name": "T6MYHFXIDDXQI6XRF7TXNWHDWDS2DECW",
+                  "value": 285.3166666666667
+                },
+                {
+                  "name": "OEEFKAZSYAYOEA57JWRZYSEGYRAUE75X",
+                  "value": 34.5
+                },
+                {
+                  "name": "B0CQHL1XV7",
+                  "value": 64.145
+                },
+                {
+                  "name": "LHXKLEWH52LWXBSOBOTMRLRJ2CONAJCC",
+                  "value": 216.68999999999997
+                },
+                {
+                  "name": "WZ34AC3Z6QKT765I3B5YQEO3U3BZXKLN",
+                  "value": 378.36500000000007
+                },
+                {
+                  "name": "SD42OYMUUNT3QF4OVGG6Y2M6HXLDJ2NZ",
+                  "value": 4.9366666666666665
+                },
+                {
+                  "name": "XUTYDSDJUGD5CEHPJUSBR6WPEFKRWCFB",
+                  "value": 43.211666666666666
+                },
+                {
+                  "name": "LJEYEFSOIDZ6GLUVVI6NH52QJH5ZDYED",
+                  "value": 3.465
+                },
+                {
+                  "name": "MX76DL77CZU6RDBXMKY4ZAL5GJ55MMGG",
+                  "value": 292.5999999999999
+                },
+                {
+                  "name": "4LXTLEYZY7L7ETOIXN5BEITXMZHJAT2H",
+                  "value": 45.004999999999995
+                },
+                {
+                  "name": "HUKF6ODKYJKXSFIK5P7Q7DIOWPD325YP",
+                  "value": 329.4433333333334
+                },
+                {
+                  "name": "TZP5HFOTIFXZOUVZML2TN6JMK26OPH5M",
+                  "value": 26.581666666666663
+                },
+                {
+                  "name": "6NDGE2NIHCVUABABQEW7LNCIZ7TO6CGC",
+                  "value": 316.3183333333334
+                },
+                {
+                  "name": "CJJUL3R7HSOXJG3AYG7MQZN3CZZWMZL5",
+                  "value": 145.59
+                },
+                {
+                  "name": "PTBMJPRMFADHGCZ7ESUYHIIFVONVRXUJ",
+                  "value": 380.665
+                },
+                {
+                  "name": "TEOQR3X2DN2TSHJ276HTYWLF6WUZXQBC",
+                  "value": 570.0049999999998
+                },
+                {
+                  "name": "TH6GPQAVDDTMCR2XKAXXE5XUWQF5DODY",
+                  "value": 31.375
+                },
+                {
+                  "name": "4BEVZWGVCV6GBB2TWCMA4Q54PC2UHGLZ",
+                  "value": 68.12333333333332
+                },
+                {
+                  "name": "CDR35CJELKKDYPJWZBMD6CG3XFMVZI4U",
+                  "value": 486.34333333333336
+                },
+                {
+                  "name": "II6J4O2WEM4UWTX47RYFLMDPIEDR6GET",
+                  "value": 188.405
+                },
+                {
+                  "name": "WVIR53TOCAWTSQCQN5QUVUTPLD2YC7AD",
+                  "value": 105.90333333333334
+                },
+                {
+                  "name": "TSTOZDLY54TMFJPMV5UY3P7FBETFAS6Y",
+                  "value": 17.616666666666667
+                },
+                {
+                  "name": "U2Z3ZVHOGQDZ2SJB23WAYVQTZA37NXVN",
+                  "value": 15.656666666666666
+                },
+                {
+                  "name": "2QNZAYQAE5R4PFN6F24WIOEU6LELQLZZ",
+                  "value": 40.821666666666665
+                },
+                {
+                  "name": "B0D3CBLLPH",
+                  "value": 5.098333333333334
+                },
+                {
+                  "name": "WS7ZNQVX7GBLFJDICPFXB44TVFXYJ3XO",
+                  "value": 136.23833333333332
+                },
+                {
+                  "name": "C6ATPLQ37HSITPZJ3VQPW6KVAJUUMK7Y",
+                  "value": 112.58166666666666
+                },
+                {
+                  "name": "MDA2MPOTKOJLTLOVINZIHHXFP4Q3WPNH",
+                  "value": 275.86
+                },
+                {
+                  "name": "B0DLLGPNMQ",
+                  "value": 18.31833333333333
+                },
+                {
+                  "name": "LTCRXOXA6TOUTCKMTU3ZCVIOM5BKGXOC",
+                  "value": 66.87833333333333
+                },
+                {
+                  "name": "B09SKWT6SF",
+                  "value": 2.375
+                },
+                {
+                  "name": "WF76OBCUMHIJ33X2SQRIIWKQ4MIBU6FK",
+                  "value": 3.2266666666666666
+                },
+                {
+                  "name": "RESEYEAJK4EJ4ULJAU6NJ6YSAGXJJQBV",
+                  "value": 406.80833333333334
+                },
+                {
+                  "name": "CLAXYW2N4FTQ76CN6JTRJPY5TJ6LGVCD",
+                  "value": 436.925
+                },
+                {
+                  "name": "FTT7VNOWFIXZCCUGO3PVUC2EFP5UBTOU",
+                  "value": 371.97666666666674
+                },
+                {
+                  "name": "O6S35RM2ZUUGD5GZ4NVTFU7UOPT7RK4U",
+                  "value": 308.7733333333333
+                },
+                {
+                  "name": "AP5FIAON5SVTMKD5WZJIZMQNHU6IF5Y6",
+                  "value": 31.86333333333333
+                },
+                {
+                  "name": "QYRAXQVBLI3LB5QJ4JUGQRWU5LOQXERK",
+                  "value": 61.504999999999995
+                },
+                {
+                  "name": "JNMIUTPQKYQ7HRUKCLKJX5RHPE3OAK4B",
+                  "value": 699.95
+                },
+                {
+                  "name": "ZPDUB3GM3WAX336MUVRJXWWZQKSYRZ4H",
+                  "value": 511.4383333333334
+                },
+                {
+                  "name": "WE7SRD2LY7QFPPIYNFYUIFGDVUBNHMLP",
+                  "value": 90.30166666666668
+                },
+                {
+                  "name": "JPOXUR4EGOMYIE4NQUVJQIDTMPQQNA4F",
+                  "value": 268.0033333333334
+                },
+                {
+                  "name": "B0DJ7XG2MQ",
+                  "value": 8.221666666666666
+                },
+                {
+                  "name": "77X5BC7DFTLU4LZPF46IWOWFXBG44XNJ",
+                  "value": 38.528333333333336
+                },
+                {
+                  "name": "43ORQUG7AE42E3A2GE6TJRETZGVMQIFX",
+                  "value": 220.22833333333335
+                },
+                {
+                  "name": "433NYT3NYBLOUOHLMNP7KZE4BASGKFI2",
+                  "value": 317.82166666666666
+                },
+                {
+                  "name": "DLPKNHHPHNJ4DUAQY2GFGV5CUSFQXXJU",
+                  "value": 10.393333333333333
+                },
+                {
+                  "name": "SL7WU7EAKIJMP6UUMD2XUOQFJIPQTNPT",
+                  "value": 649.3016666666666
+                },
+                {
+                  "name": "VE4SJJEMPCNJIYM5H66WC62DAPYE4BQI",
+                  "value": 662.2116666666666
+                },
+                {
+                  "name": "CD2J6YLYY6SMOGLTHM77PUX5YBUTBUKC",
+                  "value": 305.555
+                },
+                {
+                  "name": "RBEXH5ATPIXTSXDRPADA6TMFIDDTOR4L",
+                  "value": 135.78166666666667
+                },
+                {
+                  "name": "MZJHLPOQEFK6QOXINYVHNIKWVK53C26Z",
+                  "value": 366.16999999999996
+                },
+                {
+                  "name": "7KRWAI2AYO7QURIYLICYT2S4DTQWFXK7",
+                  "value": 401.2983333333334
+                },
+                {
+                  "name": "KGYWKIBH5PNSEB3YPUA5KDHPGPGI5X4V",
+                  "value": 25.363333333333333
+                },
+                {
+                  "name": "LLUQMOFNTTDE4U47XIA344P55IEPDQDW",
+                  "value": 419.305
+                },
+                {
+                  "name": "CYYIMAPVWFZQZ7XVINNTFI6QPBWGZ245",
+                  "value": 403.11999999999995
+                },
+                {
+                  "name": "SEZPDYLSFM2BYZQJNVIF2P5X74LX7RKR",
+                  "value": 227.5916666666667
+                },
+                {
+                  "name": "FL3NEUQ2GAR53VPJA4427F67PPROIYBM",
+                  "value": 58.87166666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Arts & Photography",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Bach, Sebastian",
+              "children": [
+                {
+                  "name": "B00NLLYN4Y",
+                  "value": 24.360000000000003
+                }
+              ]
+            },
+            {
+              "name": "Beaujour, Tom",
+              "children": [
+                {
+                  "name": "B08BYBNGMW",
+                  "value": 813.7466666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Biographies & Memoirs",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Isaacson, Walter",
+              "children": [
+                {
+                  "name": "B071Y385Q1",
+                  "value": 37.318333333333335
+                }
+              ]
+            },
+            {
+              "name": "Styron, William",
+              "children": [
+                {
+                  "name": "B00BBPVYUS",
+                  "value": 80.41333333333333
+                }
+              ]
+            },
+            {
+              "name": "Shubaly, Mishka",
+              "children": [
+                {
+                  "name": "B07YXS82KD",
+                  "value": 48.910000000000004
+                }
+              ]
+            },
+            {
+              "name": "Rath, Tom",
+              "children": [
+                {
+                  "name": "B07YXSLVX7",
+                  "value": 2.3583333333333334
+                }
+              ]
+            },
+            {
+              "name": "Yousafzai, Malala",
+              "children": [
+                {
+                  "name": "B00CH3DBNQ",
+                  "value": 195.965
+                }
+              ]
+            },
+            {
+              "name": "Bourdain, Anthony",
+              "children": [
+                {
+                  "name": "B083SN8RF7",
+                  "value": 6.423333333333333
+                }
+              ]
+            },
+            {
+              "name": "Magary, Drew",
+              "children": [
+                {
+                  "name": "B08SJQSWYM",
+                  "value": 17.656666666666666
+                }
+              ]
+            },
+            {
+              "name": "Kolker, Robert",
+              "children": [
+                {
+                  "name": "B07TZYFR71",
+                  "value": 555.6616666666667
+                }
+              ]
+            },
+            {
+              "name": "Mcgrath, Ben ",
+              "children": [
+                {
+                  "name": "B098PXP11K",
+                  "value": 354.3983333333333
+                }
+              ]
+            },
+            {
+              "name": "Thielen, Amy",
+              "children": [
+                {
+                  "name": "B01LWWK7WR",
+                  "value": 456.0983333333333
+                }
+              ]
+            },
+            {
+              "name": "Philpott, Mary Laura",
+              "children": [
+                {
+                  "name": "B09841WSGD",
+                  "value": 23.175
+                }
+              ]
+            },
+            {
+              "name": "Schulz, Kathryn",
+              "children": [
+                {
+                  "name": "B09285Y1V4",
+                  "value": 8.288333333333334
+                }
+              ]
+            },
+            {
+              "name": "Garner, Dwight",
+              "children": [
+                {
+                  "name": "B0BQGHJM5L",
+                  "value": 341.57500000000005
+                }
+              ]
+            },
+            {
+              "name": "Jones, Amanda",
+              "children": [
+                {
+                  "name": "B0CQFXKTPW",
+                  "value": 0.8383333333333334
+                }
+              ]
+            },
+            {
+              "name": "Wynn-Williams, Sarah",
+              "children": [
+                {
+                  "name": "B0DY9TZD8Z",
+                  "value": 6.181666666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Children's Books",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Riordan, Rick",
+              "children": [
+                {
+                  "name": "B00280LYIM",
+                  "value": 75.29166666666667
+                }
+              ]
+            },
+            {
+              "name": "DuPrau, Jeanne",
+              "children": [
+                {
+                  "name": "B000QCS932",
+                  "value": 35.65333333333333
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "History",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Chernow, Ron",
+              "children": [
+                {
+                  "name": "B06W2J89PV",
+                  "value": 255.6933333333333
+                }
+              ]
+            },
+            {
+              "name": "Larson, Erik",
+              "children": [
+                {
+                  "name": "B07TRVW6VX",
+                  "value": 44.41333333333333
+                },
+                {
+                  "name": "B0CDKLBD2W",
+                  "value": 234.21999999999997
+                }
+              ]
+            },
+            {
+              "name": "Coe, Alexis",
+              "children": [
+                {
+                  "name": "B07TPFTG1S",
+                  "value": 278.2966666666667
+                }
+              ]
+            },
+            {
+              "name": "Bryson, Bill",
+              "children": [
+                {
+                  "name": "B00C8S9VKM",
+                  "value": 48.989999999999995
+                }
+              ]
+            },
+            {
+              "name": "Orlean, Susan",
+              "children": [
+                {
+                  "name": "B07CL5ZLHX",
+                  "value": 364.2649999999999
+                }
+              ]
+            },
+            {
+              "name": "Duncan, Dennis",
+              "children": [
+                {
+                  "name": "B098TZ17NC",
+                  "value": 177.19166666666666
+                }
+              ]
+            },
+            {
+              "name": "Millard, Candice",
+              "children": [
+                {
+                  "name": "B09BTJNJCX",
+                  "value": 328.52
+                }
+              ]
+            },
+            {
+              "name": "Brown, Daniel James",
+              "children": [
+                {
+                  "name": "B00AEBETU2",
+                  "value": 17.14666666666667
+                }
+              ]
+            },
+            {
+              "name": "Hämäläinen, Pekka",
+              "children": [
+                {
+                  "name": "B0B193DJYK",
+                  "value": 6.5183333333333335
+                }
+              ]
+            },
+            {
+              "name": "Smith, Clint",
+              "children": [
+                {
+                  "name": "B08KQ4W18H",
+                  "value": 29.779999999999998
+                }
+              ]
+            },
+            {
+              "name": "Grann, David",
+              "children": [
+                {
+                  "name": "B0B6Z4SVTH",
+                  "value": 107.67666666666668
+                }
+              ]
+            },
+            {
+              "name": "Popkin, Jim",
+              "children": [
+                {
+                  "name": "B09XBGYWSR",
+                  "value": 84.015
+                }
+              ]
+            },
+            {
+              "name": "Stille, Alexander",
+              "children": [
+                {
+                  "name": "B0BBC769LV",
+                  "value": 83.77499999999999
+                }
+              ]
+            },
+            {
+              "name": "Dunlop, Fuchsia",
+              "children": [
+                {
+                  "name": "B0BWGKNK7G",
+                  "value": 299.78000000000003
+                }
+              ]
+            },
+            {
+              "name": "Zinn, Howard",
+              "children": [
+                {
+                  "name": "B003B4IW2U",
+                  "value": 5.3116666666666665
+                }
+              ]
+            },
+            {
+              "name": "Bale, Anthony Paul ",
+              "children": [
+                {
+                  "name": "B0C97G1ZR6",
+                  "value": 253.60000000000002
+                }
+              ]
+            },
+            {
+              "name": "Sides, Hampton",
+              "children": [
+                {
+                  "name": "B0CC1J32NG",
+                  "value": 664.4766666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Self-Help",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Burns, David D. ",
+              "children": [
+                {
+                  "name": "B009UW5X4C",
+                  "value": 30.696666666666665
+                }
+              ]
+            },
+            {
+              "name": "Gottlieb, Lori",
+              "children": [
+                {
+                  "name": "B07BZ4F75T",
+                  "value": 351.7866666666667
+                }
+              ]
+            },
+            {
+              "name": "Clavell, Alexander",
+              "children": [
+                {
+                  "name": "B081ZXQB52",
+                  "value": 53.27
+                }
+              ]
+            },
+            {
+              "name": "Irvine, William B.",
+              "children": [
+                {
+                  "name": "B07P9DC6TY",
+                  "value": 8.743333333333334
+                }
+              ]
+            },
+            {
+              "name": "Chapman, Gary",
+              "children": [
+                {
+                  "name": "B00OICLVBI",
+                  "value": 21.338333333333335
+                }
+              ]
+            },
+            {
+              "name": "Tolstoy, Leo",
+              "children": [
+                {
+                  "name": "B003L77UKC",
+                  "value": 127.35499999999999
+                }
+              ]
+            },
+            {
+              "name": "Martin, Clancy",
+              "children": [
+                {
+                  "name": "B0B1Y1ZKFX",
+                  "value": 26.791666666666664
+                }
+              ]
+            },
+            {
+              "name": "Burkeman, Oliver",
+              "children": [
+                {
+                  "name": "B08FGV64B1",
+                  "value": 45.31333333333334
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Science Fiction & Fantasy",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Moore, Christopher",
+              "children": [
+                {
+                  "name": "B07192GP7F",
+                  "value": 154.37000000000003
+                }
+              ]
+            },
+            {
+              "name": "Mandel, Emily St. John",
+              "children": [
+                {
+                  "name": "B07RL58ZDG",
+                  "value": 361.03499999999985
+                },
+                {
+                  "name": "B099DRHTLX",
+                  "value": 305.2583333333333
+                }
+              ]
+            },
+            {
+              "name": "Alam, Rumaan",
+              "children": [
+                {
+                  "name": "B083JKGK15",
+                  "value": 306.15166666666664
+                }
+              ]
+            },
+            {
+              "name": "Clarke, Susanna",
+              "children": [
+                {
+                  "name": "B0865TSTWM",
+                  "value": 34.99666666666667
+                }
+              ]
+            },
+            {
+              "name": "Bell, Matt",
+              "children": [
+                {
+                  "name": "B08L3P3VGQ",
+                  "value": 681.6850000000001
+                }
+              ]
+            },
+            {
+              "name": "Shepherd, Peng",
+              "children": [
+                {
+                  "name": "B08G1NJK2R",
+                  "value": 435.6783333333333
+                }
+              ]
+            },
+            {
+              "name": "Osman, Richard",
+              "children": [
+                {
+                  "name": "B08YRM9NBM",
+                  "value": 638.4150000000001
+                }
+              ]
+            },
+            {
+              "name": "Weir, Andy",
+              "children": [
+                {
+                  "name": "B07VDJBKNJ",
+                  "value": 36.69833333333333
+                }
+              ]
+            },
+            {
+              "name": "le Carré, John",
+              "children": [
+                {
+                  "name": "B006CUDDUG",
+                  "value": 44.09
+                }
+              ]
+            },
+            {
+              "name": "Schwab, V. E.",
+              "children": [
+                {
+                  "name": "B084357H23",
+                  "value": 722.335
+                }
+              ]
+            },
+            {
+              "name": "Stevenson, Benjamin",
+              "children": [
+                {
+                  "name": "B09Y94K74X",
+                  "value": 439.21666666666675
+                }
+              ]
+            },
+            {
+              "name": "Aoyama, Michiko",
+              "children": [
+                {
+                  "name": "B0BT82YGGF",
+                  "value": 2.6683333333333334
+                }
+              ]
+            },
+            {
+              "name": "Scalzi, John",
+              "children": [
+                {
+                  "name": "B0B9KVXCQ6",
+                  "value": 18.738333333333333
+                }
+              ]
+            },
+            {
+              "name": "Kuang, R. F",
+              "children": [
+                {
+                  "name": "B0B9SN8K6H",
+                  "value": 296.54666666666657
+                }
+              ]
+            },
+            {
+              "name": "Bardugo, Leigh",
+              "children": [
+                {
+                  "name": "B07LF64DZ2",
+                  "value": 45.715
+                }
+              ]
+            },
+            {
+              "name": "Goodhand, James",
+              "children": [
+                {
+                  "name": "B0C4PX8RD7",
+                  "value": 461.825
+                }
+              ]
+            },
+            {
+              "name": "Cronin, Justin",
+              "children": [
+                {
+                  "name": "B0B8GZ58DK",
+                  "value": 6.466666666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Business & Money",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Hall, Chad W. ",
+              "children": [
+                {
+                  "name": "B0143V938Q",
+                  "value": 0.6733333333333333
+                }
+              ]
+            },
+            {
+              "name": "Kross, Ethan",
+              "children": [
+                {
+                  "name": "B087PL8YVQ",
+                  "value": 5.595
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Literature & Fiction",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Bernhard, Susan",
+              "children": [
+                {
+                  "name": "B07BDKJVWS",
+                  "value": 229.80666666666667
+                }
+              ]
+            },
+            {
+              "name": "Halliday, Lisa",
+              "children": [
+                {
+                  "name": "B074ZDRGBC",
+                  "value": 71.865
+                }
+              ]
+            },
+            {
+              "name": "Mason, Daniel",
+              "children": [
+                {
+                  "name": "B078W5XGZD",
+                  "value": 0.5116666666666666
+                },
+                {
+                  "name": "B0BPX7SF89",
+                  "value": 188.73333333333332
+                }
+              ]
+            },
+            {
+              "name": "Offill, Jenny",
+              "children": [
+                {
+                  "name": "B077WWXZ41",
+                  "value": 84.57
+                }
+              ]
+            },
+            {
+              "name": "Stradal, J. Ryan",
+              "children": [
+                {
+                  "name": "B07L2J8P4S",
+                  "value": 0.305
+                },
+                {
+                  "name": "B0B6Z3LN2D",
+                  "value": 365.8316666666666
+                }
+              ]
+            },
+            {
+              "name": "Donoghue, Emma",
+              "children": [
+                {
+                  "name": "B086JN68M6",
+                  "value": 134.38666666666666
+                }
+              ]
+            },
+            {
+              "name": "Defoe, Daniel",
+              "children": [
+                {
+                  "name": "B0084B57VO",
+                  "value": 8.288333333333334
+                }
+              ]
+            },
+            {
+              "name": "O'Farrell, Maggie",
+              "children": [
+                {
+                  "name": "B07ZN51NL3",
+                  "value": 14.233333333333334
+                },
+                {
+                  "name": "B09RTYQW2S",
+                  "value": 227.17166666666662
+                }
+              ]
+            },
+            {
+              "name": "MacDonald, Andrew David",
+              "children": [
+                {
+                  "name": "B07THQLGBT",
+                  "value": 8.703333333333333
+                }
+              ]
+            },
+            {
+              "name": "Frazier, Jean Kyoung",
+              "children": [
+                {
+                  "name": "B07YRWHGYD",
+                  "value": 201.625
+                }
+              ]
+            },
+            {
+              "name": "Yu, Charles",
+              "children": [
+                {
+                  "name": "B07R5KC59C",
+                  "value": 130.26166666666666
+                }
+              ]
+            },
+            {
+              "name": "Millet, Lydia",
+              "children": [
+                {
+                  "name": "B07ZTTH5VD",
+                  "value": 210.41333333333336
+                }
+              ]
+            },
+            {
+              "name": "Evans, Danielle",
+              "children": [
+                {
+                  "name": "B084V823SR",
+                  "value": 61.74166666666667
+                }
+              ]
+            },
+            {
+              "name": "Gyasi, Yaa",
+              "children": [
+                {
+                  "name": "B07ZC6W6SV",
+                  "value": 285.815
+                }
+              ]
+            },
+            {
+              "name": "Winkler, Anthony C.",
+              "children": [
+                {
+                  "name": "B008TY8BQ4",
+                  "value": 210.7733333333333
+                }
+              ]
+            },
+            {
+              "name": "Lerner, Ben",
+              "children": [
+                {
+                  "name": "B07MYXB26N",
+                  "value": 121.355
+                }
+              ]
+            },
+            {
+              "name": "Erdrich, Louise",
+              "children": [
+                {
+                  "name": "B07SKWFVYW",
+                  "value": 389.6816666666667
+                }
+              ]
+            },
+            {
+              "name": "Wagamese, Richard",
+              "children": [
+                {
+                  "name": "B07C3XLBHG",
+                  "value": 158.16333333333333
+                }
+              ]
+            },
+            {
+              "name": "Lin, Tao",
+              "children": [
+                {
+                  "name": "B08PK59474",
+                  "value": 81.49666666666668
+                }
+              ]
+            },
+            {
+              "name": "Franzen, Jonathan",
+              "children": [
+                {
+                  "name": "B08N8Z99MK",
+                  "value": 687.5266666666666
+                }
+              ]
+            },
+            {
+              "name": "Doerr, Anthony",
+              "children": [
+                {
+                  "name": "B08TRMSR3Z",
+                  "value": 639.1366666666665
+                }
+              ]
+            },
+            {
+              "name": "Shteyngart, Gary",
+              "children": [
+                {
+                  "name": "B08VRP55V1",
+                  "value": 563.2516666666667
+                }
+              ]
+            },
+            {
+              "name": "Kasulke, Calvin",
+              "children": [
+                {
+                  "name": "B08PY1XTB8",
+                  "value": 128.16
+                }
+              ]
+            },
+            {
+              "name": "Labatut, Benjamín",
+              "children": [
+                {
+                  "name": "B08QM8VHRT",
+                  "value": 267.76666666666665
+                }
+              ]
+            },
+            {
+              "name": "Otsuka, Julie",
+              "children": [
+                {
+                  "name": "B095MMJYSR",
+                  "value": 170.82666666666665
+                }
+              ]
+            },
+            {
+              "name": "Magary, Drew",
+              "children": [
+                {
+                  "name": "B00JX43A0G",
+                  "value": 26.981666666666666
+                }
+              ]
+            },
+            {
+              "name": "Haslett, Adam",
+              "children": [
+                {
+                  "name": "B0151YQYYU",
+                  "value": 484.47333333333336
+                }
+              ]
+            },
+            {
+              "name": "Barry, Quan",
+              "children": [
+                {
+                  "name": "B095MPSYWY",
+                  "value": 402.4766666666668
+                }
+              ]
+            },
+            {
+              "name": "Lee, Chang-rae",
+              "children": [
+                {
+                  "name": "B08HL86V91",
+                  "value": 27.181666666666665
+                }
+              ]
+            },
+            {
+              "name": "Greer, Andrew Sean",
+              "children": [
+                {
+                  "name": "B01MSICPW3",
+                  "value": 9.538333333333334
+                }
+              ]
+            },
+            {
+              "name": "Escoffery, Jonathan",
+              "children": [
+                {
+                  "name": "B09NTJPTKN",
+                  "value": 110.26499999999999
+                }
+              ]
+            },
+            {
+              "name": "Mikhail Bulgakov",
+              "children": [
+                {
+                  "name": "B0BH8GTQYX",
+                  "value": 187.3733333333333
+                }
+              ]
+            },
+            {
+              "name": "Thurber, Bob",
+              "children": [
+                {
+                  "name": "B07WK8JZ9N",
+                  "value": 28.276666666666667
+                }
+              ]
+            },
+            {
+              "name": "Talty, Morgan",
+              "children": [
+                {
+                  "name": "B09NH4DJBP",
+                  "value": 278.205
+                }
+              ]
+            },
+            {
+              "name": "Bulgakov, Mikhail",
+              "children": [
+                {
+                  "name": "B08KH4LZDM",
+                  "value": 226.86833333333337
+                }
+              ]
+            },
+            {
+              "name": "Bennett, Claire-Louise",
+              "children": [
+                {
+                  "name": "B097XBXQ1T",
+                  "value": 18.453333333333333
+                }
+              ]
+            },
+            {
+              "name": "McCarthy, Cormac",
+              "children": [
+                {
+                  "name": "B09T9D8QY7",
+                  "value": 229.32833333333335
+                }
+              ]
+            },
+            {
+              "name": "Batuman, Elif",
+              "children": [
+                {
+                  "name": "B01HNJIJ3U",
+                  "value": 147.60000000000002
+                }
+              ]
+            },
+            {
+              "name": "Kingsolver, Barbara",
+              "children": [
+                {
+                  "name": "B09QMHZ53K",
+                  "value": 759.8516666666667
+                }
+              ]
+            },
+            {
+              "name": "Rundell, Katherine",
+              "children": [
+                {
+                  "name": "B09NTK9WDQ",
+                  "value": 355.51833333333326
+                }
+              ]
+            },
+            {
+              "name": "Jackson, Jenny",
+              "children": [
+                {
+                  "name": "B0B3HPSFJ7",
+                  "value": 356.04333333333335
+                }
+              ]
+            },
+            {
+              "name": "Moshfegh, Ottessa",
+              "children": [
+                {
+                  "name": "B09GW3P1KJ",
+                  "value": 57.95333333333333
+                }
+              ]
+            },
+            {
+              "name": "Kirshenbaum, Binnie",
+              "children": [
+                {
+                  "name": "B07GD51NCJ",
+                  "value": 335.0616666666667
+                }
+              ]
+            },
+            {
+              "name": "Vila-Matas, Enrique",
+              "children": [
+                {
+                  "name": "B07GJBCLHN",
+                  "value": 8.353333333333333
+                }
+              ]
+            },
+            {
+              "name": "deWitt, Patrick",
+              "children": [
+                {
+                  "name": "B0BH4QWM85",
+                  "value": 330.86666666666656
+                }
+              ]
+            },
+            {
+              "name": "Moore, Lorrie",
+              "children": [
+                {
+                  "name": "B0BG13PH57",
+                  "value": 162.63666666666668
+                }
+              ]
+            },
+            {
+              "name": "Patchett, Ann",
+              "children": [
+                {
+                  "name": "B0BL126WSH",
+                  "value": 67.50333333333333
+                }
+              ]
+            },
+            {
+              "name": "Evison, Jonathan",
+              "children": [
+                {
+                  "name": "B08T6CL58V",
+                  "value": 714.8283333333334
+                }
+              ]
+            },
+            {
+              "name": "Russo, Richard",
+              "children": [
+                {
+                  "name": "B0BKKVQPLB",
+                  "value": 300.06666666666666
+                }
+              ]
+            },
+            {
+              "name": "Groff, Lauren",
+              "children": [
+                {
+                  "name": "B0BTVBH6G3",
+                  "value": 343.14
+                }
+              ]
+            },
+            {
+              "name": "Smith, Zadie",
+              "children": [
+                {
+                  "name": "B0BP66G6B7",
+                  "value": 195.4133333333333
+                }
+              ]
+            },
+            {
+              "name": "Fosse, Jon",
+              "children": [
+                {
+                  "name": "B09RMQJCZJ",
+                  "value": 18.408333333333335
+                }
+              ]
+            },
+            {
+              "name": "Diaz, Hernan",
+              "children": [
+                {
+                  "name": "B09BV2JNWV",
+                  "value": 510.0216666666667
+                }
+              ]
+            },
+            {
+              "name": "Hill, Nathan",
+              "children": [
+                {
+                  "name": "B0BR511292",
+                  "value": 585.6399999999998
+                }
+              ]
+            },
+            {
+              "name": "Napolitano, Ann",
+              "children": [
+                {
+                  "name": "B0B7R4Q5DJ",
+                  "value": 558.1083333333335
+                }
+              ]
+            },
+            {
+              "name": "Pickett, Alex",
+              "children": [
+                {
+                  "name": "B0927NRBFB",
+                  "value": 129.6183333333333
+                }
+              ]
+            },
+            {
+              "name": "Verghese, Abraham",
+              "children": [
+                {
+                  "name": "B0BJSGV831",
+                  "value": 879.6683333333334
+                }
+              ]
+            },
+            {
+              "name": "Akbar, Kaveh",
+              "children": [
+                {
+                  "name": "B0C3C886FY",
+                  "value": 447.3
+                }
+              ]
+            },
+            {
+              "name": "Graff, Andrew J.",
+              "children": [
+                {
+                  "name": "B0C592RHNC",
+                  "value": 546.5533333333333
+                }
+              ]
+            },
+            {
+              "name": "Yagi, Emi",
+              "children": [
+                {
+                  "name": "B09LHBX5KV",
+                  "value": 232.18833333333336
+                }
+              ]
+            },
+            {
+              "name": "Lianke, Yan",
+              "children": [
+                {
+                  "name": "B0B72HGHW8",
+                  "value": 47.09833333333333
+                }
+              ]
+            },
+            {
+              "name": "Bob-Waksberg, Raphael",
+              "children": [
+                {
+                  "name": "B07HDT9JFX",
+                  "value": 41.415
+                }
+              ]
+            },
+            {
+              "name": "Lynch, Paul",
+              "children": [
+                {
+                  "name": "B0CLQVQSVL",
+                  "value": 21.755
+                }
+              ]
+            },
+            {
+              "name": "Enrigue, Álvaro",
+              "children": [
+                {
+                  "name": "B0C1YCKNK1",
+                  "value": 490.74999999999994
+                }
+              ]
+            },
+            {
+              "name": "McBride, James",
+              "children": [
+                {
+                  "name": "B0BPNP7YQB",
+                  "value": 246.03166666666664
+                }
+              ]
+            },
+            {
+              "name": "Wiman, Christian",
+              "children": [
+                {
+                  "name": "B0BQGJVCMT",
+                  "value": 23.566666666666666
+                }
+              ]
+            },
+            {
+              "name": "Orange, Tommy",
+              "children": [
+                {
+                  "name": "B0C772ZLMQ",
+                  "value": 351.61333333333357
+                }
+              ]
+            },
+            {
+              "name": "Miri, Yu",
+              "children": [
+                {
+                  "name": "B081914PR7",
+                  "value": 61.81166666666667
+                }
+              ]
+            },
+            {
+              "name": "Paisner, Daniel",
+              "children": [
+                {
+                  "name": "B09X34KMRM",
+                  "value": 488.18500000000006
+                }
+              ]
+            },
+            {
+              "name": "Enger, Leif",
+              "children": [
+                {
+                  "name": "B0CH1NHWNW",
+                  "value": 144.69333333333333
+                }
+              ]
+            },
+            {
+              "name": "Haig, Matt",
+              "children": [
+                {
+                  "name": "B0CGZFPKTZ",
+                  "value": 210.22500000000002
+                }
+              ]
+            },
+            {
+              "name": "Patterson, James",
+              "children": [
+                {
+                  "name": "B0CDWDLCNS",
+                  "value": 11.546666666666667
+                }
+              ]
+            },
+            {
+              "name": "Harvey, Samantha",
+              "children": [
+                {
+                  "name": "B0BZ5Y513V",
+                  "value": 263.08833333333337
+                }
+              ]
+            },
+            {
+              "name": "Torres, Justin",
+              "children": [
+                {
+                  "name": "B0BQGDMFH6",
+                  "value": 8.911666666666667
+                }
+              ]
+            },
+            {
+              "name": "Melville, Herman",
+              "children": [
+                {
+                  "name": "B000JML2Z6",
+                  "value": 0.7316666666666667
+                }
+              ]
+            },
+            {
+              "name": "Williams, John",
+              "children": [
+                {
+                  "name": "B003K15IF8",
+                  "value": 571.6816666666666
+                }
+              ]
+            },
+            {
+              "name": "Tellegen, Toon",
+              "children": [
+                {
+                  "name": "B0D57LWBM6",
+                  "value": 13.611666666666668
+                }
+              ]
+            },
+            {
+              "name": "Pattee, Emma",
+              "children": [
+                {
+                  "name": "B0CWFMT5SC",
+                  "value": 11.095
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Sports & Outdoors",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Goldman, Justin",
+              "children": [
+                {
+                  "name": "B00O2RPEE4",
+                  "value": 42.56333333333334
+                }
+              ]
+            },
+            {
+              "name": "Magness, Steve",
+              "children": [
+                {
+                  "name": "B00II6SY4W",
+                  "value": 0.3883333333333333
+                }
+              ]
+            },
+            {
+              "name": "Clark, David",
+              "children": [
+                {
+                  "name": "B07N2X3ST6",
+                  "value": 7.671666666666667
+                }
+              ]
+            },
+            {
+              "name": "Dobkin, Adin",
+              "children": [
+                {
+                  "name": "B08DHSFM4Q",
+                  "value": 1.1133333333333335
+                }
+              ]
+            },
+            {
+              "name": "Gilkis, Dr. Zeev",
+              "children": [
+                {
+                  "name": "B0893YWV5Q",
+                  "value": 12.670000000000002
+                }
+              ]
+            },
+            {
+              "name": "Thompson, J. M.",
+              "children": [
+                {
+                  "name": "B08RZ4PTSF",
+                  "value": 481.745
+                }
+              ]
+            },
+            {
+              "name": "Reese, Cory ",
+              "children": [
+                {
+                  "name": "B0955FXRLM",
+                  "value": 1.1783333333333332
+                }
+              ]
+            },
+            {
+              "name": "Luke, Humphrey",
+              "children": [
+                {
+                  "name": "B00JV2H5I8",
+                  "value": 116.79666666666667
+                }
+              ]
+            },
+            {
+              "name": "D' Alessandro, Adam",
+              "children": [
+                {
+                  "name": "B00HYQEJAK",
+                  "value": 10.595
+                }
+              ]
+            },
+            {
+              "name": "oluyede, leramo",
+              "children": [
+                {
+                  "name": "B09QBBMXCR",
+                  "value": 0.6933333333333334
+                }
+              ]
+            },
+            {
+              "name": "Maraniss, David",
+              "children": [
+                {
+                  "name": "B09JPFYQY2",
+                  "value": 201.63833333333332
+                }
+              ]
+            },
+            {
+              "name": "McMillan, Greg",
+              "children": [
+                {
+                  "name": "B0B33PJZJT",
+                  "value": 66.815
+                }
+              ]
+            },
+            {
+              "name": "Lomong, Lopez",
+              "children": [
+                {
+                  "name": "B007D1TKAU",
+                  "value": 117.40833333333333
+                }
+              ]
+            },
+            {
+              "name": "Pierce, Bill",
+              "children": [
+                {
+                  "name": "B087BQ7GK3",
+                  "value": 11.338333333333333
+                }
+              ]
+            },
+            {
+              "name": "Hudson, John",
+              "children": [
+                {
+                  "name": "B08D4QJRY2",
+                  "value": 80.91666666666666
+                }
+              ]
+            },
+            {
+              "name": "Gearhart, Sarah",
+              "children": [
+                {
+                  "name": "B0B3Y4RYX6",
+                  "value": 2.12
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Politics & Social Sciences",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Oluo, Ijeoma",
+              "children": [
+                {
+                  "name": "B07QBNKJTZ",
+                  "value": 145.57666666666668
+                }
+              ]
+            },
+            {
+              "name": "Freeman, Grey",
+              "children": [
+                {
+                  "name": "B0764BV94D",
+                  "value": 6.85
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Cookbooks, Food & Wine",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Sroufe, Del",
+              "children": [
+                {
+                  "name": "B00U27BMT4",
+                  "value": 17.973333333333333
+                }
+              ]
+            },
+            {
+              "name": "Frazier, Matt",
+              "children": [
+                {
+                  "name": "B08J3YYP2M",
+                  "value": 14.389999999999999
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Religion & Spirituality",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Frankl, Viktor E.",
+              "children": [
+                {
+                  "name": "B009U9S6FI",
+                  "value": 26.38333333333333
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health, Fitness & Dieting",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Ferriss, Timothy",
+              "children": [
+                {
+                  "name": "B003EI2EH2",
+                  "value": 0.8016666666666666
+                }
+              ]
+            },
+            {
+              "name": "Attia MD, Peter ",
+              "children": [
+                {
+                  "name": "B0B1BTJLJN",
+                  "value": 312.31333333333333
+                }
+              ]
+            },
+            {
+              "name": "Asprey, Dave",
+              "children": [
+                {
+                  "name": "B0B399L6KP",
+                  "value": 77.79333333333334
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Comics & Graphic Novels",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Bechdel, Alison",
+              "children": [
+                {
+                  "name": "B08B38JVKY",
+                  "value": 201.58166666666668
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Medical Books",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "READS, CALEB",
+              "children": [
+                {
+                  "name": "B09LM328XY",
+                  "value": 6.89
+                }
+              ]
+            },
+            {
+              "name": "Campbell, Hayley",
+              "children": [
+                {
+                  "name": "B09CNFH5WG",
+                  "value": 5.001666666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Reference",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Sheridan, Gina",
+              "children": [
+                {
+                  "name": "B0108VD2L4",
+                  "value": 7.595
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Teen & Young Adult",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Quinones, Sam",
+              "children": [
+                {
+                  "name": "B07TVRR6GR",
+                  "value": 14.353333333333333
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Travel",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Sancton, Julian",
+              "children": [
+                {
+                  "name": "B08FH9BV7N",
+                  "value": 776.5333333333334
+                }
+              ]
+            },
+            {
+              "name": "National Geographic",
+              "children": [
+                {
+                  "name": "B016TG0SAK",
+                  "value": 0.9916666666666667
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Humor & Entertainment",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Petrow, Steven",
+              "children": [
+                {
+                  "name": "B08KL58Q4X",
+                  "value": 28.553333333333335
+                }
+              ]
+            },
+            {
+              "name": "Jillette, Penn",
+              "children": [
+                {
+                  "name": "B0B2F5J32D",
+                  "value": 34.79333333333334
+                }
+              ]
+            },
+            {
+              "name": "Mortimer, Bob",
+              "children": [
+                {
+                  "name": "B0BTZRQHJM",
+                  "value": 470.41999999999996
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Romance",
+      "children": [
+        {
+          "name": "Unknown",
+          "children": [
+            {
+              "name": "Zevin, Gabrielle",
+              "children": [
+                {
+                  "name": "B09JBCGQB8",
+                  "value": 598.2366666666666
+                }
+              ]
+            },
+            {
+              "name": "Sue, Natalie",
+              "children": [
+                {
+                  "name": "B0CJ9TSSYB",
+                  "value": 580.2633333333333
+                }
+              ]
+            }
           ]
         }
       ]

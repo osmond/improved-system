@@ -1,4 +1,272 @@
 [
-  { "source": "A", "target": "B", "count": 2 },
-  { "source": "B", "target": "C", "count": 1 }
+  {
+    "source": "Mystery, Thriller & Suspense",
+    "target": "Science & Math",
+    "count": 10
+  },
+  {
+    "source": "Unknown",
+    "target": "Arts & Photography",
+    "count": 3
+  },
+  {
+    "source": "Mystery, Thriller & Suspense",
+    "target": "Unknown",
+    "count": 63
+  },
+  {
+    "source": "Biographies & Memoirs",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 9
+  },
+  {
+    "source": "Biographies & Memoirs",
+    "target": "Unknown",
+    "count": 7
+  },
+  {
+    "source": "Mystery, Thriller & Suspense",
+    "target": "Children's Books",
+    "count": 3
+  },
+  {
+    "source": "Biographies & Memoirs",
+    "target": "Science Fiction & Fantasy",
+    "count": 3
+  },
+  {
+    "source": "Science Fiction & Fantasy",
+    "target": "Business & Money",
+    "count": 1
+  },
+  {
+    "source": "Business & Money",
+    "target": "Science & Math",
+    "count": 2
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 12
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 80
+  },
+  {
+    "source": "History",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 19
+  },
+  {
+    "source": "Politics & Social Sciences",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 4
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Unknown",
+    "count": 56
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Unknown",
+    "count": 10
+  },
+  {
+    "source": "Politics & Social Sciences",
+    "target": "Literature & Fiction",
+    "count": 1
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Biographies & Memoirs",
+    "count": 4
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Biographies & Memoirs",
+    "count": 3
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Science Fiction & Fantasy",
+    "count": 10
+  },
+  {
+    "source": "Science Fiction & Fantasy",
+    "target": "Unknown",
+    "count": 6
+  },
+  {
+    "source": "History",
+    "target": "Literature & Fiction",
+    "count": 12
+  },
+  {
+    "source": "History",
+    "target": "Unknown",
+    "count": 11
+  },
+  {
+    "source": "History",
+    "target": "Religion & Spirituality",
+    "count": 3
+  },
+  {
+    "source": "Religion & Spirituality",
+    "target": "Literature & Fiction",
+    "count": 3
+  },
+  {
+    "source": "Mystery, Thriller & Suspense",
+    "target": "Science Fiction & Fantasy",
+    "count": 15
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Science & Math",
+    "count": 10
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Science & Math",
+    "count": 3
+  },
+  {
+    "source": "Unknown",
+    "target": "Science & Math",
+    "count": 4
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Business & Money",
+    "count": 1
+  },
+  {
+    "source": "Comics & Graphic Novels",
+    "target": "Literature & Fiction",
+    "count": 1
+  },
+  {
+    "source": "Comics & Graphic Novels",
+    "target": "Unknown",
+    "count": 1
+  },
+  {
+    "source": "Medical Books",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 2
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Science Fiction & Fantasy",
+    "count": 1
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Reference",
+    "count": 1
+  },
+  {
+    "source": "Reference",
+    "target": "Unknown",
+    "count": 1
+  },
+  {
+    "source": "History",
+    "target": "Biographies & Memoirs",
+    "count": 1
+  },
+  {
+    "source": "Biographies & Memoirs",
+    "target": "Teen & Young Adult",
+    "count": 2
+  },
+  {
+    "source": "Travel",
+    "target": "Literature & Fiction",
+    "count": 1
+  },
+  {
+    "source": "History",
+    "target": "Science & Math",
+    "count": 4
+  },
+  {
+    "source": "Humor & Entertainment",
+    "target": "History",
+    "count": 2
+  },
+  {
+    "source": "History",
+    "target": "Sports & Outdoors",
+    "count": 2
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Cookbooks, Food & Wine",
+    "count": 1
+  },
+  {
+    "source": "Cookbooks, Food & Wine",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 2
+  },
+  {
+    "source": "Biographies & Memoirs",
+    "target": "Science & Math",
+    "count": 1
+  },
+  {
+    "source": "Mystery, Thriller & Suspense",
+    "target": "Self-Help",
+    "count": 18
+  },
+  {
+    "source": "Humor & Entertainment",
+    "target": "Self-Help",
+    "count": 1
+  },
+  {
+    "source": "Mystery, Thriller & Suspense",
+    "target": "Romance",
+    "count": 8
+  },
+  {
+    "source": "Health, Fitness & Dieting",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 2
+  },
+  {
+    "source": "Literature & Fiction",
+    "target": "Medical Books",
+    "count": 1
+  },
+  {
+    "source": "Sports & Outdoors",
+    "target": "Self-Help",
+    "count": 1
+  },
+  {
+    "source": "Travel",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 1
+  },
+  {
+    "source": "Health, Fitness & Dieting",
+    "target": "Self-Help",
+    "count": 1
+  },
+  {
+    "source": "Humor & Entertainment",
+    "target": "Mystery, Thriller & Suspense",
+    "count": 1
+  },
+  {
+    "source": "Science Fiction & Fantasy",
+    "target": "Science & Math",
+    "count": 3
+  }
 ]
