@@ -10,21 +10,59 @@ import {
 } from '@/ui/tooltip';
 import { getISOWeek, getISOWeekYear } from 'date-fns';
 
-export default function CalendarHeatmap() {
-  const { data } = useDailyReading();
-  if (!data || data.length === 0) return null;
+const monthNames = [
+  'Jan',
+  'Feb',
+  'Mar',
+  'Apr',
+  'May',
+  'Jun',
+  'Jul',
+  'Aug',
+  'Sep',
+  'Oct',
+  'Nov',
+  'Dec',
+];
 
+const Sparkline = ({ series }) => {
+  const width = 40;
+  const height = 10;
+  const max = Math.max(...series, 1);
+  const points = series
+    .map((v, i) => {
+      const x = (i / (series.length - 1)) * width;
+      const y = height - (v / max) * height;
+      return `${x},${y}`;
+    })
+    .join(' ');
+  return (
+    <svg
+      width={width}
+      height={height}
+      viewBox={`0 0 ${width} ${height}`}
+      data-testid="sparkline"
+    >
+      <polyline
+        points={points}
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1"
+      />
+    </svg>
+  );
+};
+
+function YearlyHeatmap({ data }) {
   const dates = data.map((d) => new Date(d.date));
   const minDate = new Date(Math.min(...dates));
   const startDate = new Date(minDate);
   startDate.setDate(startDate.getDate() - 1);
   const endDate = new Date(Math.max(...dates));
 
-  // compute start date including empty days for week alignment
   const startWithEmptyDays = new Date(startDate);
   startWithEmptyDays.setDate(startWithEmptyDays.getDate() - startDate.getDay());
 
-  // group minutes by month
   const monthTotals = {};
   const startMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
   const endMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
@@ -37,18 +75,15 @@ export default function CalendarHeatmap() {
     const key = `${dt.getFullYear()}-${dt.getMonth()}`;
     monthTotals[key] += d.minutes;
   });
-  const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
   const maxMinutes = Math.max(...data.map((d) => d.minutes), 0);
   const values = data.map((d) => ({ date: d.date, count: d.minutes }));
 
-  // map date -> minutes for quick lookup
   const minutesByDate = data.reduce((acc, d) => {
     acc[d.date] = d.minutes;
     return acc;
   }, {});
 
-  // build series of minutes for each ISO week (Mon-Sun)
   const weekSeries = {};
   data.forEach((d) => {
     const dt = new Date(d.date);
@@ -58,33 +93,6 @@ export default function CalendarHeatmap() {
     weekSeries[weekKey][dayIdx] = d.minutes;
   });
 
-  const Sparkline = ({ series }) => {
-    const width = 40;
-    const height = 10;
-    const max = Math.max(...series, 1);
-    const points = series
-      .map((v, i) => {
-        const x = (i / (series.length - 1)) * width;
-        const y = height - (v / max) * height;
-        return `${x},${y}`;
-      })
-      .join(' ');
-    return (
-      <svg
-        width={width}
-        height={height}
-        viewBox={`0 0 ${width} ${height}`}
-        data-testid="sparkline"
-      >
-        <polyline
-          points={points}
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="1"
-        />
-      </svg>
-    );
-  };
   const classForValue = (value) => {
     if (!value || !value.count || maxMinutes === 0) return 'reading-scale-0';
     const level = Math.ceil((value.count / maxMinutes) * 4);
@@ -160,3 +168,30 @@ export default function CalendarHeatmap() {
     </div>
   );
 }
+
+export default function CalendarHeatmap({ data: propData }) {
+  const { data: hookData } = useDailyReading();
+  const data = propData || hookData;
+  if (!data || data.length === 0) return null;
+
+  const dataByYear = data.reduce((acc, d) => {
+    const year = new Date(d.date).getFullYear();
+    if (!acc[year]) acc[year] = [];
+    acc[year].push(d);
+    return acc;
+  }, {});
+
+  const years = Object.keys(dataByYear).sort();
+
+  return (
+    <div>
+      {years.map((year) => (
+        <div key={year} className="mb-8">
+          <div className="mb-2 font-semibold">{year}</div>
+          <YearlyHeatmap data={dataByYear[year]} />
+        </div>
+      ))}
+    </div>
+  );
+}
+
