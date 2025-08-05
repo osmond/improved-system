@@ -17,11 +17,12 @@ function createDashboardRoutes() {
   return dashboardRoutes.flatMap(({ items }) =>
     items.map(({ to, component }) => {
       if (!component) return [];
+      const path = component.replace("@/", "./");
       const importer =
-        pageModules[`${component}.tsx`] ||
-        pageModules[`${component}.ts`] ||
-        pageModules[`${component}.jsx`] ||
-        pageModules[`${component}.js`];
+        pageModules[`${path}.tsx`] ||
+        pageModules[`${path}.ts`] ||
+        pageModules[`${path}.jsx`] ||
+        pageModules[`${path}.js`];
       const LazyComp = importer ? lazy(importer as any) : MissingComponent;
       return (
         <Route
