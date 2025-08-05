@@ -1,7 +1,166 @@
 {
   "nodes": [
-    { "id": "1", "title": "One", "tags": ["mystery"], "authors": ["Alice"] },
-    { "id": "2", "title": "Two", "tags": ["scifi"], "authors": ["Bob"] }
+    {
+      "id": "B0CH9KQYHS",
+      "title": "Godwin: A Novel",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0CZXNTCFX",
+      "title": "The Frontrunner",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0CN8TPKSP",
+      "title": "Burn: A novel",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "Not Available",
+      "title": "Not Available",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0CQ38FNR9",
+      "title": "Cold Victory",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B002C7Z57C",
+      "title": "The Denial of Death",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0CGTHLBT9",
+      "title": "The Winner: A Novel",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0B7NGCGHG",
+      "title": "Knowing What We Know: The Transmission of Knowledge: From Ancient Wisdom to Modern Magic",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0C7RK8P8K",
+      "title": "Last Acts: A Novel",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0C3C886FY",
+      "title": "Martyr!: A novel",
+      "authors": [
+        "Akbar, Kaveh"
+      ],
+      "tags": [
+        "Literature & Fiction"
+      ]
+    },
+    {
+      "id": "B0BL6271NP",
+      "title": "The End of August: A Novel",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B003XT60E0",
+      "title": "Blood Meridian: Or the Evening Redness in the West (Vintage International)",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B09S3WWY98",
+      "title": "The Purple Runner",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B09Q2F1X14",
+      "title": "The Stranger (Camus Novel)",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0BQGHJM5L",
+      "title": "The Upstairs Delicatessen: On Eating, Reading, Reading About Eating, and Eating While Reading",
+      "authors": [
+        "Garner, Dwight"
+      ],
+      "tags": [
+        "Biographies & Memoirs",
+        "Cookbooks, Food & Wine"
+      ]
+    },
+    {
+      "id": "B0B6B4WPSF",
+      "title": "Eastbound",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B09YRR8DB6",
+      "title": "What's Gotten Into You: The Story of Your Body's Atoms, from the Big Bang Through Last Night's Dinner",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0CHWJCN94",
+      "title": "The Awesome Game: One Man's Incredible, Globe-Crushing Hockey Odyssey",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0BGJ3W5D3",
+      "title": "The Theory of Everything Else: A Voyage Into the World of the Weird",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0BP6S1S57",
+      "title": "Fever House: A Novel (Fever House Duology Book 1)",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0BHY38ZPH",
+      "title": "Hope: A Novel",
+      "authors": [],
+      "tags": []
+    },
+    {
+      "id": "B0CBW58P3J",
+      "title": "The Rise: A Short Story",
+      "authors": [
+        "Rankin, Ian"
+      ],
+      "tags": [
+        "Mystery, Thriller & Suspense"
+      ]
+    }
   ],
-  "links": []
+  "links": [
+    {
+      "source": "B0CH9KQYHS",
+      "target": "B0CZXNTCFX",
+      "weight": 0.2727272727272727
+    },
+    {
+      "source": "B0CH9KQYHS",
+      "target": "B0CN8TPKSP",
+      "weight": 0.07692307692307693
+    },
+    {
+      "source": "B0CZXNTCFX",
+      "target": "B0CN8TPKSP",
+      "weight": 0.09090909090909091
+    }
+  ]
 }
