@@ -18,6 +18,9 @@ function wordSet(texts = []) {
   return [...words];
 }
 
+const { UndirectedGraph } = require('graphology');
+const louvain = require('graphology-communities-louvain');
+
 function buildBookGraph(books = []) {
   const nodes = books.map((b) => ({
     id: b.asin,
@@ -41,6 +44,14 @@ function buildBookGraph(books = []) {
       }
     }
   }
+
+  const graph = new UndirectedGraph();
+  nodes.forEach((n) => graph.addNode(n.id));
+  links.forEach((l) => graph.addEdge(l.source, l.target, { weight: l.weight }));
+
+  louvain.assign(graph);
+  nodes.forEach((n) => (n.community = graph.getNodeAttribute(n.id, 'community')));
+
   return { nodes, links };
 }
 
