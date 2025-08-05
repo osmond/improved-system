@@ -22,4 +22,13 @@ describe('BookNetwork component', () => {
       expect(nodes.length).toBe(expected);
     });
   });
+
+  it('renders nodes with CSS variable fill', async () => {
+    const { container } = render(<BookNetwork />);
+    await waitFor(() => {
+      const node = container.querySelector('[data-testid="node"]');
+      expect(node).toBeTruthy();
+      expect(node.getAttribute('fill')).toBe('var(--chart-network-node)');
+    });
+  });
 });

@@ -39,7 +39,7 @@ export default function BookNetwork() {
 
     const link = svg
       .append('g')
-      .attr('stroke', '#999')
+      .attr('stroke', 'var(--chart-network-link)')
       .attr('stroke-opacity', 0.6)
       .selectAll('line')
       .data(filteredLinks)
@@ -48,13 +48,13 @@ export default function BookNetwork() {
 
     const node = svg
       .append('g')
-      .attr('stroke', '#fff')
+      .attr('stroke', 'var(--chart-network-node-border)')
       .attr('stroke-width', 1.5)
       .selectAll('circle')
       .data(filteredNodes)
       .join('circle')
       .attr('r', 5)
-      .attr('fill', '#69b3a2')
+      .attr('fill', 'var(--chart-network-node)')
       .attr('data-testid', 'node')
       .call(
         drag()
