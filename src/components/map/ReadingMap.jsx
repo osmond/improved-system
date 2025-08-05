@@ -83,14 +83,14 @@ export default function ReadingMap() {
   }
 
   // Aggregate locations by region (US states or world countries)
-  const choropleth = useMemo(() => {
+  const { data: choropleth, counts } = useMemo(() => {
     const states = feature(statesTopo, statesTopo.objects.states);
     const countries = feature(worldTopo, worldTopo.objects.countries);
     const features = [
       ...countries.features.filter((f) => f.id !== '840'),
       ...states.features,
     ];
-    const counts = {};
+    const titleSets = {};
     filtered.forEach((loc) => {
       const point = [loc.longitude, loc.latitude];
       let region = states.features.find((s) => geoContains(s, point));
@@ -99,28 +99,32 @@ export default function ReadingMap() {
       }
       if (region) {
         const name = region.properties.name;
-        counts[name] = (counts[name] || 0) + 1;
+        if (!titleSets[name]) titleSets[name] = new Set();
+        titleSets[name].add(loc.title);
       }
     });
+    const counts = {};
+    Object.entries(titleSets).forEach(([name, set]) => {
+      counts[name] = set.size;
+    });
     return {
-      type: 'FeatureCollection',
-      features: features.map((f) => ({
-        ...f,
-        properties: {
-          ...f.properties,
-          count: counts[f.properties.name] || 0,
-        },
-      })),
+      data: {
+        type: 'FeatureCollection',
+        features: features.map((f) => ({
+          ...f,
+          properties: {
+            ...f.properties,
+            count: counts[f.properties.name] || 0,
+          },
+        })),
+      },
+      counts,
     };
   }, [filtered]);
 
   const maxCount = useMemo(
-    () =>
-      Math.max(
-        ...choropleth.features.map((f) => f.properties.count || 0),
-        0
-      ),
-    [choropleth]
+    () => Math.max(...Object.values(counts), 0),
+    [counts]
   );
 
   const colorScale = useMemo(
