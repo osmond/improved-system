@@ -28,4 +28,16 @@ describe("Button", () => {
     expect(button.className).toMatch(/border-input/);
     expect(button.className).toMatch(/h-11/);
   });
+
+  it("merges additional classes", () => {
+    render(<Button className="custom">custom</Button>);
+    const button = screen.getByRole("button");
+    expect(button.className).toMatch(/custom/);
+  });
+
+  it("forwards refs", () => {
+    const ref = React.createRef<HTMLButtonElement>();
+    render(<Button ref={ref}>ref</Button>);
+    expect(ref.current).toBeInstanceOf(HTMLButtonElement);
+  });
 });
