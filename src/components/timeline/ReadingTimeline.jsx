@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useMemo } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime } from 'd3-scale';
 import { brushX } from 'd3-brush';
@@ -7,12 +7,27 @@ import { timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
 
 const WIDTH = 600;
-const HEIGHT = 40;
+const BAR_HEIGHT = 30;
+const LANE_PADDING = 5;
+const LANE_HEIGHT = BAR_HEIGHT + LANE_PADDING;
 const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 20;
 
 export default function ReadingTimeline({ sessions = [] }) {
   const ref = useRef(null);
+
+  const laneMap = useMemo(() => {
+    const map = new Map();
+    sessions.forEach((s) => {
+      if (!map.has(s.asin)) {
+        map.set(s.asin, map.size);
+      }
+    });
+    return map;
+  }, [sessions]);
+
+  const lanes = laneMap.size || 1;
+  const height = lanes * LANE_HEIGHT + LANE_PADDING;
 
   useEffect(() => {
     const svg = select(ref.current);
@@ -23,6 +38,7 @@ export default function ReadingTimeline({ sessions = [] }) {
       ...s,
       startDate: new Date(s.start),
       endDate: new Date(s.end),
+      lane: laneMap.get(s.asin),
     }));
     const longest = parsed.reduce((a, b) => (a.duration > b.duration ? a : b));
     const shortest = parsed.reduce((a, b) => (a.duration < b.duration ? a : b));
@@ -31,13 +47,13 @@ export default function ReadingTimeline({ sessions = [] }) {
     const initialDomain = [min, max];
     const x = scaleTime().domain(initialDomain).range([0, WIDTH]);
 
-    svg.attr('viewBox', `0 0 ${WIDTH} ${HEIGHT + BRUSH_HEIGHT + AXIS_HEIGHT}`);
+    svg.attr('viewBox', `0 0 ${WIDTH} ${height + BRUSH_HEIGHT + AXIS_HEIGHT}`);
 
     const barsG = svg.append('g').attr('transform', `translate(0,${BRUSH_HEIGHT})`);
     const axisG = svg
       .append('g')
       .attr('class', 'x-axis')
-      .attr('transform', `translate(0,${BRUSH_HEIGHT + HEIGHT})`);
+      .attr('transform', `translate(0,${BRUSH_HEIGHT + height})`);
     const xAxis = axisBottom(x)
       .ticks(timeMonth.every(1))
       .tickFormat(timeFormat('%b'));
@@ -51,9 +67,9 @@ export default function ReadingTimeline({ sessions = [] }) {
         .enter()
         .append('rect')
         .attr('x', (d) => x(d.startDate))
-        .attr('y', 5)
+        .attr('y', (d) => d.lane * LANE_HEIGHT + LANE_PADDING)
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
-        .attr('height', 30)
+        .attr('height', BAR_HEIGHT)
         .attr('fill', 'steelblue');
 
       bars
@@ -102,12 +118,12 @@ export default function ReadingTimeline({ sessions = [] }) {
 
     // expose brush for tests
     ref.current.__brush = brush;
-  }, [sessions]);
+  }, [sessions, laneMap, height]);
 
   return (
     <svg
       ref={ref}
-      style={{ width: '100%', height: HEIGHT + BRUSH_HEIGHT + AXIS_HEIGHT }}
+      style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
     />
   );
 }

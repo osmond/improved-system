@@ -23,6 +23,25 @@ const sessions = [
   },
 ];
 
+const overlapping = [
+  {
+    start: '2025-01-01T00:00:00Z',
+    end: '2025-01-01T00:30:00Z',
+    asin: 'B001',
+    title: 'Overlap 1',
+    duration: 20,
+    highlights: 1,
+  },
+  {
+    start: '2025-01-01T00:15:00Z',
+    end: '2025-01-01T00:45:00Z',
+    asin: 'B002',
+    title: 'Overlap 2',
+    duration: 25,
+    highlights: 3,
+  },
+];
+
 describe('ReadingTimeline', () => {
   it('renders an svg element with a brush', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
@@ -59,5 +78,15 @@ describe('ReadingTimeline', () => {
     expect(ticks.length).toBeGreaterThan(0);
     expect(svg.querySelector('.annotation-longest')).toBeInTheDocument();
     expect(svg.querySelector('.annotation-shortest')).toBeInTheDocument();
+  });
+
+  it('places overlapping sessions in distinct vertical positions', () => {
+    const { container } = render(<ReadingTimeline sessions={overlapping} />);
+    const svg = container.querySelector('svg');
+    const rects = svg.querySelectorAll('rect[fill="steelblue"]');
+    expect(rects.length).toBe(2);
+    const y1 = rects[0].getAttribute('y');
+    const y2 = rects[1].getAttribute('y');
+    expect(y1).not.toBe(y2);
   });
 });
