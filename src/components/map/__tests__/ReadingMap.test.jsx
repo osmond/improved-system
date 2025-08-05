@@ -21,6 +21,18 @@ vi.mock('react-leaflet', () => {
   };
 });
 
+vi.mock('leaflet', () => {
+  const control = () => ({
+    onAdd: () => {},
+    addTo: () => {},
+    remove: () => {},
+  });
+  const DomUtil = {
+    create: () => ({ style: {}, innerHTML: '' }),
+  };
+  return { __esModule: true, default: { control, DomUtil } };
+});
+
 vi.mock('react-leaflet-markercluster', () => ({
   __esModule: true,
   default: ({ children }) => <div>{children}</div>,
