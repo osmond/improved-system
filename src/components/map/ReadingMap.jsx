@@ -7,6 +7,7 @@ import {
   GeoJSON,
   useMap,
 } from 'react-leaflet';
+import L from 'leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
 import HeatmapLayer from './HeatmapLayer';
 import { feature } from 'topojson-client';
@@ -101,6 +102,45 @@ export default function ReadingMap() {
         map.off('zoomend', update);
       };
     }, [map, onZoom]);
+    return null;
+  }
+
+  function Legend({ colorScale, maxCount }) {
+    const map = useMap();
+    useEffect(() => {
+      const legend = L.control({ position: 'bottomright' });
+      legend.onAdd = () => {
+        const div = L.DomUtil.create('div', 'legend');
+        div.style.background = 'white';
+        div.style.padding = '6px 8px';
+        div.style.font = '12px/14px Arial, Helvetica, sans-serif';
+        div.style.boxShadow = '0 0 15px rgba(0,0,0,0.2)';
+        div.style.borderRadius = '5px';
+        const grades = maxCount
+          ? Array.from({ length: 5 }, (_, i) =>
+              Math.round((i * maxCount) / 5)
+            )
+          : [0];
+        grades.push(maxCount);
+        const labels = [];
+        for (let i = 0; i < grades.length - 1; i++) {
+          const from = grades[i];
+          const to = grades[i + 1];
+          const color = colorScale((from + to) / 2);
+          labels.push(
+            `<i style="background:${color}; width: 18px; height: 18px; float: left; margin-right: 8px; opacity: 0.7"></i> ${from}${
+              to ? `&ndash;${to}` : ''
+            }`
+          );
+        }
+        div.innerHTML = labels.join('<br>');
+        return div;
+      };
+      legend.addTo(map);
+      return () => {
+        legend.remove();
+      };
+    }, [map, colorScale, maxCount]);
     return null;
   }
 
@@ -295,6 +335,7 @@ export default function ReadingMap() {
             fillOpacity: 0.7,
           })}
         />
+        <Legend colorScale={colorScale} maxCount={maxCount} />
         {computedMode === 'heatmap' && <HeatmapLayer points={points} />}
         {computedMode === 'cluster' && (
           <MarkerClusterGroup>
