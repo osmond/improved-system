@@ -17,6 +17,18 @@ vi.mock('recharts', async () => {
 })
 
 describe('CorrelationRippleMatrix', () => {
+  beforeEach(() => {
+    const root = document.documentElement as HTMLElement
+    root.style.setProperty('--chart-1', '210 100% 45%')
+    root.style.setProperty('--chart-2', '214 90% 50%')
+    root.style.setProperty('--chart-3', '218 80% 55%')
+    root.style.setProperty('--chart-8', '238 90% 60%')
+    root.style.setProperty('--chart-9', '242 80% 65%')
+    root.style.setProperty('--chart-10', '246 70% 70%')
+    root.style.setProperty('--background', '0 0% 100%')
+    root.style.setProperty('--foreground', '222.2 84% 4.9%')
+    root.style.setProperty('--border', '214.3 31.8% 91.4%')
+  })
   it('shows detail panel on cell click', async () => {
     const cell = (v: number) => ({ value: v, n: 10, p: 0.01 })
     const matrix = [
@@ -82,8 +94,8 @@ describe('CorrelationRippleMatrix', () => {
 
     const legend = container.querySelector('[data-testid="legend-gradient"]') as HTMLDivElement
     const bg = legend.style.background.replace(/\s/g, '')
-    expect(bg).toContain('rgb(0,68,27)')
-    expect(bg).toContain('rgb(64,0,75)')
+    expect(bg).toContain('rgb(48,116,232)')
+    expect(bg).toContain('rgb(61,67,245)')
   })
 
   it('supports viridis palette', () => {
@@ -104,8 +116,8 @@ describe('CorrelationRippleMatrix', () => {
 
     const legend = container.querySelector('[data-testid="legend-gradient"]') as HTMLDivElement
     const bg = legend.style.background.replace(/\s/g, '')
-    expect(bg).toContain('#440154')
-    expect(bg).toContain('#fde725')
+    expect(bg).toContain('rgb(13,112,242)')
+    expect(bg).toContain('rgb(99,94,237)')
   })
 
   it('respects displayMode for lower triangle', () => {

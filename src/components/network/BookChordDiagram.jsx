@@ -3,7 +3,6 @@ import { select } from 'd3-selection';
 import { chord, ribbon } from 'd3-chord';
 import { arc } from 'd3-shape';
 import { scaleOrdinal } from 'd3-scale';
-import { schemeTableau10 } from 'd3-scale-chromatic';
 import graphData from '@/data/kindle/book-graph.json';
 
 function buildMatrix(nodes, links) {
@@ -35,7 +34,11 @@ export default function BookChordDiagram({ data = graphData }) {
 
     const matrix = buildMatrix(data.nodes, data.links);
     const chords = chord().padAngle(0.05)(matrix);
-    const color = scaleOrdinal(schemeTableau10);
+    const chartColors = Array.from(
+      { length: 10 },
+      (_, i) => `hsl(var(--chart-${i + 1}))`
+    );
+    const color = scaleOrdinal().range(chartColors);
 
     const g = svg
       .append('g')

@@ -13,12 +13,7 @@ import {
   Line,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
-import {
-  interpolateRdBu,
-  interpolatePRGn,
-  interpolateViridis,
-  interpolateMagma,
-} from "d3-scale-chromatic";
+import { interpolateHsl } from "d3-interpolate";
 import { rgb } from "d3-color";
 import CorrelationDetails, {
   type CorrelationDrilldown,
@@ -58,13 +53,6 @@ interface CellData extends CorrelationCell {
 
 type PaletteOption = "default" | "colorblind" | "viridis" | "magma";
 
-const PALETTE_INTERPOLATORS: Record<PaletteOption, (t: number) => string> = {
-  default: (t) => interpolateRdBu(1 - t),
-  colorblind: (t) => interpolatePRGn(1 - t),
-  viridis: interpolateViridis,
-  magma: interpolateMagma,
-};
-
 const DEFAULT_CELL_SIZE = 24;
 
 /**
@@ -79,8 +67,26 @@ function createColorScale(
   maxValue = 1,
   palette: PaletteOption = "default",
 ) {
-  const interpolator =
-    PALETTE_INTERPOLATORS[palette] ?? PALETTE_INTERPOLATORS.default;
+  const style = getComputedStyle(document.documentElement);
+  const get = (n: number) =>
+    `hsl(${style
+      .getPropertyValue(`--chart-${n}`)
+      .trim()
+      .replace(/\s+/g, ',')})`;
+  const [negIdx, posIdx] =
+    {
+      default: [1, 10],
+      colorblind: [3, 8],
+      viridis: [2, 9],
+      magma: [4, 6],
+    }[palette] || [1, 10];
+  const neg = get(negIdx);
+  const pos = get(posIdx);
+  const neutral = `hsl(var(--background))`;
+  const interpolator = (t: number) =>
+    t < 0.5
+      ? interpolateHsl(neg, neutral)(t * 2)
+      : interpolateHsl(neutral, pos)((t - 0.5) * 2);
 
   return scaleDiverging(interpolator)
     .domain([minValue, 0, maxValue])
@@ -107,7 +113,9 @@ function wrapText(label: string, maxChars = 10) {
 function getTextColor(background: string) {
   const { r, g, b } = rgb(background);
   const luminance = (0.2126 * r + 0.7152 * g + 0.0722 * b) / 255;
-  return luminance > 0.5 ? "#000" : "#fff";
+  return luminance > 0.5
+    ? "hsl(var(--foreground))"
+    : "hsl(var(--background))";
 }
 
 function generateInsight(value: number) {
@@ -307,7 +315,11 @@ export default function CorrelationRippleMatrix({
                   y={0}
                   width={g.size * cellSize}
                   height={labels.length * cellSize}
-                  fill={i % 2 === 0 ? "#000" : "#fff"}
+                  fill={
+                    i % 2 === 0
+                      ? "hsl(var(--foreground))"
+                      : "hsl(var(--background))"
+                  }
                   opacity={0.03}
                 />
                 <rect
@@ -315,7 +327,11 @@ export default function CorrelationRippleMatrix({
                   y={g.start * cellSize}
                   width={labels.length * cellSize}
                   height={g.size * cellSize}
-                  fill={i % 2 === 0 ? "#000" : "#fff"}
+                  fill={
+                    i % 2 === 0
+                      ? "hsl(var(--foreground))"
+                      : "hsl(var(--background))"
+                  }
                   opacity={0.03}
                 />
               </g>
@@ -327,7 +343,7 @@ export default function CorrelationRippleMatrix({
                   x2={g.start * cellSize}
                   y1={0}
                   y2={labels.length * cellSize}
-                  stroke="#bbb"
+                  stroke="hsl(var(--border))"
                   strokeWidth={1}
                 />
                 <line
@@ -335,7 +351,7 @@ export default function CorrelationRippleMatrix({
                   x2={labels.length * cellSize}
                   y1={g.start * cellSize}
                   y2={g.start * cellSize}
-                  stroke="#bbb"
+                  stroke="hsl(var(--border))"
                   strokeWidth={1}
                 />
               </g>
@@ -407,7 +423,7 @@ export default function CorrelationRippleMatrix({
                     height={cellSize}
                     fill={fillColor}
                     radius={4}
-                    stroke={cellGap > 0 ? "#f0f0f0" : undefined}
+                    stroke={cellGap > 0 ? "hsl(var(--border))" : undefined}
                     strokeWidth={cellGap}
                     opacity={opacity}
                     onClick={() => handleCellClick(payload as CellData)}

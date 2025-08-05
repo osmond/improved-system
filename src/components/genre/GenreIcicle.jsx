@@ -2,7 +2,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { hierarchy, partition } from 'd3-hierarchy';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
 import { hsl } from 'd3-color';
 import { interpolate } from 'd3-interpolate';
 import 'd3-transition';
@@ -43,7 +42,15 @@ export default function GenreIcicle({ data }) {
     partition().size([WIDTH, HEIGHT])(root);
     setCurrentNode(root);
 
-    const color = scaleOrdinal(schemeCategory10);
+    const style = getComputedStyle(document.documentElement);
+    const chartColors = Array.from({ length: 10 }, (_, i) => {
+      const val = style
+        .getPropertyValue(`--chart-${i + 1}`)
+        .trim()
+        .replace(/\s+/g, ',');
+      return `hsl(${val})`;
+    });
+    const color = scaleOrdinal().range(chartColors);
 
     const getColor = (d) => {
       if (d.color) return d.color;

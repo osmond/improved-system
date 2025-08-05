@@ -20,6 +20,12 @@ import { hsl as d3hsl } from 'd3-color';
     ],
   };
 
+  beforeEach(() => {
+    const root = document.documentElement;
+    root.style.setProperty('--chart-1', '210 100% 45%');
+    root.style.setProperty('--chart-2', '214 90% 50%');
+  });
+
     it('updates breadcrumb and zooms on interactions', async () => {
     const user = userEvent.setup();
 
