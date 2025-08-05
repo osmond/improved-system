@@ -37,7 +37,9 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export default function ChartRadarDefault() {
+export default function ChartRadarDefault({
+  random = Math.random,
+}: { random?: () => number } = {}) {
   return (
     <Card>
       <CardHeader className='items-center pb-4'>
@@ -63,7 +65,7 @@ export default function ChartRadarDefault() {
       </CardContent>
       <CardFooter className='flex-col gap-2 text-sm'>
         <div className='flex items-center gap-2 leading-none font-medium'>
-          {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+          {generateTrendMessage(random)} <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground flex items-center gap-2 leading-none'>
           January - June 2024

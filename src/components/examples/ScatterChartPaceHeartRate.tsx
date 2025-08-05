@@ -38,7 +38,9 @@ const chartConfig = {
   hr: { label: "Heart Rate" },
 } as const;
 
-export default function ScatterChartPaceHeartRate() {
+export default function ScatterChartPaceHeartRate({
+  random = Math.random,
+}: { random?: () => number } = {}) {
   return (
     <Card>
       <CardHeader>
@@ -59,7 +61,7 @@ export default function ScatterChartPaceHeartRate() {
         </ChartContainer>
       </CardContent>
       <CardFooter className="flex items-center gap-2 text-sm">
-        {generateTrendMessage()} <TrendingUp className="h-4 w-4" />
+        {generateTrendMessage(random)} <TrendingUp className="h-4 w-4" />
       </CardFooter>
     </Card>
   );
