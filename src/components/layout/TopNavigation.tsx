@@ -1,11 +1,19 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { NavLink } from "react-router-dom";
 import { Menu } from "lucide-react";
 import { dashboardRoutes } from "@/routes";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger, SheetClose } from "@/ui/sheet";
 
 export default function TopNavigation() {
   const [open, setOpen] = useState(false);
+  const isMobile = useIsMobile();
+
+  useEffect(() => {
+    if (!isMobile) {
+      setOpen(false);
+    }
+  }, [isMobile]);
 
   return (
     <nav className="flex items-center">
