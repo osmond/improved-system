@@ -30,6 +30,7 @@ import type { TooltipProps } from "recharts"
 import { computeClusterStability } from "@/lib/clusterStability"
 import { useSessionInsights } from "@/hooks/useSessionInsights"
 import { computeClusterMetrics } from "@/hooks/useRunningSessions"
+import * as Collapsible from "@radix-ui/react-collapsible"
 
 const colors = [
   "var(--chart-1)",
@@ -374,6 +375,7 @@ export default function SessionSimilarityMap({
           <Scatter
             data={goodRuns}
             fill="hsl(var(--chart-6))"
+            animationDuration={300}
             shape={(props) => (
               <GoodRunSymbol
                 {...props}
@@ -408,7 +410,57 @@ export default function SessionSimilarityMap({
         Points close together represent runs with similar pace, heart rate,
         weather, and time.
       </p>
-      <div className="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <ul className="sr-only" aria-label="Selected runs">
+        {filtered.map((s) => (
+          <li key={s.id}>
+            {`${new Date(s.start).toLocaleDateString()}: pace ${s.pace.toFixed(
+              2,
+            )} Δ ${s.paceDelta.toFixed(2)}`}
+          </li>
+        ))}
+      </ul>
+      <div className="mt-4 sm:hidden space-y-2">
+        {clusters.map((c) => {
+          const clusterData = filtered.filter((d) => d.cluster === c)
+          const open = activeCluster === c
+          return (
+            <Collapsible.Root
+              key={c}
+              open={open}
+              onOpenChange={(o) => setActiveCluster(o ? c : null)}
+              className={
+                activeCluster === null || activeCluster === c
+                  ? ""
+                  : "opacity-50"
+              }
+            >
+              <Collapsible.Trigger className="w-full flex justify-between p-2 text-sm font-medium focus:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+                {clusterConfig[c].label}
+              </Collapsible.Trigger>
+              <Collapsible.Content>
+                <ClusterCard
+                  data={clusterData}
+                  color={clusterConfig[c].color}
+                  stability={
+                    clusterDetails.find((d) => d.cluster === c)?.stability || 0
+                  }
+                  label={clusterConfig[c].label}
+                  centroid={
+                    clusterDetails.find((d) => d.cluster === c)?.centroidVec
+                  }
+                  goodDay={
+                    clusterDetails.find((d) => d.cluster === c)?.goodDay
+                  }
+                  open={open}
+                  onOpenChange={(o) => setActiveCluster(o ? c : null)}
+                  onSelect={() => setActiveCluster(c)}
+                />
+              </Collapsible.Content>
+            </Collapsible.Root>
+          )
+        })}
+      </div>
+      <div className="mt-4 hidden sm:grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {clusters.map((c) => {
           const clusterData = filtered.filter((d) => d.cluster === c)
           return (
@@ -531,6 +583,7 @@ function ClusterBackground({
                 stroke={color}
                 fill={color}
                 fillOpacity={dimmed ? 0.05 : 0.1}
+                className="transition-all duration-300"
               />
             )}
           </g>
@@ -645,6 +698,7 @@ function RunSymbol({ cx, cy, payload, fill, onSelect, selected, orderMap }: any)
         stroke={fill}
         strokeOpacity={conf}
         strokeWidth={2}
+        style={{ transition: "cx 0.3s, cy 0.3s" }}
       />
       <circle
         cx={cx}
@@ -655,6 +709,9 @@ function RunSymbol({ cx, cy, payload, fill, onSelect, selected, orderMap }: any)
         strokeWidth={1 + conf * 2}
         role="button"
         tabIndex={0}
+        aria-label={`${new Date(payload.start).toLocaleDateString()}: pace ${payload.pace.toFixed(2)} min/mi, Δ ${payload.paceDelta.toFixed(2)}`}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        style={{ transition: "cx 0.3s, cy 0.3s" }}
         onClick={() => onSelect(payload)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
@@ -696,6 +753,7 @@ function GoodRunSymbol({
         stroke={fill}
         strokeOpacity={conf}
         strokeWidth={2}
+        style={{ transition: "cx 0.3s, cy 0.3s" }}
       />
       <circle
         cx={cx}
@@ -706,6 +764,9 @@ function GoodRunSymbol({
         strokeWidth={1 + conf * 2}
         role="button"
         tabIndex={0}
+        aria-label={`${new Date(payload.start).toLocaleDateString()}: pace ${payload.pace.toFixed(2)} min/mi, Δ ${payload.paceDelta.toFixed(2)}`}
+        className="focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        style={{ transition: "cx 0.3s, cy 0.3s" }}
         onClick={() => onSelect(payload)}
         onKeyDown={(e) => {
           if (e.key === "Enter" || e.key === " ") {
