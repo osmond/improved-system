@@ -62,6 +62,15 @@ describe('GenreSankey', () => {
     });
   });
 
+  it('renders highest-outflow genre first', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
+    });
+    const texts = container.querySelectorAll('text');
+    expect(texts[0].textContent).toBe('Literature & Fiction');
+  });
+
   it('shows a tooltip on link hover', async () => {
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
