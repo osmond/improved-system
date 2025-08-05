@@ -113,10 +113,28 @@ function YearlyHeatmap({ data, maxMinutes }) {
       day: 'numeric',
       year: 'numeric',
     });
-    const dayRect = React.cloneElement(element, { 'data-date': dateKey });
+    const dayRect = React.cloneElement(element, {
+      'data-date': dateKey,
+      tabIndex: 0,
+      'aria-label': `${formatted}: ${minutes} minutes`,
+    });
     const cell = (
       <Tooltip>
-        <TooltipTrigger asChild>{dayRect}</TooltipTrigger>
+        <TooltipTrigger
+          asChild
+          onFocus={(e) =>
+            e.target.dispatchEvent(
+              new MouseEvent('mouseover', { bubbles: true })
+            )
+          }
+          onBlur={(e) =>
+            e.target.dispatchEvent(
+              new MouseEvent('mouseout', { bubbles: true })
+            )
+          }
+        >
+          {dayRect}
+        </TooltipTrigger>
         <TooltipContent>
           <div className="flex flex-col">
             <span>{formatted}</span>
