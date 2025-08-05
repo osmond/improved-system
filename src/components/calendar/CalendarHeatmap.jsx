@@ -9,7 +9,13 @@ import {
   TooltipProvider,
 } from '@/ui/tooltip';
 import { Skeleton } from '@/ui/skeleton';
-import { getISOWeek, getISOWeekYear, getMonth, getYear } from 'date-fns';
+import {
+  getISOWeek,
+  getISOWeekYear,
+  getMonth,
+  getYear,
+  getISODay,
+} from 'date-fns';
 
 const monthNames = [
   'Jan',
@@ -62,7 +68,9 @@ function YearlyHeatmap({ data, maxMinutes }) {
   const endDate = new Date(Math.max(...dates));
 
   const startWithEmptyDays = new Date(startDate);
-  startWithEmptyDays.setDate(startWithEmptyDays.getDate() - startDate.getDay());
+  startWithEmptyDays.setDate(
+    startWithEmptyDays.getDate() - ((getISODay(startDate) + 6) % 7)
+  );
 
   const dataByMonth = data.reduce((acc, d) => {
     const dt = new Date(d.date);
@@ -91,7 +99,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     const dt = new Date(d.date);
     const weekKey = `${getISOWeekYear(dt)}-${getISOWeek(dt)}`;
     if (!weekSeries[weekKey]) weekSeries[weekKey] = Array(7).fill(0);
-    const dayIdx = (dt.getDay() + 6) % 7; // Monday=0
+    const dayIdx = getISODay(dt) - 1; // Monday=0
     weekSeries[weekKey][dayIdx] = d.minutes;
   });
 
@@ -113,10 +121,28 @@ function YearlyHeatmap({ data, maxMinutes }) {
       day: 'numeric',
       year: 'numeric',
     });
-    const dayRect = React.cloneElement(element, { 'data-date': dateKey });
+    const dayRect = React.cloneElement(element, {
+      'data-date': dateKey,
+      tabIndex: 0,
+      'aria-label': `${formatted}: ${minutes} minutes`,
+    });
     const cell = (
       <Tooltip>
-        <TooltipTrigger asChild>{dayRect}</TooltipTrigger>
+        <TooltipTrigger
+          asChild
+          onFocus={(e) =>
+            e.target.dispatchEvent(
+              new MouseEvent('mouseover', { bubbles: true })
+            )
+          }
+          onBlur={(e) =>
+            e.target.dispatchEvent(
+              new MouseEvent('mouseout', { bubbles: true })
+            )
+          }
+        >
+          {dayRect}
+        </TooltipTrigger>
         <TooltipContent>
           <div className="flex flex-col">
             <span>{formatted}</span>
@@ -129,7 +155,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     if (date.getDate() === 1) {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
       const size = Number(element.props.height) || 10;
-      const topY = element.props.y - date.getDay() * size;
+      const topY = element.props.y - (getISODay(date) - 1) * size;
       const bottomY = topY + size * 7 + 12;
       return (
         <g key={dateKey}>
@@ -152,7 +178,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     <TooltipProvider>
       <div>
         <Heatmap
-          startDate={startDate}
+          startDate={startWithEmptyDays}
           endDate={endDate}
           values={values}
           classForValue={classForValue}

@@ -1,6 +1,12 @@
 import React from 'react';
-import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
 import ReadingMap from '../ReadingMap';
 
 vi.mock('react-leaflet', () => {
@@ -9,7 +15,7 @@ vi.mock('react-leaflet', () => {
   return {
     MapContainer: ({ children }) => <div data-testid="map">{children}</div>,
     TileLayer: () => null,
-    CircleMarker: ({ children }) => <div>{children}</div>,
+    CircleMarker: ({ children }) => <div data-testid="marker">{children}</div>,
     GeoJSON: () => null,
     Tooltip: ({ children }) => <div>{children}</div>,
     LayersControl,
@@ -36,12 +42,12 @@ vi.mock('leaflet', () => {
 
 vi.mock('react-leaflet-markercluster', () => ({
   __esModule: true,
-  default: ({ children }) => <div>{children}</div>,
+  default: ({ children }) => <div data-testid="cluster">{children}</div>,
 }));
 
 vi.mock('../HeatmapLayer', () => ({
   __esModule: true,
-  default: () => null,
+  default: () => <div data-testid="heatmap" />,
 }));
 
 vi.mock('@/services/locationData', () => ({
@@ -49,9 +55,21 @@ vi.mock('@/services/locationData', () => ({
     Promise.resolve([
       {
         start: '2020-01-01T00:00:00Z',
-        title: 'Test',
+        title: 'Alpha',
         latitude: 0,
         longitude: 0,
+      },
+      {
+        start: '2021-06-01T00:00:00Z',
+        title: 'Beta',
+        latitude: 1,
+        longitude: 1,
+      },
+      {
+        start: '2022-01-01T00:00:00Z',
+        title: 'Gamma',
+        latitude: 2,
+        longitude: 2,
       },
     ]),
 }));
@@ -62,5 +80,83 @@ describe('ReadingMap', () => {
     await waitFor(() => expect(screen.getByTestId('map')).toBeTruthy());
     expect(screen.getByRole('slider')).toBeTruthy();
     expect(screen.getByRole('button')).toBeTruthy();
+  });
+
+  it('filters locations by date and title', async () => {
+    const { container } = render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: 2 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(3)
+    );
+
+    const dateInputs = container.querySelectorAll('input[type="date"]');
+    const [startInput] = dateInputs;
+    fireEvent.change(startInput, { target: { value: '2021-01-01' } });
+    fireEvent.change(slider, { target: { value: 1 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(2)
+    );
+
+    const titleInput = screen.getByPlaceholderText('Book title');
+    fireEvent.change(titleInput, { target: { value: 'Gamma' } });
+    fireEvent.change(slider, { target: { value: 0 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(1)
+    );
+  });
+
+  it('plays through locations when toggling play', async () => {
+    render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    expect(screen.getAllByTestId('marker')).toHaveLength(1);
+
+    vi.useFakeTimers();
+    const button = screen.getByRole('button');
+    fireEvent.click(button); // play
+
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getAllByTestId('marker')).toHaveLength(2);
+
+    fireEvent.click(button); // pause
+    await act(async () => {
+      vi.advanceTimersByTime(1000);
+    });
+
+    expect(screen.getAllByTestId('marker')).toHaveLength(2);
+    vi.useRealTimers();
+  });
+
+  it('switches map modes', async () => {
+    const { container } = render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: 2 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(3)
+    );
+
+    const select = container.querySelector('select');
+
+    fireEvent.change(select, { target: { value: 'markers' } });
+    expect(screen.getAllByTestId('marker').length).toBeGreaterThan(0);
+    expect(screen.queryByTestId('cluster')).toBeNull();
+    expect(screen.queryByTestId('heatmap')).toBeNull();
+
+    fireEvent.change(select, { target: { value: 'cluster' } });
+    expect(screen.getByTestId('cluster')).toBeTruthy();
+    expect(screen.queryByTestId('heatmap')).toBeNull();
+
+    fireEvent.change(select, { target: { value: 'heatmap' } });
+    expect(screen.getByTestId('heatmap')).toBeTruthy();
+    expect(screen.queryAllByTestId('marker')).toHaveLength(0);
+    expect(screen.queryByTestId('cluster')).toBeNull();
   });
 });

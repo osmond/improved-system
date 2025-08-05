@@ -74,6 +74,17 @@ describe('CalendarHeatmap', () => {
     });
   });
 
+  it('aligns weeks starting on Monday', () => {
+    const { container } = render(<CalendarHeatmap />);
+    const monday = container.querySelector('rect[data-date="2024-01-01"]');
+    const sunday = container.querySelector('rect[data-date="2024-01-07"]');
+    expect(monday).not.toBeNull();
+    expect(sunday).not.toBeNull();
+    const yMonday = parseFloat(monday.getAttribute('y'));
+    const ySunday = parseFloat(sunday.getAttribute('y'));
+    expect(yMonday).toBeLessThan(ySunday);
+  });
+
   it('shows tooltip with date, minutes, and sparkline', async () => {
     const user = userEvent.setup();
     const { container } = render(<CalendarHeatmap />);
@@ -84,6 +95,24 @@ describe('CalendarHeatmap', () => {
     within(tooltip).getByText('Jan 2, 2024');
     within(tooltip).getByText('10 min');
     within(tooltip).getByTestId('sparkline');
+  });
+
+  it('shows tooltip when navigating with keyboard', async () => {
+    const user = userEvent.setup();
+    render(<CalendarHeatmap />);
+
+    const firstCell = screen.getByLabelText('Jan 1, 2024: 5 minutes');
+    while (document.activeElement !== firstCell) {
+      await user.tab();
+    }
+    let tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 1, 2024');
+    within(tooltip).getByText('5 min');
+
+    await user.tab();
+    tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 2, 2024');
+    within(tooltip).getByText('10 min');
   });
 
   it('renders separate heatmaps for each year', () => {

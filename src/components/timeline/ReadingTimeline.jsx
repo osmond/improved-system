@@ -88,16 +88,26 @@ export default function ReadingTimeline({ sessions = [] }) {
     const renderBars = (domain = initialDomain) => {
       x.domain(domain);
       barsG.selectAll('*').remove();
-      const bars = barsG
-        .selectAll('rect')
+      const barGroups = barsG
+        .selectAll('g')
         .data(parsedSessions)
         .enter()
+        .append('g')
+        .attr('role', 'group');
+
+      const bars = barGroups
         .append('rect')
         .attr('x', (d) => x(d.startDate))
         .attr('y', (d) => d.lane * LANE_HEIGHT + LANE_PADDING)
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
         .attr('height', BAR_HEIGHT)
-        .attr('fill', (d) => colorScale(d.genre || 'Unknown'));
+        .attr('fill', (d) => colorScale(d.genre || 'Unknown'))
+        .attr('tabindex', 0)
+        .attr(
+          'aria-label',
+          (d) =>
+            `${d.title}, ${d.duration.toFixed(1)} minutes, ${d.highlights} highlights`,
+        );
 
       bars
         .append('title')
