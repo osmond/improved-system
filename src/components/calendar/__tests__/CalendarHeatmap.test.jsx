@@ -48,15 +48,25 @@ describe('CalendarHeatmap', () => {
     const legend = getByTestId('reading-legend');
     expect(legend).not.toBeNull();
 
-      const rects = container.querySelectorAll('svg.react-calendar-heatmap rect');
-      expect(container.querySelector('rect.reading-scale-2')).not.toBeNull();
-      expect(container.querySelector('rect.reading-scale-3')).not.toBeNull();
-      expect(container.querySelector('rect.reading-scale-5')).not.toBeNull();
+    expect(container.querySelector('rect.reading-scale-2')).not.toBeNull();
+    expect(container.querySelector('rect.reading-scale-3')).not.toBeNull();
+    expect(container.querySelector('rect.reading-scale-5')).not.toBeNull();
 
-      const swatches = legend.querySelectorAll('div');
-      expect(swatches.length).toBe(5);
-      expect(swatches[0].classList.contains('reading-scale-1')).toBe(true);
-      expect(swatches[4].classList.contains('reading-scale-5')).toBe(true);
+    const swatches = legend.querySelectorAll('[data-legend-level]');
+    expect(swatches.length).toBe(5);
+    expect(
+      swatches[0].querySelector('div').classList.contains('reading-scale-1')
+    ).toBe(true);
+    expect(
+      swatches[4].querySelector('div').classList.contains('reading-scale-5')
+    ).toBe(true);
+    expect(legend.querySelector('[data-no-data]')).not.toBeNull();
+  });
+
+  it('renders month and quarter boundaries', () => {
+    const { container } = render(<CalendarHeatmap />);
+    expect(container.querySelector('line.month-boundary')).not.toBeNull();
+    expect(container.querySelector('line.quarter-boundary')).not.toBeNull();
   });
 
   it('renders month labels and totals', () => {

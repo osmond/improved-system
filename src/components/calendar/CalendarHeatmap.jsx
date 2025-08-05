@@ -174,8 +174,19 @@ function YearlyHeatmap({ data, maxMinutes }) {
       const size = Number(element.props.height) || 10;
       const topY = element.props.y - (getISODay(date) - 1) * size;
       const bottomY = topY + size * 7 + 12;
+      const lineX = element.props.x - 1;
+      const boundaryClass = `month-boundary${
+        date.getMonth() % 3 === 0 ? ' quarter-boundary' : ''
+      }`;
       return (
         <g key={dateKey}>
+          <line
+            x1={lineX}
+            y1={topY}
+            x2={lineX}
+            y2={bottomY - 12}
+            className={boundaryClass}
+          />
           <text x={element.props.x} y={topY - 2} className="text-xs">
             {monthNames[date.getMonth()]}
           </text>
@@ -189,7 +200,8 @@ function YearlyHeatmap({ data, maxMinutes }) {
     return <g key={dateKey}>{cell}</g>;
   };
 
-    const legendScale = [1, 2, 3, 4, 5];
+  const legendScale = [1, 2, 3, 4, 5];
+  const step = Math.ceil(maxMinutes / 5) || 1;
 
   return (
     <TooltipProvider>
@@ -203,14 +215,29 @@ function YearlyHeatmap({ data, maxMinutes }) {
           showMonthLabels={false}
         />
         <div
-          className="flex items-center gap-1 mt-2 text-xs"
+          className="flex flex-wrap items-center gap-2 mt-2 text-xs"
           data-testid="reading-legend"
         >
-          <span>Less</span>
-          {legendScale.map((level) => (
-            <div key={level} className={`w-3 h-3 reading-scale-${level}`} />
-          ))}
-          <span>More</span>
+          <div className="flex items-center gap-1" data-no-data>
+            <div className="w-3 h-3 border" />
+            <span>No data</span>
+          </div>
+          {legendScale.map((level) => {
+            const min = step * (level - 1);
+            const max = step * level;
+            return (
+              <div
+                key={level}
+                className="flex items-center gap-1"
+                data-legend-level
+              >
+                <div className={`w-3 h-3 reading-scale-${level}`} />
+                <span>
+                  {min}-{max} min
+                </span>
+              </div>
+            );
+          })}
         </div>
       </div>
     </TooltipProvider>
