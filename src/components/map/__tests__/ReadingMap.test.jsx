@@ -14,9 +14,22 @@ vi.mock('react-leaflet', () => {
     LayersControl,
     useMap: () => ({
       setView: () => {},
+      on: () => {},
+      off: () => {},
+      getZoom: () => 5,
     }),
   };
 });
+
+vi.mock('react-leaflet-markercluster', () => ({
+  __esModule: true,
+  default: ({ children }) => <div>{children}</div>,
+}));
+
+vi.mock('../HeatmapLayer', () => ({
+  __esModule: true,
+  default: () => null,
+}));
 
 describe('ReadingMap', () => {
   it('renders map with controls', async () => {
