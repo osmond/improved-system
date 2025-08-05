@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import Heatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import useDailyReading from '@/hooks/useDailyReading';
@@ -72,36 +72,53 @@ function YearlyHeatmap({ data, maxMinutes }) {
     startWithEmptyDays.getDate() - ((getISODay(startDate) + 6) % 7)
   );
 
-  const dataByMonth = data.reduce((acc, d) => {
-    const dt = new Date(d.date);
-    const key = `${getYear(dt)}-${getMonth(dt)}`;
-    if (!acc[key]) acc[key] = [];
-    acc[key].push(d);
-    return acc;
-  }, {});
+  const dataByMonth = useMemo(
+    () =>
+      data.reduce((acc, d) => {
+        const dt = new Date(d.date);
+        const key = `${getYear(dt)}-${getMonth(dt)}`;
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(d);
+        return acc;
+      }, {}),
+    [data, maxMinutes]
+  );
 
-  const monthTotals = Object.fromEntries(
-    Object.entries(dataByMonth).map(([key, arr]) => [
-      key,
-      arr.reduce((sum, item) => sum + item.minutes, 0),
-    ])
+  const monthTotals = useMemo(
+    () =>
+      Object.fromEntries(
+        Object.entries(dataByMonth).map(([key, arr]) => [
+          key,
+          arr.reduce((sum, item) => sum + item.minutes, 0),
+        ])
+      ),
+    [data, maxMinutes]
   );
 
   const values = data.map((d) => ({ date: d.date, count: d.minutes }));
 
-  const minutesByDate = data.reduce((acc, d) => {
-    acc[d.date] = d.minutes;
-    return acc;
-  }, {});
+  const minutesByDate = useMemo(
+    () =>
+      data.reduce((acc, d) => {
+        acc[d.date] = d.minutes;
+        return acc;
+      }, {}),
+    [data, maxMinutes]
+  );
 
-  const weekSeries = {};
-  data.forEach((d) => {
-    const dt = new Date(d.date);
-    const weekKey = `${getISOWeekYear(dt)}-${getISOWeek(dt)}`;
-    if (!weekSeries[weekKey]) weekSeries[weekKey] = Array(7).fill(0);
-    const dayIdx = getISODay(dt) - 1; // Monday=0
-    weekSeries[weekKey][dayIdx] = d.minutes;
-  });
+
+  const weekSeries = useMemo(() => {
+    const result = {};
+    data.forEach((d) => {
+      const dt = new Date(d.date);
+      const weekKey = `${getISOWeekYear(dt)}-${getISOWeek(dt)}`;
+      if (!result[weekKey]) result[weekKey] = Array(7).fill(0);
+      const dayIdx = (dt.getDay() + 6) % 7; // Monday=0
+      result[weekKey][dayIdx] = d.minutes;
+    });
+    return result;
+  }, [data, maxMinutes]);
+
 
     const classForValue = (value) => {
       if (!value || !value.count || maxMinutes === 0) return 'reading-scale-0';
