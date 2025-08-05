@@ -126,6 +126,14 @@ describe('ReadingTimeline', () => {
     expect(rects[1].getAttribute('fill')).toBe('hsl(var(--chart-2))');
   });
 
+  it('makes each bar focusable with an aria-label', () => {
+    const { container } = render(<ReadingTimeline sessions={sessions} />);
+    const svg = container.querySelector('svg');
+    const rects = svg.querySelectorAll('rect[tabindex="0"]');
+    expect(rects).toHaveLength(sessions.length);
+    expect(rects[0].getAttribute('aria-label')).toContain('Test Book 1');
+  });
+
   it('renders a legend for genres with matching colors', () => {
     const { getByRole } = render(<ReadingTimeline sessions={sessions} />);
     const list = getByRole('list', { name: /genres/i });
