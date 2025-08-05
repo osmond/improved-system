@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
-import { scaleTime, scaleOrdinal } from 'd3-scale';
+import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
 import { brushX } from 'd3-brush';
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
@@ -82,10 +82,14 @@ export default function ReadingTimeline({ sessions = [] }) {
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${BRUSH_HEIGHT + height})`);
     const xAxis = axisBottom(x)
-      .ticks(timeMonth.every(1))
+      .ticks(timeMonth.every(3))
       .tickFormat(timeFormat('%b'))
       .tickSize(-height)
       .tickSizeOuter(0);
+
+    const opacityScale = scaleLinear()
+      .domain([shortest.duration, longest.duration])
+      .range([0.3, 1]);
 
     const renderBars = (domain = initialDomain) => {
       x.domain(domain);
@@ -104,6 +108,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
         .attr('height', BAR_HEIGHT)
         .attr('fill', (d) => colorScale(d.genre || 'Unknown'))
+        .attr('fill-opacity', (d) => opacityScale(d.duration))
         .attr('tabindex', 0)
         .attr(
           'aria-label',

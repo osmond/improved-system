@@ -143,6 +143,15 @@ describe('ReadingTimeline', () => {
     expect(rects[1].getAttribute('fill')).toBe('hsl(var(--chart-2))');
   });
 
+  it('encodes duration using opacity', () => {
+    const { container } = render(<ReadingTimeline sessions={sessions} />);
+    const svg = container.querySelector('svg');
+    const rects = svg.querySelectorAll('rect[height="30"]');
+    const op1 = Number(rects[0].getAttribute('fill-opacity'));
+    const op2 = Number(rects[1].getAttribute('fill-opacity'));
+    expect(op2).toBeGreaterThan(op1);
+  });
+
   it('makes each bar focusable with an aria-label', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
