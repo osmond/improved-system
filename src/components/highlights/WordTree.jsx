@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { hierarchy, tree } from 'd3-hierarchy';
+import { hierarchy, tree, cluster } from 'd3-hierarchy';
 import { select } from 'd3-selection';
-import { linkHorizontal } from 'd3-shape';
+import { linkHorizontal, linkRadial } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import highlights from '@/data/kindle/highlights.json';
 
@@ -23,6 +23,7 @@ function getExpansions(word) {
 export default function WordTree() {
   const [keyword, setKeyword] = useState('');
   const [data, setData] = useState(null);
+  const [layoutType, setLayoutType] = useState('linear');
   const svgRef = useRef(null);
 
   useEffect(() => {
@@ -30,27 +31,61 @@ export default function WordTree() {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
     const root = hierarchy(data);
-    const layout = tree().nodeSize([24, 120]);
-    layout(root);
-    const link = linkHorizontal().x(d => d.y).y(d => d.x);
-    svg
-      .attr('viewBox', [-20, -20, 800, 400])
-      .selectAll('path')
-      .data(root.links())
-      .join('path')
-      .attr('fill', 'none')
-      .attr('stroke', 'var(--chart-network-link)')
-      .attr('d', link);
-    const node = svg
-      .selectAll('g')
-      .data(root.descendants())
-      .join('g')
-      .attr('transform', d => `translate(${d.y},${d.x})`)
-      .on('click', async (event, d) => {
-        const expansions = getExpansions(d.data.word);
-        d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
-        setData({ ...data });
-      });
+
+    let node, linkFn;
+
+    if (layoutType === 'radial') {
+      const radius = 180;
+      const layout = cluster().size([2 * Math.PI, radius]);
+      layout(root);
+      linkFn = linkRadial().angle(d => d.x).radius(d => d.y);
+      svg
+        .attr('viewBox', [-radius - 20, -radius - 20, (radius + 20) * 2, (radius + 20) * 2])
+        .selectAll('path')
+        .data(root.links())
+        .join('path')
+        .attr('fill', 'none')
+        .attr('stroke', 'var(--chart-network-link)')
+        .attr('d', linkFn);
+
+      node = svg
+        .selectAll('g')
+        .data(root.descendants())
+        .join('g')
+        .attr('transform', d => {
+          const x = d.y * Math.cos(d.x - Math.PI / 2);
+          const y = d.y * Math.sin(d.x - Math.PI / 2);
+          return `translate(${x},${y})`;
+        })
+        .on('click', async (event, d) => {
+          const expansions = getExpansions(d.data.word);
+          d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
+          setData({ ...data });
+        });
+    } else {
+      const layout = tree().nodeSize([24, 120]);
+      layout(root);
+      linkFn = linkHorizontal().x(d => d.y).y(d => d.x);
+      svg
+        .attr('viewBox', [-20, -20, 800, 400])
+        .selectAll('path')
+        .data(root.links())
+        .join('path')
+        .attr('fill', 'none')
+        .attr('stroke', 'var(--chart-network-link)')
+        .attr('d', linkFn);
+
+      node = svg
+        .selectAll('g')
+        .data(root.descendants())
+        .join('g')
+        .attr('transform', d => `translate(${d.y},${d.x})`)
+        .on('click', async (event, d) => {
+          const expansions = getExpansions(d.data.word);
+          d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
+          setData({ ...data });
+        });
+    }
 
     node.each(d => {
       if (d.parent) {
@@ -82,7 +117,7 @@ export default function WordTree() {
           .attr('width', scale(d.data.count))
           .attr('fill', 'var(--chart-wordtree-bar)');
       });
-  }, [data]);
+  }, [data, layoutType]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -102,8 +137,15 @@ export default function WordTree() {
         <button type="submit" className="px-2 py-1 border">
           Search
         </button>
+        <button
+          type="button"
+          className="px-2 py-1 border"
+          onClick={() => setLayoutType(layoutType === 'linear' ? 'radial' : 'linear')}
+        >
+          {layoutType === 'linear' ? 'Radial' : 'Linear'}
+        </button>
       </form>
-      <svg ref={svgRef} width={800} height={400}></svg>
+      <svg ref={svgRef} width={layoutType === 'linear' ? 800 : 400} height={400}></svg>
     </div>
   );
 }
