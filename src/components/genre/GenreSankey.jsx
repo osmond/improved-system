@@ -44,24 +44,23 @@ export default function GenreSankey() {
     const genres = Array.from(new Set(data.flatMap((d) => [d.source, d.target])));
 
     // compute outgoing totals per genre
-    const outflows = {};
-    data.forEach((d) => {
-      outflows[d.source] = (outflows[d.source] || 0) + d.count;
-      if (!(d.target in outflows)) outflows[d.target] = outflows[d.target] || 0;
-    });
+    const outflows = data.reduce((acc, { source, target, count }) => {
+      acc[source] = (acc[source] || 0) + count;
+      acc[target] = acc[target] || 0;
+      return acc;
+    }, {});
 
-    // sort genres by descending outflow
-    const sortedGenres = [...genres].sort(
-      (a, b) => (outflows[b] || 0) - (outflows[a] || 0),
-    );
+    // build nodes sorted by descending outflow
+    const nodes = genres
+      .map((name) => ({ name, outflow: outflows[name] || 0 }))
+      .sort((a, b) => b.outflow - a.outflow);
 
-    const nodes = sortedGenres.map((name) => ({
-      name,
-      outflow: outflows[name] || 0,
-    }));
+    const indexByName = Object.fromEntries(nodes.map((d, i) => [d.name, i]));
+
+    // rebuild links with indices matching sorted node order
     const links = data.map((d) => ({
-      source: sortedGenres.indexOf(d.source),
-      target: sortedGenres.indexOf(d.target),
+      source: indexByName[d.source],
+      target: indexByName[d.target],
       value: d.count,
       monthlyCounts: d.monthlyCounts || Array(12).fill(0),
     }));
@@ -69,7 +68,6 @@ export default function GenreSankey() {
     const { nodes: n, links: l } = sankey()
       .nodeWidth(15)
       .nodePadding(10)
-      .nodeSort((a, b) => b.outflow - a.outflow)
       .extent([
         [1, 1],
         [width - 1, height - 6],
@@ -83,7 +81,7 @@ export default function GenreSankey() {
       (_, i) => `hsl(var(--chart-${i + 1}))`
     );
     // reuse a single ordinal scale so nodes and their outgoing links share hues
-    const color = scaleOrdinal().domain(sortedGenres).range(chartColors);
+    const color = scaleOrdinal().domain(nodes.map((d) => d.name)).range(chartColors);
 
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 
