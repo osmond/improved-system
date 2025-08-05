@@ -22,12 +22,20 @@ function calculateGenreTransitions(sessions, genres = []) {
     const target = list[i + 1].genre;
     if (source === target) continue;
     const key = `${source}->${target}`;
-    map[key] = (map[key] || 0) + 1;
+    if (!map[key]) {
+      map[key] = {
+        count: 0,
+        monthlyCounts: Array(12).fill(0),
+      };
+    }
+    const month = new Date(list[i + 1].start).getUTCMonth();
+    map[key].count += 1;
+    map[key].monthlyCounts[month] += 1;
   }
 
-  return Object.entries(map).map(([key, count]) => {
+  return Object.entries(map).map(([key, value]) => {
     const [source, target] = key.split('->');
-    return { source, target, count };
+    return { source, target, count: value.count, monthlyCounts: value.monthlyCounts };
   });
 }
 

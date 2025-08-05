@@ -6,6 +6,7 @@ import transitions from '@/data/kindle/genre-transitions.json';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
+  const tooltipRef = useRef(null);
   const [data, setData] = useState([]);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
@@ -15,11 +16,21 @@ export default function GenreSankey() {
       `/api/kindle/genre-transitions?start=${start}&end=${end}`,
     );
     const json = await res.json();
-    setData(json);
+    setData(
+      json.map((d) => ({
+        ...d,
+        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+      })),
+    );
   };
 
   useEffect(() => {
-    setData(transitions);
+    setData(
+      transitions.map((d) => ({
+        ...d,
+        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+      })),
+    );
   }, []);
 
   useEffect(() => {
@@ -40,6 +51,7 @@ export default function GenreSankey() {
       source: genres.indexOf(d.source),
       target: genres.indexOf(d.target),
       value: d.count,
+      monthlyCounts: d.monthlyCounts || Array(12).fill(0),
     }));
 
     const { nodes: n, links: l } = sankey()
@@ -69,7 +81,32 @@ export default function GenreSankey() {
       .attr('d', sankeyLinkHorizontal())
       .attr('stroke', (d) => color(d.source.name))
       .attr('fill', 'none')
-      .attr('stroke-width', (d) => Math.max(1, d.width));
+      .attr('stroke-width', (d) => Math.max(1, d.width))
+      .on('mouseover', (event, d) => {
+        const tooltip = tooltipRef.current;
+        if (!tooltip) return;
+        const x = event.pageX || event.clientX;
+        const y = event.pageY || event.clientY;
+        tooltip.style.display = 'block';
+        tooltip.style.left = `${x + 10}px`;
+        tooltip.style.top = `${y + 10}px`;
+        const text = `${d.source.name} → ${d.target.name}: ${d.value} sessions`;
+        const counts = d.monthlyCounts || [];
+        const max = Math.max(...counts, 0);
+        const barWidth = 5;
+        const barHeight = 20;
+        const bars = counts
+          .map((c, i) => {
+            const h = max ? (c / max) * barHeight : 0;
+            return `<rect x="${i * barWidth}" y="${barHeight - h}" width="${barWidth - 1}" height="${h}" fill="steelblue" />`;
+          })
+          .join('');
+        tooltip.innerHTML = `<div>${text}</div><svg width="${counts.length * barWidth}" height="${barHeight}">${bars}</svg>`;
+      })
+      .on('mouseout', () => {
+        const tooltip = tooltipRef.current;
+        if (tooltip) tooltip.style.display = 'none';
+      });
 
     const node = svg
       .append('g')
@@ -98,7 +135,7 @@ export default function GenreSankey() {
   }, [data]);
 
   return (
-    <div>
+    <div style={{ position: 'relative' }}>
       <div>
         <label>
           Start
@@ -111,6 +148,18 @@ export default function GenreSankey() {
         <button onClick={fetchData}>Apply</button>
       </div>
       <svg ref={svgRef} width="600" height="400" />
+      <div
+        ref={tooltipRef}
+        data-testid="tooltip"
+        style={{
+          position: 'absolute',
+          pointerEvents: 'none',
+          background: 'white',
+          border: '1px solid #ccc',
+          padding: '4px',
+          display: 'none',
+        }}
+      />
     </div>
   );
 }

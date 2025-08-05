@@ -217,7 +217,9 @@ function getGenreTransitions(start, end) {
   let aggregated = aggregateReadingSessions(sessions, [], orders);
   if (start) aggregated = aggregated.filter((s) => s.start >= start);
   if (end) aggregated = aggregated.filter((s) => s.start <= end);
-  return calculateGenreTransitions(aggregated, genres);
+  // include monthly transition counts in the result
+  const transitions = calculateGenreTransitions(aggregated, genres);
+  return transitions;
 }
 
 let highlightTrie = null;

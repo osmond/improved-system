@@ -57,6 +57,7 @@ describe('GET /api/kindle', () => {
       expect(res.body[0]).toHaveProperty('source');
       expect(res.body[0]).toHaveProperty('target');
       expect(res.body[0]).toHaveProperty('count');
+      expect(res.body[0]).toHaveProperty('monthlyCounts');
     }
   });
 
