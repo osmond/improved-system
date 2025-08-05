@@ -10,7 +10,7 @@ import { computeRouteMetrics } from "./routeMetrics";
 import { getAllSessionMeta } from "./sessionStore";
 export { calculateRouteSimilarity } from "./routeMetrics";
 export type { LocationVisit } from "./locationStore";
-import dailyReadingData from "../../data/kindle/daily-stats.json";
+import dailyReadingData from "@/data/kindle/daily-stats.json";
 import sessionData from "../data/kindle/sessions.json";
 
 export type Activity = {
