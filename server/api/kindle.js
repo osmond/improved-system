@@ -66,7 +66,8 @@ router.get('/genre-hierarchy', (req, res) => {
 router.get('/genre-transitions', (req, res) => {
   try {
     const { start, end } = req.query;
-    res.json(getGenreTransitions(start, end));
+    const transitions = getGenreTransitions(start, end);
+    res.json(transitions);
   } catch (err) {
     res.status(500).json({ error: 'Failed to load genre transitions' });
   }

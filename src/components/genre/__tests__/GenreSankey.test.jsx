@@ -61,4 +61,29 @@ describe('GenreSankey', () => {
       expect(hasColoredLink).toBe(true);
     });
   });
+
+  it('shows a tooltip on link hover', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    const link = container.querySelector('path');
+    fireEvent.mouseOver(link, {
+      clientX: 50,
+      clientY: 50,
+      pageX: 50,
+      pageY: 50,
+    });
+    const tooltip = screen.getByTestId('tooltip');
+    await waitFor(() => {
+      expect(tooltip).toHaveStyle({ display: 'block' });
+    });
+    expect(tooltip).toHaveTextContent(
+      'Mystery, Thriller & Suspense → Science & Math: 10 sessions',
+    );
+    fireEvent.mouseOut(link);
+    await waitFor(() => {
+      expect(tooltip).toHaveStyle({ display: 'none' });
+    });
+  });
 });
