@@ -7,6 +7,7 @@ const {
   getSessions,
   getGenreHierarchy,
   getGenreTransitions,
+  getHighlightExpansions,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -65,6 +66,16 @@ router.get('/genre-transitions', (req, res) => {
     res.json(getGenreTransitions(start, end));
   } catch (err) {
     res.status(500).json({ error: 'Failed to load genre transitions' });
+  }
+});
+
+router.get('/highlights/search', (req, res) => {
+  const { keyword } = req.query;
+  if (!keyword) return res.status(400).json({ error: 'keyword query required' });
+  try {
+    res.json(getHighlightExpansions(keyword));
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to search highlights' });
   }
 });
 
