@@ -18,7 +18,7 @@ describe('GenreSunburstPage', () => {
     const user = userEvent.setup();
     render(<GenreSunburstPage />);
 
-    expect(screen.getByTestId('sunburst-layout')).toBeInTheDocument();
+    expect(await screen.findByTestId('sunburst-layout')).toBeInTheDocument();
     expect(screen.queryByTestId('icicle-layout')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /icicle/i }));
