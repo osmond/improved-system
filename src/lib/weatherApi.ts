@@ -39,15 +39,11 @@ export async function getDailyWeather(
 export async function getWeatherForRuns(
   runs: { date: string; lat: number; lon: number }[],
 ): Promise<DailyWeather[]> {
-  const result: DailyWeather[] = []
-  for (const run of runs) {
-    try {
-      result.push(await getDailyWeather(run.lat, run.lon, run.date))
-    } catch {
-      // ignore errors so dashboards still load
-    }
-  }
-  return result
+  const promises = runs.map((run) =>
+    getDailyWeather(run.lat, run.lon, run.date).catch(() => null),
+  )
+  const results = await Promise.all(promises)
+  return results.filter((r): r is DailyWeather => r !== null)
 }
 
 export async function getWeatherForecast(
