@@ -16,9 +16,11 @@ export function minutesSince(date: string | number | Date): number {
   return Math.floor((Date.now() - d.getTime()) / 60000)
 }
 
-export function generateTrendMessage(): string {
-  const direction = Math.random() < 0.5 ? 'up' : 'down'
-  const percentage = (Math.random() * (8 - 3) + 3).toFixed(1)
+export function generateTrendMessage(
+  random: () => number = Math.random,
+): string {
+  const direction = random() < 0.5 ? 'up' : 'down'
+  const percentage = (random() * (8 - 3) + 3).toFixed(1)
   return `Trending ${direction} by ${percentage}% this month`
 }
 

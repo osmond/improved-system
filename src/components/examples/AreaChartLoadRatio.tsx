@@ -39,7 +39,9 @@ const chartConfig = {
   ratio: { label: 'AC Ratio', color: 'hsl(var(--chart-4))' },
 } as const
 
-export default function AreaChartLoadRatio() {
+export default function AreaChartLoadRatio({
+  random = Math.random,
+}: { random?: () => number } = {}) {
   return (
     <Card>
       <CardHeader>
@@ -81,7 +83,7 @@ export default function AreaChartLoadRatio() {
         </ChartContainer>
       </CardContent>
       <CardFooter className='flex items-center gap-2 text-sm'>
-        {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+        {generateTrendMessage(random)} <TrendingUp className='h-4 w-4' />
       </CardFooter>
     </Card>
   )

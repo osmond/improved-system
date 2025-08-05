@@ -33,7 +33,9 @@ const labels: Record<string, string> = {
   other: 'Other',
 }
 
-export default function ChartRadialGrid() {
+export default function ChartRadialGrid({
+  random = Math.random,
+}: { random?: () => number } = {}) {
   const { data, isLoading, error } = useReadingMediumTotals()
 
   if (isLoading) return <Skeleton className='h-64' />
@@ -91,7 +93,7 @@ export default function ChartRadialGrid() {
       </CardContent>
       <CardFooter className='flex-col gap-2 text-sm'>
         <div className='flex items-center gap-2 leading-none font-medium'>
-          {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+          {generateTrendMessage(random)} <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
           Showing total reading minutes for the last 6 months

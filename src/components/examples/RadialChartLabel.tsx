@@ -39,7 +39,9 @@ const chartConfig = {
   other: { label: 'Other', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
 
-export default function ChartRadialLabel() {
+export default function ChartRadialLabel({
+  random = Math.random,
+}: { random?: () => number } = {}) {
   return (
     <Card className='flex flex-col'>
       <CardHeader className='items-center pb-0'>
@@ -75,7 +77,7 @@ export default function ChartRadialLabel() {
       </CardContent>
       <CardFooter className='flex-col gap-2 text-sm'>
         <div className='flex items-center gap-2 leading-none font-medium'>
-          {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+          {generateTrendMessage(random)} <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
           Showing total workout minutes for the last 6 months

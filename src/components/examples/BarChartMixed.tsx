@@ -39,7 +39,9 @@ const chartConfig = {
   other: { label: 'Other', color: 'hsl(var(--chart-5))' },
 } satisfies ChartConfig
 
-export default function ChartBarMixed() {
+export default function ChartBarMixed({
+  random = Math.random,
+}: { random?: () => number } = {}) {
   return (
     <Card>
       <CardHeader>
@@ -65,7 +67,7 @@ export default function ChartBarMixed() {
       </CardContent>
       <CardFooter className='flex-col items-start gap-2 text-sm'>
         <div className='flex gap-2 leading-none font-medium'>
-          {generateTrendMessage()} <TrendingUp className='h-4 w-4' />
+          {generateTrendMessage(random)} <TrendingUp className='h-4 w-4' />
         </div>
         <div className='text-muted-foreground leading-none'>
           Showing total sessions for the last 6 months
