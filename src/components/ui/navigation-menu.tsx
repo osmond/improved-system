@@ -62,7 +62,10 @@ const NavigationMenuContent = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <NavigationMenuPrimitive.Content
     ref={ref}
-    className={cn(className)}
+    className={cn(
+      "transition-none data-[state=open]:animate-none data-[state=closed]:animate-none",
+      className
+    )}
     {...props}
   />
 ));
@@ -77,7 +80,7 @@ const NavigationMenuViewport = React.forwardRef<
     <div className="absolute left-0 top-full z-50 flex w-full min-h-[var(--radix-navigation-menu-viewport-height)] justify-center">
       <NavigationMenuPrimitive.Viewport
         className={cn(
-          "origin-top-center relative mt-1 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-background text-popover-foreground shadow sm:w-[var(--radix-navigation-menu-viewport-width)]",
+          "origin-top-center relative mt-1 h-[var(--radix-navigation-menu-viewport-height)] w-full overflow-hidden rounded-md border bg-background text-popover-foreground shadow sm:w-[var(--radix-navigation-menu-viewport-width)] transition-none data-[state=open]:animate-none data-[state=closed]:animate-none",
           className
         )}
         ref={ref}
