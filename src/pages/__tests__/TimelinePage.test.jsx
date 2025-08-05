@@ -8,6 +8,12 @@ import useReadingSessions from '@/hooks/useReadingSessions';
 vi.mock('@/hooks/useReadingSessions');
 
 describe('TimelinePage', () => {
+  it('renders skeleton while loading', () => {
+    useReadingSessions.mockReturnValue({ data: null, error: null, isLoading: true });
+    const { getByTestId } = render(<TimelinePage />);
+    expect(getByTestId('timeline-skeleton')).toBeInTheDocument();
+  });
+
   it('renders timeline when data is loaded', () => {
     useReadingSessions.mockReturnValue({
       data: [

@@ -1,7 +1,7 @@
 import React from 'react';
 import useReadingSessions from '@/hooks/useReadingSessions';
 import ReadingTimeline from '@/components/timeline/ReadingTimeline.jsx';
-import { Skeleton } from '@/ui/skeleton';
+import TimelineSkeleton from '@/components/timeline/TimelineSkeleton.jsx';
 
 export default function ReadingTimelinePage() {
   const { data, error, isLoading } = useReadingSessions();
@@ -12,7 +12,7 @@ export default function ReadingTimelinePage() {
       {error ? (
         <div>Failed to load sessions</div>
       ) : isLoading ? (
-        <Skeleton className="h-64 w-full" />
+        <TimelineSkeleton className="h-64 w-full" />
       ) : (
         <ReadingTimeline sessions={data || []} />
       )}
