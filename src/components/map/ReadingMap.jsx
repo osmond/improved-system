@@ -7,6 +7,8 @@ import {
   GeoJSON,
   useMap,
 } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-markercluster';
+import HeatmapLayer from './HeatmapLayer';
 import { feature } from 'topojson-client';
 import { geoContains } from 'd3-geo';
 import { scaleSequential } from 'd3-scale';
@@ -27,6 +29,8 @@ export default function ReadingMap() {
   const [basemap, setBasemap] = useState(
     () => localStorage.getItem('basemap') || 'osm'
   );
+  const [zoom, setZoom] = useState(5);
+  const [mode, setMode] = useState('auto');
 
   useEffect(() => {
     localStorage.setItem('basemap', basemap);
@@ -79,6 +83,19 @@ export default function ReadingMap() {
     useEffect(() => {
       if (position) map.setView(position);
     }, [map, position]);
+    return null;
+  }
+
+  function ZoomHandler({ onZoom }) {
+    const map = useMap();
+    useEffect(() => {
+      const update = () => onZoom(map.getZoom());
+      map.on('zoomend', update);
+      update();
+      return () => {
+        map.off('zoomend', update);
+      };
+    }, [map, onZoom]);
     return null;
   }
 
@@ -141,6 +158,19 @@ export default function ReadingMap() {
     return scaleSequential(interpolator).domain([0, maxCount || 1]);
   }, [maxCount]);
 
+  const points = useMemo(() => {
+    return filtered
+      .slice(0, currentIndex + 1)
+      .map((loc) => [loc.latitude, loc.longitude]);
+  }, [filtered, currentIndex]);
+
+  const computedMode = useMemo(() => {
+    if (mode !== 'auto') return mode;
+    if (zoom < 4) return 'heatmap';
+    if (zoom < 8) return 'cluster';
+    return 'markers';
+  }, [mode, zoom]);
+
   if (loading)
     return <Skeleton className="h-[480px] w-full" data-testid="loading" />;
 
@@ -178,12 +208,28 @@ export default function ReadingMap() {
           {playing ? 'Pause' : 'Play'}
         </button>
       </div>
-      
+      <div style={{ marginBottom: '1rem' }}>
+        <label>
+          Mode:
+          <select
+            value={mode}
+            onChange={(e) => setMode(e.target.value)}
+            style={{ marginLeft: '0.5rem' }}
+          >
+            <option value="auto">Auto ({computedMode})</option>
+            <option value="markers">Markers</option>
+            <option value="cluster">Cluster</option>
+            <option value="heatmap">Heatmap</option>
+          </select>
+        </label>
+      </div>
+
       <MapContainer
         center={center}
-        zoom={5}
+        zoom={zoom}
         style={{ height: '400px', width: '100%' }}
       >
+        <ZoomHandler onZoom={setZoom} />
         <LayersControl position="topright">
           <LayersControl.BaseLayer
             checked={basemap === 'osm'}
@@ -240,14 +286,28 @@ export default function ReadingMap() {
             fillOpacity: 0.7,
           })}
         />
-        {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
-          <CircleMarker
-            key={idx}
-            center={[loc.latitude, loc.longitude]}
-            radius={5}
-            pathOptions={{ color: 'hsl(var(--chart-1))' }}
-          />
-        ))}
+        {computedMode === 'heatmap' && <HeatmapLayer points={points} />}
+        {computedMode === 'cluster' && (
+          <MarkerClusterGroup>
+            {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
+              <CircleMarker
+                key={idx}
+                center={[loc.latitude, loc.longitude]}
+                radius={5}
+                pathOptions={{ color: 'hsl(var(--chart-1))' }}
+              />
+            ))}
+          </MarkerClusterGroup>
+        )}
+        {computedMode === 'markers' &&
+          filtered.slice(0, currentIndex + 1).map((loc, idx) => (
+            <CircleMarker
+              key={idx}
+              center={[loc.latitude, loc.longitude]}
+              radius={5}
+              pathOptions={{ color: 'hsl(var(--chart-1))' }}
+            />
+          ))}
       </MapContainer>
     </div>
   );
