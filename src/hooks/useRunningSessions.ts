@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { getRunningSessions, RunningSession } from '@/lib/api'
 import { getAllSessionMeta, getSessionMeta } from '@/lib/sessionStore'
 import TSNE from 'tsne-js'
+import { getClusterLabel, setClusterLabel } from '@/lib/clusterLabelStore'
 
 export interface SessionFactor {
   /** Human friendly description of what helped or hurt */
@@ -197,6 +198,30 @@ export function computeExpected(s: RunningSession): { expected: number; factors:
   }
 }
 
+function tempLabel(t: number): string {
+  if (t < 45) return 'Cold'
+  if (t < 60) return 'Cool'
+  if (t < 75) return 'Warm'
+  return 'Hot'
+}
+
+function hourLabel(h: number): string {
+  if (h < 6) return 'Early'
+  if (h < 12) return 'Morning'
+  if (h < 18) return 'Afternoon'
+  return 'Evening'
+}
+
+function deltaLabel(d: number): string {
+  if (d > 0.3) return 'High Δ'
+  if (d < -0.3) return 'Low Δ'
+  return 'Mid Δ'
+}
+
+function makeClusterLabel(t: number, h: number, d: number): string {
+  return `${tempLabel(t)} ${hourLabel(h)} ${deltaLabel(d)}`
+}
+
 export function useRunningSessions(): {
   sessions: SessionPoint[] | null
   trend: GoodDayTrendPoint[] | null
@@ -262,21 +287,19 @@ export function useRunningSessions(): {
         const uniqueClusters = Array.from(new Set(labels))
         for (const c of uniqueClusters) {
           const clusterSessions = preliminary.filter((p) => p.cluster === c)
-          const conditionCounts = clusterSessions.reduce(
-            (acc, s) => {
-              acc[s.condition] = (acc[s.condition] || 0) + 1
-              return acc
-            },
-            {} as Record<string, number>,
-          )
-          const condition = Object.keys(conditionCounts).reduce((a, b) =>
-            conditionCounts[a] > conditionCounts[b] ? a : b,
-          )
+          const avgTemp =
+            clusterSessions.reduce((sum, s) => sum + s.temperature, 0) /
+            clusterSessions.length
           const avgHour =
             clusterSessions.reduce((sum, s) => sum + s.startHour, 0) /
             clusterSessions.length
-          const timeLabel = avgHour < 12 ? 'AM' : 'PM'
-          descriptorMap[c] = `${condition} ${timeLabel} Cluster`
+          const avgDelta =
+            clusterSessions.reduce((sum, s) => sum + s.paceDelta, 0) /
+            clusterSessions.length
+          const existing = getClusterLabel(c)
+          const label = existing ?? makeClusterLabel(avgTemp, avgHour, avgDelta)
+          descriptorMap[c] = label
+          if (!existing) setClusterLabel(c, label)
         }
 
         const data = preliminary.map((p) => ({
