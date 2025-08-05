@@ -157,6 +157,7 @@ export default function SessionSimilarityMap({
     const avgTemp = points.reduce((s, p) => s + p.temperature, 0) / points.length
     const avgHour = points.reduce((s, p) => s + p.startHour, 0) / points.length
     const avgDelta = points.reduce((s, p) => s + p.paceDelta, 0) / points.length
+    const goodFreq = points.filter((p) => p.good).length / points.length
     return {
       cluster: c,
       points,
@@ -164,6 +165,7 @@ export default function SessionSimilarityMap({
       centroid,
       stability: stability[c] ?? 0,
       centroidVec: { temperature: avgTemp, startHour: avgHour, paceDelta: avgDelta },
+      goodDay: goodFreq > 0.6,
     }
   })
   const [activeCluster, setActiveCluster] = useState<number | null>(null)
@@ -401,6 +403,9 @@ export default function SessionSimilarityMap({
                 label={clusterConfig[c].label}
                 centroid={
                   clusterDetails.find((d) => d.cluster === c)?.centroidVec
+                }
+                goodDay={
+                  clusterDetails.find((d) => d.cluster === c)?.goodDay
                 }
                 open={activeCluster === c}
                 onOpenChange={(o) => setActiveCluster(o ? c : null)}
