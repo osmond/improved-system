@@ -9,7 +9,13 @@ import {
   TooltipProvider,
 } from '@/ui/tooltip';
 import { Skeleton } from '@/ui/skeleton';
-import { getISOWeek, getISOWeekYear, getMonth, getYear } from 'date-fns';
+import {
+  getISOWeek,
+  getISOWeekYear,
+  getMonth,
+  getYear,
+  getISODay,
+} from 'date-fns';
 
 const monthNames = [
   'Jan',
@@ -62,7 +68,9 @@ function YearlyHeatmap({ data, maxMinutes }) {
   const endDate = new Date(Math.max(...dates));
 
   const startWithEmptyDays = new Date(startDate);
-  startWithEmptyDays.setDate(startWithEmptyDays.getDate() - startDate.getDay());
+  startWithEmptyDays.setDate(
+    startWithEmptyDays.getDate() - ((getISODay(startDate) + 6) % 7)
+  );
 
   const dataByMonth = useMemo(
     () =>
@@ -98,6 +106,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     [data, maxMinutes]
   );
 
+
   const weekSeries = useMemo(() => {
     const result = {};
     data.forEach((d) => {
@@ -109,6 +118,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     });
     return result;
   }, [data, maxMinutes]);
+
 
     const classForValue = (value) => {
       if (!value || !value.count || maxMinutes === 0) return 'reading-scale-0';
@@ -162,7 +172,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     if (date.getDate() === 1) {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
       const size = Number(element.props.height) || 10;
-      const topY = element.props.y - date.getDay() * size;
+      const topY = element.props.y - (getISODay(date) - 1) * size;
       const bottomY = topY + size * 7 + 12;
       return (
         <g key={dateKey}>
@@ -185,7 +195,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     <TooltipProvider>
       <div>
         <Heatmap
-          startDate={startDate}
+          startDate={startWithEmptyDays}
           endDate={endDate}
           values={values}
           classForValue={classForValue}

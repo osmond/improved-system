@@ -74,6 +74,17 @@ describe('CalendarHeatmap', () => {
     });
   });
 
+  it('aligns weeks starting on Monday', () => {
+    const { container } = render(<CalendarHeatmap />);
+    const monday = container.querySelector('rect[data-date="2024-01-01"]');
+    const sunday = container.querySelector('rect[data-date="2024-01-07"]');
+    expect(monday).not.toBeNull();
+    expect(sunday).not.toBeNull();
+    const yMonday = parseFloat(monday.getAttribute('y'));
+    const ySunday = parseFloat(sunday.getAttribute('y'));
+    expect(yMonday).toBeLessThan(ySunday);
+  });
+
   it('shows tooltip with date, minutes, and sparkline', async () => {
     const user = userEvent.setup();
     const { container } = render(<CalendarHeatmap />);
