@@ -5,6 +5,7 @@ const { aggregateReadingSessions } = require('../../src/services/readingSessions
 const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
 const { calculateGenreTransitions } = require('../../src/services/genreTransitions');
 const { buildHighlightIndex, getExpansions } = require('../../src/services/highlightIndex');
+const { getSessionLocations } = require('../../src/services/locationData');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -217,6 +218,10 @@ function getHighlightExpansions(keyword) {
   return getExpansions(trie, keyword);
 }
 
+function getLocations() {
+  return getSessionLocations();
+}
+
 module.exports = {
   getEvents,
   getPoints,
@@ -226,5 +231,6 @@ module.exports = {
   getGenreHierarchy,
   getGenreTransitions,
   getHighlightExpansions,
+  getLocations,
 };
 
