@@ -61,4 +61,18 @@ describe('CalendarHeatmap', () => {
     expect(minuteTexts.length).toBeGreaterThan(0);
     expect(screen.getAllByTestId('sparkline').length).toBeGreaterThan(0);
   });
+
+  it('renders separate heatmaps for each year', () => {
+    const twoYearData = [
+      { date: '2023-12-31', minutes: 30, pages: 10 },
+      { date: '2024-01-01', minutes: 5, pages: 2 },
+    ];
+    const { container, getByText } = render(
+      <CalendarHeatmap data={twoYearData} />
+    );
+    const svgs = container.querySelectorAll('svg.react-calendar-heatmap');
+    expect(svgs.length).toBe(2);
+    getByText('2023');
+    getByText('2024');
+  });
 });
