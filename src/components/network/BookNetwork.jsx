@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { select } from 'd3-selection';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
-import { scaleOrdinal } from 'd3-scale';
+import { scaleOrdinal, scaleLinear } from 'd3-scale';
 import { schemeTableau10 } from 'd3-scale-chromatic';
 import graphData from '@/data/kindle/book-graph.json';
 
@@ -16,7 +16,13 @@ export default function BookNetwork({ data = graphData }) {
   const [highlightedLinks, setHighlightedLinks] = useState(new Set());
 
   useEffect(() => {
-    setGraph(data);
+    const degreeMap = {};
+    data.links.forEach((l) => {
+      degreeMap[l.source] = (degreeMap[l.source] || 0) + 1;
+      degreeMap[l.target] = (degreeMap[l.target] || 0) + 1;
+    });
+    const nodes = data.nodes.map((n) => ({ ...n, degree: degreeMap[n.id] || 0 }));
+    setGraph({ nodes, links: data.links });
   }, [data]);
 
   const adjacency = useMemo(() => {
@@ -85,6 +91,12 @@ export default function BookNetwork({ data = graphData }) {
     const height = 400;
 
     const color = scaleOrdinal(schemeTableau10);
+    const degrees = graph.nodes.map((n) => n.degree);
+    const minDegree = Math.min(...degrees);
+    const maxDegree = Math.max(...degrees);
+    const radiusScale = scaleLinear()
+      .domain([minDegree, maxDegree])
+      .range([5, 15]);
     const edgeKey = (a, b) => (a < b ? `${a}-${b}` : `${b}-${a}`);
     const edgeFromLink = (d) => {
       const s = typeof d.source === 'object' ? d.source.id : d.source;
@@ -124,7 +136,9 @@ export default function BookNetwork({ data = graphData }) {
       .selectAll('circle')
       .data(graph.nodes)
       .join('circle')
-      .attr('r', (d) => (highlightedNodes.has(d.id) ? 8 : 5))
+      .attr('r', (d) =>
+        radiusScale(d.degree) + (highlightedNodes.has(d.id) ? 3 : 0)
+      )
       .attr('fill', (d) => color(d.community))
       .attr('stroke', (d) =>
         highlightedNodes.has(d.id)
