@@ -192,25 +192,19 @@ export default function WordTree() {
       })
       .remove();
 
-    nodeMerge.select('rect').remove();
-
-    nodeMerge.each(d => {
-      if (d.parent) {
-        const counts = d.parent.children.map(c => c.data.count || 0);
-        d.siblingMax = Math.max(...counts);
-      }
-    });
+    nodeMerge.select('rect.count-bar').remove();
 
     nodeMerge
-      .filter(d => d.data.count)
+      .filter(d => d.data.count && d.parent)
       .each(function (d) {
         const textWidth = select(this).select('text').node().getBBox().width;
-        const scale = scaleLinear()
-          .domain([0, d.siblingMax || d.data.count])
-          .range([0, 60]);
+        const siblingCounts = d.parent.children.map(c => c.data.count || 0);
+        const maxCount = Math.max(...siblingCounts, 0);
+        const scale = scaleLinear().domain([0, maxCount]).range([0, 60]);
         select(this)
           .append('rect')
-          .attr('x', 8 + textWidth + 4)
+          .attr('class', 'count-bar')
+          .attr('x', textWidth + 12)
           .attr('y', -3)
           .attr('height', 6)
           .attr('width', scale(d.data.count))
