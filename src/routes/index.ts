@@ -5,6 +5,7 @@ import {
   Goal,
   Shield,
   List,
+  BookOpen,
 } from "lucide-react";
 import {
   withIcon,
@@ -240,6 +241,71 @@ const analyticalRouteGroup: DashboardRouteGroup = {
   items: analyticalRoutes,
 };
 
+export const kindleRoutes = withIcon(BookOpen, [
+  {
+    to: "/dashboard/kindle/calendar-heatmap",
+    label: "Daily Reading Calendar",
+    description: "GitHub-style calendar of reading activity",
+    component: "@/pages/charts/ReadingCalendarHeatmap",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/timeline",
+    label: "Reading Timeline",
+    description: "Interactive timeline of sessions",
+    component: "@/pages/charts/ReadingTimeline",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/genre-sunburst",
+    label: "Genre Hierarchy Sunburst",
+    description: "Drill into genres by reading time",
+    component: "@/pages/charts/GenreSunburst",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/genre-sankey",
+    label: "Genre Transition Sankey",
+    description: "Flow of reading across genres",
+    component: "@/pages/charts/GenreSankey",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/word-tree",
+    label: "Highlight Word Tree",
+    description: "Explore highlight contexts",
+    component: "@/pages/charts/WordTree",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/reading-map",
+    label: "Reading Locations Map",
+    description: "Geospatial heatmap of reading",
+    component: "@/pages/charts/ReadingMap",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/reading-speed",
+    label: "Reading Speed Distribution",
+    description: "Violin plot of reading speed",
+    component: "@/pages/charts/ReadingSpeedViolin",
+    tags: ["kindle"],
+  },
+  {
+    to: "/dashboard/kindle/book-network",
+    label: "Related Books Network",
+    description: "Force-directed graph of books",
+    component: "@/pages/charts/BookNetwork",
+    tags: ["kindle"],
+  },
+]);
+
+const kindleRouteGroup: DashboardRouteGroup = {
+  label: "Kindle Insights",
+  icon: BookOpen,
+  items: kindleRoutes,
+};
+
 export const goalsRoutes = withIcon(Goal, [
   {
     to: "/dashboard/charts/steps-trend-with-goal",
@@ -305,6 +371,7 @@ export const dashboardRoutes: DashboardRouteGroup[] = [
   mapsRouteGroup,
   trendsRouteGroup,
   analyticalRouteGroup,
+  kindleRouteGroup,
   goalsRouteGroup,
   privacyRouteGroup,
 ];
