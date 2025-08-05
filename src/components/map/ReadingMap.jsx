@@ -4,13 +4,16 @@ import {
   TileLayer,
   LayersControl,
   CircleMarker,
+  GeoJSON,
   useMap,
-  useMapEvents,
 } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-markercluster';
-import L from 'leaflet';
-import 'leaflet.heat';
+import { feature } from 'topojson-client';
+import { geoContains } from 'd3-geo';
+import { scaleSequential } from 'd3-scale';
+import { interpolateYlOrRd } from 'd3-scale-chromatic';
 import locationsData from '@/data/kindle/locations.json';
+import statesTopo from '@/lib/us-states.json';
+import worldTopo from '@/lib/world-countries.json';
 
 export default function ReadingMap() {
   const [locations, setLocations] = useState([]);
@@ -19,9 +22,6 @@ export default function ReadingMap() {
   const [title, setTitle] = useState('');
   const [currentIndex, setCurrentIndex] = useState(0);
   const [playing, setPlaying] = useState(false);
-  const [zoom, setZoom] = useState(5);
-  const [mode, setMode] = useState('cluster');
-  const [userToggled, setUserToggled] = useState(false);
   const [basemap, setBasemap] = useState(
     () => localStorage.getItem('basemap') || 'osm'
   );
@@ -79,24 +79,51 @@ export default function ReadingMap() {
     return null;
   }
 
-  function ZoomHandler() {
-    useMapEvents({
-      zoomend: (e) => setZoom(e.target.getZoom()),
+  // Aggregate locations by region (US states or world countries)
+  const choropleth = useMemo(() => {
+    const states = feature(statesTopo, statesTopo.objects.states);
+    const countries = feature(worldTopo, worldTopo.objects.countries);
+    const features = [
+      ...countries.features.filter((f) => f.id !== '840'),
+      ...states.features,
+    ];
+    const counts = {};
+    filtered.forEach((loc) => {
+      const point = [loc.longitude, loc.latitude];
+      let region = states.features.find((s) => geoContains(s, point));
+      if (!region) {
+        region = countries.features.find((c) => geoContains(c, point));
+      }
+      if (region) {
+        const name = region.properties.name;
+        counts[name] = (counts[name] || 0) + 1;
+      }
     });
-    return null;
-  }
+    return {
+      type: 'FeatureCollection',
+      features: features.map((f) => ({
+        ...f,
+        properties: {
+          ...f.properties,
+          count: counts[f.properties.name] || 0,
+        },
+      })),
+    };
+  }, [filtered]);
 
-  function HeatmapLayer({ points }) {
-    const map = useMap();
-    useEffect(() => {
-      if (!map) return;
-      const heat = L.heatLayer(points, { radius: 25 }).addTo(map);
-      return () => {
-        map.removeLayer(heat);
-      };
-    }, [map, points]);
-    return null;
-  }
+  const maxCount = useMemo(
+    () =>
+      Math.max(
+        ...choropleth.features.map((f) => f.properties.count || 0),
+        0
+      ),
+    [choropleth]
+  );
+
+  const colorScale = useMemo(
+    () => scaleSequential(interpolateYlOrRd).domain([0, maxCount || 1]),
+    [maxCount]
+  );
 
   return (
     <div>
@@ -132,40 +159,12 @@ export default function ReadingMap() {
           {playing ? 'Pause' : 'Play'}
         </button>
       </div>
-      <div style={{ marginBottom: '1rem' }}>
-        <label>
-          <input
-            type="radio"
-            name="mode"
-            value="cluster"
-            checked={mode === 'cluster'}
-            onChange={(e) => {
-              setMode(e.target.value);
-              setUserToggled(true);
-            }}
-          />
-          Cluster
-        </label>
-        <label style={{ marginLeft: '0.5rem' }}>
-          <input
-            type="radio"
-            name="mode"
-            value="heatmap"
-            checked={mode === 'heatmap'}
-            onChange={(e) => {
-              setMode(e.target.value);
-              setUserToggled(true);
-            }}
-          />
-          Heatmap
-        </label>
-      </div>
+      
       <MapContainer
         center={center}
         zoom={5}
         style={{ height: '400px', width: '100%' }}
       >
-        <ZoomHandler />
         <LayersControl position="topright">
           <LayersControl.BaseLayer
             checked={basemap === 'osm'}
@@ -213,42 +212,23 @@ export default function ReadingMap() {
             position={[filtered[currentIndex].latitude, filtered[currentIndex].longitude]}
           />
         )}
-        {(() => {
-          const points = filtered
-            .slice(0, currentIndex + 1)
-            .map((loc) => [loc.latitude, loc.longitude]);
-          const zoomThreshold = 8;
-          const lowZoom = 4;
-          let displayMode = 'cluster';
-          if (zoom >= zoomThreshold) displayMode = 'markers';
-          else if (zoom < lowZoom && !userToggled) displayMode = 'heatmap';
-          else displayMode = mode;
-          if (displayMode === 'markers') {
-            return filtered.slice(0, currentIndex + 1).map((loc, idx) => (
-              <CircleMarker
-                key={idx}
-                center={[loc.latitude, loc.longitude]}
-                radius={5}
-                pathOptions={{ color: 'red' }}
-              />
-            ));
-          }
-          if (displayMode === 'heatmap') {
-            return <HeatmapLayer points={points} />;
-          }
-          return (
-            <MarkerClusterGroup>
-              {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
-                <CircleMarker
-                  key={idx}
-                  center={[loc.latitude, loc.longitude]}
-                  radius={5}
-                  pathOptions={{ color: 'red' }}
-                />
-              ))}
-            </MarkerClusterGroup>
-          );
-        })()}
+        <GeoJSON
+          data={choropleth}
+          style={(f) => ({
+            fillColor: colorScale(f.properties.count || 0),
+            weight: 1,
+            color: 'white',
+            fillOpacity: 0.7,
+          })}
+        />
+        {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
+          <CircleMarker
+            key={idx}
+            center={[loc.latitude, loc.longitude]}
+            radius={5}
+            pathOptions={{ color: 'red' }}
+          />
+        ))}
       </MapContainer>
     </div>
   );
