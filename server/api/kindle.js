@@ -15,93 +15,93 @@ const {
 
 const router = express.Router();
 
-router.get('/events', (req, res) => {
+router.get('/events', async (req, res) => {
   try {
-    res.json(getEvents());
+    res.json(await getEvents());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load events' });
   }
 });
 
-router.get('/points', (req, res) => {
+router.get('/points', async (req, res) => {
   try {
-    res.json(getPoints());
+    res.json(await getPoints());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load points' });
   }
 });
 
-router.get('/achievements', (req, res) => {
+router.get('/achievements', async (req, res) => {
   try {
-    res.json(getAchievements());
+    res.json(await getAchievements());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load achievements' });
   }
 });
 
-router.get('/daily-stats', (req, res) => {
+router.get('/daily-stats', async (req, res) => {
   try {
-    res.json(getDailyStats());
+    res.json(await getDailyStats());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load daily stats' });
   }
 });
 
-router.get('/sessions', (req, res) => {
+router.get('/sessions', async (req, res) => {
   try {
-    res.json(getSessions());
+    res.json(await getSessions());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load sessions' });
   }
 });
 
-router.get('/genre-hierarchy', (req, res) => {
+router.get('/genre-hierarchy', async (req, res) => {
   try {
-    res.json(getGenreHierarchy());
+    res.json(await getGenreHierarchy());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load genre hierarchy' });
   }
 });
 
-router.get('/genre-transitions', (req, res) => {
+router.get('/genre-transitions', async (req, res) => {
   try {
     const { start, end } = req.query;
-    const transitions = getGenreTransitions(start, end);
+    const transitions = await getGenreTransitions(start, end);
     res.json(transitions);
   } catch (err) {
     res.status(500).json({ error: 'Failed to load genre transitions' });
   }
 });
 
-router.get('/highlights/search', (req, res) => {
+router.get('/highlights/search', async (req, res) => {
   const { keyword } = req.query;
   if (!keyword) return res.status(400).json({ error: 'keyword query required' });
   try {
-    res.json(getHighlightExpansions(keyword));
+    res.json(await getHighlightExpansions(keyword));
   } catch (err) {
     res.status(500).json({ error: 'Failed to search highlights' });
   }
 });
 
-router.get('/locations', (req, res) => {
+router.get('/locations', async (req, res) => {
   try {
-    res.json(getLocations());
+    res.json(await getLocations());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load locations' });
   }
 });
 
-router.get('/reading-speed', (req, res) => {
+router.get('/reading-speed', async (req, res) => {
   try {
-    res.json(getReadingSpeed());
+    res.json(await getReadingSpeed());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load reading speed' });
   }
 });
 
-router.get('/book-graph', (req, res) => {
+router.get('/book-graph', async (req, res) => {
   try {
-    res.json(getBookGraph());
+    res.json(await getBookGraph());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load book graph' });
   }

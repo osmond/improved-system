@@ -27,6 +27,7 @@
     "class-variance-authority": "^0.7.0",
     "compromise": "^14.14.4",
     "cors": "^2.8.5",
+    "csv-parse": "^6.1.0",
     "d3-axis": "^3.0.0",
     "d3-brush": "^3.0.0",
     "d3-chord": "^3.0.1",
