@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, fireEvent } from '@testing-library/react';
+import { render, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { select } from 'd3-selection';
 import { act } from 'react';
@@ -124,5 +124,15 @@ describe('ReadingTimeline', () => {
     const rects = svg.querySelectorAll('rect[height="30"]');
     expect(rects[0].getAttribute('fill')).toBe('hsl(var(--chart-1))');
     expect(rects[1].getAttribute('fill')).toBe('hsl(var(--chart-2))');
+  });
+
+  it('renders a legend for genres with matching colors', () => {
+    const { getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    const list = getByRole('list', { name: /genres/i });
+    const items = within(list).getAllByRole('listitem');
+    expect(items).toHaveLength(2);
+    expect(items[0].textContent).toContain('Mystery');
+    const swatch = items[0].querySelector('span[aria-hidden="true"]');
+    expect(swatch).toHaveStyle({ backgroundColor: 'hsl(var(--chart-1))' });
   });
 });
