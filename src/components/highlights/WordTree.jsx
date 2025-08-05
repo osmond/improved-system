@@ -7,6 +7,7 @@ import { scaleLinear } from 'd3-scale';
 import Sentiment from 'sentiment';
 import nlp from 'compromise';
 import highlights from '@/data/kindle/highlights.json';
+import { Skeleton } from '@/ui/skeleton';
 
 const sentimentAnalyzer = new Sentiment();
 const sentimentColor = scaleLinear()
@@ -51,9 +52,11 @@ export default function WordTree() {
   const [data, setData] = useState(null);
   const [layout, setLayout] = useState('linear');
   const [mode, setMode] = useState('sentiment');
+  const [loading, setLoading] = useState(false);
   const svgRef = useRef(null);
 
-  const toggleNode = d => {
+  const toggleNode = async d => {
+    setLoading(true);
     if (d.data.expanded) {
       d.data._children = d.data.children;
       d.data.children = undefined;
@@ -64,7 +67,7 @@ export default function WordTree() {
         d.data._children = undefined;
         d.data.expanded = true;
       } else {
-        const expansions = getExpansions(d.data.word);
+        const expansions = await Promise.resolve(getExpansions(d.data.word));
         d.data.children = expansions.map(e => ({
           id: `${d.data.id}-${e.word}`,
           word: e.word,
@@ -77,10 +80,11 @@ export default function WordTree() {
       }
     }
     setData({ ...data });
+    setLoading(false);
   };
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || loading) return;
     const svg = select(svgRef.current);
 
     const t = transition().duration(400);
@@ -247,11 +251,12 @@ export default function WordTree() {
       svg.selectAll('.links path').interrupt();
       svg.selectAll('.nodes g').interrupt();
     };
-  }, [data, layout, mode]);
+  }, [data, layout, mode, loading]);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const expansions = getExpansions(keyword);
+    setLoading(true);
+    const expansions = await Promise.resolve(getExpansions(keyword));
     const analysis = analyzeWord(keyword);
     setData({
       id: keyword,
@@ -268,6 +273,7 @@ export default function WordTree() {
         expanded: false,
       })),
     });
+    setLoading(false);
   };
 
   return (
@@ -325,7 +331,11 @@ export default function WordTree() {
           ))}
         </div>
       )}
-      <svg ref={svgRef} width={layout === 'linear' ? 800 : 400} height={400}></svg>
+      {!data || loading ? (
+        <Skeleton className="h-64 w-full" />
+      ) : (
+        <svg ref={svgRef} width={layout === 'linear' ? 800 : 400} height={400}></svg>
+      )}
     </div>
   );
 }
