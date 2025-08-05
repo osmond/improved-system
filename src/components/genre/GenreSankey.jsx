@@ -11,13 +11,21 @@ export default function GenreSankey() {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
 
-  const fetchData = () => {
-    setData(transitions);
+  const fetchData = async () => {
+    const res = await fetch(
+      `/api/kindle/genre-transitions?start=${start}&end=${end}`,
+    );
+    const json = await res.json();
+    setData(json);
   };
 
   useEffect(() => {
     setData(transitions);
   }, []);
+
+  useEffect(() => {
+    if (start && end) fetchData();
+  }, [start, end]);
 
   useEffect(() => {
     const svg = select(svgRef.current);
