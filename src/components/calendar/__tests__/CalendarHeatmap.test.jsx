@@ -1,4 +1,5 @@
-import { render } from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
 
@@ -46,5 +47,18 @@ describe('CalendarHeatmap', () => {
     getByText('Feb');
     getByText('15');
     getByText('20');
+  });
+
+  it('shows tooltip with date, minutes, and sparkline', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<CalendarHeatmap />);
+    const day = container.querySelector('rect[data-date="2024-01-02"]');
+    expect(day).not.toBeNull();
+    await user.hover(day);
+    const dateTexts = await screen.findAllByText('Jan 2, 2024');
+    expect(dateTexts.length).toBeGreaterThan(0);
+    const minuteTexts = await screen.findAllByText('10 min');
+    expect(minuteTexts.length).toBeGreaterThan(0);
+    expect(screen.getAllByTestId('sparkline').length).toBeGreaterThan(0);
   });
 });
