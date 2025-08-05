@@ -1,25 +1,42 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import BookNetwork from '../network/BookNetwork.jsx';
-import graphData from '@/data/kindle/book-graph.json';
+
+vi.mock('@/data/kindle/book-graph.json', () => ({
+  default: {
+    nodes: [
+      { id: '1', title: 'A', authors: [], tags: ['foo'] },
+      { id: '2', title: 'B', authors: [], tags: ['foo'] },
+      { id: '3', title: 'C', authors: [], tags: [] },
+    ],
+    links: [
+      { source: '1', target: '2', weight: 1 },
+      { source: '2', target: '3', weight: 1 },
+    ],
+  },
+}));
 
 describe('BookNetwork component', () => {
-  it('filters nodes by tag', async () => {
+  it('highlights paths on tag search', async () => {
     const { container } = render(<BookNetwork />);
-    const totalNodes = graphData.nodes.length;
     await waitFor(() => {
-      const nodes = container.querySelectorAll('[data-testid="node"]');
-      expect(nodes.length).toBe(totalNodes);
+      expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
     });
 
-    const tag = graphData.nodes.find((n) => n.tags.length > 0).tags[0];
-    const expected = graphData.nodes.filter((n) => n.tags.includes(tag)).length;
+    const node = container.querySelector('[data-id="1"]');
+    fireEvent.click(node);
+
     const tagInput = container.querySelector('input[placeholder="Filter by tag"]');
-    fireEvent.change(tagInput, { target: { value: tag } });
+    fireEvent.change(tagInput, { target: { value: 'foo' } });
+
     await waitFor(() => {
-      const nodes = container.querySelectorAll('[data-testid="node"]');
-      expect(nodes.length).toBe(expected);
+      const highlighted = container.querySelectorAll(
+        '[data-testid="node"][stroke="orange"]'
+      );
+      expect(highlighted.length).toBe(2);
+      const link = container.querySelector('line[stroke="orange"]');
+      expect(link).toBeTruthy();
     });
   });
 
@@ -32,3 +49,4 @@ describe('BookNetwork component', () => {
     });
   });
 });
+
