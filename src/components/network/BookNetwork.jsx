@@ -117,7 +117,7 @@ export default function BookNetwork({ data = graphData }) {
 
     const link = svg
       .append('g')
-      .attr('stroke', 'var(--chart-network-link)')
+      .attr('stroke', 'hsl(var(--chart-2))')
       .attr('stroke-opacity', 0.6)
       .selectAll('line')
       .data(graph.links)
@@ -128,7 +128,7 @@ export default function BookNetwork({ data = graphData }) {
       .attr('stroke', (d) =>
         highlightedLinks.has(edgeFromLink(d))
           ? 'hsl(var(--chart-1))'
-          : 'var(--chart-network-link)'
+          : 'hsl(var(--chart-2))'
       )
       .attr('data-highlighted', (d) =>
         highlightedLinks.has(edgeFromLink(d)) ? 'true' : null
@@ -146,7 +146,7 @@ export default function BookNetwork({ data = graphData }) {
       .attr('stroke', (d) =>
         highlightedNodes.has(d.id)
           ? 'hsl(var(--chart-1))'
-          : 'var(--chart-network-node-border)'
+          : 'hsl(var(--chart-3))'
       )
       .attr('stroke-width', (d) => (highlightedNodes.has(d.id) ? 3 : 1.5))
       .attr('data-testid', 'node')

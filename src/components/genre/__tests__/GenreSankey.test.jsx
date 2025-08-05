@@ -56,7 +56,7 @@ describe('GenreSankey', () => {
       expect(links.length).toBeGreaterThan(0);
       const hasColoredLink = Array.from(links).some((link) => {
         const stroke = link.getAttribute('stroke');
-        return stroke && stroke !== '#999' && stroke !== 'var(--chart-network-link)';
+        return stroke && stroke !== '#999';
       });
       expect(hasColoredLink).toBe(true);
     });

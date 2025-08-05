@@ -14,11 +14,11 @@ const sentimentColor = scaleLinear()
   .range(['#d73027', '#ffffbf', '#1a9850']);
 
 const posColors = {
-  Noun: '#1f77b4',
-  Verb: '#ff7f0e',
-  Adjective: '#2ca02c',
-  Adverb: '#d62728',
-  Unknown: '#7f7f7f',
+  Noun: 'hsl(var(--chart-4))',
+  Verb: 'hsl(var(--chart-5))',
+  Adjective: 'hsl(var(--chart-6))',
+  Adverb: 'hsl(var(--chart-7))',
+  Unknown: 'hsl(var(--chart-8))',
 };
 
 function analyzeWord(word) {
@@ -144,7 +144,7 @@ export default function WordTree() {
           enter
             .append('path')
             .attr('fill', 'none')
-            .attr('stroke', 'var(--chart-network-link)')
+            .attr('stroke', 'hsl(var(--chart-2))')
             .attr('d', d => {
               const o = { x: d.source.data.x0, y: d.source.data.y0 };
               return linkFn({ source: o, target: o });
@@ -188,7 +188,7 @@ export default function WordTree() {
     nodeEnter
       .append('circle')
       .attr('r', 0)
-      .attr('fill', 'var(--chart-wordtree-node)')
+      .attr('fill', 'hsl(var(--chart-1))')
       .transition(t)
       .attr('r', 4);
 
@@ -235,7 +235,7 @@ export default function WordTree() {
         .attr('y', -3)
         .attr('height', 6)
         .attr('width', scale(d.data.count))
-        .attr('fill', 'var(--chart-wordtree-bar)');
+        .attr('fill', 'hsl(var(--chart-3))');
     });
 
     nodes.forEach(d => {

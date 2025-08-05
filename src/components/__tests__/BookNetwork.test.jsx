@@ -65,10 +65,10 @@ describe('BookNetwork component', () => {
 
     const nodeUsesVar = Array.from(
       container.querySelectorAll('[data-testid="node"]')
-    ).some((el) => el.getAttribute('stroke') === 'var(--chart-network-node-border)');
+    ).some((el) => el.getAttribute('stroke') === 'hsl(var(--chart-3))');
 
     const linkUsesVar = Array.from(container.querySelectorAll('line')).some(
-      (el) => el.getAttribute('stroke') === 'var(--chart-network-link)'
+      (el) => el.getAttribute('stroke') === 'hsl(var(--chart-2))'
     );
 
     expect(nodeUsesVar).toBe(true);

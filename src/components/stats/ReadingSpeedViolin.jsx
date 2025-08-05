@@ -89,7 +89,7 @@ export default function ReadingSpeedViolin() {
         .append('path')
         .datum(density)
         .attr('d', areaGenerator)
-        .attr('fill', 'var(--chart-network-node)');
+        .attr('fill', 'hsl(var(--chart-1))');
 
       const { q1, q3, median } = stats[period];
       const q1Y = y(q1);
@@ -106,9 +106,9 @@ export default function ReadingSpeedViolin() {
         .attr('y', q3Y)
         .attr('width', boxWidth)
         .attr('height', q1Y - q3Y)
-        .attr('fill', 'var(--chart-network-node-border)')
+        .attr('fill', 'hsl(var(--chart-2))')
         .attr('fill-opacity', 0.4)
-        .attr('stroke', 'var(--chart-network-node-border)');
+        .attr('stroke', 'hsl(var(--chart-2))');
 
       // Median line
       g
@@ -117,7 +117,7 @@ export default function ReadingSpeedViolin() {
         .attr('x2', 0)
         .attr('y1', medianY - medianHeight / 2)
         .attr('y2', medianY + medianHeight / 2)
-        .attr('stroke', 'var(--chart-network-node-border)')
+        .attr('stroke', 'hsl(var(--chart-2))')
         .attr('stroke-width', 2);
 
       // Plot individual reading speed points with slight horizontal jitter
@@ -127,7 +127,7 @@ export default function ReadingSpeedViolin() {
           .attr('cx', Math.random() * jitterWidth - jitterWidth / 2)
           .attr('cy', y(v))
           .attr('r', 3)
-          .attr('fill', 'var(--chart-network-node-border)')
+          .attr('fill', 'hsl(var(--chart-2))')
           .attr('fill-opacity', 0.6);
       });
     });

@@ -522,8 +522,14 @@ function AxisHintOverlay({ hints, offset, xAxisMap, yAxisMap }: any) {
         const y = yScale(h.y) + offset.top
         return (
           <g key={h.label}>
-            <line x1={originX} y1={originY} x2={x} y2={y} stroke="#999" />
-            <text x={x} y={y} fill="#666" fontSize={10}>
+            <line
+              x1={originX}
+              y1={originY}
+              x2={x}
+              y2={y}
+              stroke="hsl(var(--chart-2))"
+            />
+            <text x={x} y={y} fill="hsl(var(--chart-3))" fontSize={10}>
               {h.label}
             </text>
           </g>

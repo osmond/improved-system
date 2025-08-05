@@ -235,7 +235,7 @@ export default function RouteNoveltyMap() {
               type="circle"
               filter={["has", "point_count"]}
               paint={{
-                "circle-color": "#999",
+                "circle-color": "hsl(var(--chart-2))",
                 "circle-radius": [
                   "step",
                   ["get", "point_count"],

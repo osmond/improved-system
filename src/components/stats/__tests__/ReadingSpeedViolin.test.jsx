@@ -23,7 +23,7 @@ describe('ReadingSpeedViolin', () => {
     });
 
     const usesVar = Array.from(container.querySelectorAll('rect')).some(
-      (el) => el.getAttribute('stroke') === 'var(--chart-network-node-border)'
+      (el) => el.getAttribute('stroke') === 'hsl(var(--chart-2))'
     );
 
     expect(usesVar).toBe(true);

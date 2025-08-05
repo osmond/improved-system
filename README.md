@@ -31,6 +31,8 @@ Add new tokens (e.g. `--chart-6`–`--chart-10`) in the same `:root { … }` blo
 
 Charts share a unified palette defined as `--chart-1` through `--chart-10` in `src/styles/globals.css`. Reference these in markup with `hsl(var(--chart-N))` rather than hard‑coded colours so visualisations stay consistent across the app.
 
+Tailwind shortcuts such as `text-chart-1` or `fill-chart-2` are available, and arbitrary values can reference the palette directly: `stroke-[hsl(var(--chart-3))]`.
+
 Dark mode is driven via the `<html class="dark">` class and the corresponding `.dark { … }` overrides in `globals.css`.
 
 ## Component conventions
