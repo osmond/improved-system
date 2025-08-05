@@ -5,6 +5,13 @@ import { select } from 'd3-selection';
 import { act } from 'react';
 import ReadingTimeline from '../ReadingTimeline.jsx';
 
+class ResizeObserver {
+  observe() {}
+  unobserve() {}
+  disconnect() {}
+}
+global.ResizeObserver = ResizeObserver;
+
 const sessions = [
   {
     start: '2025-01-01T00:00:00Z',
@@ -135,7 +142,7 @@ describe('ReadingTimeline', () => {
     expect(y1).not.toBe(y2);
   });
 
-  it('assigns colors based on genre', () => {
+  it('assigns colors based on title', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const rects = svg.querySelectorAll('rect[height="30"]');
@@ -160,12 +167,12 @@ describe('ReadingTimeline', () => {
     expect(rects[0].getAttribute('aria-label')).toContain('Test Book 1');
   });
 
-  it('renders a legend for genres with matching colors', () => {
+  it('renders a legend for books with matching colors', () => {
     const { getByRole } = render(<ReadingTimeline sessions={sessions} />);
-    const list = getByRole('list', { name: /genres/i });
+    const list = getByRole('list', { name: /books/i });
     const items = within(list).getAllByRole('listitem');
     expect(items).toHaveLength(2);
-    expect(items[0].textContent).toContain('Mystery');
+    expect(items[0].textContent).toContain('Test Book 1');
     const swatch = items[0].querySelector('span[aria-hidden="true"]');
     expect(swatch).toHaveStyle({ backgroundColor: 'hsl(var(--chart-1))' });
   });
