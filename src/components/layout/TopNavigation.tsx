@@ -15,6 +15,13 @@ export default function TopNavigation() {
   return (
     <NavigationMenu>
       <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild>
+            <NavLink to="/" className="block px-2 py-1 text-sm">
+              Dashboard
+            </NavLink>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
         {dashboardRoutes.map((group) => {
           const Icon = group.icon;
           return (
@@ -25,13 +32,6 @@ export default function TopNavigation() {
               </NavigationMenuTrigger>
               <NavigationMenuContent>
                 <ul className="flex w-48 flex-col gap-2 p-4">
-                  <li>
-                    <NavigationMenuLink asChild>
-                      <NavLink to="/dashboard" className="block px-2 py-1 text-sm">
-                        Dashboard
-                      </NavLink>
-                    </NavigationMenuLink>
-                  </li>
                   {group.items.map((item) => (
                     <li key={item.to}>
                       <NavigationMenuLink asChild>

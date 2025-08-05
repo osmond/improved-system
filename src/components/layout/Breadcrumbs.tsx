@@ -8,6 +8,7 @@ for (const group of dashboardRoutes) {
     routeLabelMap[item.to] = item.label;
   }
 }
+routeLabelMap["/"] = "Dashboard";
 
 interface BreadcrumbsProps {
   /**
@@ -34,7 +35,10 @@ export default function Breadcrumbs({ labels = {} }: BreadcrumbsProps) {
   }
 
   const crumbs = segments.map((segment, index) => {
-    const to = "/" + segments.slice(0, index + 1).join("/");
+    let to = "/" + segments.slice(0, index + 1).join("/");
+    if (index === 0 && segment === "dashboard") {
+      to = "/";
+    }
     let label: string | undefined;
 
     const paramEntry = Object.entries(params).find(([, value]) => value === segment);
