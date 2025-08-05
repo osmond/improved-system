@@ -11,15 +11,18 @@ import { SelectionProvider } from "@/hooks/useSelection";
 
 const MissingComponent = () => <div>Component not found</div>;
 
+const pageModules = import.meta.glob("@/pages/**/*.{ts,tsx,js,jsx}");
+
 function createDashboardRoutes() {
   return dashboardRoutes.flatMap(({ items }) =>
     items.map(({ to, component }) => {
       if (!component) return [];
-      const LazyComp = lazy(() =>
-        import(/* @vite-ignore */ component).catch(() => ({
-          default: MissingComponent,
-        })),
-      );
+      const importer =
+        pageModules[`${component}.tsx`] ||
+        pageModules[`${component}.ts`] ||
+        pageModules[`${component}.jsx`] ||
+        pageModules[`${component}.js`];
+      const LazyComp = importer ? lazy(importer as any) : MissingComponent;
       return (
         <Route
           key={to}
