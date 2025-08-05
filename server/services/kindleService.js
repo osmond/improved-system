@@ -7,6 +7,7 @@ const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
 const { calculateGenreTransitions } = require('../../src/services/genreTransitions');
 const { buildHighlightIndex, getExpansions } = require('../../src/services/highlightIndex');
 const { getSessionLocations } = require('../../src/services/locationData');
+const { buildBookGraph } = require('../../src/services/bookGraph');
 
 function parseCsv(filePath) {
   const content = fs.readFileSync(filePath, 'utf-8').trim();
@@ -238,6 +239,81 @@ function getLocations() {
   return getSessionLocations();
 }
 
+function getBookGraph() {
+  const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
+
+  const ordersPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders',
+    'Kindle.UnifiedLibraryIndex.CustomerOrders.csv'
+  );
+  const authorsPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerAuthorNameRelationship',
+    'Kindle.UnifiedLibraryIndex.CustomerAuthorNameRelationship.csv'
+  );
+  const genresPath = path.join(
+    base,
+    'Kindle.UnifiedLibraryIndex',
+    'datasets',
+    'Kindle.UnifiedLibraryIndex.CustomerGenres',
+    'Kindle.UnifiedLibraryIndex.CustomerGenres.csv'
+  );
+  const highlightsPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'data',
+    'kindle',
+    'highlights.json'
+  );
+
+  const orders = parseCsv(ordersPath);
+  const authors = parseCsv(authorsPath);
+  const genres = parseCsv(genresPath);
+  const highlights = JSON.parse(fs.readFileSync(highlightsPath, 'utf-8'));
+
+  const books = new Map();
+  for (const o of orders) {
+    const asin = o.ASIN;
+    if (!asin) continue;
+    if (!books.has(asin)) {
+      books.set(asin, {
+        asin,
+        title: o['Product Name'] || asin,
+        authors: [],
+        tags: [],
+        highlights: [],
+      });
+    }
+  }
+
+  for (const a of authors) {
+    const asin = a.ASIN;
+    const name = a['Author Name'];
+    const book = books.get(asin);
+    if (book && name && !book.authors.includes(name)) book.authors.push(name);
+  }
+
+  for (const g of genres) {
+    const asin = g.ASIN;
+    const genre = g.Genre;
+    const book = books.get(asin);
+    if (book && genre && !book.tags.includes(genre)) book.tags.push(genre);
+  }
+
+  const bookList = Array.from(books.values());
+  highlights.forEach((text, i) => {
+    if (bookList[i]) bookList[i].highlights.push(text);
+  });
+
+  return buildBookGraph(bookList);
+}
+
 module.exports = {
   getEvents,
   getPoints,
@@ -249,5 +325,6 @@ module.exports = {
   getHighlightExpansions,
   getLocations,
   getReadingSpeed,
+  getBookGraph,
 };
 
