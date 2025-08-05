@@ -3,21 +3,23 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { describe, it, expect } from 'vitest';
 import BookNetwork from '../network/BookNetwork.jsx';
 
-const mockGraph = {
-  nodes: [
-    { id: 'a', title: 'A', authors: ['Author1'], tags: [], community: 0 },
-    { id: 'b', title: 'B', authors: [], tags: [], community: 0 },
-    { id: 'c', title: 'C', authors: [], tags: ['tag1'], community: 0 }
-  ],
-  links: [
-    { source: 'a', target: 'b', weight: 1 },
-    { source: 'b', target: 'c', weight: 1 }
-  ]
-};
+function createMockGraph() {
+  return {
+    nodes: [
+      { id: 'a', title: 'A', authors: ['Author1'], tags: [], community: 0 },
+      { id: 'b', title: 'B', authors: [], tags: [], community: 0 },
+      { id: 'c', title: 'C', authors: [], tags: ['tag1'], community: 0 }
+    ],
+    links: [
+      { source: 'a', target: 'b', weight: 1 },
+      { source: 'b', target: 'c', weight: 1 }
+    ]
+  };
+}
 
 describe('BookNetwork component', () => {
   it('highlights shortest path when searching by tag', async () => {
-    const { container } = render(<BookNetwork data={mockGraph} />);
+    const { container } = render(<BookNetwork data={createMockGraph()} />);
     await waitFor(() => {
       expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
     });
@@ -33,5 +35,23 @@ describe('BookNetwork component', () => {
       const highlightedLinks = container.querySelectorAll('line[data-highlighted="true"]');
       expect(highlightedLinks.length).toBe(2);
     });
+  });
+
+  it('renders higher-degree nodes with larger radii', async () => {
+    const { container } = render(<BookNetwork data={createMockGraph()} />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
+    });
+    const radiusA = parseFloat(
+      container.querySelector('[data-id="a"]').getAttribute('r')
+    );
+    const radiusB = parseFloat(
+      container.querySelector('[data-id="b"]').getAttribute('r')
+    );
+    const radiusC = parseFloat(
+      container.querySelector('[data-id="c"]').getAttribute('r')
+    );
+    expect(radiusB).toBeGreaterThan(radiusA);
+    expect(radiusA).toBeCloseTo(radiusC);
   });
 });
