@@ -9,8 +9,9 @@ vi.mock('react-leaflet', () => {
   return {
     MapContainer: ({ children }) => <div data-testid="map">{children}</div>,
     TileLayer: () => null,
-    CircleMarker: () => null,
+    CircleMarker: ({ children }) => <div>{children}</div>,
     GeoJSON: () => null,
+    Tooltip: ({ children }) => <div>{children}</div>,
     LayersControl,
     useMap: () => ({
       setView: () => {},

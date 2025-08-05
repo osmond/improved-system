@@ -6,6 +6,7 @@ import {
   CircleMarker,
   GeoJSON,
   useMap,
+  Tooltip,
 } from 'react-leaflet';
 import L from 'leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
@@ -345,7 +346,13 @@ export default function ReadingMap() {
                 center={[loc.latitude, loc.longitude]}
                 radius={5}
                 pathOptions={{ color: 'hsl(var(--chart-1))' }}
-              />
+              >
+                <Tooltip>
+                  {loc.title}
+                  <br />
+                  {new Date(loc.start).toLocaleDateString()}
+                </Tooltip>
+              </CircleMarker>
             ))}
           </MarkerClusterGroup>
         )}
@@ -356,7 +363,13 @@ export default function ReadingMap() {
               center={[loc.latitude, loc.longitude]}
               radius={5}
               pathOptions={{ color: 'hsl(var(--chart-1))' }}
-            />
+            >
+              <Tooltip>
+                {loc.title}
+                <br />
+                {new Date(loc.start).toLocaleDateString()}
+              </Tooltip>
+            </CircleMarker>
           ))}
       </MapContainer>
     </div>
