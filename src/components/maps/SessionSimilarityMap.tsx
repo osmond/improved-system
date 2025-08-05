@@ -124,6 +124,17 @@ export default function SessionSimilarityMap({
     return true
   })
 
+  const neighborOrder = useMemo(() => {
+    if (!selected) return new Map<number, number>()
+    const others = filtered
+      .filter((p) => p.cluster === selected.cluster && p.id !== selected.id)
+      .map((p) => ({ id: p.id, dist: Math.hypot(p.x - selected.x, p.y - selected.y) }))
+      .sort((a, b) => a.dist - b.dist)
+    const map = new Map<number, number>()
+    others.forEach((o, i) => map.set(o.id, i))
+    return map
+  }, [filtered, selected])
+
   const clusters = Array.from(new Set(filtered.map((d) => d.cluster)))
   const clusterConfig = clusters.reduce(
     (acc, c) => {
@@ -314,7 +325,12 @@ export default function SessionSimilarityMap({
               animationDuration={300}
               opacity={activeCluster === null || activeCluster === c ? 1 : 0.2}
               shape={(props) => (
-                <RunSymbol {...props} onSelect={handlePointSelect} />
+                <RunSymbol
+                  {...props}
+                  onSelect={handlePointSelect}
+                  selected={selected}
+                  orderMap={neighborOrder}
+                />
               )}
             />
           ))}
@@ -335,6 +351,8 @@ export default function SessionSimilarityMap({
                 {...props}
                 paceThreshold={paceThreshold}
                 onSelect={handlePointSelect}
+                selected={selected}
+                orderMap={neighborOrder}
               />
             )}
           />
@@ -576,41 +594,18 @@ function DeviationTrails({
   )
 }
 
-function RunSymbol({ cx, cy, payload, fill, onSelect }: any) {
-  const size = 6 + Math.max(0, payload.paceDelta) * 3
-  const halo = size + payload.confidence * 10
-
-  return (
-    <g>
-      <circle cx={cx} cy={cy} r={halo} fill={fill} opacity={0.2} />
-      <circle
-        cx={cx}
-        cy={cy}
-        r={size}
-        fill={fill}
-        stroke="#fff"
-        strokeWidth={1}
-        role="button"
-        tabIndex={0}
-        onClick={() => onSelect(payload)}
-        onKeyDown={(e) => {
-          if (e.key === "Enter" || e.key === " ") {
-            e.preventDefault()
-            onSelect(payload)
-          }
-        }}
-      />
-    </g>
-  )
-}
-
-function GoodRunSymbol({ cx, cy, payload, paceThreshold, onSelect, fill }: any) {
+function RunSymbol({ cx, cy, payload, fill, onSelect, selected, orderMap }: any) {
   const size = 6 + Math.max(0, payload.paceDelta) * 3
   const conf = payload.confidence ?? 0
   const halo = size + 2
+  const order = orderMap.get(payload.id)
+  let opacity = 1
+  if (selected && selected.id !== payload.id) {
+    opacity = order === undefined ? 0.1 : Math.max(0.2, 1 - order * 0.15)
+  }
 
   return (
-    <g>
+    <g opacity={opacity}>
       <circle
         cx={cx}
         cy={cy}
@@ -626,7 +621,58 @@ function GoodRunSymbol({ cx, cy, payload, paceThreshold, onSelect, fill }: any) 
         r={size}
         fill={fill}
         stroke="#fff"
-        strokeWidth={1}
+        strokeWidth={1 + conf * 2}
+        role="button"
+        tabIndex={0}
+        onClick={() => onSelect(payload)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter" || e.key === " ") {
+            e.preventDefault()
+            onSelect(payload)
+          }
+        }}
+      />
+    </g>
+  )
+}
+
+function GoodRunSymbol({
+  cx,
+  cy,
+  payload,
+  paceThreshold,
+  onSelect,
+  fill,
+  selected,
+  orderMap,
+}: any) {
+  const size = 6 + Math.max(0, payload.paceDelta) * 3
+  const conf = payload.confidence ?? 0
+  const halo = size + 2
+  const order = orderMap.get(payload.id)
+  let opacity = 1
+  if (selected && selected.id !== payload.id) {
+    opacity = order === undefined ? 0.1 : Math.max(0.2, 1 - order * 0.15)
+  }
+
+  return (
+    <g opacity={opacity}>
+      <circle
+        cx={cx}
+        cy={cy}
+        r={halo}
+        fill="none"
+        stroke={fill}
+        strokeOpacity={conf}
+        strokeWidth={2}
+      />
+      <circle
+        cx={cx}
+        cy={cy}
+        r={size}
+        fill={fill}
+        stroke="#fff"
+        strokeWidth={1 + conf * 2}
         role="button"
         tabIndex={0}
         onClick={() => onSelect(payload)}

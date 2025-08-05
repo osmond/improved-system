@@ -26,6 +26,7 @@ const baseSession: SessionPoint = {
   x: 0,
   y: 0,
   cluster: 0,
+  distance: 0,
   descriptor: 'Clear AM Cluster',
   good: true,
   pace: 6,

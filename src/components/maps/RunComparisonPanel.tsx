@@ -78,6 +78,17 @@ export default function RunComparisonPanel({
     }))
   }, [session.heartRate, clusterAvg.heartRate, typicalAvg.heartRate])
 
+  const neighbors = React.useMemo(() => {
+    return clusterPoints
+      .filter((p) => p.id !== session.id)
+      .map((p) => ({
+        ...p,
+        dist: Math.hypot(p.x - session.x, p.y - session.y),
+      }))
+      .sort((a, b) => a.dist - b.dist)
+      .slice(0, 5)
+  }, [clusterPoints, session])
+
   const chartConfig = {
     run: { label: "Run", color: "hsl(var(--chart-1))" },
     cluster: { label: "Cluster", color: "hsl(var(--chart-2))" },
@@ -125,6 +136,17 @@ export default function RunComparisonPanel({
                 <Line type="monotone" dataKey="typical" stroke="var(--color-typical)" dot={false} />
               </LineChart>
             </ChartContainer>
+          </div>
+          <div>
+            <h4 className="mb-1 text-sm font-medium">Nearest Neighbors</h4>
+            <ul className="text-sm list-disc pl-4 space-y-1">
+              {neighbors.map((n) => (
+                <li key={n.id}>
+                  {new Date(n.start).toLocaleDateString()} (
+                  {n.dist.toFixed(2)})
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </DialogContent>
