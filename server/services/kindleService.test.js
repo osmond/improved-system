@@ -8,34 +8,34 @@ afterEach(() => {
 });
 
 describe('kindleService', () => {
-  it('getEvents parses CSV into array of records', () => {
-    const csv = 'Timestamp,Activity\n2025-01-01T00:00:00Z,OPENED';
-    vi.spyOn(fs, 'readFileSync').mockReturnValue(csv);
-    const result = getEvents();
+  it('getEvents parses CSV with quoted commas', async () => {
+    const csv = 'Timestamp,Activity\n2025-01-01T00:00:00Z,"OPENED, page 1"';
+    vi.spyOn(fs.promises, 'readFile').mockResolvedValue(csv);
+    const result = await getEvents();
     expect(result).toEqual([
-      { Timestamp: '2025-01-01T00:00:00Z', Activity: 'OPENED' },
+      { Timestamp: '2025-01-01T00:00:00Z', Activity: 'OPENED, page 1' },
     ]);
   });
 
-  it('getPoints returns first row as object', () => {
-    const csv = 'Available Balance (Points),Marketplace,Pending Balance (Points)\n10,www.amazon.com,0';
-    vi.spyOn(fs, 'readFileSync').mockReturnValue(csv);
-    const result = getPoints();
+  it('getPoints returns first row as object', async () => {
+    const csv = 'Available Balance (Points),Marketplace,Pending Balance (Points)\n10,"www.amazon.com,uk",0';
+    vi.spyOn(fs.promises, 'readFile').mockResolvedValue(csv);
+    const result = await getPoints();
     expect(result).toEqual({
       'Available Balance (Points)': '10',
-      Marketplace: 'www.amazon.com',
+      Marketplace: 'www.amazon.com,uk',
       'Pending Balance (Points)': '0',
     });
   });
 
-  it('getAchievements parses CSV into array', () => {
-    const csv = 'AchievementGroupName,AchievementName,EarnDate,Marketplace,Quantity\nGroup,Gold,2024-01-01Z,www.amazon.com,1';
-    vi.spyOn(fs, 'readFileSync').mockReturnValue(csv);
-    const result = getAchievements();
+  it('getAchievements parses CSV with quoted fields', async () => {
+    const csv = 'AchievementGroupName,AchievementName,EarnDate,Marketplace,Quantity\nGroup,"Gold, Level",2024-01-01Z,"www.amazon.com","1"';
+    vi.spyOn(fs.promises, 'readFile').mockResolvedValue(csv);
+    const result = await getAchievements();
     expect(result).toEqual([
       {
         AchievementGroupName: 'Group',
-        AchievementName: 'Gold',
+        AchievementName: 'Gold, Level',
         EarnDate: '2024-01-01Z',
         Marketplace: 'www.amazon.com',
         Quantity: '1',

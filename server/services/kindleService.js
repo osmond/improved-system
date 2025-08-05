@@ -1,5 +1,6 @@
 const fs = require('fs');
 const path = require('path');
+const { parse } = require('csv-parse');
 const { aggregateDailyReading } = require('../../src/services/readingStats');
 const { aggregateReadingSessions } = require('../../src/services/readingSessions');
 const { calculateReadingSpeeds } = require('../../src/services/readingSpeed');
@@ -9,22 +10,21 @@ const { buildHighlightIndex, getExpansions } = require('../../src/services/highl
 const { getSessionLocations } = require('../../src/services/locationData');
 const { buildBookGraph } = require('../../src/services/bookGraph');
 
-function parseCsv(filePath) {
-  const content = fs.readFileSync(filePath, 'utf-8').trim();
-  const lines = content.split(/\r?\n/);
-  const headers = lines[0].split(',');
-  return lines.slice(1).filter(Boolean).map((line) => {
-    const values = line.split(',');
-    const record = {};
-    headers.forEach((h, i) => {
-      const value = values[i] || '';
-      record[h.trim()] = value.replace(/^"|"$/g, '');
-    });
-    return record;
+async function parseCsv(filePath) {
+  const content = await fs.promises.readFile(filePath, 'utf-8');
+  return new Promise((resolve, reject) => {
+    parse(
+      content,
+      { columns: true, skip_empty_lines: true, trim: true, bom: true },
+      (err, records) => {
+        if (err) reject(err);
+        else resolve(records);
+      }
+    );
   });
 }
 
-function getEvents() {
+async function getEvents() {
   const filePath = path.join(
     __dirname,
     '..',
@@ -38,7 +38,7 @@ function getEvents() {
   return parseCsv(filePath);
 }
 
-function getPoints() {
+async function getPoints() {
   const filePath = path.join(
     __dirname,
     '..',
@@ -51,11 +51,11 @@ function getPoints() {
     'Kindle.BookIncentives.BookPointsAccounts',
     'Kindle.BookIncentives.BookPointsAccounts.csv'
   );
-  const rows = parseCsv(filePath);
+  const rows = await parseCsv(filePath);
   return rows[0] || {};
 }
 
-function getAchievements() {
+async function getAchievements() {
   const filePath = path.join(
     __dirname,
     '..',
@@ -71,7 +71,7 @@ function getAchievements() {
   return parseCsv(filePath);
 }
 
-function getDailyStats() {
+async function getDailyStats() {
   const filePath = path.join(
     __dirname,
     '..',
@@ -82,11 +82,11 @@ function getDailyStats() {
     'Kindle.Devices.ReadingSession',
     'Kindle.Devices.ReadingSession.csv',
   );
-  const rows = parseCsv(filePath);
+  const rows = await parseCsv(filePath);
   return aggregateDailyReading(rows);
 }
 
-function getSessions() {
+async function getSessions() {
   const sessionsPath = path.join(
     __dirname,
     '..',
@@ -119,13 +119,15 @@ function getSessions() {
     'Kindle.UnifiedLibraryIndex.CustomerOrders',
     'Kindle.UnifiedLibraryIndex.CustomerOrders.csv',
   );
-  const sessions = parseCsv(sessionsPath);
-  const highlights = parseCsv(highlightsPath);
-  const orders = parseCsv(ordersPath);
+  const [sessions, highlights, orders] = await Promise.all([
+    parseCsv(sessionsPath),
+    parseCsv(highlightsPath),
+    parseCsv(ordersPath),
+  ]);
   return aggregateReadingSessions(sessions, highlights, orders);
 }
 
-function getReadingSpeed() {
+async function getReadingSpeed() {
   const sessionsPath = path.join(
     __dirname,
     '..',
@@ -136,11 +138,11 @@ function getReadingSpeed() {
     'Kindle.Devices.ReadingSession',
     'Kindle.Devices.ReadingSession.csv',
   );
-  const sessions = parseCsv(sessionsPath);
+  const sessions = await parseCsv(sessionsPath);
   return calculateReadingSpeeds(sessions);
 }
 
-function getGenreHierarchy() {
+async function getGenreHierarchy() {
   const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
 
   const sessionsPath = path.join(
@@ -177,17 +179,19 @@ function getGenreHierarchy() {
     'Kindle.UnifiedLibraryIndex.CustomerTags.csv'
   );
 
-  const sessions = parseCsv(sessionsPath);
-  const orders = parseCsv(ordersPath);
-  const authors = parseCsv(authorsPath);
-  const genres = parseCsv(genresPath);
-  const tags = parseCsv(tagsPath);
+  const [sessions, orders, authors, genres, tags] = await Promise.all([
+    parseCsv(sessionsPath),
+    parseCsv(ordersPath),
+    parseCsv(authorsPath),
+    parseCsv(genresPath),
+    parseCsv(tagsPath),
+  ]);
 
   const aggregated = aggregateReadingSessions(sessions, [], orders);
   return buildGenreHierarchy(aggregated, genres, authors, tags);
 }
 
-function getGenreTransitions(start, end) {
+async function getGenreTransitions(start, end) {
   const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
 
   const sessionsPath = path.join(
@@ -210,9 +214,11 @@ function getGenreTransitions(start, end) {
     'Kindle.UnifiedLibraryIndex.CustomerGenres.csv'
   );
 
-  const sessions = parseCsv(sessionsPath);
-  const orders = parseCsv(ordersPath);
-  const genres = parseCsv(genresPath);
+  const [sessions, orders, genres] = await Promise.all([
+    parseCsv(sessionsPath),
+    parseCsv(ordersPath),
+    parseCsv(genresPath),
+  ]);
 
   let aggregated = aggregateReadingSessions(sessions, [], orders);
   if (start) aggregated = aggregated.filter((s) => s.start >= start);
@@ -223,17 +229,18 @@ function getGenreTransitions(start, end) {
 }
 
 let highlightTrie = null;
-function getHighlightTrie() {
+async function getHighlightTrie() {
   if (!highlightTrie) {
     const filePath = path.join(__dirname, '..', '..', 'data', 'kindle', 'highlights.json');
-    const texts = JSON.parse(fs.readFileSync(filePath, 'utf-8'));
+    const content = await fs.promises.readFile(filePath, 'utf-8');
+    const texts = JSON.parse(content);
     highlightTrie = buildHighlightIndex(texts);
   }
   return highlightTrie;
 }
 
-function getHighlightExpansions(keyword) {
-  const trie = getHighlightTrie();
+async function getHighlightExpansions(keyword) {
+  const trie = await getHighlightTrie();
   return getExpansions(trie, keyword);
 }
 
@@ -241,7 +248,7 @@ function getLocations() {
   return getSessionLocations();
 }
 
-function getBookGraph() {
+async function getBookGraph() {
   const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
 
   const ordersPath = path.join(
@@ -274,10 +281,13 @@ function getBookGraph() {
     'highlights.json'
   );
 
-  const orders = parseCsv(ordersPath);
-  const authors = parseCsv(authorsPath);
-  const genres = parseCsv(genresPath);
-  const highlights = JSON.parse(fs.readFileSync(highlightsPath, 'utf-8'));
+  const [orders, authors, genres, highlightsContent] = await Promise.all([
+    parseCsv(ordersPath),
+    parseCsv(authorsPath),
+    parseCsv(genresPath),
+    fs.promises.readFile(highlightsPath, 'utf-8'),
+  ]);
+  const highlights = JSON.parse(highlightsContent);
 
   const books = new Map();
   for (const o of orders) {
