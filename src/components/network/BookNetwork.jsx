@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState, useMemo } from 'react';
 import { select } from 'd3-selection';
+import { transition } from 'd3-transition';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
 import { scaleOrdinal, scaleLinear } from 'd3-scale';
@@ -20,7 +21,11 @@ export default function BookNetwork({ data = graphData }) {
       degreeMap[l.source] = (degreeMap[l.source] || 0) + 1;
       degreeMap[l.target] = (degreeMap[l.target] || 0) + 1;
     });
-    const nodes = data.nodes.map((n) => ({ ...n, degree: degreeMap[n.id] || 0 }));
+    const nodes = data.nodes.map((n) => ({
+      ...n,
+      degree: degreeMap[n.id] || 0,
+      expanded: true,
+    }));
     setGraph({ nodes, links: data.links });
   }, [data]);
 
@@ -34,6 +39,19 @@ export default function BookNetwork({ data = graphData }) {
     });
     return map;
   }, [graph]);
+
+  const toggleNeighbors = (id) => {
+    setGraph((g) => {
+      const target = g.nodes.find((n) => n.id === id);
+      const neigh = adjacency.get(id) || [];
+      const expand = !target.expanded;
+      const nodes = g.nodes.map((n) =>
+        neigh.includes(n.id) ? { ...n, expanded: expand } : n
+      );
+      target.expanded = true;
+      return { ...g, nodes };
+    });
+  };
 
   useEffect(() => {
     if (!selected || (!tag && !author)) {
@@ -85,7 +103,6 @@ export default function BookNetwork({ data = graphData }) {
 
   useEffect(() => {
     const svg = select(svgRef.current);
-    svg.selectAll('*').remove();
     const width = 600;
     const height = 400;
 
@@ -107,73 +124,127 @@ export default function BookNetwork({ data = graphData }) {
       return edgeKey(s, t);
     };
 
-    const simulation = forceSimulation(graph.nodes)
-      .force(
-        'link',
-        forceLink(graph.links).id((d) => d.id).distance(100)
-      )
+    const visible = graph.nodes.filter((n) => n.expanded);
+    const idSet = new Set(visible.map((n) => n.id));
+    const visibleLinks = graph.links.filter(
+      (l) => idSet.has(l.source) && idSet.has(l.target)
+    );
+
+    const simulation = forceSimulation(visible)
+      .force('link', forceLink(visibleLinks).id((d) => d.id).distance(100))
       .force('charge', forceManyBody().strength(-200))
       .force('center', forceCenter(width / 2, height / 2));
 
-    const link = svg
-      .append('g')
+    const t = transition().duration(400);
+
+    const linkGroup = svg
+      .selectAll('g.links')
+      .data([null])
+      .join('g')
+      .attr('class', 'links')
       .attr('stroke', 'var(--chart-network-link)')
-      .attr('stroke-opacity', 0.6)
+      .attr('stroke-opacity', 0.6);
+
+    const link = linkGroup
       .selectAll('line')
-      .data(graph.links)
-      .join('line')
-      .attr('stroke-width', (d) =>
-        highlightedLinks.has(edgeFromLink(d)) ? 3 : Math.sqrt(d.weight)
-      )
-      .attr('stroke', (d) =>
-        highlightedLinks.has(edgeFromLink(d))
-          ? 'hsl(var(--chart-1))'
-          : 'var(--chart-network-link)'
-      )
-      .attr('data-highlighted', (d) =>
-        highlightedLinks.has(edgeFromLink(d)) ? 'true' : null
+      .data(visibleLinks, edgeFromLink)
+      .join(
+        (enter) =>
+          enter
+            .append('line')
+            .attr('stroke-width', (d) =>
+              highlightedLinks.has(edgeFromLink(d)) ? 3 : Math.sqrt(d.weight)
+            )
+            .attr('stroke', (d) =>
+              highlightedLinks.has(edgeFromLink(d))
+                ? 'hsl(var(--chart-1))'
+                : 'var(--chart-network-link)'
+            )
+            .attr('data-highlighted', (d) =>
+              highlightedLinks.has(edgeFromLink(d)) ? 'true' : null
+            )
+            .attr('stroke-opacity', 0)
+            .call((e) => e.transition(t).attr('stroke-opacity', 0.6)),
+        (update) => update,
+        (exit) => exit.transition(t).attr('stroke-opacity', 0).remove()
       );
 
-    const node = svg
-      .append('g')
-      .selectAll('circle')
-      .data(graph.nodes)
-      .join('circle')
-      .attr('r', (d) =>
-        radiusScale(d.degree) + (highlightedNodes.has(d.id) ? 3 : 0)
-      )
-      .attr('fill', (d) => color(d.community))
-      .attr('stroke', (d) =>
-        highlightedNodes.has(d.id)
-          ? 'hsl(var(--chart-1))'
-          : 'var(--chart-network-node-border)'
-      )
-      .attr('stroke-width', (d) => (highlightedNodes.has(d.id) ? 3 : 1.5))
-      .attr('data-testid', 'node')
-      .attr('data-id', (d) => d.id)
-      .attr('data-highlighted', (d) =>
-        highlightedNodes.has(d.id) ? 'true' : null
-      )
-      .call(
-        drag()
-          .on('start', (event, d) => {
-            if (!event.active) simulation.alphaTarget(0.3).restart();
-            d.fx = d.x;
-            d.fy = d.y;
-          })
-          .on('drag', (event, d) => {
-            d.fx = event.x;
-            d.fy = event.y;
-          })
-          .on('end', (event, d) => {
-            if (!event.active) simulation.alphaTarget(0);
-            d.fx = null;
-            d.fy = null;
-          })
-      )
-      .on('click', (event, d) => setSelected(d.id));
+    const nodeGroup = svg
+      .selectAll('g.nodes')
+      .data([null])
+      .join('g')
+      .attr('class', 'nodes');
 
-    node.append('title').text((d) => d.title);
+    const node = nodeGroup
+      .selectAll('circle')
+      .data(visible, (d) => d.id)
+      .join(
+        (enter) => {
+          const n = enter
+            .append('circle')
+            .attr('r', 0)
+            .attr('fill', (d) => color(d.community))
+            .attr('stroke', (d) =>
+              highlightedNodes.has(d.id)
+                ? 'hsl(var(--chart-1))'
+                : 'var(--chart-network-node-border)'
+            )
+            .attr('stroke-width', (d) =>
+              highlightedNodes.has(d.id) ? 3 : 1.5
+            )
+            .attr('data-testid', 'node')
+            .attr('data-id', (d) => d.id)
+            .attr('data-highlighted', (d) =>
+              highlightedNodes.has(d.id) ? 'true' : null
+            )
+            .attr('cx', width / 2)
+            .attr('cy', height / 2)
+            .on('click', (event, d) => {
+              setSelected(d.id);
+              toggleNeighbors(d.id);
+            })
+            .call(
+              drag()
+                .on('start', (event, d) => {
+                  if (!event.active) simulation.alphaTarget(0.3).restart();
+                  d.fx = d.x;
+                  d.fy = d.y;
+                })
+                .on('drag', (event, d) => {
+                  d.fx = event.x;
+                  d.fy = event.y;
+                })
+                .on('end', (event, d) => {
+                  if (!event.active) simulation.alphaTarget(0);
+                  d.fx = null;
+                  d.fy = null;
+                })
+            );
+          n.append('title').text((d) => d.title);
+          n.call((e) =>
+            e
+              .transition(t)
+              .attr('r', (d) =>
+                radiusScale(d.degree) + (highlightedNodes.has(d.id) ? 3 : 0)
+              )
+          );
+          return n;
+        },
+        (update) =>
+          update.call((u) =>
+            u
+              .transition(t)
+              .attr('stroke', (d) =>
+                highlightedNodes.has(d.id)
+                  ? 'hsl(var(--chart-1))'
+                  : 'var(--chart-network-node-border)'
+              )
+              .attr('stroke-width', (d) =>
+                highlightedNodes.has(d.id) ? 3 : 1.5
+              )
+          ),
+        (exit) => exit.transition(t).attr('r', 0).remove()
+      );
 
     simulation.on('tick', () => {
       link
@@ -185,8 +256,12 @@ export default function BookNetwork({ data = graphData }) {
       node.attr('cx', (d) => d.x).attr('cy', (d) => d.y);
     });
 
-    return () => simulation.stop();
-  }, [graph, highlightedNodes, highlightedLinks]);
+    return () => {
+      simulation.stop();
+      svg.selectAll('circle').interrupt();
+      svg.selectAll('line').interrupt();
+    };
+  }, [graph, highlightedNodes, highlightedLinks, adjacency]);
 
   return (
     <div>
