@@ -14,17 +14,6 @@ const LANE_HEIGHT = BAR_HEIGHT + LANE_PADDING;
 const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 20;
 
-const getDurationBucket = (duration) => {
-  if (duration < 30) return 'short';
-  if (duration < 60) return 'medium';
-  return 'long';
-};
-
-const colorScale = scaleOrdinal()
-  .domain(['short', 'medium', 'long'])
-  .range(schemeTableau10.slice(0, 3));
-
-const colorScaleMapper = (d) => colorScale(d.bucket);
 
 export default function ReadingTimeline({ sessions = [] }) {
   const ref = useRef(null);
@@ -44,6 +33,15 @@ export default function ReadingTimeline({ sessions = [] }) {
   const lanes = laneMap.size || 1;
   const height = lanes * LANE_HEIGHT + LANE_PADDING;
 
+  const genres = useMemo(
+    () => Array.from(new Set(sessions.map((s) => s.genre || 'Unknown'))),
+    [sessions],
+  );
+  const colorScale = useMemo(
+    () => scaleOrdinal().domain(genres).range(schemeTableau10),
+    [genres],
+  );
+
   useEffect(() => {
     const svg = select(ref.current);
     svg.selectAll('*').remove();
@@ -54,7 +52,6 @@ export default function ReadingTimeline({ sessions = [] }) {
       startDate: new Date(s.start),
       endDate: new Date(s.end),
       lane: laneMap.get(s.asin),
-      bucket: getDurationBucket(s.duration),
     }));
     const longest = parsed.reduce((a, b) => (a.duration > b.duration ? a : b));
     const shortest = parsed.reduce((a, b) => (a.duration < b.duration ? a : b));
@@ -86,7 +83,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         .attr('y', (d) => d.lane * LANE_HEIGHT + LANE_PADDING)
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
         .attr('height', BAR_HEIGHT)
-        .attr('fill', colorScaleMapper);
+        .attr('fill', (d) => colorScale(d.genre || 'Unknown'));
 
       bars
         .append('title')

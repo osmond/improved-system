@@ -15,6 +15,7 @@ const sessions = [
     title: 'Test Book 1',
     duration: 20,
     highlights: 2,
+    genre: 'Mystery',
   },
   {
     start: '2025-01-01T00:30:00Z',
@@ -23,6 +24,7 @@ const sessions = [
     title: 'Test Book 2',
     duration: 40,
     highlights: 1,
+    genre: 'Fantasy',
   },
 ];
 
@@ -34,6 +36,7 @@ const overlapping = [
     title: 'Overlap 1',
     duration: 20,
     highlights: 1,
+    genre: 'Mystery',
   },
   {
     start: '2025-01-01T00:15:00Z',
@@ -42,6 +45,7 @@ const overlapping = [
     title: 'Overlap 2',
     duration: 25,
     highlights: 3,
+    genre: 'Science Fiction',
   },
 ];
 
@@ -116,15 +120,14 @@ describe('ReadingTimeline', () => {
     expect(y1).not.toBe(y2);
   });
 
-  it('assigns colors based on duration bucket', () => {
+  it('assigns colors based on genre', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const rects = svg.querySelectorAll('rect[height="30"]');
     const color = scaleOrdinal()
-      .domain(['short', 'medium', 'long'])
-      .range(schemeTableau10.slice(0, 3));
-    const bucket = (d) => (d < 30 ? 'short' : d < 60 ? 'medium' : 'long');
-    expect(rects[0].getAttribute('fill')).toBe(color(bucket(sessions[0].duration)));
-    expect(rects[1].getAttribute('fill')).toBe(color(bucket(sessions[1].duration)));
+      .domain(['Mystery', 'Fantasy'])
+      .range(schemeTableau10.slice(0, 2));
+    expect(rects[0].getAttribute('fill')).toBe(color(sessions[0].genre));
+    expect(rects[1].getAttribute('fill')).toBe(color(sessions[1].genre));
   });
 });
