@@ -10,6 +10,7 @@ const {
   getHighlightExpansions,
   getLocations,
   getReadingSpeed,
+  getBookGraph,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -94,6 +95,14 @@ router.get('/reading-speed', (req, res) => {
     res.json(getReadingSpeed());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load reading speed' });
+  }
+});
+
+router.get('/book-graph', (req, res) => {
+  try {
+    res.json(getBookGraph());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load book graph' });
   }
 });
 

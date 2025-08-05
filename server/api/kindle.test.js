@@ -75,4 +75,11 @@ describe('GET /api/kindle', () => {
     expect(res.body[0]).toHaveProperty('latitude');
     expect(res.body[0]).toHaveProperty('longitude');
   });
+
+  it('returns book graph data', async () => {
+    const res = await request(app).get('/api/kindle/book-graph');
+    expect(res.status).toBe(200);
+    expect(res.body).toHaveProperty('nodes');
+    expect(res.body).toHaveProperty('links');
+  });
 });
