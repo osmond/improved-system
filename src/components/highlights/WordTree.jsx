@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { hierarchy, tree, cluster } from 'd3-hierarchy';
 import { select } from 'd3-selection';
 import { transition } from 'd3-transition';
-import { linkHorizontal, linkRadial } from 'd3-shape';
+import { linkHorizontal } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import Sentiment from 'sentiment';
 import highlights from '@/data/kindle/highlights.json';
@@ -34,7 +34,7 @@ function getExpansions(word) {
 export default function WordTree() {
   const [keyword, setKeyword] = useState('');
   const [data, setData] = useState(null);
-  const [layoutType, setLayoutType] = useState('linear');
+  const [layout, setLayout] = useState('linear');
   const svgRef = useRef(null);
 
   const toggleNode = d => {
@@ -82,20 +82,31 @@ export default function WordTree() {
 
     const root = hierarchy(data, d => d.children);
 
+    const project = (x, y) => {
+      if (layout === 'radial') {
+        const tx = y * Math.cos(x - Math.PI / 2);
+        const ty = y * Math.sin(x - Math.PI / 2);
+        return [tx, ty];
+      }
+      return [y, x];
+    };
+
     let linkFn;
 
-    if (layoutType === 'radial') {
+    if (layout === 'radial') {
       const radius = 180;
-      const layout = cluster().size([2 * Math.PI, radius]);
-      layout(root);
-      linkFn = linkRadial().angle(d => d.x).radius(d => d.y);
+      const layoutAlg = cluster().size([2 * Math.PI, radius]);
+      layoutAlg(root);
+      linkFn = linkHorizontal()
+        .x(d => project(d.x, d.y)[0])
+        .y(d => project(d.x, d.y)[1]);
       svg.attr(
         'viewBox',
         [-radius - 20, -radius - 20, (radius + 20) * 2, (radius + 20) * 2]
       );
     } else {
-      const layout = tree().nodeSize([24, 120]);
-      layout(root);
+      const layoutAlg = tree().nodeSize([24, 120]);
+      layoutAlg(root);
       linkFn = linkHorizontal().x(d => d.y).y(d => d.x);
       svg.attr('viewBox', [-20, -20, 800, 400]);
     }
@@ -107,15 +118,6 @@ export default function WordTree() {
       d.data.x0 = d.data.x0 ?? d.x;
       d.data.y0 = d.data.y0 ?? d.y;
     });
-
-    const project = (x, y) => {
-      if (layoutType === 'radial') {
-        const tx = y * Math.cos(x - Math.PI / 2);
-        const ty = y * Math.sin(x - Math.PI / 2);
-        return [tx, ty];
-      }
-      return [y, x];
-    };
 
     const link = linkGroup.selectAll('path').data(links, d => d.target.data.id);
 
@@ -224,7 +226,7 @@ export default function WordTree() {
       svg.selectAll('.links path').interrupt();
       svg.selectAll('.nodes g').interrupt();
     };
-  }, [data, layoutType]);
+  }, [data, layout]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -259,9 +261,9 @@ export default function WordTree() {
         <button
           type="button"
           className="px-2 py-1 border"
-          onClick={() => setLayoutType(layoutType === 'linear' ? 'radial' : 'linear')}
+          onClick={() => setLayout(layout === 'linear' ? 'radial' : 'linear')}
         >
-          {layoutType === 'linear' ? 'Radial' : 'Linear'}
+          {layout === 'linear' ? 'Radial' : 'Linear'}
         </button>
       </form>
       <div className="mb-2 flex items-center gap-2 text-sm">
@@ -275,7 +277,7 @@ export default function WordTree() {
           <span className="w-4 h-4 mr-1" style={{ background: '#1a9850' }}></span>Positive
         </span>
       </div>
-      <svg ref={svgRef} width={layoutType === 'linear' ? 800 : 400} height={400}></svg>
+      <svg ref={svgRef} width={layout === 'linear' ? 800 : 400} height={400}></svg>
     </div>
   );
 }
