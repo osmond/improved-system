@@ -46,10 +46,26 @@ export default function GenreSankey() {
     const height = 400;
 
     const genres = Array.from(new Set(data.flatMap((d) => [d.source, d.target])));
-    const nodes = genres.map((name) => ({ name }));
+
+    // compute outgoing totals per genre
+    const outflows = {};
+    data.forEach((d) => {
+      outflows[d.source] = (outflows[d.source] || 0) + d.count;
+      if (!(d.target in outflows)) outflows[d.target] = outflows[d.target] || 0;
+    });
+
+    // sort genres by descending outflow
+    const sortedGenres = [...genres].sort(
+      (a, b) => (outflows[b] || 0) - (outflows[a] || 0),
+    );
+
+    const nodes = sortedGenres.map((name) => ({
+      name,
+      outflow: outflows[name] || 0,
+    }));
     const links = data.map((d) => ({
-      source: genres.indexOf(d.source),
-      target: genres.indexOf(d.target),
+      source: sortedGenres.indexOf(d.source),
+      target: sortedGenres.indexOf(d.target),
       value: d.count,
       monthlyCounts: d.monthlyCounts || Array(12).fill(0),
     }));
@@ -57,6 +73,7 @@ export default function GenreSankey() {
     const { nodes: n, links: l } = sankey()
       .nodeWidth(15)
       .nodePadding(10)
+      .nodeSort((a, b) => b.outflow - a.outflow)
       .extent([
         [1, 1],
         [width - 1, height - 6],
