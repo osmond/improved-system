@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-const { getSessionLocations } = require('../locationData');
+import { getSessionLocations } from '../locationData';
 
 describe('location data serialization', () => {
   it('provides numeric latitude and longitude', () => {
