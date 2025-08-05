@@ -1,8 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
 import { select } from "d3-selection";
 import { geoOrthographic, geoPath } from "d3-geo";
-import { drag } from "d3-drag";
-import { zoom } from "d3-zoom";
+import { drag, type DragBehavior } from "d3-drag";
+import { zoom, type ZoomBehavior } from "d3-zoom";
 import { timer, Timer } from "d3-timer";
 import type { Feature } from "geojson";
 
@@ -60,9 +60,11 @@ export default function GlobeRenderer({
   }, [autoRotate]);
 
   useEffect(() => {
-    const svg = select(svgRef.current);
+    const svgEl = svgRef.current;
+    if (!svgEl) return;
+    const svg = select(svgEl);
 
-    const dragBehavior = drag<SVGSVGElement, unknown>()
+    const dragBehavior: DragBehavior<SVGSVGElement, unknown, unknown> = drag<SVGSVGElement, unknown>()
       .on("start", () => {
         timerRef.current?.stop();
       })
@@ -81,7 +83,7 @@ export default function GlobeRenderer({
         if (autoRotate) startTimer();
       });
 
-    const zoomBehavior = zoom<SVGSVGElement, unknown>()
+    const zoomBehavior: ZoomBehavior<SVGSVGElement, unknown> = zoom<SVGSVGElement, unknown>()
       .on("start", () => {
         timerRef.current?.stop();
       })
@@ -93,8 +95,8 @@ export default function GlobeRenderer({
         if (autoRotate) startTimer();
       });
 
-    svg.call(dragBehavior as any);
-    svg.call(zoomBehavior as any);
+    svg.call(dragBehavior);
+    svg.call(zoomBehavior);
   }, [autoRotate]);
 
   // animate newly added paths to "draw" themselves
