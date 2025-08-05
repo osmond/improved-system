@@ -1,0 +1,7 @@
+{
+  "nodes": [
+    { "id": "1", "title": "One", "tags": ["mystery"], "authors": ["Alice"] },
+    { "id": "2", "title": "Two", "tags": ["scifi"], "authors": ["Bob"] }
+  ],
+  "links": []
+}

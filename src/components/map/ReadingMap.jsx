@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { MapContainer, TileLayer, CircleMarker } from 'react-leaflet';
+import locationsData from '@/data/kindle/locations.json';
 
 export default function ReadingMap() {
   const [locations, setLocations] = useState([]);
@@ -8,10 +9,7 @@ export default function ReadingMap() {
   const [title, setTitle] = useState('');
 
   useEffect(() => {
-    fetch('/api/kindle/locations')
-      .then((res) => res.json())
-      .then(setLocations)
-      .catch(() => setLocations([]));
+    setLocations(locationsData);
   }, []);
 
   const filtered = useMemo(() => {

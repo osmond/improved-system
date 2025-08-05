@@ -2,11 +2,21 @@ import React, { useState, useRef, useEffect } from 'react';
 import { hierarchy, tree } from 'd3-hierarchy';
 import { select } from 'd3-selection';
 import { linkHorizontal } from 'd3-shape';
+import highlights from '@/data/kindle/highlights.json';
 
-async function fetchExpansions(word) {
-  const res = await fetch(`/api/kindle/highlights/search?keyword=${encodeURIComponent(word)}`);
-  if (!res.ok) throw new Error('failed');
-  return res.json();
+function getExpansions(word) {
+  const counts = {};
+  const target = word.toLowerCase();
+  for (const h of highlights) {
+    const parts = h.toLowerCase().split(/\s+/);
+    for (let i = 0; i < parts.length - 1; i++) {
+      if (parts[i] === target) {
+        const next = parts[i + 1];
+        counts[next] = (counts[next] || 0) + 1;
+      }
+    }
+  }
+  return Object.entries(counts).map(([w, count]) => ({ word: w, count }));
 }
 
 export default function WordTree() {
@@ -36,7 +46,7 @@ export default function WordTree() {
       .join('g')
       .attr('transform', d => `translate(${d.y},${d.x})`)
       .on('click', async (event, d) => {
-        const expansions = await fetchExpansions(d.data.word);
+        const expansions = getExpansions(d.data.word);
         d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
         setData({ ...data });
       });
@@ -50,7 +60,7 @@ export default function WordTree() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const expansions = await fetchExpansions(keyword);
+    const expansions = getExpansions(keyword);
     setData({ word: keyword, children: expansions.map(e => ({ word: e.word, count: e.count })) });
   };
 

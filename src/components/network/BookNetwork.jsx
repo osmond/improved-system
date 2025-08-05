@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
+import graphData from '@/data/kindle/book-graph.json';
 
 export default function BookNetwork() {
   const svgRef = useRef(null);
@@ -10,9 +11,7 @@ export default function BookNetwork() {
   const [author, setAuthor] = useState('');
 
   useEffect(() => {
-    fetch('/api/kindle/book-graph')
-      .then((res) => res.json())
-      .then((data) => setGraph(data));
+    setGraph(graphData);
   }, []);
 
   const filteredNodes = graph.nodes.filter(

@@ -1,0 +1,4 @@
+[
+  { "start": "2024-01-01T08:00:00Z", "wpm": 200, "period": "morning" },
+  { "start": "2024-01-01T20:00:00Z", "wpm": 300, "period": "evening" }
+]

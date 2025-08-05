@@ -10,6 +10,8 @@ import { computeRouteMetrics } from "./routeMetrics";
 import { getAllSessionMeta } from "./sessionStore";
 export { calculateRouteSimilarity } from "./routeMetrics";
 export type { LocationVisit } from "./locationStore";
+import dailyReadingData from "../data/kindle/daily-stats.json";
+import sessionData from "../data/kindle/sessions.json";
 
 export type Activity = {
   id: number;
@@ -1681,9 +1683,7 @@ export interface DailyReadingStat {
 }
 
 export async function getDailyReadingStats(): Promise<DailyReadingStat[]> {
-  const res = await fetch('/api/kindle/daily-stats');
-  if (!res.ok) throw new Error('Failed to fetch daily stats');
-  return res.json();
+  return dailyReadingData;
 }
 
 export interface KindleSession {
@@ -1696,9 +1696,7 @@ export interface KindleSession {
 }
 
 export async function getKindleSessions(): Promise<KindleSession[]> {
-  const res = await fetch('/api/kindle/sessions');
-  if (!res.ok) throw new Error('Failed to fetch sessions');
-  return res.json();
+  return sessionData;
 }
 
 // ----- Focus sessions -----
