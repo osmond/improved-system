@@ -4,13 +4,14 @@ import ReadingSpeedViolin from '../ReadingSpeedViolin';
 import '@testing-library/jest-dom';
 
 describe('ReadingSpeedViolin', () => {
-  it('renders toggles and chart', async () => {
+  it('renders controls and chart', async () => {
     render(<ReadingSpeedViolin />);
     expect(screen.getByLabelText('Morning')).toBeInTheDocument();
     expect(screen.getByLabelText('Evening')).toBeInTheDocument();
+    expect(screen.getByLabelText('Bandwidth')).toBeInTheDocument();
     await waitFor(() => {
-      const rects = document.querySelectorAll('rect');
-      expect(rects.length).toBeGreaterThan(0);
+      const paths = document.querySelectorAll('path');
+      expect(paths.length).toBeGreaterThan(0);
     });
   });
 });
