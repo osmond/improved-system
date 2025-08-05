@@ -19,6 +19,7 @@ import {
   DialogTrigger,
   DialogContent,
 } from "@/ui/dialog";
+import { Badge } from "@/ui/badge";
 import * as React from "react";
 
 interface ClusterCardProps {
@@ -30,6 +31,7 @@ interface ClusterCardProps {
   open?: boolean
   onOpenChange?: (open: boolean) => void
   onSelect?: () => void
+  goodDay?: boolean
 }
 
 export default function ClusterCard({
@@ -38,6 +40,7 @@ export default function ClusterCard({
   stability,
   label,
   centroid,
+  goodDay,
   open,
   onOpenChange,
   onSelect,
@@ -55,7 +58,12 @@ export default function ClusterCard({
       <DialogTrigger asChild>
         <Card className="cursor-pointer" onClick={onSelect}>
           <CardHeader className="p-4 pb-2">
-            <CardTitle className="text-sm">{label}</CardTitle>
+            <CardTitle className="text-sm flex items-center gap-2">
+              {label}
+              {goodDay && (
+                <Badge variant="secondary">Good day cluster</Badge>
+              )}
+            </CardTitle>
             <CardDescription className="text-xs">
               {temp.toFixed(1)}°F · {start.toFixed(0)}h · Δ {delta.toFixed(2)} ·
               Stability {(stability * 100).toFixed(0)}%
