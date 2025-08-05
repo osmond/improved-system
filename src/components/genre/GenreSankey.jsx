@@ -86,7 +86,8 @@ export default function GenreSankey() {
       { length: 10 },
       (_, i) => `hsl(var(--chart-${i + 1}))`
     );
-    const color = scaleOrdinal().range(chartColors);
+    // reuse a single ordinal scale so nodes and their outgoing links share hues
+    const color = scaleOrdinal().domain(sortedGenres).range(chartColors);
 
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 

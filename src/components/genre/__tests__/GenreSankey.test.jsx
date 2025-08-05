@@ -49,14 +49,18 @@ describe('GenreSankey', () => {
     expect(container.querySelectorAll('path').length).not.toBe(initialCount);
   });
 
-  it('renders links with non-gray strokes', async () => {
+  it('renders at least one link sharing a node color', async () => {
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
       const links = container.querySelectorAll('path');
+      const nodes = container.querySelectorAll('rect');
       expect(links.length).toBeGreaterThan(0);
+      expect(nodes.length).toBeGreaterThan(0);
+
+      const nodeColors = Array.from(nodes).map((n) => n.getAttribute('fill'));
       const hasColoredLink = Array.from(links).some((link) => {
         const stroke = link.getAttribute('stroke');
-        return stroke && stroke !== '#999' && stroke !== 'var(--chart-network-link)';
+        return stroke && stroke !== '#999' && nodeColors.includes(stroke);
       });
       expect(hasColoredLink).toBe(true);
     });
