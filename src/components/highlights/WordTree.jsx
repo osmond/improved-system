@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { hierarchy, tree, cluster } from 'd3-hierarchy';
 import { select } from 'd3-selection';
+import { transition } from 'd3-transition';
 import { linkHorizontal, linkRadial } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import Sentiment from 'sentiment';
@@ -36,92 +37,169 @@ export default function WordTree() {
   const [layoutType, setLayoutType] = useState('linear');
   const svgRef = useRef(null);
 
+  const toggleNode = d => {
+    if (d.data.expanded) {
+      d.data._children = d.data.children;
+      d.data.children = undefined;
+      d.data.expanded = false;
+    } else {
+      if (d.data._children) {
+        d.data.children = d.data._children;
+        d.data._children = undefined;
+        d.data.expanded = true;
+      } else {
+        const expansions = getExpansions(d.data.word);
+        d.data.children = expansions.map(e => ({
+          id: `${d.data.id}-${e.word}`,
+          word: e.word,
+          count: e.count,
+          sentiment: e.sentiment,
+          expanded: false,
+        }));
+        d.data.expanded = true;
+      }
+    }
+    setData({ ...data });
+  };
+
   useEffect(() => {
     if (!data) return;
     const svg = select(svgRef.current);
-    svg.selectAll('*').remove();
-    const root = hierarchy(data);
 
-    let node, linkFn;
+    const t = transition().duration(400);
+
+    const linkGroup = svg
+      .selectAll('g.links')
+      .data([null])
+      .join('g')
+      .attr('class', 'links');
+
+    const nodeGroup = svg
+      .selectAll('g.nodes')
+      .data([null])
+      .join('g')
+      .attr('class', 'nodes');
+
+    const root = hierarchy(data, d => d.children);
+
+    let linkFn;
 
     if (layoutType === 'radial') {
       const radius = 180;
       const layout = cluster().size([2 * Math.PI, radius]);
       layout(root);
       linkFn = linkRadial().angle(d => d.x).radius(d => d.y);
-      svg
-        .attr('viewBox', [-radius - 20, -radius - 20, (radius + 20) * 2, (radius + 20) * 2])
-        .selectAll('path')
-        .data(root.links())
-        .join('path')
-        .attr('fill', 'none')
-        .attr('stroke', 'var(--chart-network-link)')
-        .attr('d', linkFn);
-
-      node = svg
-        .selectAll('g')
-        .data(root.descendants())
-        .join('g')
-        .attr('transform', d => {
-          const x = d.y * Math.cos(d.x - Math.PI / 2);
-          const y = d.y * Math.sin(d.x - Math.PI / 2);
-          return `translate(${x},${y})`;
-        })
-        .on('click', async (event, d) => {
-          const expansions = getExpansions(d.data.word);
-          d.data.children = expansions.map(e => ({
-            word: e.word,
-            count: e.count,
-            sentiment: e.sentiment,
-          }));
-          setData({ ...data });
-        });
+      svg.attr(
+        'viewBox',
+        [-radius - 20, -radius - 20, (radius + 20) * 2, (radius + 20) * 2]
+      );
     } else {
       const layout = tree().nodeSize([24, 120]);
       layout(root);
       linkFn = linkHorizontal().x(d => d.y).y(d => d.x);
-      svg
-        .attr('viewBox', [-20, -20, 800, 400])
-        .selectAll('path')
-        .data(root.links())
-        .join('path')
-        .attr('fill', 'none')
-        .attr('stroke', 'var(--chart-network-link)')
-        .attr('d', linkFn);
-
-      node = svg
-        .selectAll('g')
-        .data(root.descendants())
-        .join('g')
-        .attr('transform', d => `translate(${d.y},${d.x})`)
-        .on('click', async (event, d) => {
-          const expansions = getExpansions(d.data.word);
-          d.data.children = expansions.map(e => ({
-            word: e.word,
-            count: e.count,
-            sentiment: e.sentiment,
-          }));
-          setData({ ...data });
-        });
+      svg.attr('viewBox', [-20, -20, 800, 400]);
     }
 
-    node.each(d => {
+    const links = root.links();
+    const nodes = root.descendants();
+
+    nodes.forEach(d => {
+      d.data.x0 = d.data.x0 ?? d.x;
+      d.data.y0 = d.data.y0 ?? d.y;
+    });
+
+    const project = (x, y) => {
+      if (layoutType === 'radial') {
+        const tx = y * Math.cos(x - Math.PI / 2);
+        const ty = y * Math.sin(x - Math.PI / 2);
+        return [tx, ty];
+      }
+      return [y, x];
+    };
+
+    const link = linkGroup.selectAll('path').data(links, d => d.target.data.id);
+
+    link
+      .join(
+        enter =>
+          enter
+            .append('path')
+            .attr('fill', 'none')
+            .attr('stroke', 'var(--chart-network-link)')
+            .attr('d', d => {
+              const o = { x: d.source.data.x0, y: d.source.data.y0 };
+              return linkFn({ source: o, target: o });
+            })
+            .call(enter => enter.transition(t).attr('d', linkFn)),
+        update => update.call(update => update.transition(t).attr('d', linkFn)),
+        exit =>
+          exit
+            .call(exit =>
+              exit
+                .transition(t)
+                .attr('d', d => {
+                  const o = { x: d.source.x, y: d.source.y };
+                  return linkFn({ source: o, target: o });
+                })
+                .remove()
+            )
+      );
+
+    const node = nodeGroup.selectAll('g').data(nodes, d => d.data.id);
+
+    const nodeEnter = node
+      .enter()
+      .append('g')
+      .attr('transform', d => {
+        const p = d.parent || d;
+        const [tx, ty] = project(p.data.x0, p.data.y0);
+        return `translate(${tx},${ty})`;
+      })
+      .on('click', (event, d) => toggleNode(d));
+
+    nodeEnter
+      .append('circle')
+      .attr('r', 0)
+      .attr('fill', 'var(--chart-wordtree-node)')
+      .transition(t)
+      .attr('r', 4);
+
+    nodeEnter.append('text').attr('x', 8).attr('dy', '0.32em');
+
+    const nodeMerge = nodeEnter.merge(node);
+
+    nodeMerge
+      .select('text')
+      .attr('fill', d => sentimentColor(d.data.sentiment || 0))
+      .text(d => `${d.data.word}${d.data.count ? ` (${d.data.count})` : ''}`);
+
+    nodeMerge
+      .transition(t)
+      .attr('transform', d => {
+        const [tx, ty] = project(d.x, d.y);
+        return `translate(${tx},${ty})`;
+      });
+
+    node
+      .exit()
+      .transition(t)
+      .attr('transform', d => {
+        const p = d.parent || d;
+        const [tx, ty] = project(p.x, p.y);
+        return `translate(${tx},${ty})`;
+      })
+      .remove();
+
+    nodeMerge.select('rect').remove();
+
+    nodeMerge.each(d => {
       if (d.parent) {
         const counts = d.parent.children.map(c => c.data.count || 0);
         d.siblingMax = Math.max(...counts);
       }
     });
 
-    node.append('circle').attr('r', 4).attr('fill', 'var(--chart-wordtree-node)');
-
-    node
-      .append('text')
-      .attr('x', 8)
-      .attr('dy', '0.32em')
-      .attr('fill', d => sentimentColor(d.data.sentiment || 0))
-      .text(d => `${d.data.word}${d.data.count ? ` (${d.data.count})` : ''}`);
-
-    node
+    nodeMerge
       .filter(d => d.data.count)
       .each(function (d) {
         const textWidth = select(this).select('text').node().getBBox().width;
@@ -136,18 +214,32 @@ export default function WordTree() {
           .attr('width', scale(d.data.count))
           .attr('fill', 'var(--chart-wordtree-bar)');
       });
+
+    nodes.forEach(d => {
+      d.data.x0 = d.x;
+      d.data.y0 = d.y;
+    });
+
+    return () => {
+      svg.selectAll('.links path').interrupt();
+      svg.selectAll('.nodes g').interrupt();
+    };
   }, [data, layoutType]);
 
   const handleSubmit = async e => {
     e.preventDefault();
     const expansions = getExpansions(keyword);
     setData({
+      id: keyword,
       word: keyword,
       sentiment: sentimentAnalyzer.analyze(keyword).score,
+      expanded: true,
       children: expansions.map(e => ({
+        id: `${keyword}-${e.word}`,
         word: e.word,
         count: e.count,
         sentiment: e.sentiment,
+        expanded: false,
       })),
     });
   };
