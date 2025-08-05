@@ -1,7 +1,20 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import React from 'react';
+import { vi } from 'vitest';
 import ReadingSpeedViolin, { color } from '../ReadingSpeedViolin';
 import '@testing-library/jest-dom';
+import readingSpeed from '@/data/kindle/reading-speed.json';
+
+beforeEach(() => {
+  vi.spyOn(global, 'fetch').mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve(readingSpeed),
+  });
+});
+
+afterEach(() => {
+  vi.restoreAllMocks();
+});
 
 describe('ReadingSpeedViolin', () => {
   it('renders controls and chart', async () => {

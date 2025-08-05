@@ -4,7 +4,6 @@ import { scaleLinear, scaleBand } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
-import readingSpeed from '@/data/kindle/reading-speed.json';
 
 export const color = {
   morning: 'hsl(var(--chart-5))',
@@ -15,12 +14,26 @@ export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
   const [bandwidth, setBandwidth] = useState(500);
 
   useEffect(() => {
-    setData(readingSpeed);
+    const fetchData = async () => {
+      try {
+        const res = await fetch('/api/kindle/reading-speed');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const json = await res.json();
+        setData(json);
+      } catch (err) {
+        setError('Error loading reading speed data');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -193,6 +206,8 @@ export default function ReadingSpeedViolin() {
 
   return (
     <div style={{ position: 'relative' }}>
+      {loading && <p>Loading reading speed data...</p>}
+      {error && !loading && <p role="alert">{error}</p>}
       <div>
         <label>
           <input
