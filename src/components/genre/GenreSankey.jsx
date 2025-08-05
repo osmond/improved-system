@@ -78,12 +78,14 @@ export default function GenreSankey() {
         links: links.map((d) => ({ ...d })),
       });
 
-    const chartColors = Array.from(
-      { length: 10 },
-      (_, i) => `hsl(var(--chart-${i + 1}))`
-    );
+    const style = getComputedStyle(document.documentElement);
+    const chartColors = Array.from({ length: 10 }, (_, i) => {
+      const val = style.getPropertyValue(`--chart-${i + 1}`).trim();
+      return `hsl(${val})`;
+    });
     // reuse a single ordinal scale so nodes and their outgoing links share hues
     const color = scaleOrdinal().domain(sortedGenres).range(chartColors);
+    const barFill = chartColors[0];
 
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 
@@ -112,7 +114,7 @@ export default function GenreSankey() {
         const bars = counts
           .map((c, i) => {
             const h = max ? (c / max) * barHeight : 0;
-            return `<rect x="${i * barWidth}" y="${barHeight - h}" width="${barWidth - 1}" height="${h}" fill="steelblue" />`;
+            return `<rect x="${i * barWidth}" y="${barHeight - h}" width="${barWidth - 1}" height="${h}" fill="${barFill}" />`;
           })
           .join('');
         tooltip.innerHTML = `<div>${text}</div><svg width="${counts.length * barWidth}" height="${barHeight}">${bars}</svg>`;
