@@ -9,6 +9,7 @@ const {
   getGenreTransitions,
   getHighlightExpansions,
   getLocations,
+  getReadingSpeed,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -85,6 +86,14 @@ router.get('/locations', (req, res) => {
     res.json(getLocations());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load locations' });
+  }
+});
+
+router.get('/reading-speed', (req, res) => {
+  try {
+    res.json(getReadingSpeed());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load reading speed' });
   }
 });
 

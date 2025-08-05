@@ -2,6 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { aggregateDailyReading } = require('../../src/services/readingStats');
 const { aggregateReadingSessions } = require('../../src/services/readingSessions');
+const { calculateReadingSpeeds } = require('../../src/services/readingSpeed');
 const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
 const { calculateGenreTransitions } = require('../../src/services/genreTransitions');
 const { buildHighlightIndex, getExpansions } = require('../../src/services/highlightIndex');
@@ -123,6 +124,21 @@ function getSessions() {
   return aggregateReadingSessions(sessions, highlights, orders);
 }
 
+function getReadingSpeed() {
+  const sessionsPath = path.join(
+    __dirname,
+    '..',
+    '..',
+    'data',
+    'kindle',
+    'Kindle',
+    'Kindle.Devices.ReadingSession',
+    'Kindle.Devices.ReadingSession.csv',
+  );
+  const sessions = parseCsv(sessionsPath);
+  return calculateReadingSpeeds(sessions);
+}
+
 function getGenreHierarchy() {
   const base = path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
 
@@ -232,5 +248,6 @@ module.exports = {
   getGenreTransitions,
   getHighlightExpansions,
   getLocations,
+  getReadingSpeed,
 };
 
