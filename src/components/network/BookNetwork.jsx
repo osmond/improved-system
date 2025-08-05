@@ -2,6 +2,8 @@ import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
+import { scaleOrdinal } from 'd3-scale';
+import { schemeTableau10 } from 'd3-scale-chromatic';
 import graphData from '@/data/kindle/book-graph.json';
 
 export default function BookNetwork() {
@@ -29,6 +31,8 @@ export default function BookNetwork() {
     const width = 600;
     const height = 400;
 
+    const color = scaleOrdinal(schemeTableau10);
+
     const simulation = forceSimulation(filteredNodes)
       .force(
         'link',
@@ -54,8 +58,9 @@ export default function BookNetwork() {
       .data(filteredNodes)
       .join('circle')
       .attr('r', 5)
-      .attr('fill', 'var(--chart-network-node)')
+      .attr('fill', (d) => color(d.community))
       .attr('data-testid', 'node')
+      .attr('data-community', (d) => d.community)
       .call(
         drag()
           .on('start', (event, d) => {

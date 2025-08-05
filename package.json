@@ -44,6 +44,8 @@
     "events": "^3.3.0",
     "express": "^5.1.0",
     "framer-motion": "^12.23.12",
+    "graphology": "^0.26.0",
+    "graphology-communities-louvain": "^2.0.2",
     "html-to-image": "^1.11.13",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.534.0",

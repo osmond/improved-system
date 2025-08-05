@@ -4,55 +4,64 @@
       "id": "B0CH9KQYHS",
       "title": "Godwin: A Novel",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 0
     },
     {
       "id": "B0CZXNTCFX",
       "title": "The Frontrunner",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 0
     },
     {
       "id": "B0CN8TPKSP",
       "title": "Burn: A novel",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 1
     },
     {
       "id": "Not Available",
       "title": "Not Available",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 2
     },
     {
       "id": "B0CQ38FNR9",
       "title": "Cold Victory",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 3
     },
     {
       "id": "B002C7Z57C",
       "title": "The Denial of Death",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 4
     },
     {
       "id": "B0CGTHLBT9",
       "title": "The Winner: A Novel",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 5
     },
     {
       "id": "B0B7NGCGHG",
       "title": "Knowing What We Know: The Transmission of Knowledge: From Ancient Wisdom to Modern Magic",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 6
     },
     {
       "id": "B0C7RK8P8K",
       "title": "Last Acts: A Novel",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 7
     },
     {
       "id": "B0C3C886FY",
@@ -62,31 +71,36 @@
       ],
       "tags": [
         "Literature & Fiction"
-      ]
+      ],
+      "community": 8
     },
     {
       "id": "B0BL6271NP",
       "title": "The End of August: A Novel",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 9
     },
     {
       "id": "B003XT60E0",
       "title": "Blood Meridian: Or the Evening Redness in the West (Vintage International)",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 10
     },
     {
       "id": "B09S3WWY98",
       "title": "The Purple Runner",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 11
     },
     {
       "id": "B09Q2F1X14",
       "title": "The Stranger (Camus Novel)",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 12
     },
     {
       "id": "B0BQGHJM5L",
@@ -97,43 +111,50 @@
       "tags": [
         "Biographies & Memoirs",
         "Cookbooks, Food & Wine"
-      ]
+      ],
+      "community": 13
     },
     {
       "id": "B0B6B4WPSF",
       "title": "Eastbound",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 14
     },
     {
       "id": "B09YRR8DB6",
       "title": "What's Gotten Into You: The Story of Your Body's Atoms, from the Big Bang Through Last Night's Dinner",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 15
     },
     {
       "id": "B0CHWJCN94",
       "title": "The Awesome Game: One Man's Incredible, Globe-Crushing Hockey Odyssey",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 16
     },
     {
       "id": "B0BGJ3W5D3",
       "title": "The Theory of Everything Else: A Voyage Into the World of the Weird",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 17
     },
     {
       "id": "B0BP6S1S57",
       "title": "Fever House: A Novel (Fever House Duology Book 1)",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 18
     },
     {
       "id": "B0BHY38ZPH",
       "title": "Hope: A Novel",
       "authors": [],
-      "tags": []
+      "tags": [],
+      "community": 19
     },
     {
       "id": "B0CBW58P3J",
@@ -143,7 +164,8 @@
       ],
       "tags": [
         "Mystery, Thriller & Suspense"
-      ]
+      ],
+      "community": 20
     }
   ],
   "links": [
