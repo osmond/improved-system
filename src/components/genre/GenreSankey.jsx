@@ -34,10 +34,6 @@ export default function GenreSankey() {
   }, []);
 
   useEffect(() => {
-    if (start && end) fetchData();
-  }, [start, end]);
-
-  useEffect(() => {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
     if (!data || data.length === 0) return;

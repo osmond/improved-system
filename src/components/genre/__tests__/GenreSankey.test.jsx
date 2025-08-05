@@ -38,6 +38,7 @@ describe('GenreSankey', () => {
     fireEvent.change(screen.getByLabelText('End'), {
       target: { value: '2024-01-31' },
     });
+    expect(global.fetch).not.toHaveBeenCalled();
     fireEvent.click(screen.getByText('Apply'));
 
     await waitFor(() => {
