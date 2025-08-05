@@ -165,6 +165,37 @@ export default function ReadingTimeline({ sessions = [] }) {
         ref={ref}
         style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
       />
+      {genres.length > 0 && (
+        <ul
+          aria-label="Genres"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            listStyle: 'none',
+            padding: 0,
+            margin: '0.5rem 0',
+          }}
+        >
+          {genres.map((g) => (
+            <li
+              key={g}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 12,
+                  height: 12,
+                  backgroundColor: colorScale(g),
+                  display: 'inline-block',
+                }}
+              />
+              <span>{g}</span>
+            </li>
+          ))}
+        </ul>
+      )}
       <button onClick={reset} disabled={!zoomed} aria-label="Reset zoom">
         Reset
       </button>
