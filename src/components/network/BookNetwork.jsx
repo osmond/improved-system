@@ -3,7 +3,6 @@ import { select } from 'd3-selection';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
 import { scaleOrdinal, scaleLinear } from 'd3-scale';
-import { schemeTableau10 } from 'd3-scale-chromatic';
 import graphData from '@/data/kindle/book-graph.json';
 
 export default function BookNetwork({ data = graphData }) {
@@ -90,7 +89,11 @@ export default function BookNetwork({ data = graphData }) {
     const width = 600;
     const height = 400;
 
-    const color = scaleOrdinal(schemeTableau10);
+    const chartColors = Array.from(
+      { length: 10 },
+      (_, i) => `hsl(var(--chart-${i + 1}))`
+    );
+    const color = scaleOrdinal().range(chartColors);
     const degrees = graph.nodes.map((n) => n.degree);
     const minDegree = Math.min(...degrees);
     const maxDegree = Math.max(...degrees);
@@ -124,7 +127,7 @@ export default function BookNetwork({ data = graphData }) {
       )
       .attr('stroke', (d) =>
         highlightedLinks.has(edgeFromLink(d))
-          ? 'red'
+          ? 'hsl(var(--chart-1))'
           : 'var(--chart-network-link)'
       )
       .attr('data-highlighted', (d) =>
@@ -142,7 +145,7 @@ export default function BookNetwork({ data = graphData }) {
       .attr('fill', (d) => color(d.community))
       .attr('stroke', (d) =>
         highlightedNodes.has(d.id)
-          ? 'red'
+          ? 'hsl(var(--chart-1))'
           : 'var(--chart-network-node-border)'
       )
       .attr('stroke-width', (d) => (highlightedNodes.has(d.id) ? 3 : 1.5))

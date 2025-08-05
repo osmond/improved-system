@@ -10,7 +10,7 @@ import {
 import { feature } from 'topojson-client';
 import { geoContains } from 'd3-geo';
 import { scaleSequential } from 'd3-scale';
-import { interpolateYlOrRd } from 'd3-scale-chromatic';
+import { interpolateHsl } from 'd3-interpolate';
 import locationsData from '@/data/kindle/locations.json';
 import statesTopo from '@/lib/us-states.json';
 import worldTopo from '@/lib/world-countries.json';
@@ -127,10 +127,19 @@ export default function ReadingMap() {
     [counts]
   );
 
-  const colorScale = useMemo(
-    () => scaleSequential(interpolateYlOrRd).domain([0, maxCount || 1]),
-    [maxCount]
-  );
+  const colorScale = useMemo(() => {
+    const style = getComputedStyle(document.documentElement);
+    const start = `hsl(${style
+      .getPropertyValue('--chart-1')
+      .trim()
+      .replace(/\s+/g, ',')})`;
+    const end = `hsl(${style
+      .getPropertyValue('--chart-10')
+      .trim()
+      .replace(/\s+/g, ',')})`;
+    const interpolator = interpolateHsl(start, end);
+    return scaleSequential(interpolator).domain([0, maxCount || 1]);
+  }, [maxCount]);
 
   if (loading)
     return <Skeleton className="h-[480px] w-full" data-testid="loading" />;
@@ -227,7 +236,7 @@ export default function ReadingMap() {
           style={(f) => ({
             fillColor: colorScale(f.properties.count || 0),
             weight: 1,
-            color: 'white',
+            color: 'hsl(var(--background))',
             fillOpacity: 0.7,
           })}
         />
@@ -236,7 +245,7 @@ export default function ReadingMap() {
             key={idx}
             center={[loc.latitude, loc.longitude]}
             radius={5}
-            pathOptions={{ color: 'red' }}
+            pathOptions={{ color: 'hsl(var(--chart-1))' }}
           />
         ))}
       </MapContainer>
