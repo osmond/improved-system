@@ -5,12 +5,28 @@ import { transition } from 'd3-transition';
 import { linkHorizontal } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import Sentiment from 'sentiment';
+import nlp from 'compromise';
 import highlights from '@/data/kindle/highlights.json';
 
 const sentimentAnalyzer = new Sentiment();
 const sentimentColor = scaleLinear()
   .domain([-5, 0, 5])
   .range(['#d73027', '#ffffbf', '#1a9850']);
+
+const posColors = {
+  Noun: '#1f77b4',
+  Verb: '#ff7f0e',
+  Adjective: '#2ca02c',
+  Adverb: '#d62728',
+  Unknown: '#7f7f7f',
+};
+
+function analyzeWord(word) {
+  const sentiment = sentimentAnalyzer.analyze(word).score;
+  const data = nlp(word).terms().data()[0];
+  const pos = data?.terms?.[0]?.tags?.[0] || 'Unknown';
+  return { sentiment, pos };
+}
 
 function getExpansions(word) {
   const counts = {};
@@ -24,17 +40,17 @@ function getExpansions(word) {
       }
     }
   }
-  return Object.entries(counts).map(([w, count]) => ({
-    word: w,
-    count,
-    sentiment: sentimentAnalyzer.analyze(w).score,
-  }));
+  return Object.entries(counts).map(([w, count]) => {
+    const { sentiment, pos } = analyzeWord(w);
+    return { word: w, count, sentiment, pos };
+  });
 }
 
 export default function WordTree() {
   const [keyword, setKeyword] = useState('');
   const [data, setData] = useState(null);
   const [layout, setLayout] = useState('linear');
+  const [mode, setMode] = useState('sentiment');
   const svgRef = useRef(null);
 
   const toggleNode = d => {
@@ -54,6 +70,7 @@ export default function WordTree() {
           word: e.word,
           count: e.count,
           sentiment: e.sentiment,
+          pos: e.pos,
           expanded: false,
         }));
         d.data.expanded = true;
@@ -172,7 +189,11 @@ export default function WordTree() {
 
     nodeMerge
       .select('text')
-      .attr('fill', d => sentimentColor(d.data.sentiment || 0))
+      .attr('fill', d =>
+        mode === 'sentiment'
+          ? sentimentColor(d.data.sentiment || 0)
+          : posColors[d.data.pos] || posColors.Unknown
+      )
       .text(d => `${d.data.word}${d.data.count ? ` (${d.data.count})` : ''}`);
 
     nodeMerge
@@ -218,21 +239,24 @@ export default function WordTree() {
       svg.selectAll('.links path').interrupt();
       svg.selectAll('.nodes g').interrupt();
     };
-  }, [data, layout]);
+  }, [data, layout, mode]);
 
   const handleSubmit = async e => {
     e.preventDefault();
     const expansions = getExpansions(keyword);
+    const analysis = analyzeWord(keyword);
     setData({
       id: keyword,
       word: keyword,
-      sentiment: sentimentAnalyzer.analyze(keyword).score,
+      sentiment: analysis.sentiment,
+      pos: analysis.pos,
       expanded: true,
       children: expansions.map(e => ({
         id: `${keyword}-${e.word}`,
         word: e.word,
         count: e.count,
         sentiment: e.sentiment,
+        pos: e.pos,
         expanded: false,
       })),
     });
@@ -257,18 +281,42 @@ export default function WordTree() {
         >
           {layout === 'linear' ? 'Radial' : 'Linear'}
         </button>
+        <button
+          type="button"
+          className="px-2 py-1 border"
+          onClick={() => setMode(mode === 'sentiment' ? 'pos' : 'sentiment')}
+        >
+          {mode === 'sentiment' ? 'POS' : 'Sentiment'}
+        </button>
       </form>
-      <div className="mb-2 flex items-center gap-2 text-sm">
-        <span className="flex items-center">
-          <span className="w-4 h-4 mr-1" style={{ background: '#d73027' }}></span>Negative
-        </span>
-        <span className="flex items-center">
-          <span className="w-4 h-4 mr-1 border" style={{ background: '#ffffbf' }}></span>Neutral
-        </span>
-        <span className="flex items-center">
-          <span className="w-4 h-4 mr-1" style={{ background: '#1a9850' }}></span>Positive
-        </span>
-      </div>
+      {mode === 'sentiment' ? (
+        <div className="mb-2 flex items-center gap-2 text-sm">
+          <span className="flex items-center">
+            <span className="w-4 h-4 mr-1" style={{ background: '#d73027' }}></span>
+            Negative
+          </span>
+          <span className="flex items-center">
+            <span className="w-4 h-4 mr-1 border" style={{ background: '#ffffbf' }}></span>
+            Neutral
+          </span>
+          <span className="flex items-center">
+            <span className="w-4 h-4 mr-1" style={{ background: '#1a9850' }}></span>
+            Positive
+          </span>
+        </div>
+      ) : (
+        <div className="mb-2 flex items-center gap-2 text-sm">
+          {['Noun', 'Verb', 'Adjective', 'Adverb'].map(tag => (
+            <span key={tag} className="flex items-center">
+              <span
+                className="w-4 h-4 mr-1"
+                style={{ background: posColors[tag] }}
+              ></span>
+              {tag}
+            </span>
+          ))}
+        </div>
+      )}
       <svg ref={svgRef} width={layout === 'linear' ? 800 : 400} height={400}></svg>
     </div>
   );
