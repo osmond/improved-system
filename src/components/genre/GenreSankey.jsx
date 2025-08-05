@@ -2,24 +2,33 @@ import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
+import { Skeleton } from '@/components/ui/skeleton';
 import transitions from '@/data/kindle/genre-transitions.json';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(true);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
 
   const fetchData = async () => {
+    setLoading(true);
+    setData([]);
     const res = await fetch(
       `/api/kindle/genre-transitions?start=${start}&end=${end}`,
     );
     const json = await res.json();
     setData(json);
+    setLoading(false);
   };
 
   useEffect(() => {
-    setData(transitions);
+    const id = setTimeout(() => {
+      setData(transitions);
+      setLoading(false);
+    }, 0);
+    return () => clearTimeout(id);
   }, []);
 
   useEffect(() => {
@@ -110,7 +119,14 @@ export default function GenreSankey() {
         </label>
         <button onClick={fetchData}>Apply</button>
       </div>
-      <svg ref={svgRef} width="600" height="400" />
+      {loading ? (
+        <Skeleton
+          className="h-[400px] w-[600px]"
+          data-testid="genre-sankey-skeleton"
+        />
+      ) : (
+        <svg ref={svgRef} width="600" height="400" />
+      )}
     </div>
   );
 }

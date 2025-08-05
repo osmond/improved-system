@@ -25,6 +25,9 @@ describe('GenreSankey', () => {
     const { container } = render(<GenreSankey />);
     expect(screen.getByLabelText('Start')).toBeInTheDocument();
     expect(screen.getByLabelText('End')).toBeInTheDocument();
+    expect(
+      screen.getByTestId('genre-sankey-skeleton')
+    ).toBeInTheDocument();
 
     await waitFor(() => {
       expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
@@ -51,6 +54,9 @@ describe('GenreSankey', () => {
 
   it('renders links with non-gray strokes', async () => {
     const { container } = render(<GenreSankey />);
+    expect(
+      screen.getByTestId('genre-sankey-skeleton')
+    ).toBeInTheDocument();
     await waitFor(() => {
       const links = container.querySelectorAll('path');
       expect(links.length).toBeGreaterThan(0);

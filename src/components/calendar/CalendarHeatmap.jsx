@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Heatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import useDailyReading from '@/hooks/useDailyReading';
+import { Skeleton } from '@/components/ui/skeleton';
 import {
   Tooltip,
   TooltipTrigger,
@@ -171,6 +172,11 @@ function YearlyHeatmap({ data, maxMinutes }) {
 export default function CalendarHeatmap({ data: propData }) {
   const { data: hookData } = useDailyReading();
   const data = propData || hookData;
+  const [loading, setLoading] = useState(!data);
+  useEffect(() => {
+    if (data) setLoading(false);
+  }, [data]);
+  if (loading) return <Skeleton className="h-64 w-full" />;
   if (!data || data.length === 0) return null;
 
   const maxMinutes = Math.max(...data.map((d) => d.minutes), 0);
