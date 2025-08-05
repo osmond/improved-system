@@ -22,17 +22,15 @@ export default function StateVisitSummary() {
 
   if (loading) return <Skeleton className="h-4 w-full" />;
 
-  if (error)
+  if (error || !states)
     return (
       <div className="text-xs">
-        Failed to load state visits.{" "}
+        Failed to load state visits.
         <button className="underline" onClick={refetch}>
           Retry
         </button>
       </div>
     );
-
-  if (!summary) return null;
 
   return (
     <div className="flex gap-2 flex-wrap text-xs mb-2">

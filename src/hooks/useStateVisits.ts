@@ -21,13 +21,13 @@ export function useStateVisits(): UseStateVisitsResult {
       const result = await getStateVisits();
       if (!result) {
         setError(new Error("Failed to load state visits"));
-        setData([]);
+        setData(null);
       } else {
         setData(result);
       }
     } catch (e) {
       setError(e as Error);
-      setData([]);
+      setData(null);
     } finally {
       setLoading(false);
     }
