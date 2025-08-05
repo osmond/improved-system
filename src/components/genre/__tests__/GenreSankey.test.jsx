@@ -67,13 +67,19 @@ describe('GenreSankey', () => {
     });
   });
 
-  it('renders highest-outflow genre first', async () => {
+  it('renders highest-outflow genre leftmost', async () => {
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
       expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
     });
+    const rects = container.querySelectorAll('rect');
     const texts = container.querySelectorAll('text');
-    expect(texts[0].textContent).toBe('Literature & Fiction');
+    const nodes = Array.from(rects).map((r, i) => ({
+      x: parseFloat(r.getAttribute('x') || '0'),
+      name: texts[i].textContent,
+    }));
+    nodes.sort((a, b) => a.x - b.x);
+    expect(nodes[0].name).toBe('Literature & Fiction');
   });
 
   it('shows a tooltip with text and bar chart on link hover', async () => {
