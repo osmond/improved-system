@@ -7,8 +7,8 @@ import { axisLeft, axisBottom } from 'd3-axis';
 import readingSpeed from '@/data/kindle/reading-speed.json';
 
 export const color = {
-  morning: '#FFA500',
-  evening: '#1E90FF',
+  morning: 'hsl(var(--chart-5))',
+  evening: 'hsl(var(--chart-8))',
 };
 
 export default function ReadingSpeedViolin() {

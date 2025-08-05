@@ -32,15 +32,15 @@ describe('CalendarHeatmap', () => {
     const legend = getByTestId('reading-legend');
     expect(legend).not.toBeNull();
 
-    const rects = container.querySelectorAll('svg.react-calendar-heatmap rect');
-    expect(container.querySelector('rect.reading-scale-1')).not.toBeNull();
-    expect(container.querySelector('rect.reading-scale-2')).not.toBeNull();
-    expect(container.querySelector('rect.reading-scale-4')).not.toBeNull();
+      const rects = container.querySelectorAll('svg.react-calendar-heatmap rect');
+      expect(container.querySelector('rect.reading-scale-2')).not.toBeNull();
+      expect(container.querySelector('rect.reading-scale-3')).not.toBeNull();
+      expect(container.querySelector('rect.reading-scale-5')).not.toBeNull();
 
-    const swatches = legend.querySelectorAll('div');
-    expect(swatches.length).toBe(5);
-    expect(swatches[0].classList.contains('reading-scale-0')).toBe(true);
-    expect(swatches[4].classList.contains('reading-scale-4')).toBe(true);
+      const swatches = legend.querySelectorAll('div');
+      expect(swatches.length).toBe(5);
+      expect(swatches[0].classList.contains('reading-scale-1')).toBe(true);
+      expect(swatches[4].classList.contains('reading-scale-5')).toBe(true);
   });
 
   it('renders month labels and totals', () => {
@@ -84,8 +84,8 @@ describe('CalendarHeatmap', () => {
     getByText('2024');
 
     const [svg2023, svg2024] = svgs;
-    expect(svg2023.querySelector('rect.reading-scale-4')).not.toBeNull();
-    expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
+      expect(svg2023.querySelector('rect.reading-scale-5')).not.toBeNull();
+      expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
   });
 
   it('can render a single heatmap when multiYear is false', () => {

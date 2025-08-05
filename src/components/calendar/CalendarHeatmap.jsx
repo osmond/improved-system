@@ -94,11 +94,11 @@ function YearlyHeatmap({ data, maxMinutes }) {
     weekSeries[weekKey][dayIdx] = d.minutes;
   });
 
-  const classForValue = (value) => {
-    if (!value || !value.count || maxMinutes === 0) return 'reading-scale-0';
-    const level = Math.ceil((value.count / maxMinutes) * 4);
-    return `reading-scale-${level}`;
-  };
+    const classForValue = (value) => {
+      if (!value || !value.count || maxMinutes === 0) return 'reading-scale-0';
+      const level = Math.ceil((value.count / maxMinutes) * 5);
+      return `reading-scale-${level}`;
+    };
 
   const transformDayElement = (element, value, index) => {
     const date = new Date(startWithEmptyDays);
@@ -145,7 +145,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
     return <g key={dateKey}>{cell}</g>;
   };
 
-  const legendScale = [0, 1, 2, 3, 4];
+    const legendScale = [1, 2, 3, 4, 5];
 
   return (
     <TooltipProvider>

@@ -33,11 +33,17 @@
     --chart-5: 226 60% 65%;
     --chart-6: 230 70% 50%;
     --chart-7: 234 80% 55%;
-    --chart-8: 238 90% 60%;
-    --chart-9: 242 80% 65%;
-    --chart-10: 246 70% 70%;
-    --sidebar: 0 0% 98%;
-    --sidebar-foreground: 240 5.3% 26.1%;
+      --chart-8: 238 90% 60%;
+      --chart-9: 242 80% 65%;
+      --chart-10: 246 70% 70%;
+      /* Reading intensity tokens */
+      --reading-1: 210 100% 90%;
+      --reading-2: 210 100% 80%;
+      --reading-3: 210 100% 70%;
+      --reading-4: 210 100% 60%;
+      --reading-5: 210 100% 50%;
+      --sidebar: 0 0% 98%;
+      --sidebar-foreground: 240 5.3% 26.1%;
     --sidebar-primary: 240 5.9% 10%;
     --sidebar-primary-foreground: 0 0% 98%;
     --sidebar-accent: 240 4.8% 95.9%;
@@ -84,6 +90,12 @@
     --chart-8: 238 90% 70%;
     --chart-9: 242 80% 75%;
     --chart-10: 246 70% 80%;
+    /* Reading intensity tokens */
+    --reading-1: 210 60% 20%;
+    --reading-2: 210 70% 30%;
+    --reading-3: 210 80% 40%;
+    --reading-4: 210 90% 50%;
+    --reading-5: 210 100% 60%;
     --sidebar: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -132,6 +144,12 @@
     --chart-8: 210 100% 50%;
     --chart-9: 270 100% 50%;
     --chart-10: 330 100% 50%;
+    /* Reading intensity tokens */
+    --reading-1: 210 100% 90%;
+    --reading-2: 210 100% 70%;
+    --reading-3: 210 100% 50%;
+    --reading-4: 210 100% 30%;
+    --reading-5: 210 100% 10%;
     --sidebar: 0 0% 0%;
     --sidebar-foreground: 0 0% 100%;
     --sidebar-primary: 60 100% 50%;
@@ -156,23 +174,27 @@ html, body {
 
 @layer utilities {
   .reading-scale-0 {
-    background-color: hsl(var(--chart-1) / 0.1);
-    fill: hsl(var(--chart-1) / 0.1);
+    background-color: hsl(var(--muted));
+    fill: hsl(var(--muted));
   }
   .reading-scale-1 {
-    background-color: hsl(var(--chart-1) / 0.25);
-    fill: hsl(var(--chart-1) / 0.25);
+    background-color: hsl(var(--reading-1));
+    fill: hsl(var(--reading-1));
   }
   .reading-scale-2 {
-    background-color: hsl(var(--chart-1) / 0.5);
-    fill: hsl(var(--chart-1) / 0.5);
+    background-color: hsl(var(--reading-2));
+    fill: hsl(var(--reading-2));
   }
   .reading-scale-3 {
-    background-color: hsl(var(--chart-1) / 0.75);
-    fill: hsl(var(--chart-1) / 0.75);
+    background-color: hsl(var(--reading-3));
+    fill: hsl(var(--reading-3));
   }
   .reading-scale-4 {
-    background-color: hsl(var(--chart-1));
-    fill: hsl(var(--chart-1));
+    background-color: hsl(var(--reading-4));
+    fill: hsl(var(--reading-4));
+  }
+  .reading-scale-5 {
+    background-color: hsl(var(--reading-5));
+    fill: hsl(var(--reading-5));
   }
 }
