@@ -25,7 +25,11 @@
     --input: 214.3 31.8% 91.4%;
     --ring: 221.2 83.2% 53.3%;
     --radius: 0.65rem;
-    /* Chart color tokens */
+    /*
+     * Chart color tokens used by data visualizations.
+     * Each token represents an HSL color and is consumed
+     * by D3 components to build ordinal palettes.
+     */
     --chart-1: 210 100% 45%;
     --chart-2: 214 90% 50%;
     --chart-3: 218 80% 55%;
@@ -73,7 +77,11 @@
     --border: 217.2 32.6% 17.5%;
     --input: 217.2 32.6% 17.5%;
     --ring: 224.3 76.3% 48%;
-    /* Chart color tokens */
+    /*
+     * Chart color tokens used by data visualizations.
+     * Dark theme variants of --chart-n tokens
+     * mirror the light theme hues with adjusted lightness.
+     */
     --chart-1: 210 100% 55%;
     --chart-2: 214 90% 60%;
     --chart-3: 218 80% 65%;
@@ -121,7 +129,11 @@
     --border: 0 0% 100%;
     --input: 0 0% 100%;
     --ring: 60 100% 50%;
-    /* Chart color tokens */
+    /*
+     * Chart color tokens used by data visualizations.
+     * High contrast variants ensure accessibility while
+     * preserving the ordinal palette.
+     */
     --chart-1: 60 100% 50%;
     --chart-2: 0 0% 100%;
     --chart-3: 120 100% 50%;

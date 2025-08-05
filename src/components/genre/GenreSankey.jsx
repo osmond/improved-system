@@ -2,7 +2,6 @@ import React, { useEffect, useRef, useState } from 'react';
 import { select } from 'd3-selection';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
 import transitions from '@/data/kindle/genre-transitions.json';
 
 export default function GenreSankey() {
@@ -46,7 +45,14 @@ export default function GenreSankey() {
         links: links.map((d) => ({ ...d })),
       });
 
-    const color = scaleOrdinal(schemeCategory10);
+    const style = getComputedStyle(document.documentElement);
+    const chartColors = Array.from({ length: 10 }, (_, i) =>
+      `hsl(${style
+        .getPropertyValue(`--chart-${i + 1}`)
+        .trim()
+        .replace(/\s+/g, ',')})`
+    );
+    const color = scaleOrdinal().range(chartColors);
 
     svg.attr('viewBox', `0 0 ${width} ${height}`);
 
