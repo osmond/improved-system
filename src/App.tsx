@@ -11,7 +11,7 @@ import { SelectionProvider } from "@/hooks/useSelection";
 
 const MissingComponent = () => <div>Component not found</div>;
 
-const pageModules = import.meta.glob("@/pages/**/*.{ts,tsx,js,jsx}");
+const pageModules = import.meta.glob("./pages/**/*.{ts,tsx,js,jsx}");
 
 function createDashboardRoutes() {
   return dashboardRoutes.flatMap(({ items }) =>
