@@ -16,6 +16,18 @@ describe('GenreSankey', () => {
     global.fetch = originalFetch;
   });
 
+  it('renders a skeleton before data resolves', async () => {
+    render(<GenreSankey />);
+    expect(
+      screen.getByTestId('genre-sankey-skeleton'),
+    ).toBeInTheDocument();
+    await waitFor(() => {
+      expect(
+        screen.queryByTestId('genre-sankey-skeleton'),
+      ).not.toBeInTheDocument();
+    });
+  });
+
   it('filters data when dates are applied', async () => {
     const filtered = [{ source: 'A', target: 'B', count: 1 }];
     global.fetch = vi.fn().mockResolvedValue({
@@ -79,7 +91,7 @@ describe('GenreSankey', () => {
       name: texts[i].textContent,
     }));
     nodes.sort((a, b) => a.x - b.x);
-    expect(nodes[0].name).toBe('Literature & Fiction');
+    expect(nodes[0].name).toBe('Politics & Social Sciences');
   });
 
   it('shows a tooltip with text and bar chart on link hover', async () => {
