@@ -3,7 +3,13 @@ import { hierarchy, tree, cluster } from 'd3-hierarchy';
 import { select } from 'd3-selection';
 import { linkHorizontal, linkRadial } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
+import Sentiment from 'sentiment';
 import highlights from '@/data/kindle/highlights.json';
+
+const sentimentAnalyzer = new Sentiment();
+const sentimentColor = scaleLinear()
+  .domain([-5, 0, 5])
+  .range(['#d73027', '#ffffbf', '#1a9850']);
 
 function getExpansions(word) {
   const counts = {};
@@ -17,7 +23,11 @@ function getExpansions(word) {
       }
     }
   }
-  return Object.entries(counts).map(([w, count]) => ({ word: w, count }));
+  return Object.entries(counts).map(([w, count]) => ({
+    word: w,
+    count,
+    sentiment: sentimentAnalyzer.analyze(w).score,
+  }));
 }
 
 export default function WordTree() {
@@ -59,7 +69,11 @@ export default function WordTree() {
         })
         .on('click', async (event, d) => {
           const expansions = getExpansions(d.data.word);
-          d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
+          d.data.children = expansions.map(e => ({
+            word: e.word,
+            count: e.count,
+            sentiment: e.sentiment,
+          }));
           setData({ ...data });
         });
     } else {
@@ -82,7 +96,11 @@ export default function WordTree() {
         .attr('transform', d => `translate(${d.y},${d.x})`)
         .on('click', async (event, d) => {
           const expansions = getExpansions(d.data.word);
-          d.data.children = expansions.map(e => ({ word: e.word, count: e.count }));
+          d.data.children = expansions.map(e => ({
+            word: e.word,
+            count: e.count,
+            sentiment: e.sentiment,
+          }));
           setData({ ...data });
         });
     }
@@ -100,6 +118,7 @@ export default function WordTree() {
       .append('text')
       .attr('x', 8)
       .attr('dy', '0.32em')
+      .attr('fill', d => sentimentColor(d.data.sentiment || 0))
       .text(d => `${d.data.word}${d.data.count ? ` (${d.data.count})` : ''}`);
 
     node
@@ -122,7 +141,15 @@ export default function WordTree() {
   const handleSubmit = async e => {
     e.preventDefault();
     const expansions = getExpansions(keyword);
-    setData({ word: keyword, children: expansions.map(e => ({ word: e.word, count: e.count })) });
+    setData({
+      word: keyword,
+      sentiment: sentimentAnalyzer.analyze(keyword).score,
+      children: expansions.map(e => ({
+        word: e.word,
+        count: e.count,
+        sentiment: e.sentiment,
+      })),
+    });
   };
 
   return (
@@ -145,6 +172,17 @@ export default function WordTree() {
           {layoutType === 'linear' ? 'Radial' : 'Linear'}
         </button>
       </form>
+      <div className="mb-2 flex items-center gap-2 text-sm">
+        <span className="flex items-center">
+          <span className="w-4 h-4 mr-1" style={{ background: '#d73027' }}></span>Negative
+        </span>
+        <span className="flex items-center">
+          <span className="w-4 h-4 mr-1 border" style={{ background: '#ffffbf' }}></span>Neutral
+        </span>
+        <span className="flex items-center">
+          <span className="w-4 h-4 mr-1" style={{ background: '#1a9850' }}></span>Positive
+        </span>
+      </div>
       <svg ref={svgRef} width={layoutType === 'linear' ? 800 : 400} height={400}></svg>
     </div>
   );
