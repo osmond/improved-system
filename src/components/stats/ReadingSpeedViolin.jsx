@@ -18,7 +18,7 @@ export default function ReadingSpeedViolin() {
   const [error, setError] = useState(null);
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
-  const [bandwidth, setBandwidth] = useState(500);
+  const [bandwidth, setBandwidth] = useState(150);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -244,9 +244,9 @@ export default function ReadingSpeedViolin() {
           Bandwidth
           <input
             type="range"
-            min="100"
-            max="3000"
-            step="100"
+            min="50"
+            max="1000"
+            step="50"
             value={bandwidth}
             onChange={(e) => setBandwidth(Number(e.target.value))}
           />
