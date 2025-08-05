@@ -8,7 +8,7 @@ import {
   TooltipContent,
   TooltipProvider,
 } from '@/ui/tooltip';
-import { getISOWeek, getISOWeekYear } from 'date-fns';
+import { getISOWeek, getISOWeekYear, getMonth, getYear } from 'date-fns';
 
 const monthNames = [
   'Jan',
@@ -63,18 +63,20 @@ function YearlyHeatmap({ data, maxMinutes }) {
   const startWithEmptyDays = new Date(startDate);
   startWithEmptyDays.setDate(startWithEmptyDays.getDate() - startDate.getDay());
 
-  const monthTotals = {};
-  const startMonth = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
-  const endMonth = new Date(endDate.getFullYear(), endDate.getMonth(), 1);
-  for (let d = new Date(startMonth); d <= endMonth; d.setMonth(d.getMonth() + 1)) {
-    const key = `${d.getFullYear()}-${d.getMonth()}`;
-    monthTotals[key] = 0;
-  }
-  data.forEach((d) => {
+  const dataByMonth = data.reduce((acc, d) => {
     const dt = new Date(d.date);
-    const key = `${dt.getFullYear()}-${dt.getMonth()}`;
-    monthTotals[key] += d.minutes;
-  });
+    const key = `${getYear(dt)}-${getMonth(dt)}`;
+    if (!acc[key]) acc[key] = [];
+    acc[key].push(d);
+    return acc;
+  }, {});
+
+  const monthTotals = Object.fromEntries(
+    Object.entries(dataByMonth).map(([key, arr]) => [
+      key,
+      arr.reduce((sum, item) => sum + item.minutes, 0),
+    ])
+  );
 
   const values = data.map((d) => ({ date: d.date, count: d.minutes }));
 
@@ -127,13 +129,16 @@ function YearlyHeatmap({ data, maxMinutes }) {
     );
     if (date.getDate() === 1) {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
+      const size = Number(element.props.height) || 10;
+      const topY = element.props.y - date.getDay() * size;
+      const bottomY = topY + size * 7 + 12;
       return (
         <g key={dateKey}>
-          <text x={element.props.x} y={element.props.y - 2} className="text-xs">
+          <text x={element.props.x} y={topY - 2} className="text-xs">
             {monthNames[date.getMonth()]}
           </text>
           {cell}
-          <text x={element.props.x} y={element.props.y + 12} className="text-xs">
+          <text x={element.props.x} y={bottomY} className="text-xs">
             {monthTotals[key]}
           </text>
         </g>

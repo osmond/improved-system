@@ -3,14 +3,16 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
 
+const mockData = [
+  { date: '2024-01-01', minutes: 5, pages: 2 },
+  { date: '2024-01-02', minutes: 10, pages: 4 },
+  { date: '2024-02-01', minutes: 20, pages: 8 },
+];
+
 vi.mock('@/hooks/useDailyReading', () => ({
   __esModule: true,
   default: () => ({
-    data: [
-      { date: '2024-01-01', minutes: 5, pages: 2 },
-      { date: '2024-01-02', minutes: 10, pages: 4 },
-      { date: '2024-02-01', minutes: 20, pages: 8 },
-    ],
+    data: mockData,
     error: null,
     isLoading: false,
   }),
@@ -43,10 +45,17 @@ describe('CalendarHeatmap', () => {
 
   it('renders month labels and totals', () => {
     const { getByText } = render(<CalendarHeatmap />);
-    getByText('Jan');
-    getByText('Feb');
-    getByText('15');
-    getByText('20');
+
+    const totals = mockData.reduce((acc, { date, minutes }) => {
+      const label = new Date(date).toLocaleString('default', { month: 'short' });
+      acc[label] = (acc[label] || 0) + minutes;
+      return acc;
+    }, {});
+
+    Object.entries(totals).forEach(([label, total]) => {
+      getByText(label);
+      getByText(String(total));
+    });
   });
 
   it('shows tooltip with date, minutes, and sparkline', async () => {
