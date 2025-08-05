@@ -6,6 +6,7 @@ import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { hsl } from 'd3-color';
 import { interpolate } from 'd3-interpolate';
 import 'd3-transition';
+import { Skeleton } from '@/ui/skeleton';
 
 const SIZE = 400;
 const RADIUS = SIZE / 2;
@@ -90,6 +91,16 @@ export default function GenreSunburst({ data }) {
       .append('title')
       .text((d) => d.data.name);
   }, [data, zoomTo]);
+
+  if (!data) {
+    return (
+      <Skeleton
+        className="h-[400px] w-full"
+        data-testid="genre-sunburst-skeleton"
+      />
+    );
+  }
+
   const ancestors = currentNode ? currentNode.ancestors().reverse() : [];
 
   return (

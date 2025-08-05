@@ -1,10 +1,25 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import GenreSunburst from '@/components/genre/GenreSunburst.jsx';
 import GenreIcicle from '@/components/genre/GenreIcicle.jsx';
-import genreHierarchy from '@/data/kindle/genre-hierarchy.json';
+import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSunburstPage() {
   const [view, setView] = useState('sunburst');
+  const [data, setData] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let isMounted = true;
+    import('@/data/kindle/genre-hierarchy.json').then((module) => {
+      if (isMounted) {
+        setData(module.default);
+        setIsLoading(false);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
   return (
     <div className="p-4">
@@ -25,10 +40,15 @@ export default function GenreSunburstPage() {
           Icicle
         </button>
       </div>
-      {view === 'sunburst' ? (
-        <GenreSunburst data={genreHierarchy} />
+      {isLoading ? (
+        <Skeleton
+          className="h-[400px] w-full"
+          data-testid="genre-hierarchy-skeleton"
+        />
+      ) : view === 'sunburst' ? (
+        <GenreSunburst data={data} />
       ) : (
-        <GenreIcicle data={genreHierarchy} />
+        <GenreIcicle data={data} />
       )}
     </div>
   );
