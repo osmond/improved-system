@@ -1,8 +1,9 @@
 import { render, waitFor, fireEvent } from '@testing-library/react'
-import { describe, it, expect, vi } from 'vitest'
+import { describe, it, expect, vi, beforeAll } from 'vitest'
 import React from 'react'
 import '@testing-library/jest-dom'
 import CorrelationRippleMatrix from '../CorrelationRippleMatrix'
+import { hsl as d3hsl } from 'd3-color'
 
 vi.mock('recharts', async () => {
   const actual: any = await vi.importActual('recharts')
@@ -14,6 +15,21 @@ vi.mock('recharts', async () => {
       </div>
     ),
   }
+})
+
+beforeAll(() => {
+  const root = document.documentElement.style
+  root.setProperty('--background', '0 0% 100%')
+  root.setProperty('--chart-1', '210 100% 45%')
+  root.setProperty('--chart-2', '214 90% 50%')
+  root.setProperty('--chart-3', '218 80% 55%')
+  root.setProperty('--chart-4', '222 70% 60%')
+  root.setProperty('--chart-5', '226 60% 65%')
+  root.setProperty('--chart-6', '230 70% 50%')
+  root.setProperty('--chart-7', '234 80% 55%')
+  root.setProperty('--chart-8', '238 90% 60%')
+  root.setProperty('--chart-9', '242 80% 65%')
+  root.setProperty('--chart-10', '246 70% 70%')
 })
 
 describe('CorrelationRippleMatrix', () => {
@@ -82,8 +98,15 @@ describe('CorrelationRippleMatrix', () => {
 
     const legend = container.querySelector('[data-testid="legend-gradient"]') as HTMLDivElement
     const bg = legend.style.background.replace(/\s/g, '')
-    expect(bg).toContain('rgb(0,68,27)')
-    expect(bg).toContain('rgb(64,0,75)')
+    const getRgb = (name: string) => {
+      const v = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim()
+        .replace(/\s+/g, ', ')
+      return d3hsl(`hsl(${v})`).rgb().toString()
+    }
+    expect(bg).toContain(getRgb('--chart-3'))
+    expect(bg).toContain(getRgb('--chart-4'))
   })
 
   it('supports viridis palette', () => {
@@ -104,8 +127,15 @@ describe('CorrelationRippleMatrix', () => {
 
     const legend = container.querySelector('[data-testid="legend-gradient"]') as HTMLDivElement
     const bg = legend.style.background.replace(/\s/g, '')
-    expect(bg).toContain('#440154')
-    expect(bg).toContain('#fde725')
+    const getRgb = (name: string) => {
+      const v = getComputedStyle(document.documentElement)
+        .getPropertyValue(name)
+        .trim()
+        .replace(/\s+/g, ', ')
+      return d3hsl(`hsl(${v})`).rgb().toString()
+    }
+    expect(bg).toContain(getRgb('--chart-5'))
+    expect(bg).toContain(getRgb('--chart-6'))
   })
 
   it('respects displayMode for lower triangle', () => {

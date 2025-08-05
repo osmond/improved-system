@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, screen, waitFor } from '@testing-library/react';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, beforeAll } from 'vitest';
 import ReadingMap from '../ReadingMap';
 
 vi.mock('react-leaflet', () => {
@@ -16,6 +16,12 @@ vi.mock('react-leaflet', () => {
       setView: () => {},
     }),
   };
+});
+
+beforeAll(() => {
+  const root = document.documentElement.style;
+  root.setProperty('--chart-1', '210 100% 45%');
+  root.setProperty('--chart-10', '246 70% 70%');
 });
 
 describe('ReadingMap', () => {

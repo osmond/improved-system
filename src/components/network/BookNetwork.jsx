@@ -3,7 +3,6 @@ import { select } from 'd3-selection';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
 import { scaleOrdinal, scaleLinear } from 'd3-scale';
-import { schemeTableau10 } from 'd3-scale-chromatic';
 import graphData from '@/data/kindle/book-graph.json';
 
 export default function BookNetwork({ data = graphData }) {
@@ -90,7 +89,8 @@ export default function BookNetwork({ data = graphData }) {
     const width = 600;
     const height = 400;
 
-    const color = scaleOrdinal(schemeTableau10);
+    const chartColors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
+    const color = scaleOrdinal(chartColors);
     const degrees = graph.nodes.map((n) => n.degree);
     const minDegree = Math.min(...degrees);
     const maxDegree = Math.max(...degrees);

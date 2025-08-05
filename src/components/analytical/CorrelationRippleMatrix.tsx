@@ -13,13 +13,8 @@ import {
   Line,
 } from "recharts";
 import { scaleDiverging } from "d3-scale";
-import {
-  interpolateRdBu,
-  interpolatePRGn,
-  interpolateViridis,
-  interpolateMagma,
-} from "d3-scale-chromatic";
-import { rgb } from "d3-color";
+import { hsl, rgb } from "d3-color";
+import { interpolateHsl } from "d3-interpolate";
 import CorrelationDetails, {
   type CorrelationDrilldown,
 } from "./CorrelationDetails";
@@ -58,11 +53,11 @@ interface CellData extends CorrelationCell {
 
 type PaletteOption = "default" | "colorblind" | "viridis" | "magma";
 
-const PALETTE_INTERPOLATORS: Record<PaletteOption, (t: number) => string> = {
-  default: (t) => interpolateRdBu(1 - t),
-  colorblind: (t) => interpolatePRGn(1 - t),
-  viridis: interpolateViridis,
-  magma: interpolateMagma,
+const PALETTE_COLORS: Record<PaletteOption, [string, string]> = {
+  default: ["--chart-1", "--chart-2"],
+  colorblind: ["--chart-3", "--chart-4"],
+  viridis: ["--chart-5", "--chart-6"],
+  magma: ["--chart-7", "--chart-8"],
 };
 
 const DEFAULT_CELL_SIZE = 24;
@@ -70,8 +65,8 @@ const DEFAULT_CELL_SIZE = 24;
 /**
  * Create a diverging color scale that maps `minValue` → negative hue,
  * `0` → white, and `maxValue` → positive hue. The palette can be
- * switched between the default red/blue (`interpolateRdBu`) and a
- * color-blind-friendly purple/green (`interpolatePRGn`) scheme.
+ * switched between predefined chart tokens for default, colorblind,
+ * viridis-like, or magma-like palettes.
  * Values outside the [minValue, maxValue] range are clamped.
  */
 function createColorScale(
@@ -79,8 +74,17 @@ function createColorScale(
   maxValue = 1,
   palette: PaletteOption = "default",
 ) {
-  const interpolator =
-    PALETTE_INTERPOLATORS[palette] ?? PALETTE_INTERPOLATORS.default;
+  const [negVar, posVar] = PALETTE_COLORS[palette] ?? PALETTE_COLORS.default;
+  const style = getComputedStyle(document.documentElement);
+  const parse = (v: string) => hsl(`hsl(${v.trim().replace(/\s+/g, ', ')})`);
+  const neg = parse(style.getPropertyValue(negVar));
+  const pos = parse(style.getPropertyValue(posVar));
+  const mid = parse(style.getPropertyValue("--background"));
+
+  const interpolator = (t: number) =>
+    t < 0.5
+      ? interpolateHsl(neg, mid)(t * 2)
+      : interpolateHsl(mid, pos)((t - 0.5) * 2);
 
   return scaleDiverging(interpolator)
     .domain([minValue, 0, maxValue])

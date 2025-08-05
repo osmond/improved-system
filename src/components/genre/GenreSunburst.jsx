@@ -3,7 +3,6 @@ import { select } from 'd3-selection';
 import { hierarchy, partition } from 'd3-hierarchy';
 import { arc } from 'd3-shape';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
-import { schemeCategory10 } from 'd3-scale-chromatic';
 import { hsl } from 'd3-color';
 import { interpolate } from 'd3-interpolate';
 import 'd3-transition';
@@ -47,12 +46,25 @@ export default function GenreSunburst({ data }) {
     partition().size([2 * Math.PI, RADIUS])(root);
     setCurrentNode(root);
 
-    const color = scaleOrdinal(schemeCategory10);
+    const chartColors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
+    const color = scaleOrdinal(chartColors);
+
+    const resolveHslVar = (str) => {
+      const match = str.match(/var\((--[^)]+)\)/);
+      if (match) {
+        const val = getComputedStyle(document.documentElement)
+          .getPropertyValue(match[1])
+          .trim()
+          .replace(/\s+/g, ', ');
+        return hsl(`hsl(${val})`);
+      }
+      return hsl(str);
+    };
 
     const getColor = (d) => {
       if (d.color) return d.color;
       const top = d.ancestors().find((a) => a.depth === 1) || d;
-      const base = hsl(color(top.data.name));
+      const base = resolveHslVar(color(top.data.name));
       const depth = d.depth - 1;
       base.s = Math.max(0, base.s - depth * 0.15);
       base.l = Math.min(1, base.l + depth * 0.1);

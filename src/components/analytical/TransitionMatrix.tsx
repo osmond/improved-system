@@ -12,18 +12,7 @@ interface TransitionMatrixProps {
   size?: number;
 }
 
-const defaultColors = [
-  "#1f77b4",
-  "#ff7f0e",
-  "#2ca02c",
-  "#d62728",
-  "#9467bd",
-  "#8c564b",
-  "#e377c2",
-  "#7f7f7f",
-  "#bcbd22",
-  "#17becf",
-];
+const defaultColors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
 
 export default function TransitionMatrix({ matrix, labels, size = 300 }: TransitionMatrixProps) {
   const ref = useRef<SVGSVGElement | null>(null);

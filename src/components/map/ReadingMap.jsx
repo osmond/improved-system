@@ -10,7 +10,8 @@ import {
 import { feature } from 'topojson-client';
 import { geoContains } from 'd3-geo';
 import { scaleSequential } from 'd3-scale';
-import { interpolateYlOrRd } from 'd3-scale-chromatic';
+import { hsl } from 'd3-color';
+import { interpolateHsl } from 'd3-interpolate';
 import locationsData from '@/data/kindle/locations.json';
 import statesTopo from '@/lib/us-states.json';
 import worldTopo from '@/lib/world-countries.json';
@@ -120,10 +121,17 @@ export default function ReadingMap() {
     [choropleth]
   );
 
-  const colorScale = useMemo(
-    () => scaleSequential(interpolateYlOrRd).domain([0, maxCount || 1]),
-    [maxCount]
-  );
+  const colorScale = useMemo(() => {
+    const style = getComputedStyle(document.documentElement);
+    const parse = (name) =>
+      hsl(`hsl(${style.getPropertyValue(name).trim().replace(/\s+/g, ', ')})`);
+    const start = parse('--chart-1');
+    const end = parse('--chart-10');
+    return scaleSequential((t) => interpolateHsl(start, end)(t)).domain([
+      0,
+      maxCount || 1,
+    ]);
+  }, [maxCount]);
 
   return (
     <div>

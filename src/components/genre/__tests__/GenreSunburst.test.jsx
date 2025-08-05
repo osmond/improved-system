@@ -4,10 +4,11 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import GenreSunburst from '../GenreSunburst';
 import { hsl as d3hsl } from 'd3-color';
+import { beforeAll } from 'vitest';
 
   describe('GenreSunburst', () => {
   const data = {
-    name: 'root',
+  name: 'root',
     children: [
       {
         name: 'A',
@@ -18,7 +19,21 @@ import { hsl as d3hsl } from 'd3-color';
       },
       { name: 'B', value: 1 },
     ],
-  };
+};
+
+beforeAll(() => {
+  const root = document.documentElement.style;
+  root.setProperty('--chart-1', '210 100% 45%');
+  root.setProperty('--chart-2', '214 90% 50%');
+  root.setProperty('--chart-3', '218 80% 55%');
+  root.setProperty('--chart-4', '222 70% 60%');
+  root.setProperty('--chart-5', '226 60% 65%');
+  root.setProperty('--chart-6', '230 70% 50%');
+  root.setProperty('--chart-7', '234 80% 55%');
+  root.setProperty('--chart-8', '238 90% 60%');
+  root.setProperty('--chart-9', '242 80% 65%');
+  root.setProperty('--chart-10', '246 70% 70%');
+});
 
     it('updates breadcrumb and zooms on interactions', async () => {
     const user = userEvent.setup();

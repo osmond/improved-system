@@ -3,7 +3,7 @@ import { render, screen, fireEvent, act } from "@testing-library/react";
 import React from "react";
 
 import GeoActivityExplorer from "../GeoActivityExplorer";
-import { vi } from "vitest";
+import { vi, beforeAll } from "vitest";
 vi.mock("react-map-gl/maplibre", () => ({
   __esModule: true,
   default: ({ children, ...props }: any) => (
@@ -13,8 +13,8 @@ vi.mock("react-map-gl/maplibre", () => ({
   Layer: () => null,
   Marker: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
   Popup: ({ children }: { children: React.ReactNode }) => <div>{children}</div>,
-}));
-import "@testing-library/jest-dom";
+  }));
+  import "@testing-library/jest-dom";
 
 vi.mock("recharts", async () => {
   const actual: any = await vi.importActual("recharts");
@@ -33,7 +33,7 @@ vi.mock("@/hooks/useStateVisits", () => ({
   useStateVisits: (...args: any[]) => mockUseStateVisits(...args),
 }));
 
-vi.mock("@/hooks/useInsights", () => ({
+  vi.mock("@/hooks/useInsights", () => ({
   __esModule: true,
   default: () => ({
     activeStreak: 5,
@@ -44,7 +44,13 @@ vi.mock("@/hooks/useInsights", () => ({
     bestPaceThisMonth: null,
     mostConsistentDay: null,
   }),
-}));
+  }));
+
+beforeAll(() => {
+  const root = document.documentElement.style;
+  root.setProperty("--chart-1", "210 100% 45%");
+  root.setProperty("--chart-10", "246 70% 70%");
+});
 
 const defaultVisits = [
   {

@@ -11,7 +11,8 @@ import maplibregl from "maplibre-gl";
 import { feature } from "topojson-client";
 import { geoCentroid, geoBounds } from "d3-geo";
 import { scaleSequential } from "d3-scale";
-import { interpolateBlues } from "d3-scale-chromatic";
+import { hsl } from "d3-color";
+import { interpolateHsl } from "d3-interpolate";
 import { useStateVisits } from "@/hooks/useStateVisits";
 import type { StateVisit } from "@/lib/types";
 import { Skeleton } from "@/ui/skeleton";
@@ -110,14 +111,18 @@ export default function GeoActivityExplorer() {
     () => Math.max(...states.map((s) => s.totalDays), 0),
     [states],
   )
-  const colorScale = useMemo(
-    () => scaleSequential(interpolateBlues).domain([0, maxDays || 1]),
-    [maxDays],
-  )
-  const legendGradient = useMemo(
-    () => `linear-gradient(to right, ${colorScale(0)}, ${colorScale(maxDays)})`,
-    [colorScale, maxDays],
-  )
+    const colorScale = useMemo(() => {
+    const style = getComputedStyle(document.documentElement)
+    const parse = (name: string) =>
+      hsl(`hsl(${style.getPropertyValue(name).trim().replace(/\s+/g, ', ')})`)
+    const start = parse('--chart-1')
+    const end = parse('--chart-10')
+    return scaleSequential((t) => interpolateHsl(start, end)(t)).domain([0, maxDays || 1])
+    }, [maxDays])
+    const legendGradient = useMemo(
+      () => `linear-gradient(to right, ${colorScale(0)}, ${colorScale(maxDays)})`,
+      [colorScale, maxDays],
+    )
 
   const statesGeo = useMemo(() => {
     const fc = feature(
