@@ -72,6 +72,7 @@ export default function ReadingSpeedViolin() {
     const root = svg.attr('viewBox', `0 0 ${width} ${height}`).append('g');
 
     periodKeys.forEach((period, i) => {
+      const values = periods[period];
       const counts = countsByPeriod[period];
       const center = violinWidth * (i + 0.5);
       const g = root.append('g').attr('transform', `translate(${center},0)`);
@@ -94,6 +95,7 @@ export default function ReadingSpeedViolin() {
       const medianY = y(median);
       const boxWidth = x(maxCount) * 0.3;
       const medianHeight = 10;
+      const jitterWidth = x(maxCount) * 0.3;
 
       // Interquartile range box
       g
@@ -115,6 +117,17 @@ export default function ReadingSpeedViolin() {
         .attr('y2', medianY + medianHeight / 2)
         .attr('stroke', 'var(--chart-network-node-border)')
         .attr('stroke-width', 2);
+
+      // Plot individual reading speed points with slight horizontal jitter
+      values.forEach((v) => {
+        g
+          .append('circle')
+          .attr('cx', Math.random() * jitterWidth - jitterWidth / 2)
+          .attr('cy', y(v))
+          .attr('r', 3)
+          .attr('fill', 'var(--chart-network-node-border)')
+          .attr('fill-opacity', 0.6);
+      });
     });
   }, [data, showMorning, showEvening]);
 
