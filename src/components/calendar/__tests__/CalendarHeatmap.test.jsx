@@ -86,6 +86,24 @@ describe('CalendarHeatmap', () => {
     within(tooltip).getByTestId('sparkline');
   });
 
+  it('shows tooltip when navigating with keyboard', async () => {
+    const user = userEvent.setup();
+    render(<CalendarHeatmap />);
+
+    const firstCell = screen.getByLabelText('Jan 1, 2024: 5 minutes');
+    while (document.activeElement !== firstCell) {
+      await user.tab();
+    }
+    let tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 1, 2024');
+    within(tooltip).getByText('5 min');
+
+    await user.tab();
+    tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 2, 2024');
+    within(tooltip).getByText('10 min');
+  });
+
   it('renders separate heatmaps for each year', () => {
     const twoYearData = [
       { date: '2023-12-31', minutes: 30, pages: 10 },
