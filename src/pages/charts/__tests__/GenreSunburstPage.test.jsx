@@ -22,10 +22,10 @@ describe('GenreSunburstPage', () => {
     expect(screen.queryByTestId('icicle-layout')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /icicle/i }));
-    expect(screen.getByTestId('icicle-layout')).toBeInTheDocument();
+    expect(await screen.findByTestId('icicle-layout')).toBeInTheDocument();
     expect(screen.queryByTestId('sunburst-layout')).not.toBeInTheDocument();
 
     await user.click(screen.getByRole('button', { name: /sunburst/i }));
-    expect(screen.getByTestId('sunburst-layout')).toBeInTheDocument();
+    expect(await screen.findByTestId('sunburst-layout')).toBeInTheDocument();
   });
 });

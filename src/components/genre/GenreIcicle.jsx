@@ -9,6 +9,7 @@ import { Skeleton } from '@/ui/skeleton';
 
 const WIDTH = 600;
 const HEIGHT = 400;
+const LABEL_MIN_HEIGHT = 20; // min height to show vertical label
 
 export default function GenreIcicle({ data }) {
   const ref = useRef(null);
@@ -16,23 +17,51 @@ export default function GenreIcicle({ data }) {
   const xScale = useRef(scaleLinear().range([0, WIDTH]).domain([0, WIDTH]));
   const yScale = useRef(scaleLinear().range([0, HEIGHT]).domain([0, HEIGHT]));
 
-  const zoomTo = useCallback((node) => {
+  const computeTextTransform = useCallback(
+    (d) => {
+      const x = (xScale.current(d.x0) + xScale.current(d.x1)) / 2;
+      const y = (yScale.current(d.y0) + yScale.current(d.y1)) / 2;
+      return `translate(${x},${y}) rotate(90)`;
+    },
+    []
+  );
+
+  const updateGhosting = useCallback((node) => {
+    const ancestors = node.ancestors();
     const svg = select(ref.current);
-    const t = svg.transition().duration(750);
-    t.tween('scale', () => {
-      const xd = interpolate(xScale.current.domain(), [node.x0, node.x1]);
-      const yd = interpolate(yScale.current.domain(), [node.y0, HEIGHT]);
-      return (t) => {
-        xScale.current.domain(xd(t));
-        yScale.current.domain(yd(t));
-      };
-    });
-    t.selectAll('rect')
-      .attr('x', (d) => xScale.current(d.x0))
-      .attr('y', (d) => yScale.current(d.y0))
-      .attr('width', (d) => xScale.current(d.x1) - xScale.current(d.x0))
-      .attr('height', (d) => yScale.current(d.y1) - yScale.current(d.y0));
+    svg
+      .selectAll('rect, text')
+      .style('opacity', (d) => (ancestors.includes(d) && d !== node ? 0.3 : 1));
   }, []);
+
+  const zoomTo = useCallback(
+    (node) => {
+      const svg = select(ref.current);
+      const t = svg.transition().duration(750);
+      t.tween('scale', () => {
+        const xd = interpolate(xScale.current.domain(), [node.x0, node.x1]);
+        const yd = interpolate(yScale.current.domain(), [node.y0, HEIGHT]);
+        return (t) => {
+          xScale.current.domain(xd(t));
+          yScale.current.domain(yd(t));
+        };
+      });
+      t
+        .selectAll('rect')
+        .attr('x', (d) => xScale.current(d.x0))
+        .attr('y', (d) => yScale.current(d.y0))
+        .attr('width', (d) => xScale.current(d.x1) - xScale.current(d.x0))
+        .attr('height', (d) => yScale.current(d.y1) - yScale.current(d.y0));
+      t
+        .selectAll('text')
+        .attrTween('transform', (d) => () => computeTextTransform(d))
+        .styleTween('opacity', (d) => () =>
+          yScale.current(d.y1) - yScale.current(d.y0) > LABEL_MIN_HEIGHT ? 1 : 0
+        );
+      t.on('end', () => updateGhosting(node));
+    },
+    [computeTextTransform, updateGhosting]
+  );
 
   useEffect(() => {
     const svg = select(ref.current);
@@ -68,8 +97,10 @@ export default function GenreIcicle({ data }) {
       .attr('viewBox', `0 0 ${WIDTH} ${HEIGHT}`)
       .append('g');
 
+    const nodes = root.descendants().filter((d) => d.depth);
+
     g.selectAll('rect')
-      .data(root.descendants().filter((d) => d.depth))
+      .data(nodes)
       .join('rect')
       .attr('x', (d) => xScale.current(d.x0))
       .attr('y', (d) => yScale.current(d.y0))
@@ -89,6 +120,23 @@ export default function GenreIcicle({ data }) {
       })
       .append('title')
       .text((d) => d.data.name);
+
+    g.selectAll('text')
+      .data(nodes)
+      .join('text')
+      .attr('transform', (d) => computeTextTransform(d))
+      .attr('text-anchor', 'middle')
+      .attr('dy', '0.32em')
+      .style('pointer-events', 'none')
+      .style('opacity', (d) =>
+        yScale.current(d.y1) - yScale.current(d.y0) > LABEL_MIN_HEIGHT ? 1 : 0
+      )
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 3)
+      .attr('paint-order', 'stroke')
+      .text((d) => d.data.name);
+
+    updateGhosting(root);
   }, [data, zoomTo]);
 
   if (!data) {

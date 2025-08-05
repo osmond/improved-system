@@ -10,6 +10,7 @@ import { Skeleton } from '@/ui/skeleton';
 
 const SIZE = 400;
 const RADIUS = SIZE / 2;
+const LABEL_MIN_ARC = 12; // minimum pixel length to show label
 
 export default function GenreSunburst({ data }) {
   const ref = useRef(null);
@@ -24,19 +25,52 @@ export default function GenreSunburst({ data }) {
       .outerRadius((d) => yScale.current(d.y1))
   );
 
-  const zoomTo = useCallback((node) => {
+  const computeTextTransform = useCallback(
+    (d) => {
+      const angle =
+        ((xScale.current(d.x0) + xScale.current(d.x1)) / 2) *
+          (180 / Math.PI) -
+        90;
+      const radius =
+        (yScale.current(d.y0) + yScale.current(d.y1)) / 2;
+      return `rotate(${angle}) translate(${radius},0) rotate(${angle < 180 ? 0 : 180})`;
+    },
+    []
+  );
+
+  const updateGhosting = useCallback((node) => {
+    const ancestors = node.ancestors();
     const svg = select(ref.current);
-    const t = svg.transition().duration(750);
-    t.tween('scale', () => {
-      const xd = interpolate(xScale.current.domain(), [node.x0, node.x1]);
-      const yd = interpolate(yScale.current.domain(), [node.y0, RADIUS]);
-      return (t) => {
-        xScale.current.domain(xd(t));
-        yScale.current.domain(yd(t));
-      };
-    });
-    t.selectAll('path').attrTween('d', (d) => () => arcGen.current(d));
+    svg
+      .selectAll('path, text')
+      .style('opacity', (d) => (ancestors.includes(d) && d !== node ? 0.3 : 1));
   }, []);
+
+  const zoomTo = useCallback(
+    (node) => {
+      const svg = select(ref.current);
+      const t = svg.transition().duration(750);
+      t.tween('scale', () => {
+        const xd = interpolate(xScale.current.domain(), [node.x0, node.x1]);
+        const yd = interpolate(yScale.current.domain(), [node.y0, RADIUS]);
+        return (t) => {
+          xScale.current.domain(xd(t));
+          yScale.current.domain(yd(t));
+        };
+      });
+      t.selectAll('path').attrTween('d', (d) => () => arcGen.current(d));
+      t
+        .selectAll('text')
+        .attrTween('transform', (d) => () => computeTextTransform(d))
+        .styleTween('opacity', (d) => () =>
+          (xScale.current(d.x1) - xScale.current(d.x0)) * RADIUS > LABEL_MIN_ARC
+            ? 1
+            : 0
+        );
+      t.on('end', () => updateGhosting(node));
+    },
+    [computeTextTransform, updateGhosting]
+  );
 
   useEffect(() => {
     const svg = select(ref.current);
@@ -72,8 +106,10 @@ export default function GenreSunburst({ data }) {
       .attr('viewBox', `${-RADIUS} ${-RADIUS} ${SIZE} ${SIZE}`)
       .append('g');
 
+    const nodes = root.descendants().filter((d) => d.depth);
+
     g.selectAll('path')
-      .data(root.descendants().filter((d) => d.depth))
+      .data(nodes)
       .join('path')
       .attr('d', (d) => arcGen.current(d))
       .attr('data-name', (d) => d.data.name)
@@ -90,6 +126,25 @@ export default function GenreSunburst({ data }) {
       })
       .append('title')
       .text((d) => d.data.name);
+
+    g.selectAll('text')
+      .data(nodes)
+      .join('text')
+      .attr('transform', (d) => computeTextTransform(d))
+      .attr('dy', '0.32em')
+      .attr('text-anchor', 'middle')
+      .style('pointer-events', 'none')
+      .style('opacity', (d) =>
+        (xScale.current(d.x1) - xScale.current(d.x0)) * RADIUS > LABEL_MIN_ARC
+          ? 1
+          : 0
+      )
+      .attr('stroke', '#fff')
+      .attr('stroke-width', 3)
+      .attr('paint-order', 'stroke')
+      .text((d) => d.data.name);
+
+    updateGhosting(root);
   }, [data, zoomTo]);
 
   if (!data) {

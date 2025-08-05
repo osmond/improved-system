@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import GenreSunburst from '@/components/genre/GenreSunburst.jsx';
 import GenreIcicle from '@/components/genre/GenreIcicle.jsx';
 import { Skeleton } from '@/ui/skeleton';
+import { AnimatePresence, motion } from 'framer-motion';
 
 export default function GenreSunburstPage() {
   const [view, setView] = useState('sunburst');
@@ -40,16 +41,34 @@ export default function GenreSunburstPage() {
           Icicle
         </button>
       </div>
-      {isLoading ? (
-        <Skeleton
-          className="h-[400px] w-full"
-          data-testid="genre-hierarchy-skeleton"
-        />
-      ) : view === 'sunburst' ? (
-        <GenreSunburst data={data} />
-      ) : (
-        <GenreIcicle data={data} />
-      )}
+      <AnimatePresence mode="wait">
+        {isLoading ? (
+          <Skeleton
+            className="h-[400px] w-full"
+            data-testid="genre-hierarchy-skeleton"
+          />
+        ) : view === 'sunburst' ? (
+          <motion.div
+            key="sunburst"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <GenreSunburst data={data} />
+          </motion.div>
+        ) : (
+          <motion.div
+            key="icicle"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <GenreIcicle data={data} />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
