@@ -24,9 +24,22 @@ export default function NavItems({
     Icon?: React.ComponentType<{ className?: string }> ,
   ) => {
     const link = (
-      <NavLink to={to} className="flex items-center gap-2 px-2 py-1 text-sm">
-        {Icon && <Icon className="h-4 w-4" aria-hidden="true" />}
-        <span>{label}</span>
+      <NavLink
+        to={to}
+        className={({ isActive }) =>
+          cn(
+            "group relative flex items-center gap-2 px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100",
+            isActive && "active text-foreground after:scale-x-100",
+          )
+        }
+      >
+        {Icon && (
+          <Icon
+            className="h-4 w-4 transition-transform group-hover:scale-110"
+            aria-hidden="true"
+          />
+        )}
+        <span className="transition-colors group-hover:text-foreground">{label}</span>
       </NavLink>
     );
     return vertical ? <SheetClose asChild>{link}</SheetClose> : link;
@@ -56,7 +69,12 @@ export default function NavItems({
                   <NavLink
                     key={item.to}
                     to={item.to}
-                    className="block px-2 py-1 text-sm"
+                    className={({ isActive }) =>
+                      cn(
+                        "block px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground",
+                        isActive && "active text-foreground",
+                      )
+                    }
                   >
                     {item.label}
                   </NavLink>
