@@ -1,4 +1,4 @@
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, within, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
@@ -102,6 +102,17 @@ describe('CalendarHeatmap', () => {
     within(tooltip).getByText('Jan 2, 2024');
     within(tooltip).getByText('10 min');
     within(tooltip).getByTestId('sparkline');
+  });
+
+  it('dispatches mouseover when clicking a cell', () => {
+    const { container } = render(<CalendarHeatmap />);
+    const day = container.querySelector('rect[data-date="2024-01-02"]');
+    expect(day).not.toBeNull();
+    const spy = vi.spyOn(day, 'dispatchEvent');
+    fireEvent.click(day);
+    expect(
+      spy.mock.calls.some(([evt]) => evt.type === 'mouseover')
+    ).toBe(true);
   });
 
   it('shows tooltip when navigating with keyboard', async () => {
