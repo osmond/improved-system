@@ -203,12 +203,12 @@
     fill: hsl(var(--reading-5));
   }
   .month-boundary {
-    stroke: hsl(var(--border));
-    stroke-width: 1;
+    stroke: hsl(var(--foreground) / 0.3);
+    stroke-width: 1.5;
     pointer-events: none;
   }
   .quarter-boundary {
     stroke: hsl(var(--foreground));
-    stroke-width: 1.5;
+    stroke-width: 2;
   }
 }
