@@ -13,6 +13,7 @@ const LANE_HEIGHT = BAR_HEIGHT + LANE_PADDING;
 const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 40;
 const MIN_HEIGHT = 120;
+const TOP_N = 5;
 
 /**
  * Timeline of reading sessions using a d3 brush.
@@ -27,9 +28,55 @@ export default function ReadingTimeline({ sessions = [] }) {
   const adjustingRef = useRef(false);
   const [zoomed, setZoomed] = useState(false);
   const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const [showLegend, setShowLegend] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const filteredSessions = useMemo(() => {
+    if (!search) return sessions;
+    const term = search.toLowerCase();
+    return sessions.filter((s) => s.title.toLowerCase().includes(term));
+  }, [sessions, search]);
+
+  const bookCounts = useMemo(() => {
+    const counts = new Map();
+    filteredSessions.forEach((s) => {
+      counts.set(s.title, (counts.get(s.title) || 0) + 1);
+    });
+    return Array.from(counts.entries()).sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+    );
+  }, [filteredSessions]);
+
+  const topTitles = useMemo(
+    () => bookCounts.slice(0, TOP_N).map(([title]) => title),
+    [bookCounts],
+  );
+
+  const legendTitles = useMemo(() => {
+    const list = [...topTitles];
+    if (bookCounts.length > TOP_N) list.push('Other');
+    return list;
+  }, [topTitles, bookCounts.length]);
+
+  const colorScale = useMemo(() => {
+    const colors = Array.from({ length: topTitles.length }, (_, i) =>
+      `hsl(var(--chart-${i + 1}))`,
+    );
+    if (bookCounts.length > TOP_N) colors.push('#ccc');
+    return scaleOrdinal().domain(legendTitles).range(colors);
+  }, [legendTitles, topTitles.length, bookCounts.length]);
+
+  const sessionsWithCat = useMemo(
+    () =>
+      filteredSessions.map((s) => ({
+        ...s,
+        category: topTitles.includes(s.title) ? s.title : 'Other',
+      })),
+    [filteredSessions, topTitles],
+  );
 
   const { parsedSessions, lanes } = useMemo(() => {
-    const parsed = sessions
+    const parsed = sessionsWithCat
       .map((s) => ({
         ...s,
         startDate: new Date(s.start),
@@ -50,18 +97,9 @@ export default function ReadingTimeline({ sessions = [] }) {
     });
 
     return { parsedSessions: parsed, lanes: laneEnds.length || 1 };
-  }, [sessions]);
+  }, [sessionsWithCat]);
 
   const height = Math.max(MIN_HEIGHT, lanes * LANE_HEIGHT + LANE_PADDING);
-
-  const titles = useMemo(
-    () => Array.from(new Set(sessions.map((s) => s.title))),
-    [sessions],
-  );
-  const colorScale = useMemo(() => {
-    const colors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
-    return scaleOrdinal().domain(titles).range(colors);
-  }, [titles]);
 
   useEffect(() => {
     const handleResize = () => {
@@ -109,8 +147,12 @@ export default function ReadingTimeline({ sessions = [] }) {
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${BRUSH_HEIGHT + height})`);
     const xAxis = axisBottom(x)
-      .ticks(timeMonth.every(3))
-      .tickFormat(timeFormat('%b'))
+      .ticks(timeMonth.every(4))
+      .tickFormat((d) =>
+        d.getMonth() === 0
+          ? timeFormat('%b %Y')(d)
+          : timeFormat('%b')(d),
+      )
       .tickSize(-height)
       .tickSizeOuter(0);
 
@@ -134,7 +176,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         .attr('y', (d) => d.lane * LANE_HEIGHT + LANE_PADDING)
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
         .attr('height', BAR_HEIGHT)
-        .attr('fill', (d) => colorScale(d.title))
+        .attr('fill', (d) => colorScale(d.category))
         .attr('fill-opacity', (d) => opacityScale(d.duration))
         .attr('tabindex', 0)
         .attr(
@@ -296,42 +338,66 @@ export default function ReadingTimeline({ sessions = [] }) {
       >
         Drag across the timeline to zoom; use Reset to return.
       </p>
-      {titles.length > 0 && (
-        <ul
-          aria-label="Books"
-          style={{
-            display: 'flex',
-            flexWrap: 'wrap',
-            gap: '0.5rem',
-            listStyle: 'none',
-            padding: 0,
-            margin: '0.5rem 0',
-          }}
-        >
-          {titles.map((t) => (
-            <li
-              key={t}
-              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
-            >
-              <span
-                aria-hidden="true"
+      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
+        {zoomed && (
+          <button onClick={reset} aria-label="Reset zoom">Reset</button>
+        )}
+      </div>
+      {showLegend && (
+        <div style={{ margin: '0.5rem 0' }}>
+          <input
+            type="text"
+            placeholder="Search..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              width: '100%',
+              marginBottom: '0.5rem',
+              padding: '0.25rem',
+            }}
+          />
+          {legendTitles.length > 0 && (
+            <div style={{ maxHeight: 150, overflowY: 'auto' }}>
+              <ul
+                aria-label="Books"
                 style={{
-                  width: 12,
-                  height: 12,
-                  backgroundColor: colorScale(t),
-                  display: 'inline-block',
+                  display: 'grid',
+                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
+                  gap: '0.5rem',
+                  listStyle: 'none',
+                  padding: 0,
+                  margin: 0,
                 }}
-              />
-              <span>{t}</span>
-            </li>
-          ))}
-        </ul>
+              >
+                {legendTitles.map((t) => (
+                  <li
+                    key={t}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 12,
+                        height: 12,
+                        backgroundColor: colorScale(t),
+                        display: 'inline-block',
+                      }}
+                    />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
-      {zoomed && (
-        <button onClick={reset} aria-label="Reset zoom">
-          Reset
-        </button>
-      )}
+      <button
+        onClick={() => setShowLegend((v) => !v)}
+        aria-expanded={showLegend}
+        style={{ marginTop: '0.5rem' }}
+      >
+        {showLegend ? 'Hide books' : 'Show books...'}
+      </button>
     </div>
   );
 }
