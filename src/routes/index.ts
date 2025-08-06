@@ -351,12 +351,13 @@ export const kindleRoutes = withIcon(BookOpen, [
     label: "Bookshelf by Year",
     description: "Book covers organized chronologically",
     component: "@/pages/charts/BookshelfByYear",
-
+    tags: ["kindle"],
+  },
+  {
     to: "/dashboard/kindle/book-progress-spiral",
     label: "Book Progress Spirals",
     description: "Spiral chart of book progress over time",
     component: "@/pages/charts/BookProgressSpiral",
-
     tags: ["kindle"],
   },
 ]);
