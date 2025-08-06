@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useRef, useId } from 'react';
 import Heatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import useDailyReading from '@/hooks/useDailyReading';
@@ -137,6 +137,38 @@ function YearlyHeatmap({ data }) {
     return `reading-scale-${idx + 1}`;
   };
 
+  const gridRef = useRef(null);
+  const instructionsId = useId();
+  const handleKeyDown = (e) => {
+    const target = e.target;
+    const dateAttr = target?.getAttribute?.('data-date');
+    if (!dateAttr) return;
+    const current = new Date(dateAttr);
+    const next = new Date(current);
+    switch (e.key) {
+      case 'ArrowLeft':
+        next.setDate(current.getDate() - 1);
+        break;
+      case 'ArrowRight':
+        next.setDate(current.getDate() + 1);
+        break;
+      case 'ArrowUp':
+        next.setDate(current.getDate() - 7);
+        break;
+      case 'ArrowDown':
+        next.setDate(current.getDate() + 7);
+        break;
+      default:
+        return;
+    }
+    const selector = `[data-date="${next.toISOString().slice(0, 10)}"]`;
+    const nextEl = gridRef.current?.querySelector(selector);
+    if (nextEl) {
+      nextEl.focus();
+      e.preventDefault();
+    }
+  };
+
   const transformDayElement = (element, value, index) => {
     const date = new Date(startWithEmptyDays);
     date.setDate(startWithEmptyDays.getDate() + index);
@@ -152,6 +184,7 @@ function YearlyHeatmap({ data }) {
     const dayRect = React.cloneElement(element, {
       'data-date': dateKey,
       tabIndex: 0,
+      role: 'gridcell',
       'aria-label': `${formatted}: ${minutes} minutes`,
     });
     const cell = (
@@ -231,16 +264,27 @@ function YearlyHeatmap({ data }) {
   return (
     <TooltipProvider>
       <div>
-        <Heatmap
-          startDate={startWithEmptyDays}
-          endDate={endDate}
-          values={values}
-          classForValue={classForValue}
-          transformDayElement={transformDayElement}
-          showMonthLabels={false}
-          className="w-full h-auto"
-          style={{ width: '100%', overflow: 'visible' }}
-        />
+        <div
+          ref={gridRef}
+          role="grid"
+          aria-label="Reading activity heatmap"
+          aria-describedby={instructionsId}
+          onKeyDown={handleKeyDown}
+        >
+          <p id={instructionsId} className="sr-only">
+            Use arrow keys to navigate between days.
+          </p>
+          <Heatmap
+            startDate={startWithEmptyDays}
+            endDate={endDate}
+            values={values}
+            classForValue={classForValue}
+            transformDayElement={transformDayElement}
+            showMonthLabels={false}
+            className="w-full h-auto"
+            style={{ width: '100%', overflow: 'visible' }}
+          />
+        </div>
         <ul
           role="list"
           className="flex flex-wrap items-center gap-2 md:gap-3 mt-2 text-xs md:text-sm"

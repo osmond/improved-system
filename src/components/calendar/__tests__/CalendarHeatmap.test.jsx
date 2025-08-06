@@ -224,6 +224,30 @@ describe('CalendarHeatmap', () => {
     within(tooltip).getByText('10 min');
   });
 
+  it('provides grid roles and navigation instructions', () => {
+    const { container } = render(<CalendarHeatmap />);
+    const grid = container.querySelector('[role="grid"]');
+    expect(grid).not.toBeNull();
+    expect(grid.getAttribute('aria-label')).toBeTruthy();
+    const instructions = within(grid).getByText(
+      /use arrow keys to navigate/i
+    );
+    expect(instructions).toHaveClass('sr-only');
+    const cell = container.querySelector('rect[data-date="2024-01-01"]');
+    expect(cell?.getAttribute('role')).toBe('gridcell');
+  });
+
+  it('moves focus with arrow keys', async () => {
+    const user = userEvent.setup();
+    render(<CalendarHeatmap />);
+    const firstCell = screen.getByLabelText('Jan 1, 2024: 5 minutes');
+    firstCell.focus();
+    expect(firstCell).toHaveFocus();
+    await user.keyboard('{ArrowRight}');
+    const secondCell = screen.getByLabelText('Jan 2, 2024: 10 minutes');
+    expect(secondCell).toHaveFocus();
+  });
+
   it('renders separate heatmaps for each year', () => {
     const twoYearData = [
       { date: '2023-12-31', minutes: 30, pages: 10 },
