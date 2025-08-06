@@ -1,3 +1,5 @@
+const asinTitleMap = require('../data/kindle/asin-title-map.json');
+
 function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
   const genreByAsin = {};
   for (const g of genres) {
@@ -22,7 +24,7 @@ function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
   for (const s of sessions) {
     const asin = s.asin || s.ASIN;
     if (!asin) continue;
-    const title = s.title || s['Product Name'] || asin;
+    const title = asinTitleMap[asin] || s.title || s['Product Name'] || asin;
     const minutes = Number(s.duration || s.minutes || 0);
     if (!books[asin]) {
       books[asin] = {

@@ -3,17 +3,31 @@ import '@testing-library/jest-dom';
 import React from 'react';
 import GenreSankey from '../GenreSankey';
 import { vi } from 'vitest';
+import transitions from '../../../data/kindle/genre-transitions.json';
 
 describe('GenreSankey', () => {
   const originalFetch = global.fetch;
+  const originalGetBoundingClientRect =
+    HTMLDivElement.prototype.getBoundingClientRect;
 
   beforeEach(() => {
     vi.resetAllMocks();
-    global.fetch = originalFetch;
+    global.fetch = vi.fn().mockResolvedValue({
+      json: () => Promise.resolve(transitions),
+    });
+    HTMLDivElement.prototype.getBoundingClientRect = () => ({
+      width: 600,
+      height: 400,
+      top: 0,
+      left: 0,
+      bottom: 400,
+      right: 600,
+    });
   });
 
   afterAll(() => {
     global.fetch = originalFetch;
+    HTMLDivElement.prototype.getBoundingClientRect = originalGetBoundingClientRect;
   });
 
   it('renders a skeleton before data resolves', async () => {

@@ -4,20 +4,28 @@ import { buildGenreHierarchy } from '../genreHierarchy';
 describe('buildGenreHierarchy', () => {
   it('builds nested tree from flat records', () => {
     const sessions = [
-      { asin: 'A1', title: 'Book One', duration: 30 },
-      { asin: 'A2', title: 'Book Two', duration: 15 },
+      { asin: 'B000OZ0NXA', duration: 30 },
+      { asin: 'B000FC1MBO', duration: 15 },
     ];
     const genres = [
-      { ASIN: 'A1', Genre: 'Fiction' },
-      { ASIN: 'A2', Genre: 'Fiction' },
+      { ASIN: 'B000OZ0NXA', Genre: 'Fiction' },
+      { ASIN: 'B000FC1MBO', Genre: 'Fiction' },
     ];
     const authors = [
-      { ASIN: 'A1', 'Author Name': 'Author A' },
-      { ASIN: 'A2', 'Author Name': 'Author B' },
+      { ASIN: 'B000OZ0NXA', 'Author Name': 'Author A' },
+      { ASIN: 'B000FC1MBO', 'Author Name': 'Author B' },
     ];
     const tags = [
-      { ASIN: 'A1', 'Tag Source Group': 'genre', 'Tag Name': 'Mystery' },
-      { ASIN: 'A2', 'Tag Source Group': 'genre', 'Tag Name': 'Fantasy' },
+      {
+        ASIN: 'B000OZ0NXA',
+        'Tag Source Group': 'genre',
+        'Tag Name': 'Mystery',
+      },
+      {
+        ASIN: 'B000FC1MBO',
+        'Tag Source Group': 'genre',
+        'Tag Name': 'Fantasy',
+      },
     ];
     const root = buildGenreHierarchy(sessions, genres, authors, tags);
     expect(root.name).toBe('root');
@@ -26,6 +34,9 @@ describe('buildGenreHierarchy', () => {
     const mystery = fiction.children.find((c) => c.name === 'Mystery');
     expect(mystery.children[0].name).toBe('Author A');
     const book = mystery.children[0].children[0];
-    expect(book).toEqual({ name: 'Book One', value: 30 });
+    expect(book).toEqual({
+      name: 'Killing Floor (Jack Reacher, Book 1)',
+      value: 30,
+    });
   });
 });
