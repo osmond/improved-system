@@ -71,8 +71,8 @@ export default function NavItems({
                     to={item.to}
                     className={({ isActive }) =>
                       cn(
-                        "block px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground",
-                        isActive && "active text-foreground",
+                        "relative block px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100",
+                        isActive && "active text-foreground after:scale-x-100",
                       )
                     }
                   >
