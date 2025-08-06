@@ -7,6 +7,7 @@ import {
   List,
   BookOpen,
   FlaskConical,
+  MoreHorizontal,
 } from "lucide-react";
 import {
   withIcon,
@@ -287,12 +288,6 @@ export const demoRoutes = withIcon(FlaskConical, [
   },
 ]);
 
-const demoRouteGroup: DashboardRouteGroup = {
-  label: "Component Demos",
-  icon: FlaskConical,
-  items: demoRoutes,
-};
-
 export const kindleRoutes = withIcon(BookOpen, [
   {
     to: "/dashboard/kindle/calendar-heatmap",
@@ -412,21 +407,20 @@ export const privacyRoutes = withIcon(Shield, [
   },
 ]);
 
-const privacyRouteGroup: DashboardRouteGroup = {
-  label: "Privacy & Settings",
-  icon: Shield,
-  items: privacyRoutes,
+const otherRouteGroup: DashboardRouteGroup = {
+  label: "Other",
+  icon: MoreHorizontal,
+  items: [...demoRoutes, ...privacyRoutes],
 };
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
+  kindleRouteGroup,
   allRouteGroup,
   mapsRouteGroup,
   trendsRouteGroup,
   analyticalRouteGroup,
-  demoRouteGroup,
-  kindleRouteGroup,
   goalsRouteGroup,
-  privacyRouteGroup,
+  otherRouteGroup,
 ];
 
 export type { DashboardRoute, DashboardRouteGroup } from "./types";
