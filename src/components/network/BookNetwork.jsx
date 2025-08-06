@@ -9,6 +9,8 @@ import graphData from '@/data/kindle/book-graph.json';
 
 export default function BookNetwork({ data = graphData }) {
   const svgRef = useRef(null);
+  const containerRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [graph, setGraph] = useState({ nodes: [], links: [] });
   const [tag, setTag] = useState('');
   const [author, setAuthor] = useState('');
@@ -18,6 +20,19 @@ export default function BookNetwork({ data = graphData }) {
   const [overrides, setOverrides] = useState({});
   const [subgenre, setSubgenre] = useState('');
   const [sgError, setSgError] = useState('');
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        const { width, height } = entry.contentRect;
+        setDimensions({ width, height });
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const degreeMap = {};
@@ -149,9 +164,9 @@ export default function BookNetwork({ data = graphData }) {
   }, [tag, author, selected, adjacency, graph]);
 
   useEffect(() => {
+    const { width, height } = dimensions;
+    if (!width || !height) return;
     const svg = select(svgRef.current);
-    const width = 600;
-    const height = 400;
 
     const chartColors = Array.from(
       { length: 10 },
@@ -322,7 +337,7 @@ export default function BookNetwork({ data = graphData }) {
       svg.selectAll('circle').interrupt();
       svg.selectAll('line').interrupt();
     };
-  }, [graph, highlightedNodes, highlightedLinks, adjacency]);
+  }, [graph, highlightedNodes, highlightedLinks, adjacency, dimensions]);
 
   return (
     <div>
@@ -358,7 +373,9 @@ export default function BookNetwork({ data = graphData }) {
           </div>
         )}
       </div>
-      <svg ref={svgRef} width={600} height={400}></svg>
+      <div ref={containerRef}>
+        <svg ref={svgRef} width={dimensions.width} height={dimensions.height}></svg>
+      </div>
     </div>
   );
 }

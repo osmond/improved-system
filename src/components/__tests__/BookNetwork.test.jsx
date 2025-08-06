@@ -1,6 +1,6 @@
 import React from 'react';
-import { render, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi, beforeEach } from 'vitest';
+import { render, fireEvent, waitFor, act } from '@testing-library/react';
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 import BookNetwork from '../network/BookNetwork.jsx';
 
 function createMockGraph() {
@@ -18,14 +18,32 @@ function createMockGraph() {
 }
 
 describe('BookNetwork component', () => {
+  const originalRO = global.ResizeObserver;
+  let resizeCallback;
+
   beforeEach(() => {
     global.fetch = vi.fn(() => Promise.resolve({ json: () => Promise.resolve({}) }));
+    resizeCallback = undefined;
+    global.ResizeObserver = class {
+      constructor(cb) {
+        resizeCallback = cb;
+      }
+      observe() {}
+      unobserve() {}
+      disconnect() {}
+    };
   });
 
-  it('renders labeled inputs and saves sub-genre override', async () => {
-    const { container, getByLabelText, getByText } = render(
-      <BookNetwork data={createMockGraph()} />
-    );
+  afterEach(() => {
+    global.ResizeObserver = originalRO;
+  });
+
+
+  it('shows sub-genre input and saves override', async () => {
+    const { container } = render(<BookNetwork data={createMockGraph()} />);
+    act(() => {
+      resizeCallback?.([{ contentRect: { width: 600, height: 400 } }]);
+    });
     await waitFor(() => {
       expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
     });
