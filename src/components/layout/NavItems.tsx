@@ -4,6 +4,12 @@ import type { DashboardRouteGroup } from "@/routes";
 import { cn } from "@/lib/utils";
 import { SheetClose } from "@/ui/sheet";
 import { Popover, PopoverTrigger, PopoverContent } from "@/ui/popover";
+import {
+  Accordion,
+  AccordionItem,
+  AccordionTrigger,
+  AccordionContent,
+} from "@/ui/accordion";
 
 interface NavItemsProps {
   groups: DashboardRouteGroup[];
@@ -45,19 +51,40 @@ export default function NavItems({
     return vertical ? <SheetClose asChild>{link}</SheetClose> : link;
   };
 
+  if (vertical) {
+    return (
+      <div className={cn("flex flex-col gap-4", className)}>
+        {renderLink("/", "Dashboard")}
+        <Accordion type="multiple" className="w-full">
+          {groups.map((group) => {
+            const Icon = group.icon;
+            return (
+              <AccordionItem key={group.label} value={group.label}>
+                <AccordionTrigger className="group flex w-full items-center gap-2 px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  {Icon && <Icon className="h-4 w-4" aria-hidden="true" />}
+                  <span>{group.label}</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="flex flex-col gap-2 pl-4">
+                    {group.items.map((item) => (
+                      <li key={item.to}>{renderLink(item.to, item.label)}</li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </div>
+    );
+  }
+
   return (
-    <ul className={cn(vertical ? "flex flex-col gap-4" : "flex gap-4", className)}>
+    <ul className={cn("flex gap-4", className)}>
       <li>{renderLink("/", "Dashboard")}</li>
       {groups.map((group) => {
         const Icon = group.icon;
         const firstItem = group.items[0];
-        if (vertical) {
-          return (
-            <li key={group.label}>
-              {renderLink(firstItem?.to ?? "#", group.label, Icon)}
-            </li>
-          );
-        }
         return (
           <li key={group.label}>
             <Popover>

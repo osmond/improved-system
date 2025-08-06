@@ -189,8 +189,8 @@ function YearlyHeatmap({ data }) {
       let topY = element.props.y - (getISODay(date) - 1) * size;
       topY = Math.max(topY, 0);
       const lineBottom = Math.min(topY + chartHeight, chartHeight);
-      const labelY = Math.max(topY - 4, 0);
-      const totalY = Math.min(lineBottom - 2, chartHeight);
+      const labelY = topY - 6;
+      const totalY = lineBottom + 12;
       const lineX = element.props.x - 1;
       const boundaryClass = `month-boundary${
         date.getMonth() % 3 === 0 ? ' quarter-boundary' : ''
@@ -207,7 +207,7 @@ function YearlyHeatmap({ data }) {
           <text
             x={element.props.x}
             y={labelY}
-            className="text-sm font-medium"
+            className="text-sm font-medium pointer-events-none"
           >
             {monthNames[date.getMonth()]}
           </text>
@@ -215,7 +215,7 @@ function YearlyHeatmap({ data }) {
           <text
             x={element.props.x}
             y={totalY}
-            className="text-sm font-medium"
+            className="text-sm font-medium pointer-events-none"
           >
             {monthTotals[key]}
           </text>
