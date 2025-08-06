@@ -75,6 +75,10 @@ describe('GenreSankey', () => {
       expect(container.querySelectorAll('path').length).toBe(4);
     });
     expect(container.querySelectorAll('path').length).toBeLessThan(initialCount);
+    fireEvent.click(screen.getByText('Reset Zoom'));
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBe(4);
+    });
     fireEvent.click(screen.getByText('Clear Filter'));
     await waitFor(() => {
       expect(container.querySelectorAll('path').length).toBe(initialCount);

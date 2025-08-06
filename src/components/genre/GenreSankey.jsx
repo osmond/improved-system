@@ -32,11 +32,10 @@ export default function GenreSankey() {
     setData(mapped);
   };
 
-  const handleReset = () => {
+  const handleResetZoom = () => {
     if (zoomRef.current) {
       zoomRef.current();
     }
-    setFilter('');
   };
 
   useEffect(() => {
@@ -301,7 +300,7 @@ export default function GenreSankey() {
           />
         </label>
         <button onClick={fetchData}>Apply</button>
-        <button onClick={handleReset}>Reset View</button>
+        <button onClick={handleResetZoom}>Reset Zoom</button>
         <button onClick={() => setFilter('')}>Clear Filter</button>
       </div>
       {(!data || data.length === 0) ? (
