@@ -4,6 +4,7 @@ import { transition } from 'd3-transition';
 import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force';
 import { drag } from 'd3-drag';
 import { scaleOrdinal, scaleLinear } from 'd3-scale';
+import { zoom } from 'd3-zoom';
 import graphData from '@/data/kindle/book-graph.json';
 
 export default function BookNetwork({ data = graphData }) {
@@ -183,7 +184,21 @@ export default function BookNetwork({ data = graphData }) {
 
     const t = transition().duration(400);
 
-    const linkGroup = svg
+    const g = svg
+      .selectAll('g.zoom-container')
+      .data([null])
+      .join('g')
+      .attr('class', 'zoom-container');
+
+    const zoomBehavior = zoom()
+      .scaleExtent([0.5, 5])
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+      });
+
+    svg.call(zoomBehavior);
+
+    const linkGroup = g
       .selectAll('g.links')
       .data([null])
       .join('g')
@@ -215,7 +230,7 @@ export default function BookNetwork({ data = graphData }) {
         (exit) => exit.transition(t).attr('stroke-opacity', 0).remove()
       );
 
-    const nodeGroup = svg
+    const nodeGroup = g
       .selectAll('g.nodes')
       .data([null])
       .join('g')
