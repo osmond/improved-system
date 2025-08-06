@@ -57,6 +57,20 @@ describe('GenreSunburstPage', () => {
     expect(icicleButton).not.toHaveClass('text-white');
   });
 
+  it('displays chart description', async () => {
+    vi.spyOn(global, 'fetch').mockResolvedValue({
+      ok: true,
+      json: () => Promise.resolve(mockData),
+    });
+
+    render(<GenreSunburstPage />);
+    expect(
+      screen.getByText(
+        /each slice represents time spent reading in that genre/i
+      )
+    ).toBeInTheDocument();
+  });
+
   it('disables view buttons while loading', () => {
     vi.spyOn(global, 'fetch').mockImplementation(() => new Promise(() => {}));
 
