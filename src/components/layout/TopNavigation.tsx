@@ -39,7 +39,11 @@ export default function TopNavigation() {
           </button>
         </SheetTrigger>
         <SheetContent side="left" className="p-4">
-          <NavItems groups={dashboardRoutes} orientation="vertical" />
+          <NavItems
+            groups={dashboardRoutes}
+            orientation="vertical"
+            closeOnLinkClick
+          />
         </SheetContent>
       </Sheet>
     </nav>
