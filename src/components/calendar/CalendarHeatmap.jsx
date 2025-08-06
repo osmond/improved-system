@@ -271,12 +271,17 @@ function YearlyHeatmap({ data }) {
 }
 
 export default function CalendarHeatmap({ data: propData, multiYear }) {
-  const { data: hookData, isLoading } = useDailyReading();
+  const { data: hookData, isLoading, error } = useDailyReading();
   const data = propData || hookData;
   if (isLoading) {
     return <Skeleton className="h-64" data-testid="calendar-heatmap-skeleton" />;
   }
-  if (!data || data.length === 0) return null;
+  if (error) {
+    return <div role="alert">Unable to load reading data.</div>;
+  }
+  if (!data || data.length === 0) {
+    return <div>No reading data available</div>;
+  }
 
   const dataByYear = data.reduce((acc, d) => {
     const year = new Date(d.date).getFullYear();

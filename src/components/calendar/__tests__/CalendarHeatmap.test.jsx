@@ -1,4 +1,5 @@
 import { render, screen, within, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
@@ -35,6 +36,28 @@ describe('CalendarHeatmap', () => {
     });
     render(<CalendarHeatmap />);
     expect(screen.getByTestId('calendar-heatmap-skeleton')).not.toBeNull();
+  });
+
+  it('renders an error message when data fails to load', () => {
+    useDailyReading.mockReturnValueOnce({
+      data: null,
+      error: new Error('oops'),
+      isLoading: false,
+    });
+    render(<CalendarHeatmap />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Unable to load reading data.'
+    );
+  });
+
+  it('renders a message when no reading data is available', () => {
+    useDailyReading.mockReturnValueOnce({
+      data: [],
+      error: null,
+      isLoading: false,
+    });
+    render(<CalendarHeatmap />);
+    expect(screen.getByText('No reading data available')).not.toBeNull();
   });
 
   it('renders heatmap cells', () => {
