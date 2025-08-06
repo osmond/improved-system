@@ -1696,7 +1696,20 @@ export interface KindleSession {
   highlights: number;
 }
 
-export async function getKindleSessions(): Promise<KindleSession[]> {
+export async function getKindleSessions(
+  signal?: AbortSignal
+): Promise<KindleSession[]> {
+  if (typeof fetch === "function") {
+    try {
+      const res = await fetch("/api/kindle/sessions", { signal });
+      if (res.ok) {
+        return res.json();
+      }
+    } catch (err: any) {
+      if (err.name === "AbortError") throw err;
+    }
+  }
+
   return sessionData.map((s) => ({
     ...s,
     title: (asinTitleMap as Record<string, string>)[s.asin] ?? s.asin,
