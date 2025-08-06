@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
-import { brushX, brushSelection } from 'd3-brush';
+
+import { schemeTableau10 } from 'd3-scale-chromatic';
+import { brushX } from 'd3-brush';
+
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
@@ -15,13 +18,21 @@ const AXIS_HEIGHT = 40;
 const MIN_HEIGHT = 120;
 const TOP_N = 5;
 
-/**
- * Timeline of reading sessions using a d3 brush.
- * Keyboard shortcuts:
- * - Arrow keys adjust the current brush selection.
- * - Enter applies the current selection.
- */
-export default function ReadingTimeline({ sessions = [] }) {
+
+const PATTERN_STYLES = [
+  'repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(90deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px)',
+  'repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px)',
+];
+
+export default function ReadingTimeline({
+  sessions = [],
+  colorBlindFriendly = false,
+}) {
+
   const ref = useRef(null);
   const containerRef = useRef(null);
   const brushRef = useRef(null);
@@ -100,6 +111,19 @@ export default function ReadingTimeline({ sessions = [] }) {
   }, [sessionsWithCat]);
 
   const height = Math.max(MIN_HEIGHT, lanes * LANE_HEIGHT + LANE_PADDING);
+
+
+  const titles = useMemo(
+    () => Array.from(new Set(sessions.map((s) => s.title))),
+    [sessions],
+  );
+  const colorScale = useMemo(() => {
+    const colors = titles.map(
+      (_, i) => schemeTableau10[i % schemeTableau10.length],
+    );
+    return scaleOrdinal().domain(titles).range(colors);
+  }, [titles]);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -333,40 +357,35 @@ export default function ReadingTimeline({ sessions = [] }) {
         ref={ref}
         style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
       />
-      <p
-        style={{ fontSize: '0.875rem', color: '#555', margin: '0.5rem 0' }}
-      >
-        Drag across the timeline to zoom; use Reset to return.
-      </p>
-      <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-        {zoomed && (
-          <button onClick={reset} aria-label="Reset zoom">Reset</button>
-        )}
-      </div>
-      {showLegend && (
-        <div style={{ margin: '0.5rem 0' }}>
-          <input
-            type="text"
-            placeholder="Search..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            style={{
-              width: '100%',
-              marginBottom: '0.5rem',
-              padding: '0.25rem',
-            }}
-          />
-          {legendTitles.length > 0 && (
-            <div style={{ maxHeight: 150, overflowY: 'auto' }}>
-              <ul
-                aria-label="Books"
+
+      {titles.length > 0 && (
+        <ul
+          aria-label="Books"
+          style={{
+            display: 'flex',
+            flexWrap: 'wrap',
+            gap: '0.5rem',
+            listStyle: 'none',
+            padding: 0,
+            margin: '0.5rem 0',
+          }}
+        >
+          {titles.map((t, idx) => (
+            <li
+              key={t}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+            >
+              <span
+                aria-hidden="true"
                 style={{
-                  display: 'grid',
-                  gridTemplateColumns: 'repeat(auto-fit, minmax(120px, 1fr))',
-                  gap: '0.5rem',
-                  listStyle: 'none',
-                  padding: 0,
-                  margin: 0,
+                  width: 12,
+                  height: 12,
+                  backgroundColor: colorScale(t),
+                  backgroundImage: colorBlindFriendly
+                    ? PATTERN_STYLES[idx % PATTERN_STYLES.length]
+                    : 'none',
+                  display: 'inline-block',
+
                 }}
               >
                 {legendTitles.map((t) => (

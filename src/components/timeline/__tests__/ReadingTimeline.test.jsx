@@ -4,6 +4,7 @@ import '@testing-library/jest-dom';
 import { select } from 'd3-selection';
 import { act } from 'react';
 import ReadingTimeline from '../ReadingTimeline.jsx';
+import { schemeTableau10 } from 'd3-scale-chromatic';
 
 class ResizeObserver {
   observe() {}
@@ -149,8 +150,8 @@ describe('ReadingTimeline', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const rects = svg.querySelectorAll('rect[height="30"]');
-    expect(rects[0].getAttribute('fill')).toBe('hsl(var(--chart-1))');
-    expect(rects[1].getAttribute('fill')).toBe('hsl(var(--chart-2))');
+    expect(rects[0].getAttribute('fill')).toBe(schemeTableau10[0]);
+    expect(rects[1].getAttribute('fill')).toBe(schemeTableau10[1]);
   });
 
   it('encodes duration using opacity', () => {
@@ -178,7 +179,7 @@ describe('ReadingTimeline', () => {
     expect(items).toHaveLength(2);
     expect(items[0].textContent).toContain('Test Book 1');
     const swatch = items[0].querySelector('span[aria-hidden="true"]');
-    expect(swatch).toHaveStyle({ backgroundColor: 'hsl(var(--chart-1))' });
+    expect(swatch).toHaveStyle({ backgroundColor: schemeTableau10[0] });
   });
 
   it('supports keyboard interaction with the brush', () => {
@@ -207,17 +208,17 @@ describe('ReadingTimeline', () => {
     expect(within(list).getByText('Test Book 1')).toBeInTheDocument();
   });
 
-  it('filters sessions based on search', async () => {
-    const { getByPlaceholderText, container, getByRole } = render(
-      <ReadingTimeline sessions={sessions} />,
+
+  it('can show patterned legend swatches for color-blind users', () => {
+    const { getByRole } = render(
+      <ReadingTimeline sessions={sessions} colorBlindFriendly />,
     );
-    fireEvent.click(getByRole('button', { name: /show books/i }));
-    const input = getByPlaceholderText(/search/i);
-    await act(async () => {
-      fireEvent.change(input, { target: { value: 'Book 1' } });
+    const list = getByRole('list', { name: /books/i });
+    const items = within(list).getAllByRole('listitem');
+    const swatch = items[0].querySelector('span[aria-hidden="true"]');
+    expect(swatch).toHaveStyle({
+      backgroundImage: expect.stringContaining('repeating-linear-gradient'),
     });
-    const svg = container.querySelector('svg');
-    const rects = svg.querySelectorAll('rect[height="30"]');
-    expect(rects).toHaveLength(1);
+
   });
 });
