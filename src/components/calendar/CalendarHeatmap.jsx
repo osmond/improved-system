@@ -49,6 +49,7 @@ const Sparkline = ({ series }) => {
       height={height}
       viewBox={`0 0 ${width} ${height}`}
       data-testid="sparkline"
+      aria-hidden="true"
     >
       <polyline
         points={points}
