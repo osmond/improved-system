@@ -60,7 +60,7 @@ const Sparkline = ({ series }) => {
   );
 };
 
-function YearlyHeatmap({ data, bins }) {
+function YearlyHeatmap({ data }) {
   const dates = data.map((d) => new Date(d.date));
   const minDate = new Date(Math.min(...dates));
   const startDate = new Date(minDate);
@@ -118,13 +118,20 @@ function YearlyHeatmap({ data, bins }) {
     return result;
   }, [data]);
 
-  const maxBin = bins[bins.length - 1] || 1;
+  const categories = [
+    { min: 0, max: 15, label: 'quick read' },
+    { min: 15, max: 30, label: 'short read' },
+    { min: 30, max: 60, label: 'long read' },
+    { min: 60, max: Infinity, label: 'long session' },
+  ];
 
   const classForValue = (value) => {
     if (!value || !value.count) return 'reading-scale-0';
-    const capped = Math.min(value.count, maxBin);
-    const level = bins.findIndex((b) => capped <= b) + 1;
-    return `reading-scale-${level}`;
+    const minutes = value.count;
+    const idx = categories.findIndex(
+      (c) => minutes >= c.min && minutes < c.max
+    );
+    return `reading-scale-${idx + 1}`;
   };
 
   const transformDayElement = (element, value, index) => {
@@ -230,8 +237,11 @@ function YearlyHeatmap({ data, bins }) {
             <div className="w-3 h-3 border" />
             <span>No data</span>
           </div>
-          {bins.map((upper, idx) => {
-            const lower = idx === 0 ? 0 : bins[idx - 1];
+          {categories.map((cat, idx) => {
+            const rangeLabel =
+              cat.max === Infinity
+                ? `${cat.min}+`
+                : `${cat.min}-${cat.max}`;
             return (
               <div
                 key={idx}
@@ -240,7 +250,7 @@ function YearlyHeatmap({ data, bins }) {
               >
                 <div className={`w-3 h-3 reading-scale-${idx + 1}`} />
                 <span>
-                  {Math.round(lower)}-{Math.round(upper)} min
+                  {rangeLabel} min ({cat.label})
                 </span>
               </div>
             );
@@ -259,18 +269,6 @@ export default function CalendarHeatmap({ data: propData, multiYear }) {
   }
   if (!data || data.length === 0) return null;
 
-  const bins = useMemo(() => {
-    const minutes = data.map((d) => d.minutes).sort((a, b) => a - b);
-    if (minutes.length === 0) return [0, 0, 0, 0, 0];
-    const getP = (arr, p) => {
-      const idx = Math.floor(p * arr.length);
-      return arr[Math.min(idx, arr.length - 1)];
-    };
-    const p95 = getP(minutes, 0.95);
-    const capped = minutes.map((m) => Math.min(m, p95)).sort((a, b) => a - b);
-    return [0.2, 0.4, 0.6, 0.8, 1].map((p) => getP(capped, p));
-  }, [data]);
-
   const dataByYear = data.reduce((acc, d) => {
     const year = new Date(d.date).getFullYear();
     if (!acc[year]) acc[year] = [];
@@ -283,7 +281,7 @@ export default function CalendarHeatmap({ data: propData, multiYear }) {
 
   if (!isMultiYear) {
     const year = years[0];
-    return <YearlyHeatmap data={dataByYear[year]} bins={bins} />;
+    return <YearlyHeatmap data={dataByYear[year]} />;
   }
 
   return (
@@ -291,7 +289,7 @@ export default function CalendarHeatmap({ data: propData, multiYear }) {
       {years.map((year) => (
         <div key={year} className="mb-8">
           <div className="mb-2 font-semibold">{year}</div>
-          <YearlyHeatmap data={dataByYear[year]} bins={bins} />
+          <YearlyHeatmap data={dataByYear[year]} />
         </div>
       ))}
     </div>
