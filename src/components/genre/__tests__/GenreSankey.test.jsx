@@ -155,4 +155,30 @@ describe('GenreSankey', () => {
       expect(tooltip).toHaveStyle({ display: 'none' });
     });
   });
+
+  it('shows a tooltip on link focus', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    const link = container.querySelector('path');
+    // jsdom provides a rect of zeros; ensure presence of method
+    link.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 10,
+      height: 10,
+      right: 10,
+      bottom: 10,
+    });
+    fireEvent.focus(link);
+    const tooltip = screen.getByTestId('tooltip');
+    await waitFor(() => {
+      expect(tooltip).toHaveStyle({ display: 'block' });
+    });
+    fireEvent.blur(link);
+    await waitFor(() => {
+      expect(tooltip).toHaveStyle({ display: 'none' });
+    });
+  });
 });
