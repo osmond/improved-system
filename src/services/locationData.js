@@ -1,5 +1,5 @@
-import sessionLocations from '../data/kindle/locations.json' with { type: 'json' };
-import asinTitleMap from '../data/kindle/asin-title-map.json' with { type: 'json' };
+import sessionLocations from '../data/kindle/locations.json';
+import asinTitleMap from '../data/kindle/asin-title-map.json';
 
 export function getSessionLocations() {
   return sessionLocations.map((l) => ({
