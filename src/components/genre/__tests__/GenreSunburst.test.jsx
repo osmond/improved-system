@@ -48,7 +48,7 @@ import { hsl as d3hsl } from 'd3-color';
     });
   });
 
-    it('updates breadcrumb and zooms on interactions', async () => {
+    it('updates breadcrumb without root and zooms on interactions', async () => {
     const user = userEvent.setup();
 
     const { container } = render(<GenreSunburst data={data} />);
@@ -60,14 +60,9 @@ import { hsl as d3hsl } from 'd3-color';
     await new Promise((r) => setTimeout(r, 800));
 
     expect(screen.getByRole('button', { name: 'A' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'root' })).not.toBeInTheDocument();
     const zoomed = pathA.getAttribute('d');
     expect(zoomed).not.toBe(initial);
-
-    await user.click(screen.getByRole('button', { name: 'root' }));
-    await new Promise((r) => setTimeout(r, 800));
-
-    expect(screen.queryByRole('button', { name: 'A' })).not.toBeInTheDocument();
-    expect(pathA.getAttribute('d')).toBe(initial);
     });
 
     it('applies depth-based colors and preserves them on hover and zoom', async () => {
