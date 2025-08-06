@@ -63,7 +63,14 @@ const Sparkline = ({ series }) => {
   );
 };
 
-function YearlyHeatmap({ data }) {
+const defaultBuckets = [
+  { min: 0, max: 15, label: 'quick read' },
+  { min: 15, max: 30, label: 'short read' },
+  { min: 30, max: 60, label: 'long read' },
+  { min: 60, max: Infinity, label: 'long session' },
+];
+
+function YearlyHeatmap({ data, buckets = defaultBuckets }) {
   const dates = data.map((d) => new Date(d.date));
   const minDate = new Date(Math.min(...dates));
   const startDate = new Date(minDate);
@@ -121,17 +128,10 @@ function YearlyHeatmap({ data }) {
     return result;
   }, [data]);
 
-  const categories = [
-    { min: 0, max: 15, label: 'quick read' },
-    { min: 15, max: 30, label: 'short read' },
-    { min: 30, max: 60, label: 'long read' },
-    { min: 60, max: Infinity, label: 'long session' },
-  ];
-
   const classForValue = (value) => {
     if (!value || !value.count) return 'reading-scale-0';
     const minutes = value.count;
-    const idx = categories.findIndex(
+    const idx = buckets.findIndex(
       (c) => minutes >= c.min && minutes < c.max
     );
     return `reading-scale-${idx + 1}`;
@@ -294,7 +294,7 @@ function YearlyHeatmap({ data }) {
             <div className="w-3 h-3 border" />
             <span>No data</span>
           </li>
-          {categories.map((cat, idx) => {
+          {buckets.map((cat, idx) => {
             const rangeLabel =
               cat.max === Infinity
                 ? `${cat.min}+`
@@ -318,7 +318,11 @@ function YearlyHeatmap({ data }) {
   );
 }
 
-export default function CalendarHeatmap({ data: propData, multiYear }) {
+export default function CalendarHeatmap({
+  data: propData,
+  multiYear,
+  buckets = defaultBuckets,
+}) {
   const { data: hookData, isLoading, error } = useDailyReading();
   const data = propData || hookData;
   if (isLoading) {
@@ -348,7 +352,7 @@ export default function CalendarHeatmap({ data: propData, multiYear }) {
   const [showAll, setShowAll] = useState(multiYear ?? false);
 
   if (years.length === 1 && !showAll) {
-    return <YearlyHeatmap data={dataByYear[years[0]]} />;
+    return <YearlyHeatmap data={dataByYear[years[0]]} buckets={buckets} />;
   }
 
   return (
@@ -379,13 +383,16 @@ export default function CalendarHeatmap({ data: propData, multiYear }) {
         ? years.map((year) => (
             <div key={year} className="mb-8">
               <div className="mb-2 font-semibold">{year}</div>
-              <YearlyHeatmap data={dataByYear[year]} />
+              <YearlyHeatmap data={dataByYear[year]} buckets={buckets} />
             </div>
           ))
         : (
             <div>
               <div className="mb-2 font-semibold">{selectedYear}</div>
-              <YearlyHeatmap data={dataByYear[selectedYear]} />
+              <YearlyHeatmap
+                data={dataByYear[selectedYear]}
+                buckets={buckets}
+              />
             </div>
           )}
     </div>
