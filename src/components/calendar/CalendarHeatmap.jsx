@@ -215,7 +215,7 @@ function YearlyHeatmap({ data, maxMinutes }) {
           showMonthLabels={false}
         />
         <div
-          className="flex flex-wrap items-center gap-2 mt-2 text-xs"
+          className="flex flex-wrap items-center gap-2 md:gap-3 mt-2 text-xs md:text-sm"
           data-testid="reading-legend"
         >
           <div className="flex items-center gap-1" data-no-data>
