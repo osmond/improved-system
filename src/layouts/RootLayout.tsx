@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import TopNavigation from "@/components/layout/TopNavigation";
 import CommandPalette from "@/ui/CommandPalette";
 import { ChartActionsProvider } from "@/hooks/useChartActions";
@@ -23,9 +23,6 @@ export default function RootLayout({ children }: RootLayoutProps) {
       <CommandPalette open={commandOpen} setOpen={setCommandOpen} />
       <div className="flex min-h-screen flex-col">
         <header className="sticky top-0 z-50 flex items-center border-b bg-white/80 p-4 backdrop-blur">
-          <Link to="/" className="mr-4 font-semibold">
-            Logo
-          </Link>
           <TopNavigation />
           <div className="ml-auto flex items-center gap-2">
             <button
