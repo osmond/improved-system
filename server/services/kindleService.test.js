@@ -1,7 +1,12 @@
 /* @vitest-environment node */
 import { describe, it, expect, vi, afterEach } from 'vitest';
 import fs from 'fs';
-import { getEvents, getPoints, getAchievements } from './kindleService';
+import {
+  getEvents,
+  getPoints,
+  getAchievements,
+  updateSubgenreOverride,
+} from './kindleService';
 
 afterEach(() => {
   vi.restoreAllMocks();
@@ -41,5 +46,13 @@ describe('kindleService', () => {
         Quantity: '1',
       },
     ]);
+  });
+
+  it('updateSubgenreOverride writes overrides', async () => {
+    vi.spyOn(fs.promises, 'readFile').mockResolvedValue('{}');
+    const writeMock = vi.spyOn(fs.promises, 'writeFile').mockResolvedValue();
+    const map = await updateSubgenreOverride('A', 'Mystery');
+    expect(map).toHaveProperty('A', 'Mystery');
+    expect(writeMock).toHaveBeenCalled();
   });
 });

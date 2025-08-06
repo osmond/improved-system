@@ -330,6 +330,36 @@ async function getBookGraph() {
   return buildBookGraph(bookList);
 }
 
+const subgenreOverridePath = path.join(
+  __dirname,
+  '..',
+  '..',
+  'src',
+  'data',
+  'kindle',
+  'subgenre-overrides.json'
+);
+
+async function getSubgenreOverrides() {
+  try {
+    const content = await fs.promises.readFile(subgenreOverridePath, 'utf-8');
+    return JSON.parse(content);
+  } catch {
+    return {};
+  }
+}
+
+async function updateSubgenreOverride(asin, subgenre) {
+  if (!asin || !subgenre) return getSubgenreOverrides();
+  const overrides = await getSubgenreOverrides();
+  overrides[asin] = subgenre;
+  await fs.promises.writeFile(
+    subgenreOverridePath,
+    JSON.stringify(overrides, null, 2)
+  );
+  return overrides;
+}
+
 module.exports = {
   getEvents,
   getPoints,
@@ -342,5 +372,7 @@ module.exports = {
   getLocations,
   getReadingSpeed,
   getBookGraph,
+  getSubgenreOverrides,
+  updateSubgenreOverride,
 };
 
