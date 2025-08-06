@@ -28,4 +28,14 @@ describe('buildGenreHierarchy', () => {
     const book = mystery.children[0].children[0];
     expect(book).toEqual({ name: 'Book One', value: 30 });
   });
+
+  it('uses asin-subgenre mapping when tags are missing', () => {
+    const sessions = [{ asin: 'B01A4AXM3W', title: 'The Last Days of Night: A Novel', duration: 10 }];
+    const genres = [{ ASIN: 'B01A4AXM3W', Genre: 'Fiction' }];
+    const authors = [{ ASIN: 'B01A4AXM3W', 'Author Name': 'Graham Moore' }];
+    const root = buildGenreHierarchy(sessions, genres, authors, []);
+    const fiction = root.children.find((c) => c.name === 'Fiction');
+    const sub = fiction.children.find((c) => c.name === 'Historical Thriller');
+    expect(sub).toBeTruthy();
+  });
 });
