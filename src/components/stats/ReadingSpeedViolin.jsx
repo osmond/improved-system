@@ -27,6 +27,7 @@ export default function ReadingSpeedViolin() {
     skimming: [400, Infinity],
   };
   const [preset, setPreset] = useState('all');
+  const [chartType, setChartType] = useState('violin');
 
   const filteredData = React.useMemo(() => {
     if (preset === 'all') return data;
@@ -77,7 +78,6 @@ export default function ReadingSpeedViolin() {
     svg.selectAll('*').remove();
     if (!width || !height) return;
 
-    // Pre-compute values for each period so scales stay consistent
     const periods = {
       morning: filteredData.filter((d) => d.period === 'morning'),
       evening: filteredData.filter((d) => d.period === 'evening'),
@@ -118,50 +118,52 @@ export default function ReadingSpeedViolin() {
       .domain(periodOrder)
       .range([0, innerWidth])
       .paddingInner(0.1);
-    const violinWidth = xCat.bandwidth();
+    const catWidth = xCat.bandwidth();
     const y = scaleLinear().domain([min, max]).range([innerHeight, 0]);
-    const yTicks = y.ticks(40);
 
-    const kernelDensityEstimator = (kernel, X) => (V) =>
-      X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
-    const kernelEpanechnikov = (k) => (v) => {
-      v /= k;
-      return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
-    };
-
-    const densities = {};
+    let densities = {};
     let maxDensity = 0;
-    periodOrder.forEach((period) => {
-      const values = periods[period].map((d) => d.wpm);
-      if (values.length === 0) return;
-      const density = kernelDensityEstimator(
-        kernelEpanechnikov(bandwidth),
-        yTicks
-      )(values);
-      densities[period] = density;
-      maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
-    });
+    let x;
+    let areaGenerator;
+    if (chartType === 'violin') {
+      const yTicks = y.ticks(40);
+      const kernelDensityEstimator = (kernel, X) => (V) =>
+        X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
+      const kernelEpanechnikov = (k) => (v) => {
+        v /= k;
+        return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+      };
 
-    const x = scaleLinear().domain([0, maxDensity]).range([0, violinWidth / 2]);
-    const areaGenerator = area()
-      .x0((d) => -x(d[1]))
-      .x1((d) => x(d[1]))
-      .y((d) => y(d[0]))
-      .curve(curveCatmullRom);
+      periodOrder.forEach((period) => {
+        const values = periods[period].map((d) => d.wpm);
+        if (values.length === 0) return;
+        const density = kernelDensityEstimator(
+          kernelEpanechnikov(bandwidth),
+          yTicks
+        )(values);
+        densities[period] = density;
+        maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
+      });
+
+      x = scaleLinear().domain([0, maxDensity]).range([0, catWidth / 2]);
+      areaGenerator = area()
+        .x0((d) => -x(d[1]))
+        .x1((d) => x(d[1]))
+        .y((d) => y(d[0]))
+        .curve(curveCatmullRom);
+    }
 
     const root = svg
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    // axes
     root.append('g').call(axisLeft(y));
     root
       .append('g')
       .attr('transform', `translate(0,${innerHeight})`)
       .call(axisBottom(xCat));
 
-    // axis labels
     root
       .append('text')
       .attr('transform', 'rotate(-90)')
@@ -176,12 +178,17 @@ export default function ReadingSpeedViolin() {
       .attr('text-anchor', 'middle')
       .text('Reading Period');
 
+    const jitterWidth = isSmall
+      ? catWidth * 0.1
+      : chartType === 'violin' && x
+      ? x(maxDensity) * 0.3
+      : catWidth * 0.3;
+
     periodOrder.forEach((period) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
       if (values.length === 0) return;
-      const density = densities[period];
-      const center = xCat(period) + violinWidth / 2;
+      const center = xCat(period) + catWidth / 2;
       const g = root
         .append('g')
         .attr('transform', `translate(${center},0)`)
@@ -189,7 +196,8 @@ export default function ReadingSpeedViolin() {
       const fill = color[period];
       const tooltip = select(tooltipRef.current);
 
-      if (!isSmall) {
+      if (chartType === 'violin' && !isSmall) {
+        const density = densities[period];
         g
           .append('path')
           .datum(density)
@@ -213,59 +221,56 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       }
 
-      const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
-      const q1Y = y(q1);
-      const q3Y = y(q3);
-      const medianY = y(median);
-      const lowerWhiskerY = y(lowerWhisker);
-      const upperWhiskerY = y(upperWhisker);
-      const boxWidth = violinWidth;
-      const lineX1 = -violinWidth / 2;
-      const lineX2 = violinWidth / 2;
-      const jitterWidth = isSmall ? violinWidth * 0.1 : x(maxDensity) * 0.3;
+      if (chartType === 'violin' || chartType === 'box') {
+        const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
+        const q1Y = y(q1);
+        const q3Y = y(q3);
+        const medianY = y(median);
+        const lowerWhiskerY = y(lowerWhisker);
+        const upperWhiskerY = y(upperWhisker);
+        const boxWidth = catWidth;
+        const lineX1 = -catWidth / 2;
+        const lineX2 = catWidth / 2;
 
-      // Interquartile range box
-      g
-        .append('rect')
-        .attr('x', lineX1)
-        .attr('y', q3Y)
-        .attr('width', boxWidth)
-        .attr('height', q1Y - q3Y)
-        .attr('fill', fill)
-        .attr('fill-opacity', 0.4)
-        .attr('stroke', fill)
-        .attr('stroke-width', 2);
+        g
+          .append('rect')
+          .attr('x', lineX1)
+          .attr('y', q3Y)
+          .attr('width', boxWidth)
+          .attr('height', q1Y - q3Y)
+          .attr('fill', fill)
+          .attr('fill-opacity', 0.4)
+          .attr('stroke', fill)
+          .attr('stroke-width', 2);
 
-      // Median line
-      g
-        .append('line')
-        .attr('x1', lineX1)
-        .attr('x2', lineX2)
-        .attr('y1', medianY)
-        .attr('y2', medianY)
-        .attr('stroke', fill)
-        .attr('stroke-width', 2);
+        g
+          .append('line')
+          .attr('x1', lineX1)
+          .attr('x2', lineX2)
+          .attr('y1', medianY)
+          .attr('y2', medianY)
+          .attr('stroke', fill)
+          .attr('stroke-width', 2);
 
-      // Whisker lines
-      g
-        .append('line')
-        .attr('x1', lineX1)
-        .attr('x2', lineX2)
-        .attr('y1', upperWhiskerY)
-        .attr('y2', upperWhiskerY)
-        .attr('stroke', fill)
-        .attr('stroke-width', 2);
+        g
+          .append('line')
+          .attr('x1', lineX1)
+          .attr('x2', lineX2)
+          .attr('y1', upperWhiskerY)
+          .attr('y2', upperWhiskerY)
+          .attr('stroke', fill)
+          .attr('stroke-width', 2);
 
-      g
-        .append('line')
-        .attr('x1', lineX1)
-        .attr('x2', lineX2)
-        .attr('y1', lowerWhiskerY)
-        .attr('y2', lowerWhiskerY)
-        .attr('stroke', fill)
-        .attr('stroke-width', 2);
+        g
+          .append('line')
+          .attr('x1', lineX1)
+          .attr('x2', lineX2)
+          .attr('y1', lowerWhiskerY)
+          .attr('y2', lowerWhiskerY)
+          .attr('stroke', fill)
+          .attr('stroke-width', 2);
+      }
 
-      // Plot individual reading speed points with slight horizontal jitter
       values.forEach((v) => {
         g
           .append('circle')
@@ -301,7 +306,14 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
-  }, [filteredData, showMorning, showEvening, bandwidth, dimensions]);
+  }, [
+    filteredData,
+    showMorning,
+    showEvening,
+    bandwidth,
+    dimensions,
+    chartType,
+  ]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -356,6 +368,18 @@ export default function ReadingSpeedViolin() {
           boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
         }}
       />
+      <div>
+        <label>
+          Chart Type
+          <select
+            value={chartType}
+            onChange={(e) => setChartType(e.target.value)}
+          >
+            <option value="violin">Violin</option>
+            <option value="box">Box Plot</option>
+          </select>
+        </label>
+      </div>
       <div>
         <label>
           Smoothing
