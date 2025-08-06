@@ -105,6 +105,20 @@ describe('CalendarHeatmap', () => {
     });
   });
 
+  it('supports custom buckets', () => {
+    const buckets = [
+      { min: 0, max: 10, label: 'short' },
+      { min: 10, max: Infinity, label: 'long' },
+    ];
+    const { getByTestId } = render(
+      <CalendarHeatmap data={mockData} buckets={buckets} />,
+    );
+    const swatches = getByTestId('reading-legend').querySelectorAll(
+      'li[data-legend-level]'
+    );
+    expect(swatches).toHaveLength(2);
+  });
+
   it('positions month labels above the grid and totals below', () => {
     const { container } = render(<CalendarHeatmap />);
     const svg = container.querySelector('svg.react-calendar-heatmap');

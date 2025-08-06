@@ -154,6 +154,32 @@ describe('ReadingTimeline', () => {
     expect(rects[1].getAttribute('fill')).toBe(schemeTableau10[1]);
   });
 
+  it('can color by genre', () => {
+    const genreSessions = [
+      ...sessions,
+      {
+        start: '2025-01-02T01:00:00Z',
+        end: '2025-01-02T01:30:00Z',
+        asin: 'B003',
+        title: 'Another',
+        duration: 15,
+        highlights: 0,
+        genre: 'Mystery',
+      },
+    ];
+    const { container, getByLabelText } = render(
+      <ReadingTimeline sessions={genreSessions} />,
+    );
+    fireEvent.change(getByLabelText(/color by/i), {
+      target: { value: 'genre' },
+    });
+    const rects = container.querySelectorAll('rect[height="30"]');
+    // first and third sessions share genre "Mystery"
+    expect(rects[0].getAttribute('fill')).toBe(
+      rects[2].getAttribute('fill'),
+    );
+  });
+
   it('encodes duration using opacity', () => {
     const { container } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
@@ -161,6 +187,24 @@ describe('ReadingTimeline', () => {
     const op1 = Number(rects[0].getAttribute('fill-opacity'));
     const op2 = Number(rects[1].getAttribute('fill-opacity'));
     expect(op2).toBeGreaterThan(op1);
+  });
+
+  it('filters by minimum duration and highlights', () => {
+    const { container, getByLabelText } = render(
+      <ReadingTimeline sessions={sessions} />,
+    );
+    fireEvent.change(getByLabelText(/min duration/i), {
+      target: { value: '30' },
+    });
+    let rects = container.querySelectorAll('rect[height="30"]');
+    expect(rects).toHaveLength(1);
+
+    fireEvent.change(getByLabelText(/min highlights/i), {
+      target: { value: '2' },
+    });
+    rects = container.querySelectorAll('rect[height="30"]');
+    expect(rects).toHaveLength(1);
+    expect(rects[0].getAttribute('aria-label')).toContain('Test Book 1');
   });
 
   it('makes each bar focusable with an aria-label', () => {

@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
+import { schemeTableau10 } from 'd3-scale-chromatic';
 
 import { brushX, brushSelection } from 'd3-brush';
 
@@ -40,49 +41,55 @@ export default function ReadingTimeline({
   const [width, setWidth] = useState(DEFAULT_WIDTH);
   const [showLegend, setShowLegend] = useState(false);
   const [search, setSearch] = useState('');
+  const [colorBy, setColorBy] = useState('title');
+  const [minDuration, setMinDuration] = useState(0);
+  const [minHighlights, setMinHighlights] = useState(0);
 
   const filteredSessions = useMemo(() => {
-    if (!search) return sessions;
     const term = search.toLowerCase();
-    return sessions.filter((s) => s.title.toLowerCase().includes(term));
-  }, [sessions, search]);
+    return sessions.filter(
+      (s) =>
+        s.duration >= minDuration &&
+        s.highlights >= minHighlights &&
+        (!term || s.title.toLowerCase().includes(term)),
+    );
+  }, [sessions, search, minDuration, minHighlights]);
 
-  const bookCounts = useMemo(() => {
+  const groupCounts = useMemo(() => {
     const counts = new Map();
     filteredSessions.forEach((s) => {
-      counts.set(s.title, (counts.get(s.title) || 0) + 1);
+      const key = s[colorBy] || 'Other';
+      counts.set(key, (counts.get(key) || 0) + 1);
     });
     return Array.from(counts.entries()).sort(
       (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
     );
-  }, [filteredSessions]);
+  }, [filteredSessions, colorBy]);
 
-  const topTitles = useMemo(
-    () => bookCounts.slice(0, TOP_N).map(([title]) => title),
-    [bookCounts],
+  const topKeys = useMemo(
+    () => groupCounts.slice(0, TOP_N).map(([key]) => key),
+    [groupCounts],
   );
 
-  const legendTitles = useMemo(() => {
-    const list = [...topTitles];
-    if (bookCounts.length > TOP_N) list.push('Other');
+  const legendKeys = useMemo(() => {
+    const list = [...topKeys];
+    if (groupCounts.length > TOP_N) list.push('Other');
     return list;
-  }, [topTitles, bookCounts.length]);
+  }, [topKeys, groupCounts.length]);
 
   const colorScale = useMemo(() => {
-    const colors = Array.from({ length: topTitles.length }, (_, i) =>
-      `hsl(var(--chart-${i + 1}))`,
-    );
-    if (bookCounts.length > TOP_N) colors.push('#ccc');
-    return scaleOrdinal().domain(legendTitles).range(colors);
-  }, [legendTitles, topTitles.length, bookCounts.length]);
+    const colors = schemeTableau10.slice(0, topKeys.length);
+    if (groupCounts.length > TOP_N) colors.push('#ccc');
+    return scaleOrdinal().domain(legendKeys).range(colors);
+  }, [legendKeys, topKeys.length, groupCounts.length]);
 
   const sessionsWithCat = useMemo(
     () =>
       filteredSessions.map((s) => ({
         ...s,
-        category: topTitles.includes(s.title) ? s.title : 'Other',
+        category: topKeys.includes(s[colorBy]) ? s[colorBy] : 'Other',
       })),
-    [filteredSessions, topTitles],
+    [filteredSessions, topKeys, colorBy],
   );
 
   const { parsedSessions, lanes } = useMemo(() => {
@@ -344,6 +351,47 @@ export default function ReadingTimeline({
 
   return (
     <div ref={containerRef}>
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+          gap: '0.5rem',
+          marginBottom: '0.5rem',
+        }}
+      >
+        <label>
+          Color by:
+          <select
+            aria-label="Color by"
+            value={colorBy}
+            onChange={(e) => setColorBy(e.target.value)}
+            style={{ marginLeft: '0.25rem' }}
+          >
+            <option value="title">Title</option>
+            <option value="genre">Genre</option>
+          </select>
+        </label>
+        <label>
+          Min duration
+          <input
+            type="number"
+            aria-label="Min duration"
+            value={minDuration}
+            onChange={(e) => setMinDuration(Number(e.target.value) || 0)}
+            style={{ width: 60, marginLeft: '0.25rem' }}
+          />
+        </label>
+        <label>
+          Min highlights
+          <input
+            type="number"
+            aria-label="Min highlights"
+            value={minHighlights}
+            onChange={(e) => setMinHighlights(Number(e.target.value) || 0)}
+            style={{ width: 60, marginLeft: '0.25rem' }}
+          />
+        </label>
+      </div>
       <svg
         ref={ref}
         role="img"
@@ -356,7 +404,7 @@ export default function ReadingTimeline({
         </desc>
       </svg>
 
-      {legendTitles.length > 0 && showLegend && (
+      {legendKeys.length > 0 && showLegend && (
         <ul
           aria-label="Books"
           style={{
@@ -368,7 +416,7 @@ export default function ReadingTimeline({
             margin: '0.5rem 0',
           }}
         >
-          {legendTitles.map((t, idx) => (
+          {legendKeys.map((t, idx) => (
             <li
               key={t}
               style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
@@ -395,7 +443,9 @@ export default function ReadingTimeline({
         aria-expanded={showLegend}
         style={{ marginTop: '0.5rem' }}
       >
-        {showLegend ? 'Hide books' : 'Show books...'}
+        {showLegend
+          ? `Hide ${colorBy === 'title' ? 'books' : colorBy}`
+          : `Show ${colorBy === 'title' ? 'books' : colorBy}...`}
       </button>
     </div>
   );
