@@ -8,7 +8,7 @@ for (const group of dashboardRoutes) {
     routeLabelMap[item.to] = item.label;
   }
 }
-routeLabelMap["/dashboard"] = "Dashboard";
+routeLabelMap["/dashboard/all"] = "Dashboard";
 
 interface BreadcrumbsProps {
   /**
@@ -28,16 +28,20 @@ function startCase(str: string): string {
 export default function Breadcrumbs({ labels = {} }: BreadcrumbsProps) {
   const location = useLocation();
   const params = useParams();
-  const segments = location.pathname.split("/").filter(Boolean);
+  let segments = location.pathname.split("/").filter(Boolean);
 
   if (segments.length === 0) {
-    return null;
+    segments = ["dashboard"];
+  }
+
+  if (segments[0] === "dashboard" && segments[1] === "all") {
+    segments = ["dashboard"];
   }
 
   const crumbs = segments.map((segment, index) => {
     let to = "/" + segments.slice(0, index + 1).join("/");
     if (index === 0 && segment === "dashboard") {
-      to = "/dashboard";
+      to = "/dashboard/all";
     }
     let label: string | undefined;
 
