@@ -21,8 +21,9 @@ export default function BookNetworkPage() {
     <div className="p-4">
       <h1 className="text-xl font-bold mb-2">Related Books Network</h1>
       <p className="mb-4 text-sm text-muted-foreground">
-        Click a book to expand its neighbors, drag nodes to reposition and use
-        the switch below to view a chord diagram.
+        Click a book to expand its neighbors, drag nodes to reposition,
+        scroll or pinch to zoom, drag the background to pan and use the switch
+        below to view a chord diagram.
       </p>
       {data ? (
         <div>
