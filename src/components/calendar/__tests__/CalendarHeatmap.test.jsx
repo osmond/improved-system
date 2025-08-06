@@ -81,6 +81,27 @@ describe('CalendarHeatmap', () => {
     });
   });
 
+  it('positions month labels within the visible area', () => {
+    const { container } = render(<CalendarHeatmap />);
+    const svg = container.querySelector('svg.react-calendar-heatmap');
+    expect(svg).not.toBeNull();
+
+    const monthLabelEls = Array.from(svg.querySelectorAll('text')).filter((el) =>
+      /^(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)$/.test(
+        el.textContent || ''
+      )
+    );
+
+    const cellHeight = parseFloat(svg.querySelector('rect').getAttribute('height'));
+    const heatmapHeight = cellHeight * 7;
+
+    monthLabelEls.forEach((label) => {
+      const y = parseFloat(label.getAttribute('y'));
+      expect(y).toBeGreaterThanOrEqual(0);
+      expect(y).toBeLessThanOrEqual(heatmapHeight);
+    });
+  });
+
   it('aligns weeks starting on Monday', () => {
     const { container } = render(<CalendarHeatmap />);
     const monday = container.querySelector('rect[data-date="2024-01-01"]');
