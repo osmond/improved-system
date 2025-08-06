@@ -22,7 +22,7 @@ describe("Breadcrumbs", () => {
 
     const links = screen.getAllByRole("link");
     expect(links[0]).toHaveTextContent("Dashboard");
-    expect(links[0]).toHaveAttribute("href", "/dashboard/all");
+    expect(links[0]).toHaveAttribute("href", "/");
     expect(links[1]).toHaveTextContent("Charts");
     expect(links[1]).toHaveAttribute("href", "/dashboard/charts");
     expect(
