@@ -180,6 +180,20 @@ describe('ReadingTimeline', () => {
     expect(swatch).toHaveStyle({ backgroundColor: 'hsl(var(--chart-1))' });
   });
 
+  it('supports keyboard interaction with the brush', () => {
+    const { container, getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    const svg = container.querySelector('svg');
+    const brushG = svg.querySelector('.brush');
+    expect(brushG.getAttribute('tabindex')).toBe('0');
+
+    // move selection with keyboard and apply with Enter
+    fireEvent.keyDown(brushG, { key: 'ArrowRight' });
+    fireEvent.keyDown(brushG, { key: 'Enter' });
+
+    const resetBtn = getByRole('button', { name: /reset/i });
+    expect(resetBtn).toBeEnabled();
+  });
+
   it('displays titles in bar tooltips and legend labels', () => {
     const { container, getByRole } = render(
       <ReadingTimeline sessions={sessions} />,
