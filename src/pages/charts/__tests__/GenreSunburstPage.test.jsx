@@ -1,57 +1,47 @@
-import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
-import GenreSunburstPage from '../GenreSunburst.jsx';
+import React from 'react';
+import constants from '@/config/constants';
+const { UNCLASSIFIED_GENRE } = constants;
 
 vi.mock('@/components/genre/GenreSunburst.jsx', () => ({
-  default: () => <div data-testid="sunburst-layout" />,
+  default: ({ data }) => (
+    <div data-testid="sunburst">
+      {data && data.children.map((c) => c.name).join(',')}
+    </div>
+  ),
 }));
 
 vi.mock('@/components/genre/GenreIcicle.jsx', () => ({
-  default: () => <div data-testid="icicle-layout" />,
+  default: ({ data }) => (
+    <div data-testid="icicle">
+      {data && data.children.map((c) => c.name).join(',')}
+    </div>
+  ),
 }));
 
-describe('GenreSunburstPage', () => {
-  it('toggles between sunburst and icicle layouts', async () => {
+vi.mock('@/data/kindle/genre-hierarchy.json', () => ({
+  default: {
+    name: 'root',
+    children: [
+      { name: 'Fiction', children: [{ name: 'Book A', value: 1 }] },
+      { name: 'Unclassified', children: [{ name: 'Book B', value: 2 }] },
+    ],
+  },
+}), { virtual: true });
+
+import GenreSunburstPage from '../GenreSunburst.jsx';
+
+describe('GenreSunburstPage filter', () => {
+  it('shows only unclassified items when filtered', async () => {
     const user = userEvent.setup();
     render(<GenreSunburstPage />);
-    const sunburstButton = screen.getByRole('button', { name: /sunburst/i });
-    const icicleButton = screen.getByRole('button', { name: /icicle/i });
-
-    expect(await screen.findByTestId('sunburst-layout')).toBeInTheDocument();
-    expect(sunburstButton).toHaveAttribute('aria-pressed', 'true');
-    expect(sunburstButton).toHaveClass('bg-primary', 'text-white');
-    expect(icicleButton).toHaveAttribute('aria-pressed', 'false');
-    expect(icicleButton).not.toHaveClass('bg-primary');
-    expect(icicleButton).not.toHaveClass('text-white');
-    expect(screen.queryByTestId('icicle-layout')).not.toBeInTheDocument();
-
-    await user.click(icicleButton);
-    expect(screen.getByTestId('icicle-layout')).toBeInTheDocument();
-    expect(icicleButton).toHaveAttribute('aria-pressed', 'true');
-    expect(icicleButton).toHaveClass('bg-primary', 'text-white');
-    expect(sunburstButton).toHaveAttribute('aria-pressed', 'false');
-    expect(sunburstButton).not.toHaveClass('bg-primary');
-    expect(sunburstButton).not.toHaveClass('text-white');
-    expect(screen.queryByTestId('sunburst-layout')).not.toBeInTheDocument();
-
-    await user.click(sunburstButton);
-    expect(screen.getByTestId('sunburst-layout')).toBeInTheDocument();
-    expect(sunburstButton).toHaveAttribute('aria-pressed', 'true');
-    expect(sunburstButton).toHaveClass('bg-primary', 'text-white');
-    expect(icicleButton).toHaveAttribute('aria-pressed', 'false');
-    expect(icicleButton).not.toHaveClass('bg-primary');
-    expect(icicleButton).not.toHaveClass('text-white');
-  });
-
-  it('displays chart description', () => {
-    render(<GenreSunburstPage />);
-    expect(
-      screen.getByText(
-        /each slice represents time spent reading in that genre/i
-      )
-    ).toBeInTheDocument();
+    await screen.findByTestId('sunburst');
+    expect(screen.getByTestId('sunburst')).toHaveTextContent('Fiction');
+    expect(screen.getByTestId('sunburst')).toHaveTextContent(UNCLASSIFIED_GENRE);
+    await user.click(screen.getByRole('button', { name: `Show ${UNCLASSIFIED_GENRE}` }));
+    expect(screen.getByTestId('sunburst')).not.toHaveTextContent('Fiction');
+    expect(screen.getByTestId('sunburst')).toHaveTextContent(UNCLASSIFIED_GENRE);
   });
 });

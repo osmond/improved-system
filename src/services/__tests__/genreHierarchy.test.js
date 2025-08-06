@@ -1,5 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildGenreHierarchy } from '../genreHierarchy';
+const { UNCLASSIFIED_GENRE } = require('../../config/constants');
 
 describe('buildGenreHierarchy', () => {
   it('builds nested tree from flat records', () => {
@@ -37,5 +38,16 @@ describe('buildGenreHierarchy', () => {
     const fiction = root.children.find((c) => c.name === 'Fiction');
     const sub = fiction.children.find((c) => c.name === 'Historical Thriller');
     expect(sub).toBeTruthy();
+  });
+
+  it('labels missing data as unclassified', () => {
+    const sessions = [{ asin: 'X1', title: 'Untitled Book', duration: 5 }];
+    const root = buildGenreHierarchy(sessions, [], [], []);
+    const unc = root.children.find((c) => c.name === UNCLASSIFIED_GENRE);
+    expect(unc).toBeTruthy();
+    const sub = unc.children.find((c) => c.name === UNCLASSIFIED_GENRE);
+    expect(sub).toBeTruthy();
+    const author = sub.children.find((c) => c.name === UNCLASSIFIED_GENRE);
+    expect(author.children[0]).toEqual({ name: 'Untitled Book', value: 5 });
   });
 });
