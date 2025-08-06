@@ -185,8 +185,12 @@ function YearlyHeatmap({ data }) {
     if (date.getDate() === 1) {
       const key = `${date.getFullYear()}-${date.getMonth()}`;
       const size = Number(element.props.height) || 10;
-      const topY = element.props.y - (getISODay(date) - 1) * size;
-      const bottomY = topY + size * 7 + 12;
+      const chartHeight = size * 7;
+      let topY = element.props.y - (getISODay(date) - 1) * size;
+      topY = Math.max(topY, 0);
+      const lineBottom = Math.min(topY + chartHeight, chartHeight);
+      const labelY = Math.max(topY - 4, 0);
+      const totalY = Math.min(lineBottom - 2, chartHeight);
       const lineX = element.props.x - 1;
       const boundaryClass = `month-boundary${
         date.getMonth() % 3 === 0 ? ' quarter-boundary' : ''
@@ -197,12 +201,12 @@ function YearlyHeatmap({ data }) {
             x1={lineX}
             y1={topY}
             x2={lineX}
-            y2={bottomY - 12}
+            y2={lineBottom}
             className={boundaryClass}
           />
           <text
             x={element.props.x}
-            y={topY - 4}
+            y={labelY}
             className="text-sm font-medium"
           >
             {monthNames[date.getMonth()]}
@@ -210,7 +214,7 @@ function YearlyHeatmap({ data }) {
           {cell}
           <text
             x={element.props.x}
-            y={bottomY}
+            y={totalY}
             className="text-sm font-medium"
           >
             {monthTotals[key]}
@@ -232,7 +236,7 @@ function YearlyHeatmap({ data }) {
           transformDayElement={transformDayElement}
           showMonthLabels={false}
           className="w-full h-auto"
-          style={{ width: '100%' }}
+          style={{ width: '100%', overflow: 'visible' }}
         />
         <div
           className="flex flex-wrap items-center gap-2 md:gap-3 mt-2 text-xs md:text-sm"
