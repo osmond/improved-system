@@ -35,6 +35,10 @@ export default function GenreSankeyPage() {
         <button
           onClick={toggleFullscreen}
           className="px-2 py-1 border rounded"
+          aria-pressed={isFullscreen}
+          aria-label={
+            isFullscreen ? 'Exit full screen' : 'Enter full screen'
+          }
         >
           {isFullscreen ? 'Exit Full Screen' : 'Full Screen'}
         </button>
