@@ -19,6 +19,22 @@ export default function GenreSankey() {
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [filter, setFilter] = useState('');
+  const [month, setMonth] = useState(0);
+  const [playing, setPlaying] = useState(false);
+  const monthNames = [
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
+  ];
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -111,6 +127,14 @@ export default function GenreSankey() {
   }, []);
 
   useEffect(() => {
+    if (!playing) return;
+    const id = setInterval(() => {
+      setMonth((m) => (m + 1) % 12);
+    }, 1000);
+    return () => clearInterval(id);
+  }, [playing]);
+
+  useEffect(() => {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
     const { width, height } = dimensions;
@@ -118,16 +142,17 @@ export default function GenreSankey() {
 
     const genres = Array.from(new Set(data.flatMap((d) => [d.source, d.target])));
 
-    // compute totals per genre (incoming + outgoing)
+    // compute totals per genre (incoming + outgoing) using overall counts to keep layout stable
     const totals = data.reduce((acc, { source, target, count }) => {
       acc[source] = (acc[source] || 0) + count;
       acc[target] = (acc[target] || 0) + count;
       return acc;
     }, {});
 
-    // compute outgoing totals separately for percent calculations
-    const sourceTotals = data.reduce((acc, { source, count }) => {
-      acc[source] = (acc[source] || 0) + count;
+    // compute outgoing totals for the current month for percentage calculations
+    const sourceTotals = data.reduce((acc, { source, monthlyCounts }) => {
+      const v = (monthlyCounts && monthlyCounts[month]) || 0;
+      acc[source] = (acc[source] || 0) + v;
       return acc;
     }, {});
 
@@ -143,7 +168,7 @@ export default function GenreSankey() {
     const links = data.map((d) => ({
       source: indexByName[d.source],
       target: indexByName[d.target],
-      value: d.count,
+      value: (d.monthlyCounts && d.monthlyCounts[month]) || 0,
       monthlyCounts: d.monthlyCounts || Array(12).fill(0),
     }));
 
@@ -199,8 +224,11 @@ export default function GenreSankey() {
       .join('path')
       .attr('d', sankeyLinkHorizontal())
       .attr('fill', 'none')
-      .attr('stroke-width', (d) => Math.max(1, d.width))
+      .attr('stroke-width', 0)
       .attr('opacity', (d) => (d.value < cutoff ? 0.3 : 1))
+      .transition()
+      .duration(750)
+      .attr('stroke-width', (d) => Math.max(1, d.width))
       .each(function (d, i) {
         const gradientId = `link-gradient-${i}`;
         const gradient = defs
@@ -246,7 +274,7 @@ export default function GenreSankey() {
         const percent = (
           (d.value / (sourceTotals[d.source.name] || d.value)) * 100
         ).toFixed(0);
-        const text = `${d.source.name} → ${d.target.name}: ${d.value} sessions (${percent}% of ${d.source.name})`;
+        const text = `${d.source.name} → ${d.target.name}: ${d.value} sessions (${percent}% of ${d.source.name}) in ${monthNames[month]}`;
         const counts = d.monthlyCounts || [];
         const max = Math.max(...counts, 0);
         const barWidth = 5;
@@ -303,7 +331,7 @@ export default function GenreSankey() {
       .filter((d) => d.x0 < width / 2)
       .attr('x', (d) => d.x1 + 6)
       .attr('text-anchor', 'start');
-  }, [data, dimensions]);
+  }, [data, dimensions, month]);
 
   return (
     <div
@@ -336,6 +364,20 @@ export default function GenreSankey() {
         <button onClick={fetchData} disabled={loading}>Apply</button>
         <button onClick={handleResetZoom}>Reset Zoom</button>
         <button onClick={() => setFilter('')}>Clear Filter</button>
+        <label>
+          Month
+          <input
+            type="range"
+            min="0"
+            max="11"
+            value={month}
+            onChange={(e) => setMonth(Number(e.target.value))}
+          />
+          <span>{monthNames[month]}</span>
+        </label>
+        <button onClick={() => setPlaying((p) => !p)}>
+          {playing ? 'Pause' : 'Play'}
+        </button>
       </div>
       <div
         ref={containerRef}
