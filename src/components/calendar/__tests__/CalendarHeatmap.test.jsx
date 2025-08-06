@@ -157,6 +157,22 @@ describe('CalendarHeatmap', () => {
     within(tooltip).getByTestId('sparkline');
   });
 
+  it('hides sparkline from assistive technologies', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<CalendarHeatmap />);
+    const day = container.querySelector('rect[data-date="2024-01-02"]');
+    expect(day).not.toBeNull();
+    await user.hover(day);
+    const tooltip = await screen.findByRole('tooltip');
+    const sparkline = within(tooltip).getByTestId('sparkline');
+    expect(sparkline.getAttribute('aria-hidden')).toBe('true');
+    const otherAria = sparkline
+      .getAttributeNames()
+      .filter((name) => name.startsWith('aria-') && name !== 'aria-hidden');
+    expect(otherAria.length).toBe(0);
+    expect(sparkline.hasAttribute('role')).toBe(false);
+  });
+
   it('shows tooltip when interacting with days that have month labels and totals', async () => {
     const user = userEvent.setup();
     const { container, getByText } = render(<CalendarHeatmap />);
