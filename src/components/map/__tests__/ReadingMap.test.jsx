@@ -110,8 +110,8 @@ describe('ReadingMap', () => {
       expect(screen.getAllByTestId('marker')).toHaveLength(2)
     );
 
-    const titleInput = screen.getByPlaceholderText('Book title');
-    fireEvent.change(titleInput, { target: { value: 'Gamma' } });
+    const titleSelect = container.querySelectorAll('select')[0];
+    fireEvent.change(titleSelect, { target: { value: 'Gamma' } });
     fireEvent.change(slider, { target: { value: 0 } });
     await waitFor(() =>
       expect(screen.getAllByTestId('marker')).toHaveLength(1)
@@ -153,7 +153,7 @@ describe('ReadingMap', () => {
       expect(screen.getAllByTestId('marker')).toHaveLength(3)
     );
 
-    const select = container.querySelector('select');
+    const select = container.querySelectorAll('select')[1];
 
     fireEvent.change(select, { target: { value: 'markers' } });
     expect(screen.getAllByTestId('marker').length).toBeGreaterThan(0);

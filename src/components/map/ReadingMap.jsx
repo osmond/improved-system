@@ -70,6 +70,11 @@ export default function ReadingMap() {
       .finally(() => setLoading(false));
   }, []);
 
+  const titles = useMemo(
+    () => Array.from(new Set(locations.map((l) => l.title))).sort(),
+    [locations]
+  );
+
   const filtered = useMemo(() => {
     return locations.filter((l) => {
       if (start && l.start < start) return false;
@@ -269,13 +274,18 @@ export default function ReadingMap() {
           onChange={(e) => setEnd(e.target.value)}
           style={{ marginLeft: '0.5rem' }}
         />
-        <input
-          type="text"
-          placeholder="Book title"
+        <select
           value={title}
           onChange={(e) => setTitle(e.target.value)}
           style={{ marginLeft: '0.5rem' }}
-        />
+        >
+          <option value=""></option>
+          {titles.map((t) => (
+            <option key={t} value={t}>
+              {t}
+            </option>
+          ))}
+        </select>
       </div>
       <div style={{ marginBottom: '1rem' }}>
         <input
