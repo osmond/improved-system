@@ -1,4 +1,5 @@
 const asinTitleMap = require('../data/kindle/asin-title-map.json');
+const { UNCLASSIFIED_GENRE } = require('../config/constants');
 
 function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
   const genreByAsin = {};
@@ -31,9 +32,9 @@ function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
       books[asin] = {
         title,
         minutes: 0,
-        genre: genreByAsin[asin] || 'Unknown',
-        subgenre: subgenreByAsin[asin] || 'Unknown',
-        author: authorByAsin[asin] || 'Unknown',
+        genre: genreByAsin[asin] || UNCLASSIFIED_GENRE,
+        subgenre: subgenreByAsin[asin] || UNCLASSIFIED_GENRE,
+        author: authorByAsin[asin] || UNCLASSIFIED_GENRE,
       };
     }
     books[asin].minutes += minutes;
@@ -61,4 +62,15 @@ function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
   return root;
 }
 
-module.exports = { buildGenreHierarchy };
+function filterUnclassified(node, label = UNCLASSIFIED_GENRE) {
+  if (!node) return null;
+  if (node.name === label) return node;
+  if (!node.children) return null;
+  const children = node.children
+    .map((child) => filterUnclassified(child, label))
+    .filter(Boolean);
+  if (!children.length) return null;
+  return { ...node, children };
+}
+
+module.exports = { buildGenreHierarchy, filterUnclassified };

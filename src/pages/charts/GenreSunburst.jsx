@@ -1,19 +1,26 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import GenreSunburst from '@/components/genre/GenreSunburst.jsx';
 import GenreIcicle from '@/components/genre/GenreIcicle.jsx';
 import hierarchy from '@/data/kindle/genre-hierarchy.json';
 import { Skeleton } from '@/ui/skeleton';
 import { cn } from '@/lib/utils';
+import { filterUnclassified } from '@/services/genreHierarchy';
 
 export default function GenreSunburstPage() {
   const [view, setView] = useState('sunburst');
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [showUnclassified, setShowUnclassified] = useState(false);
 
   useEffect(() => {
     setData(hierarchy);
     setIsLoading(false);
   }, []);
+
+  const displayData = useMemo(() => {
+    if (!data) return null;
+    return showUnclassified ? filterUnclassified(data) : data;
+  }, [data, showUnclassified]);
 
   return (
     <div className="p-4">
@@ -47,6 +54,18 @@ export default function GenreSunburstPage() {
         >
           Icicle
         </button>
+        <button
+          type="button"
+          onClick={() => setShowUnclassified((v) => !v)}
+          aria-pressed={showUnclassified}
+          disabled={isLoading}
+          className={cn(
+            'px-2 py-1 border rounded',
+            showUnclassified && 'bg-accent text-accent-foreground',
+          )}
+        >
+          {showUnclassified ? 'Show All' : 'Unclassified Only'}
+        </button>
       </div>
       {isLoading ? (
         <Skeleton
@@ -54,9 +73,9 @@ export default function GenreSunburstPage() {
           data-testid="genre-hierarchy-skeleton"
         />
       ) : view === 'sunburst' ? (
-        <GenreSunburst data={data} />
+        <GenreSunburst data={displayData} />
       ) : (
-        <GenreIcicle data={data} />
+        <GenreIcicle data={displayData} />
       )}
     </div>
   );

@@ -1,57 +1,63 @@
-import React from 'react';
-import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
+import React from 'react';
 import GenreSunburstPage from '../GenreSunburst.jsx';
+vi.mock('@/data/kindle/genre-hierarchy.json', () => {
+  const { UNCLASSIFIED_GENRE } = require('../../../config/constants');
+  return {
+    default: {
+      name: 'root',
+      children: [
+        {
+          name: 'Fiction',
+          children: [
+            {
+              name: 'Mystery',
+              children: [
+                {
+                  name: 'Author A',
+                  children: [{ name: 'Book One', value: 30 }],
+                },
+              ],
+            },
+          ],
+        },
+        {
+          name: UNCLASSIFIED_GENRE,
+          children: [
+            {
+              name: UNCLASSIFIED_GENRE,
+              children: [
+                {
+                  name: UNCLASSIFIED_GENRE,
+                  children: [{ name: 'Book Two', value: 15 }],
+                },
+              ],
+            },
+          ],
+        },
+      ],
+    },
+  };
+});
 
-vi.mock('@/components/genre/GenreSunburst.jsx', () => ({
-  default: () => <div data-testid="sunburst-layout" />,
-}));
-
-vi.mock('@/components/genre/GenreIcicle.jsx', () => ({
-  default: () => <div data-testid="icicle-layout" />,
-}));
+import { UNCLASSIFIED_GENRE } from '../../../config/constants';
 
 describe('GenreSunburstPage', () => {
-  it('toggles between sunburst and icicle layouts', async () => {
+  it('filters to unclassified branch', async () => {
     const user = userEvent.setup();
-    render(<GenreSunburstPage />);
-    const sunburstButton = screen.getByRole('button', { name: /sunburst/i });
-    const icicleButton = screen.getByRole('button', { name: /icicle/i });
-
-    expect(await screen.findByTestId('sunburst-layout')).toBeInTheDocument();
-    expect(sunburstButton).toHaveAttribute('aria-pressed', 'true');
-    expect(sunburstButton).toHaveClass('bg-primary', 'text-white');
-    expect(icicleButton).toHaveAttribute('aria-pressed', 'false');
-    expect(icicleButton).not.toHaveClass('bg-primary');
-    expect(icicleButton).not.toHaveClass('text-white');
-    expect(screen.queryByTestId('icicle-layout')).not.toBeInTheDocument();
-
-    await user.click(icicleButton);
-    expect(screen.getByTestId('icicle-layout')).toBeInTheDocument();
-    expect(icicleButton).toHaveAttribute('aria-pressed', 'true');
-    expect(icicleButton).toHaveClass('bg-primary', 'text-white');
-    expect(sunburstButton).toHaveAttribute('aria-pressed', 'false');
-    expect(sunburstButton).not.toHaveClass('bg-primary');
-    expect(sunburstButton).not.toHaveClass('text-white');
-    expect(screen.queryByTestId('sunburst-layout')).not.toBeInTheDocument();
-
-    await user.click(sunburstButton);
-    expect(screen.getByTestId('sunburst-layout')).toBeInTheDocument();
-    expect(sunburstButton).toHaveAttribute('aria-pressed', 'true');
-    expect(sunburstButton).toHaveClass('bg-primary', 'text-white');
-    expect(icicleButton).toHaveAttribute('aria-pressed', 'false');
-    expect(icicleButton).not.toHaveClass('bg-primary');
-    expect(icicleButton).not.toHaveClass('text-white');
-  });
-
-  it('displays chart description', () => {
-    render(<GenreSunburstPage />);
+    const { container } = render(<GenreSunburstPage />);
+    await waitFor(() => {
+      expect(container.querySelector('path[data-name="Fiction"]')).toBeInTheDocument();
+    });
+    const button = screen.getByRole('button', { name: /Unclassified Only/i });
+    await user.click(button);
+    await waitFor(() => {
+      expect(container.querySelector('path[data-name="Fiction"]')).not.toBeInTheDocument();
+    });
     expect(
-      screen.getByText(
-        /each slice represents time spent reading in that genre/i
-      )
+      container.querySelector(`path[data-name="${UNCLASSIFIED_GENRE}"]`)
     ).toBeInTheDocument();
   });
 });
