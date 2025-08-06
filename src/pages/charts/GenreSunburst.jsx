@@ -1,7 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import GenreSunburst from '@/components/genre/GenreSunburst.jsx';
 import GenreIcicle from '@/components/genre/GenreIcicle.jsx';
-import hierarchy from '@/data/kindle/genre-hierarchy.json';
 import { Skeleton } from '@/ui/skeleton';
 import { cn } from '@/lib/utils';
 import constants from '@/config/constants';
@@ -13,10 +12,31 @@ export default function GenreSunburstPage() {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [showUnclassified, setShowUnclassified] = useState(false);
-
+  const [error, setError] = useState(null);
   useEffect(() => {
-    setData(hierarchy);
-    setIsLoading(false);
+    let isMounted = true;
+    const loadData = async () => {
+      try {
+        const module = await import('@/data/kindle/genre-hierarchy.json');
+        const hierarchy = module.default || module;
+        if (isMounted) {
+          setData(hierarchy);
+        }
+      } catch (err) {
+        console.error(err);
+        if (isMounted) {
+          setError('Failed to load genre data');
+        }
+      } finally {
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
+    };
+    loadData();
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const filteredData = useMemo(() => {
@@ -71,7 +91,11 @@ export default function GenreSunburstPage() {
           {showUnclassified ? 'Show All' : `Show ${UNCLASSIFIED_GENRE}`}
         </button>
       </div>
-      {isLoading ? (
+      {error ? (
+        <div className="text-destructive" role="alert">
+          {error}
+        </div>
+      ) : isLoading ? (
         <Skeleton
           className="h-[400px] w-full"
           data-testid="genre-hierarchy-skeleton"

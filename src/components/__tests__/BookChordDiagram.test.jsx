@@ -6,9 +6,9 @@ import BookChordDiagram from '../network/BookChordDiagram.jsx';
 
 const sampleData = {
   nodes: [
-    { id: 'a' },
-    { id: 'b' },
-    { id: 'c' }
+    { id: 'a', title: 'Book A' },
+    { id: 'b', title: 'Book B' },
+    { id: 'c', title: 'Book C' }
   ],
   links: [
     { source: 'a', target: 'b', weight: 1 },
@@ -17,6 +17,7 @@ const sampleData = {
 };
 
 describe('BookChordDiagram', () => {
+
   const originalRO = global.ResizeObserver;
   let resizeCallback;
 
@@ -41,9 +42,17 @@ describe('BookChordDiagram', () => {
     act(() => {
       resizeCallback?.([{ contentRect: { width: 600, height: 400 } }]);
     });
+
     await waitFor(() => {
-      expect(screen.getAllByTestId('chord').length).toBe(sampleData.links.length);
+      expect(screen.getAllByTestId('chord')).toHaveLength(sampleData.links.length);
+      expect(screen.getAllByTestId('label')).toHaveLength(sampleData.nodes.length);
     });
+
+    const titles = Array.from(
+      container.querySelectorAll('path[data-testid="chord"] title')
+    ).map((t) => t.textContent);
+    expect(titles).toContain('Book A → Book B');
+    expect(titles).toContain('Book B → Book C');
   });
 
   it('updates SVG size when container resizes', async () => {

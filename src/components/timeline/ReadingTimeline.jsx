@@ -1,7 +1,10 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
+
+import { schemeTableau10 } from 'd3-scale-chromatic';
 import { brushX } from 'd3-brush';
+
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
@@ -13,17 +16,78 @@ const LANE_HEIGHT = BAR_HEIGHT + LANE_PADDING;
 const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 40;
 const MIN_HEIGHT = 120;
+const TOP_N = 5;
 
 
-export default function ReadingTimeline({ sessions = [] }) {
+const PATTERN_STYLES = [
+  'repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(90deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px)',
+  'repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px)',
+];
+
+export default function ReadingTimeline({
+  sessions = [],
+  colorBlindFriendly = false,
+}) {
+
   const ref = useRef(null);
   const containerRef = useRef(null);
   const brushRef = useRef(null);
+  const adjustingRef = useRef(false);
   const [zoomed, setZoomed] = useState(false);
   const [width, setWidth] = useState(DEFAULT_WIDTH);
+  const [showLegend, setShowLegend] = useState(false);
+  const [search, setSearch] = useState('');
+
+  const filteredSessions = useMemo(() => {
+    if (!search) return sessions;
+    const term = search.toLowerCase();
+    return sessions.filter((s) => s.title.toLowerCase().includes(term));
+  }, [sessions, search]);
+
+  const bookCounts = useMemo(() => {
+    const counts = new Map();
+    filteredSessions.forEach((s) => {
+      counts.set(s.title, (counts.get(s.title) || 0) + 1);
+    });
+    return Array.from(counts.entries()).sort(
+      (a, b) => b[1] - a[1] || a[0].localeCompare(b[0]),
+    );
+  }, [filteredSessions]);
+
+  const topTitles = useMemo(
+    () => bookCounts.slice(0, TOP_N).map(([title]) => title),
+    [bookCounts],
+  );
+
+  const legendTitles = useMemo(() => {
+    const list = [...topTitles];
+    if (bookCounts.length > TOP_N) list.push('Other');
+    return list;
+  }, [topTitles, bookCounts.length]);
+
+  const colorScale = useMemo(() => {
+    const colors = Array.from({ length: topTitles.length }, (_, i) =>
+      `hsl(var(--chart-${i + 1}))`,
+    );
+    if (bookCounts.length > TOP_N) colors.push('#ccc');
+    return scaleOrdinal().domain(legendTitles).range(colors);
+  }, [legendTitles, topTitles.length, bookCounts.length]);
+
+  const sessionsWithCat = useMemo(
+    () =>
+      filteredSessions.map((s) => ({
+        ...s,
+        category: topTitles.includes(s.title) ? s.title : 'Other',
+      })),
+    [filteredSessions, topTitles],
+  );
 
   const { parsedSessions, lanes } = useMemo(() => {
-    const parsed = sessions
+    const parsed = sessionsWithCat
       .map((s) => ({
         ...s,
         startDate: new Date(s.start),
@@ -44,18 +108,22 @@ export default function ReadingTimeline({ sessions = [] }) {
     });
 
     return { parsedSessions: parsed, lanes: laneEnds.length || 1 };
-  }, [sessions]);
+  }, [sessionsWithCat]);
 
   const height = Math.max(MIN_HEIGHT, lanes * LANE_HEIGHT + LANE_PADDING);
+
 
   const titles = useMemo(
     () => Array.from(new Set(sessions.map((s) => s.title))),
     [sessions],
   );
   const colorScale = useMemo(() => {
-    const colors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
+    const colors = titles.map(
+      (_, i) => schemeTableau10[i % schemeTableau10.length],
+    );
     return scaleOrdinal().domain(titles).range(colors);
   }, [titles]);
+
 
   useEffect(() => {
     const handleResize = () => {
@@ -103,8 +171,12 @@ export default function ReadingTimeline({ sessions = [] }) {
       .attr('class', 'x-axis')
       .attr('transform', `translate(0,${BRUSH_HEIGHT + height})`);
     const xAxis = axisBottom(x)
-      .ticks(timeMonth.every(3))
-      .tickFormat(timeFormat('%b'))
+      .ticks(timeMonth.every(4))
+      .tickFormat((d) =>
+        d.getMonth() === 0
+          ? timeFormat('%b %Y')(d)
+          : timeFormat('%b')(d),
+      )
       .tickSize(-height)
       .tickSizeOuter(0);
 
@@ -128,14 +200,20 @@ export default function ReadingTimeline({ sessions = [] }) {
         .attr('y', (d) => d.lane * LANE_HEIGHT + LANE_PADDING)
         .attr('width', (d) => Math.max(1, x(d.endDate) - x(d.startDate)))
         .attr('height', BAR_HEIGHT)
-        .attr('fill', (d) => colorScale(d.title))
+        .attr('fill', (d) => colorScale(d.category))
         .attr('fill-opacity', (d) => opacityScale(d.duration))
         .attr('tabindex', 0)
         .attr(
           'aria-label',
           (d) =>
             `${d.title}, ${d.duration.toFixed(1)} minutes, ${d.highlights} highlights`,
-        );
+        )
+        .on('focus', function () {
+          select(this).attr('stroke', '#000').attr('stroke-width', 2);
+        })
+        .on('blur', function () {
+          select(this).attr('stroke', null).attr('stroke-width', null);
+        });
 
       bars
         .append('title')
@@ -186,6 +264,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         [width, BRUSH_HEIGHT],
       ])
       .on('end', (event) => {
+        if (adjustingRef.current) return;
         if (event.selection) {
           const [x0, x1] = event.selection.map(x.invert);
           renderBars([x0, x1]);
@@ -196,7 +275,70 @@ export default function ReadingTimeline({ sessions = [] }) {
         }
       });
 
-    svg.append('g').attr('class', 'brush').call(brush);
+    const brushG = svg.append('g').attr('class', 'brush');
+    brushG.call(brush);
+    brushG
+      .attr('tabindex', 0)
+      .attr(
+        'aria-label',
+        'Timeline selection. Use arrow keys to adjust and Enter to apply.',
+      )
+      .on('focus', function () {
+        select(this).style('outline', '2px solid #000');
+      })
+      .on('blur', function () {
+        select(this).style('outline', 'none');
+      })
+      .on('keydown', (event) => {
+        const step = width / 100;
+        let sel = brushSelection(brushG.node());
+        if (!sel) sel = [0, width];
+        switch (event.key) {
+          case 'ArrowLeft':
+            sel = [Math.max(0, sel[0] - step), Math.max(step, sel[1] - step)];
+            adjustingRef.current = true;
+            brush.move(brushG, sel);
+            adjustingRef.current = false;
+            event.preventDefault();
+            break;
+          case 'ArrowRight':
+            sel = [Math.min(width - step, sel[0] + step), Math.min(width, sel[1] + step)];
+            adjustingRef.current = true;
+            brush.move(brushG, sel);
+            adjustingRef.current = false;
+            event.preventDefault();
+            break;
+          case 'ArrowUp':
+            sel = [Math.max(0, sel[0] - step), Math.min(width, sel[1] + step)];
+            adjustingRef.current = true;
+            brush.move(brushG, sel);
+            adjustingRef.current = false;
+            event.preventDefault();
+            break;
+          case 'ArrowDown':
+            if (sel[1] - sel[0] > step * 2) {
+              sel = [sel[0] + step, sel[1] - step];
+              adjustingRef.current = true;
+              brush.move(brushG, sel);
+              adjustingRef.current = false;
+              event.preventDefault();
+            }
+            break;
+          case 'Enter':
+            if (sel) {
+              const [x0, x1] = sel.map(x.invert);
+              renderBars([x0, x1]);
+              setZoomed(true);
+            } else {
+              renderBars(initialDomain);
+              setZoomed(false);
+            }
+            event.preventDefault();
+            break;
+          default:
+            break;
+        }
+      });
 
     // expose brush for tests
     ref.current.__brush = brush;
@@ -215,6 +357,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         ref={ref}
         style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
       />
+
       {titles.length > 0 && (
         <ul
           aria-label="Books"
@@ -227,7 +370,7 @@ export default function ReadingTimeline({ sessions = [] }) {
             margin: '0.5rem 0',
           }}
         >
-          {titles.map((t) => (
+          {titles.map((t, idx) => (
             <li
               key={t}
               style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
@@ -238,16 +381,41 @@ export default function ReadingTimeline({ sessions = [] }) {
                   width: 12,
                   height: 12,
                   backgroundColor: colorScale(t),
+                  backgroundImage: colorBlindFriendly
+                    ? PATTERN_STYLES[idx % PATTERN_STYLES.length]
+                    : 'none',
                   display: 'inline-block',
+
                 }}
-              />
-              <span>{t}</span>
-            </li>
-          ))}
-        </ul>
+              >
+                {legendTitles.map((t) => (
+                  <li
+                    key={t}
+                    style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
+                  >
+                    <span
+                      aria-hidden="true"
+                      style={{
+                        width: 12,
+                        height: 12,
+                        backgroundColor: colorScale(t),
+                        display: 'inline-block',
+                      }}
+                    />
+                    <span>{t}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
       )}
-      <button onClick={reset} disabled={!zoomed} aria-label="Reset zoom">
-        Reset
+      <button
+        onClick={() => setShowLegend((v) => !v)}
+        aria-expanded={showLegend}
+        style={{ marginTop: '0.5rem' }}
+      >
+        {showLegend ? 'Hide books' : 'Show books...'}
       </button>
     </div>
   );

@@ -75,6 +75,10 @@ describe('GenreSankey', () => {
       expect(container.querySelectorAll('path').length).toBe(4);
     });
     expect(container.querySelectorAll('path').length).toBeLessThan(initialCount);
+    fireEvent.click(screen.getByText('Reset Zoom'));
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBe(4);
+    });
     fireEvent.click(screen.getByText('Clear Filter'));
     await waitFor(() => {
       expect(container.querySelectorAll('path').length).toBe(initialCount);
@@ -149,6 +153,54 @@ describe('GenreSankey', () => {
     fireEvent.mouseOut(link);
     await waitFor(() => {
       expect(tooltip).toHaveStyle({ display: 'none' });
+    });
+  });
+
+  it('shows a tooltip on link focus', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    const link = container.querySelector('path');
+    // jsdom provides a rect of zeros; ensure presence of method
+    link.getBoundingClientRect = () => ({
+      left: 0,
+      top: 0,
+      width: 10,
+      height: 10,
+      right: 10,
+      bottom: 10,
+    });
+    fireEvent.focus(link);
+    const tooltip = screen.getByTestId('tooltip');
+    await waitFor(() => {
+      expect(tooltip).toHaveStyle({ display: 'block' });
+    });
+    fireEvent.blur(link);
+    await waitFor(() => {
+      expect(tooltip).toHaveStyle({ display: 'none' });
+    });
+  });
+
+  it('does not change svg dimensions on re-render when container size is stable', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    const svg = container.querySelector('svg');
+    const initialWidth = svg.getAttribute('width');
+    const initialHeight = svg.getAttribute('height');
+
+    // Trigger a re-render that does not affect container size
+    fireEvent.change(screen.getByLabelText('Filter'), {
+      target: { value: 'Self-Help' },
+    });
+    fireEvent.change(screen.getByLabelText('Filter'), { target: { value: '' } });
+
+    await waitFor(() => {
+      const svg2 = container.querySelector('svg');
+      expect(svg2.getAttribute('width')).toBe(initialWidth);
+      expect(svg2.getAttribute('height')).toBe(initialHeight);
     });
   });
 });

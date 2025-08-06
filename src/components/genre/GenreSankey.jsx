@@ -9,6 +9,8 @@ import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
+  // Container specifically for the svg. The resize observer will measure this
+  // element so that changes to the svg itself do not affect the measurement.
   const containerRef = useRef(null);
   const tooltipRef = useRef(null);
   const zoomRef = useRef(null);
@@ -32,11 +34,10 @@ export default function GenreSankey() {
     setData(mapped);
   };
 
-  const handleReset = () => {
+  const handleResetZoom = () => {
     if (zoomRef.current) {
       zoomRef.current();
     }
-    setFilter('');
   };
 
   useEffect(() => {
@@ -68,16 +69,20 @@ export default function GenreSankey() {
 
   useEffect(() => {
     const updateSize = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({
-          width: width || 600,
-          height: height || 400,
-        });
-      } else {
-        setDimensions({ width: window.innerWidth, height: window.innerHeight });
-      }
+      if (!containerRef.current) return;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const newWidth = width || 600;
+      const newHeight = height || 400;
+      // Only update when the measured dimensions actually change. This avoids
+      // triggering React renders that would cause ResizeObserver to fire again.
+      setDimensions((prev) => {
+        if (prev.width !== newWidth || prev.height !== newHeight) {
+          return { width: newWidth, height: newHeight };
+        }
+        return prev;
+      });
     };
+
     updateSize();
     let observer;
     if (typeof ResizeObserver !== 'undefined') {
@@ -207,11 +212,21 @@ export default function GenreSankey() {
             `From ${d.source.name} to ${d.target.name}: ${d.value} sessions`,
           );
       })
-      .on('mouseover', (event, d) => {
+      .on('mouseover focus', (event, d) => {
         const tooltip = tooltipRef.current;
         if (!tooltip) return;
-        const x = event.pageX || event.clientX;
-        const y = event.pageY || event.clientY;
+        let x = event.pageX ?? event.clientX;
+        let y = event.pageY ?? event.clientY;
+        if (x == null || y == null) {
+          const rect = event.target?.getBoundingClientRect();
+          if (rect) {
+            x = rect.left + rect.width / 2 + window.scrollX;
+            y = rect.top + rect.height / 2 + window.scrollY;
+          } else {
+            x = 0;
+            y = 0;
+          }
+        }
         tooltip.style.display = 'block';
         tooltip.style.left = `${x + 10}px`;
         tooltip.style.top = `${y + 10}px`;
@@ -231,7 +246,7 @@ export default function GenreSankey() {
           .join('');
         tooltip.innerHTML = `<div>${text}</div><svg width="${counts.length * barWidth}" height="${barHeight}">${bars}</svg>`;
       })
-      .on('mouseout', () => {
+      .on('mouseout blur', () => {
         const tooltip = tooltipRef.current;
         if (tooltip) tooltip.style.display = 'none';
       });
@@ -279,11 +294,16 @@ export default function GenreSankey() {
 
   return (
     <div
-      ref={containerRef}
-      style={{ position: 'relative', width: '100%', height: '100%' }}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
     >
       <div>
-        <label>
+      <label>
           Start
           <input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
         </label>
@@ -301,14 +321,19 @@ export default function GenreSankey() {
           />
         </label>
         <button onClick={fetchData}>Apply</button>
-        <button onClick={handleReset}>Reset View</button>
+        <button onClick={handleResetZoom}>Reset Zoom</button>
         <button onClick={() => setFilter('')}>Clear Filter</button>
       </div>
-      {(!data || data.length === 0) ? (
-        <Skeleton className="h-64 w-full" data-testid="genre-sankey-skeleton" />
-      ) : (
-        <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
-      )}
+      <div
+        ref={containerRef}
+        style={{ position: 'relative', width: '100%', height: '100%', flex: 1 }}
+      >
+        {(!data || data.length === 0) ? (
+          <Skeleton className="h-full w-full" data-testid="genre-sankey-skeleton" />
+        ) : (
+          <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
+        )}
+      </div>
       <div
         ref={tooltipRef}
         data-testid="tooltip"

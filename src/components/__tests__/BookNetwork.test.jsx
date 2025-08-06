@@ -38,6 +38,7 @@ describe('BookNetwork component', () => {
     global.ResizeObserver = originalRO;
   });
 
+
   it('shows sub-genre input and saves override', async () => {
     const { container } = render(<BookNetwork data={createMockGraph()} />);
     act(() => {
@@ -46,20 +47,40 @@ describe('BookNetwork component', () => {
     await waitFor(() => {
       expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
     });
+    // label rendering
+    expect(getByLabelText('Filter by tag')).not.toBeNull();
+    expect(getByLabelText('Filter by author')).not.toBeNull();
     fireEvent.click(container.querySelector('[data-id="a"]'));
-    await waitFor(() => {
-      expect(container.querySelector('input[placeholder="Sub-genre"]')).not.toBeNull();
-    });
+    const sgInput = await waitFor(() => getByLabelText('Sub-genre'));
     global.fetch.mockResolvedValueOnce({ json: () => Promise.resolve({ a: 'Mystery' }) });
-    fireEvent.change(container.querySelector('input[placeholder="Sub-genre"]'), {
-      target: { value: 'Mystery' }
-    });
-    fireEvent.click(container.querySelector('button'));
+    fireEvent.change(sgInput, { target: { value: 'Mystery' } });
+    fireEvent.click(getByText('Save'));
     await waitFor(() => {
       expect(global.fetch).toHaveBeenCalledWith(
         '/api/kindle/subgenre-overrides',
         expect.objectContaining({ method: 'POST' })
       );
+    });
+  });
+
+  it('clears tag, author, and selection', async () => {
+    const { container, getByLabelText, getByText, queryByLabelText } = render(
+      <BookNetwork data={createMockGraph()} />
+    );
+    await waitFor(() => {
+      expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
+    });
+    fireEvent.click(container.querySelector('[data-id="a"]'));
+    await waitFor(() => getByLabelText('Sub-genre'));
+    fireEvent.change(getByLabelText('Filter by tag'), { target: { value: 'tag1' } });
+    fireEvent.change(getByLabelText('Filter by author'), { target: { value: 'auth1' } });
+
+    fireEvent.click(getByText('Clear filters'));
+
+    expect(getByLabelText('Filter by tag').value).toBe('');
+    expect(getByLabelText('Filter by author').value).toBe('');
+    await waitFor(() => {
+      expect(queryByLabelText('Sub-genre')).toBeNull();
     });
   });
 });
