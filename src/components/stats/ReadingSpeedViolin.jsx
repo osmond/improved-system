@@ -21,6 +21,18 @@ export default function ReadingSpeedViolin() {
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
   const [bandwidth, setBandwidth] = useState(300);
+  const presets = {
+    deep: [0, 200],
+    normal: [200, 400],
+    skimming: [400, Infinity],
+  };
+  const [preset, setPreset] = useState('all');
+
+  const filteredData = React.useMemo(() => {
+    if (preset === 'all') return data;
+    const [min, max] = presets[preset];
+    return data.filter((d) => d.wpm >= min && d.wpm < max);
+  }, [data, preset]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -67,8 +79,8 @@ export default function ReadingSpeedViolin() {
 
     // Pre-compute values for each period so scales stay consistent
     const periods = {
-      morning: data.filter((d) => d.period === 'morning'),
-      evening: data.filter((d) => d.period === 'evening'),
+      morning: filteredData.filter((d) => d.period === 'morning'),
+      evening: filteredData.filter((d) => d.period === 'evening'),
     };
     const periodOrder = ['morning', 'evening'];
     const allValues = periodOrder.flatMap((k) => periods[k].map((d) => d.wpm));
@@ -80,6 +92,7 @@ export default function ReadingSpeedViolin() {
     const stats = {};
     periodOrder.forEach((period) => {
       const values = periods[period].map((d) => d.wpm);
+      if (values.length === 0) return;
       const q1 = quantile(values, 0.25);
       const q3 = quantile(values, 0.75);
       const median = quantile(values, 0.5);
@@ -119,10 +132,12 @@ export default function ReadingSpeedViolin() {
     const densities = {};
     let maxDensity = 0;
     periodOrder.forEach((period) => {
+      const values = periods[period].map((d) => d.wpm);
+      if (values.length === 0) return;
       const density = kernelDensityEstimator(
         kernelEpanechnikov(bandwidth),
         yTicks
-      )(periods[period].map((d) => d.wpm));
+      )(values);
       densities[period] = density;
       maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
     });
@@ -164,6 +179,7 @@ export default function ReadingSpeedViolin() {
     periodOrder.forEach((period) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
+      if (values.length === 0) return;
       const density = densities[period];
       const center = xCat(period) + violinWidth / 2;
       const g = root
@@ -285,7 +301,7 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
-  }, [data, showMorning, showEvening, bandwidth, dimensions]);
+  }, [filteredData, showMorning, showEvening, bandwidth, dimensions]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -311,6 +327,12 @@ export default function ReadingSpeedViolin() {
           />
           Evening
         </label>
+      </div>
+      <div>
+        <button onClick={() => setPreset('all')}>Show All</button>
+        <button onClick={() => setPreset('deep')}>Deep reading (0-200 WPM)</button>
+        <button onClick={() => setPreset('normal')}>Normal (200-400 WPM)</button>
+        <button onClick={() => setPreset('skimming')}>Skimming (400+ WPM)</button>
       </div>
       <div ref={containerRef} style={{ width: '100%' }}>
         <svg

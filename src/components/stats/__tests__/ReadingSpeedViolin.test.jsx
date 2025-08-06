@@ -22,9 +22,53 @@ afterEach(() => {
       expect(screen.getByLabelText('Morning')).toBeInTheDocument();
       expect(screen.getByLabelText('Evening')).toBeInTheDocument();
       expect(screen.getByLabelText('Smoothing')).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Show All/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Deep reading/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Normal/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: /Skimming/i })).toBeInTheDocument();
       await waitFor(() => {
         const paths = document.querySelectorAll('path');
         expect(paths.length).toBeGreaterThan(0);
+      });
+    });
+
+    it('filters data based on presets', async () => {
+      const mockData = [
+        { start: '2020-01-01T00:00:00Z', asin: 'A', wpm: 100, period: 'morning' },
+        { start: '2020-01-01T00:30:00Z', asin: 'B', wpm: 150, period: 'evening' },
+        { start: '2020-01-01T01:00:00Z', asin: 'C', wpm: 250, period: 'morning' },
+        { start: '2020-01-01T01:30:00Z', asin: 'D', wpm: 300, period: 'evening' },
+        { start: '2020-01-01T02:00:00Z', asin: 'E', wpm: 500, period: 'morning' },
+        { start: '2020-01-01T02:30:00Z', asin: 'F', wpm: 700, period: 'evening' },
+      ];
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      });
+      render(<ReadingSpeedViolin />);
+
+      await waitFor(() => {
+        expect(document.querySelectorAll('circle').length).toBe(6);
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Deep reading/i }));
+      await waitFor(() => {
+        expect(document.querySelectorAll('circle').length).toBe(2);
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Normal/i }));
+      await waitFor(() => {
+        expect(document.querySelectorAll('circle').length).toBe(2);
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Skimming/i }));
+      await waitFor(() => {
+        expect(document.querySelectorAll('circle').length).toBe(2);
+      });
+
+      fireEvent.click(screen.getByRole('button', { name: /Show All/i }));
+      await waitFor(() => {
+        expect(document.querySelectorAll('circle').length).toBe(6);
       });
     });
 
