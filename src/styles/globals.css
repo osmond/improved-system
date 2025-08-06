@@ -38,7 +38,7 @@
       --chart-10: 246 70% 70%;
       /* Reading intensity tokens - viridis scale */
       --reading-1: 237.4 35% 39.2%;
-      --reading-2: 193.2 54.3% 36.1%;
+      --reading-2: 200 65% 41%;
       --reading-3: 163.9 66.3% 39.6%;
       --reading-4: 100.8 58.2% 56.9%;
       --reading-5: 53.9 98.2% 56.9%;
@@ -92,7 +92,7 @@
     --chart-10: 246 70% 80%;
     /* Reading intensity tokens - viridis scale */
     --reading-1: 237.4 35% 39.2%;
-    --reading-2: 193.2 54.3% 36.1%;
+    --reading-2: 200 65% 41%;
     --reading-3: 163.9 66.3% 39.6%;
     --reading-4: 100.8 58.2% 56.9%;
     --reading-5: 53.9 98.2% 56.9%;
@@ -146,7 +146,7 @@
     --chart-10: 330 100% 50%;
     /* Reading intensity tokens */
     --reading-1: 210 100% 90%;
-    --reading-2: 210 100% 70%;
+    --reading-2: 180 100% 70%;
     --reading-3: 210 100% 50%;
     --reading-4: 210 100% 30%;
     --reading-5: 210 100% 10%;
