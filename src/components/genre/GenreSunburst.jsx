@@ -49,10 +49,13 @@ export default function GenreSunburst({ data }) {
 
     const style = getComputedStyle(document.documentElement);
     const chartColors = Array.from({ length: 10 }, (_, i) => {
-      const val = style
-        .getPropertyValue(`--chart-${i + 1}`)
-        .trim()
-        .replace(/\s+/g, ',');
+      const prop = `--chart-${i + 1}`;
+      const raw = style.getPropertyValue(prop).trim();
+      if (!raw) {
+        console.warn(`Missing CSS variable ${prop}, using fallback color`);
+        return 'hsl(0,0%,50%)';
+      }
+      const val = raw.replace(/\s+/g, ',');
       return `hsl(${val})`;
     });
     const color = scaleOrdinal().range(chartColors);
