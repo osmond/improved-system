@@ -10,6 +10,12 @@ export const color = {
   evening: 'hsl(var(--chart-8))',
 };
 
+const presetRanges = {
+  deep: [0, 150],
+  normal: [150, 300],
+  skimming: [300, Infinity],
+};
+
 export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
@@ -19,6 +25,7 @@ export default function ReadingSpeedViolin() {
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
   const [bandwidth, setBandwidth] = useState(150);
+  const [preset, setPreset] = useState('all');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,10 +52,16 @@ export default function ReadingSpeedViolin() {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
 
+    const filtered = data.filter((d) => {
+      if (preset === 'all') return true;
+      const [min, max] = presetRanges[preset];
+      return d.wpm >= min && d.wpm < max;
+    });
+
     // Pre-compute values for each period so scales stay consistent
     const periods = {
-      morning: data.filter((d) => d.period === 'morning'),
-      evening: data.filter((d) => d.period === 'evening'),
+      morning: filtered.filter((d) => d.period === 'morning'),
+      evening: filtered.filter((d) => d.period === 'evening'),
     };
     const periodOrder = ['morning', 'evening'];
     const allValues = periodOrder.flatMap((k) => periods[k].map((d) => d.wpm));
@@ -240,7 +253,7 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
-  }, [data, showMorning, showEvening, bandwidth]);
+  }, [data, showMorning, showEvening, bandwidth, preset]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -266,6 +279,36 @@ export default function ReadingSpeedViolin() {
           />
           Evening
         </label>
+      </div>
+      <div>
+        <button
+          onClick={() => setPreset('deep')}
+          aria-pressed={preset === 'deep'}
+          disabled={preset === 'deep'}
+        >
+          Deep reading
+        </button>
+        <button
+          onClick={() => setPreset('normal')}
+          aria-pressed={preset === 'normal'}
+          disabled={preset === 'normal'}
+        >
+          Normal
+        </button>
+        <button
+          onClick={() => setPreset('skimming')}
+          aria-pressed={preset === 'skimming'}
+          disabled={preset === 'skimming'}
+        >
+          Skimming
+        </button>
+        <button
+          onClick={() => setPreset('all')}
+          aria-pressed={preset === 'all'}
+          disabled={preset === 'all'}
+        >
+          Show All
+        </button>
       </div>
       <svg ref={svgRef} width="700" height="450" />
       <div

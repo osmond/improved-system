@@ -4,6 +4,7 @@ import { vi } from 'vitest';
 import ReadingSpeedViolin, { color } from '../ReadingSpeedViolin';
 import '@testing-library/jest-dom';
 import readingSpeed from '@/data/kindle/reading-speed.json';
+import userEvent from '@testing-library/user-event';
 
 beforeEach(() => {
   vi.spyOn(global, 'fetch').mockResolvedValue({
@@ -21,6 +22,10 @@ afterEach(() => {
       render(<ReadingSpeedViolin />);
       expect(screen.getByLabelText('Morning')).toBeInTheDocument();
       expect(screen.getByLabelText('Evening')).toBeInTheDocument();
+      expect(screen.getByText('Deep reading')).toBeInTheDocument();
+      expect(screen.getByText('Normal')).toBeInTheDocument();
+      expect(screen.getByText('Skimming')).toBeInTheDocument();
+      expect(screen.getByText('Show All')).toBeInTheDocument();
       expect(screen.getByLabelText('Bandwidth')).toBeInTheDocument();
       await waitFor(() => {
         const paths = document.querySelectorAll('path');
@@ -67,6 +72,27 @@ afterEach(() => {
 
     Array.from(container.querySelectorAll('circle')).forEach((el) => {
       expect(colors).toContain(el.getAttribute('fill'));
+    });
+  });
+
+  it('filters data based on reading speed preset', async () => {
+    const user = userEvent.setup();
+    render(<ReadingSpeedViolin />);
+
+    await waitFor(() => {
+      expect(document.querySelectorAll('circle').length).toBe(readingSpeed.length);
+    });
+
+    await user.click(screen.getByText('Deep reading'));
+    await waitFor(() => {
+      expect(document.querySelectorAll('circle').length).toBe(
+        readingSpeed.filter((d) => d.wpm < 150).length
+      );
+    });
+
+    await user.click(screen.getByText('Show All'));
+    await waitFor(() => {
+      expect(document.querySelectorAll('circle').length).toBe(readingSpeed.length);
     });
   });
 
