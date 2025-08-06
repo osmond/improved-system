@@ -21,20 +21,21 @@ afterEach(() => {
       render(<ReadingSpeedViolin />);
       expect(screen.getByLabelText('Morning')).toBeInTheDocument();
       expect(screen.getByLabelText('Evening')).toBeInTheDocument();
-      expect(screen.getByLabelText('Bandwidth')).toBeInTheDocument();
+      expect(screen.getByLabelText('Smoothing')).toBeInTheDocument();
       await waitFor(() => {
         const paths = document.querySelectorAll('path');
         expect(paths.length).toBeGreaterThan(0);
       });
     });
 
-    it('uses lower default bandwidth and slider range', () => {
+    it('uses preset smoothing options', () => {
       render(<ReadingSpeedViolin />);
-      const slider = screen.getByLabelText('Bandwidth');
-      expect(slider).toHaveValue('150');
-      expect(slider).toHaveAttribute('min', '50');
-      expect(slider).toHaveAttribute('max', '1000');
-      expect(slider).toHaveAttribute('step', '50');
+      const select = screen.getByLabelText('Smoothing');
+      expect(select).toHaveValue('300');
+      const optionValues = Array.from(select.querySelectorAll('option')).map(
+        (o) => o.value
+      );
+      expect(optionValues).toEqual(['100', '300', '600']);
     });
 
     it('applies period-specific colors', async () => {
