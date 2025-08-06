@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
+import { schemeTableau10 } from 'd3-scale-chromatic';
 import { brushX } from 'd3-brush';
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
@@ -14,8 +15,19 @@ const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 40;
 const MIN_HEIGHT = 120;
 
+const PATTERN_STYLES = [
+  'repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(0deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(90deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 2px, transparent 2px, transparent 4px)',
+  'repeating-linear-gradient(45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px)',
+  'repeating-linear-gradient(-45deg, rgba(0,0,0,0.4) 0, rgba(0,0,0,0.4) 1px, transparent 1px, transparent 2px)',
+];
 
-export default function ReadingTimeline({ sessions = [] }) {
+export default function ReadingTimeline({
+  sessions = [],
+  colorBlindFriendly = false,
+}) {
   const ref = useRef(null);
   const containerRef = useRef(null);
   const brushRef = useRef(null);
@@ -53,7 +65,9 @@ export default function ReadingTimeline({ sessions = [] }) {
     [sessions],
   );
   const colorScale = useMemo(() => {
-    const colors = Array.from({ length: 10 }, (_, i) => `hsl(var(--chart-${i + 1}))`);
+    const colors = titles.map(
+      (_, i) => schemeTableau10[i % schemeTableau10.length],
+    );
     return scaleOrdinal().domain(titles).range(colors);
   }, [titles]);
 
@@ -227,7 +241,7 @@ export default function ReadingTimeline({ sessions = [] }) {
             margin: '0.5rem 0',
           }}
         >
-          {titles.map((t) => (
+          {titles.map((t, idx) => (
             <li
               key={t}
               style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
@@ -238,6 +252,9 @@ export default function ReadingTimeline({ sessions = [] }) {
                   width: 12,
                   height: 12,
                   backgroundColor: colorScale(t),
+                  backgroundImage: colorBlindFriendly
+                    ? PATTERN_STYLES[idx % PATTERN_STYLES.length]
+                    : 'none',
                   display: 'inline-block',
                 }}
               />
