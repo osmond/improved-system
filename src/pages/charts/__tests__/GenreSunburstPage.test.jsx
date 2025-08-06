@@ -28,16 +28,43 @@ describe('GenreSunburstPage', () => {
 
     const user = userEvent.setup();
     render(<GenreSunburstPage />);
+    const sunburstButton = screen.getByRole('button', { name: /sunburst/i });
+    const icicleButton = screen.getByRole('button', { name: /icicle/i });
 
     expect(await screen.findByTestId('sunburst-layout')).toBeInTheDocument();
+    expect(sunburstButton).toHaveAttribute('aria-pressed', 'true');
+    expect(sunburstButton).toHaveClass('bg-primary', 'text-white');
+    expect(icicleButton).toHaveAttribute('aria-pressed', 'false');
+    expect(icicleButton).not.toHaveClass('bg-primary');
+    expect(icicleButton).not.toHaveClass('text-white');
     expect(screen.queryByTestId('icicle-layout')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: /icicle/i }));
+    await user.click(icicleButton);
     expect(screen.getByTestId('icicle-layout')).toBeInTheDocument();
+    expect(icicleButton).toHaveAttribute('aria-pressed', 'true');
+    expect(icicleButton).toHaveClass('bg-primary', 'text-white');
+    expect(sunburstButton).toHaveAttribute('aria-pressed', 'false');
+    expect(sunburstButton).not.toHaveClass('bg-primary');
+    expect(sunburstButton).not.toHaveClass('text-white');
     expect(screen.queryByTestId('sunburst-layout')).not.toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: /sunburst/i }));
+    await user.click(sunburstButton);
     expect(screen.getByTestId('sunburst-layout')).toBeInTheDocument();
+    expect(sunburstButton).toHaveAttribute('aria-pressed', 'true');
+    expect(sunburstButton).toHaveClass('bg-primary', 'text-white');
+    expect(icicleButton).toHaveAttribute('aria-pressed', 'false');
+    expect(icicleButton).not.toHaveClass('bg-primary');
+    expect(icicleButton).not.toHaveClass('text-white');
+  });
+
+  it('disables view buttons while loading', () => {
+    vi.spyOn(global, 'fetch').mockImplementation(() => new Promise(() => {}));
+
+    render(<GenreSunburstPage />);
+    const sunburstButton = screen.getByRole('button', { name: /sunburst/i });
+    const icicleButton = screen.getByRole('button', { name: /icicle/i });
+    expect(sunburstButton).toBeDisabled();
+    expect(icicleButton).toBeDisabled();
   });
 
   it('renders an error message when the fetch fails', async () => {

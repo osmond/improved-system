@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import GenreSunburst from '@/components/genre/GenreSunburst.jsx';
 import GenreIcicle from '@/components/genre/GenreIcicle.jsx';
 import { Skeleton } from '@/ui/skeleton';
+import { cn } from '@/lib/utils';
 
 export default function GenreSunburstPage() {
   const [view, setView] = useState('sunburst');
@@ -40,14 +41,24 @@ export default function GenreSunburstPage() {
         <button
           type="button"
           onClick={() => setView('sunburst')}
-          className="px-2 py-1 border rounded"
+          aria-pressed={view === 'sunburst'}
+          disabled={isLoading}
+          className={cn(
+            'px-2 py-1 border rounded',
+            view === 'sunburst' && 'bg-primary text-white',
+          )}
         >
           Sunburst
         </button>
         <button
           type="button"
           onClick={() => setView('icicle')}
-          className="px-2 py-1 border rounded"
+          aria-pressed={view === 'icicle'}
+          disabled={isLoading}
+          className={cn(
+            'px-2 py-1 border rounded',
+            view === 'icicle' && 'bg-primary text-white',
+          )}
         >
           Icicle
         </button>
