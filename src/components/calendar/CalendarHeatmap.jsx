@@ -213,6 +213,8 @@ function YearlyHeatmap({ data, maxMinutes }) {
           classForValue={classForValue}
           transformDayElement={transformDayElement}
           showMonthLabels={false}
+          className="w-full h-auto"
+          style={{ width: '100%' }}
         />
         <div
           className="flex flex-wrap items-center gap-2 mt-2 text-xs"
