@@ -19,8 +19,12 @@ afterEach(() => {
   describe('ReadingSpeedViolin', () => {
     it('renders controls and chart', async () => {
       render(<ReadingSpeedViolin />);
-      expect(screen.getByLabelText('Morning')).toBeInTheDocument();
-      expect(screen.getByLabelText('Evening')).toBeInTheDocument();
+      expect(
+        screen.getByRole('checkbox', { name: 'Morning' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('checkbox', { name: 'Evening' })
+      ).toBeInTheDocument();
       expect(screen.getByLabelText('Smoothing')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Show All/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Deep reading/i })).toBeInTheDocument();
