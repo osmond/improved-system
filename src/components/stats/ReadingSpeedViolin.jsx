@@ -184,6 +184,49 @@ export default function ReadingSpeedViolin() {
       ? x(maxDensity) * 0.3
       : catWidth * 0.3;
 
+    const legendData = [
+      { key: 'morning', label: 'Morning', visible: showMorning },
+      { key: 'evening', label: 'Evening', visible: showEvening },
+    ];
+
+    const legend = svg
+      .append('g')
+      .attr('class', 'legend')
+      .attr(
+        'transform',
+        `translate(${width - margin.right - 100},${margin.top})`
+      );
+
+    const legendItems = legend
+      .selectAll('g')
+      .data(legendData)
+      .enter()
+      .append('g')
+      .attr('transform', (_, i) => `translate(0, ${i * 20})`)
+      .style('cursor', 'pointer')
+      .on('click', (_, d) => {
+        if (d.key === 'morning') {
+          setShowMorning((s) => !s);
+        } else {
+          setShowEvening((s) => !s);
+        }
+      });
+
+    legendItems
+      .append('rect')
+      .attr('width', 12)
+      .attr('height', 12)
+      .attr('fill', (d) => color[d.key])
+      .attr('fill-opacity', (d) => (d.visible ? 1 : 0.3))
+      .attr('stroke', (d) => color[d.key]);
+
+    legendItems
+      .append('text')
+      .attr('x', 18)
+      .attr('y', 10)
+      .text((d) => d.label)
+      .attr('fill', '#000');
+
     periodOrder.forEach((period) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
@@ -322,24 +365,6 @@ export default function ReadingSpeedViolin() {
       {!loading && !error && data.length === 0 && (
         <p>No reading speed data available.</p>
       )}
-      <div>
-        <label>
-          <input
-            type="checkbox"
-            checked={showMorning}
-            onChange={(e) => setShowMorning(e.target.checked)}
-          />
-          Morning
-        </label>
-        <label>
-          <input
-            type="checkbox"
-            checked={showEvening}
-            onChange={(e) => setShowEvening(e.target.checked)}
-          />
-          Evening
-        </label>
-      </div>
       <div>
         <button onClick={() => setPreset('all')}>Show All</button>
         <button onClick={() => setPreset('deep')}>Deep reading (0-200 WPM)</button>
