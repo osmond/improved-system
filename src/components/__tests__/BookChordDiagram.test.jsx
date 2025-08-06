@@ -6,9 +6,9 @@ import BookChordDiagram from '../network/BookChordDiagram.jsx';
 
 const sampleData = {
   nodes: [
-    { id: 'a' },
-    { id: 'b' },
-    { id: 'c' }
+    { id: 'a', title: 'Book A' },
+    { id: 'b', title: 'Book B' },
+    { id: 'c', title: 'Book C' }
   ],
   links: [
     { source: 'a', target: 'b', weight: 1 },
@@ -17,10 +17,17 @@ const sampleData = {
 };
 
 describe('BookChordDiagram', () => {
-  it('renders the expected number of chords', async () => {
-    render(<BookChordDiagram data={sampleData} />);
+  it('renders chords, labels and tooltips', async () => {
+    const { container } = render(<BookChordDiagram data={sampleData} />);
     await waitFor(() => {
-      expect(screen.getAllByTestId('chord').length).toBe(sampleData.links.length);
+      expect(screen.getAllByTestId('chord')).toHaveLength(sampleData.links.length);
+      expect(screen.getAllByTestId('label')).toHaveLength(sampleData.nodes.length);
     });
+
+    const titles = Array.from(
+      container.querySelectorAll('path[data-testid="chord"] title')
+    ).map((t) => t.textContent);
+    expect(titles).toContain('Book A → Book B');
+    expect(titles).toContain('Book B → Book C');
   });
 });
