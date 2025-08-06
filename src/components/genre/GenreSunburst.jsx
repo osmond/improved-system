@@ -101,7 +101,12 @@ export default function GenreSunburst({ data }) {
     );
   }
 
-  const ancestors = currentNode ? currentNode.ancestors().reverse() : [];
+  const ancestors = currentNode
+    ? currentNode
+        .ancestors()
+        .reverse()
+        .filter((node) => node.data.name !== 'root')
+    : [];
 
   return (
     <div>

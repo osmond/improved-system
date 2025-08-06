@@ -1,12 +1,16 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import GenreIcicle from '../GenreIcicle';
 
 describe('GenreIcicle', () => {
   const data = {
     name: 'root',
-    children: [{ name: 'A', value: 1 }],
+    children: [
+      { name: 'A', value: 1 },
+      { name: 'B', value: 1 },
+    ],
   };
 
   beforeEach(() => {
@@ -35,6 +39,19 @@ describe('GenreIcicle', () => {
         screen.queryByTestId('genre-icicle-skeleton')
       ).not.toBeInTheDocument();
     });
+  });
+
+  it('updates breadcrumb without root on interactions', async () => {
+    const user = userEvent.setup();
+    const { container } = render(<GenreIcicle data={data} />);
+    const svg = container.querySelector('svg');
+    const rectA = svg.querySelector('rect[data-name="A"]');
+
+    await user.click(rectA);
+    await new Promise((r) => setTimeout(r, 800));
+
+    expect(screen.getByRole('button', { name: 'A' })).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: 'root' })).not.toBeInTheDocument();
   });
 });
 
