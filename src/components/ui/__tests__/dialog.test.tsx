@@ -2,6 +2,7 @@ import * as React from "react";
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import "@testing-library/jest-dom";
+import { vi } from "vitest";
 
 import { Dialog, DialogContentFullscreen, DialogTrigger } from "../dialog";
 import * as DialogPrimitive from "@radix-ui/react-dialog";
@@ -86,5 +87,22 @@ describe("Dialog", () => {
     await user.click(screen.getByText("open"));
 
     expect(screen.getByText("content")).toBeInTheDocument();
+  });
+
+  it("allows interacting with links when closed", async () => {
+    const user = userEvent.setup();
+    const handleClick = vi.fn();
+    render(
+      <>
+        <UncontrolledDialog />
+        <a href="#" onClick={handleClick}>
+          link
+        </a>
+      </>
+    );
+
+    await user.click(screen.getByText("link"));
+
+    expect(handleClick).toHaveBeenCalled();
   });
 });

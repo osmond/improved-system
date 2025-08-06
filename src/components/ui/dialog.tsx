@@ -5,7 +5,7 @@ import { cn } from "@/lib/utils";
 interface DialogProps
   extends React.ComponentPropsWithoutRef<typeof DialogPrimitive.Root> {}
 
-function Dialog({ open, onOpenChange, ...props }: DialogProps) {
+function Dialog({ open, onOpenChange, children, ...props }: DialogProps) {
   const [internalOpen, setInternalOpen] = React.useState(false);
 
   const handleOpenChange = (next: boolean) => {
@@ -20,7 +20,9 @@ function Dialog({ open, onOpenChange, ...props }: DialogProps) {
       open={open === undefined ? internalOpen : open}
       onOpenChange={handleOpenChange}
       {...props}
-    />
+    >
+      {children}
+    </DialogPrimitive.Root>
   );
 }
 const DialogTrigger = DialogPrimitive.Trigger;
