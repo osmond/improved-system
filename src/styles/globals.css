@@ -167,9 +167,14 @@
     --font-slab: "Georgia", "Times New Roman", serif;
   }
 
-html, body {
-  @apply bg-background text-foreground;
-}
+  html, body {
+    @apply bg-background text-foreground;
+  }
+
+  .react-calendar-heatmap {
+    width: 100%;
+    height: auto;
+  }
 }
 
 @layer utilities {
