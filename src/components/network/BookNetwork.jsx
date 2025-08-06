@@ -312,19 +312,28 @@ export default function BookNetwork({ data = graphData }) {
   return (
     <div>
       <div>
+        <label htmlFor="tag-input">Filter by tag</label>
         <input
+          id="tag-input"
           placeholder="Filter by tag"
           value={tag}
           onChange={(e) => setTag(e.target.value)}
         />
+        <label htmlFor="author-input">Filter by author</label>
         <input
+          id="author-input"
           placeholder="Filter by author"
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
         />
+        <button onClick={() => { setTag(''); setAuthor(''); setSelected(null); }}>
+          Clear filters
+        </button>
         {selected && (
           <div>
+            <label htmlFor="subgenre-input">Sub-genre</label>
             <input
+              id="subgenre-input"
               placeholder="Sub-genre"
               value={subgenre}
               onChange={(e) => setSubgenre(e.target.value)}
