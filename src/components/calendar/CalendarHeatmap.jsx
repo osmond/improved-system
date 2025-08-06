@@ -238,21 +238,22 @@ function YearlyHeatmap({ data }) {
           className="w-full h-auto"
           style={{ width: '100%', overflow: 'visible' }}
         />
-        <div
+        <ul
+          role="list"
           className="flex flex-wrap items-center gap-2 md:gap-3 mt-2 text-xs md:text-sm"
           data-testid="reading-legend"
         >
-          <div className="flex items-center gap-1" data-no-data>
+          <li className="flex items-center gap-1" data-no-data>
             <div className="w-3 h-3 border" />
             <span>No data</span>
-          </div>
+          </li>
           {categories.map((cat, idx) => {
             const rangeLabel =
               cat.max === Infinity
                 ? `${cat.min}+`
                 : `${cat.min}-${cat.max}`;
             return (
-              <div
+              <li
                 key={idx}
                 className="flex items-center gap-1"
                 data-legend-level
@@ -261,10 +262,10 @@ function YearlyHeatmap({ data }) {
                 <span>
                   {rangeLabel} min ({cat.label})
                 </span>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </TooltipProvider>
   );
