@@ -50,12 +50,12 @@ describe('CalendarHeatmap', () => {
 
     expect(container.querySelector('rect.reading-scale-1')).not.toBeNull();
     const swatches = legend.querySelectorAll('[data-legend-level]');
-    expect(swatches.length).toBe(5);
+    expect(swatches.length).toBe(4);
     expect(
       swatches[0].querySelector('div').classList.contains('reading-scale-1')
     ).toBe(true);
     expect(
-      swatches[4].querySelector('div').classList.contains('reading-scale-5')
+      swatches[3].querySelector('div').classList.contains('reading-scale-4')
     ).toBe(true);
     expect(legend.querySelector('[data-no-data]')).not.toBeNull();
   });
