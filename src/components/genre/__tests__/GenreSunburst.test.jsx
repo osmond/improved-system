@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import React from 'react';
 import GenreSunburst from '../GenreSunburst';
 import { hsl as d3hsl } from 'd3-color';
+import { vi } from 'vitest';
 
   describe('GenreSunburst', () => {
   const data = {
@@ -92,6 +93,18 @@ import { hsl as d3hsl } from 'd3-color';
       await user.click(pathA);
       await new Promise((r) => setTimeout(r, 800));
       expect(pathA.getAttribute('fill')).toBe(initialA);
+    });
+
+    it('falls back to default color when CSS variable is missing', () => {
+      document.documentElement.style.removeProperty('--chart-2');
+      const warnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      const { container } = render(<GenreSunburst data={data} />);
+      const pathB = container.querySelector('path[data-name="B"]');
+      const colorB = d3hsl(pathB.getAttribute('fill'));
+      expect(colorB.s).toBe(0);
+      expect(colorB.l).toBeCloseTo(0.5, 1);
+      expect(warnSpy).toHaveBeenCalled();
+      warnSpy.mockRestore();
     });
   });
 
