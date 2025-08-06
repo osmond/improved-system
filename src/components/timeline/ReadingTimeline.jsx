@@ -2,8 +2,7 @@ import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
 
-import { schemeTableau10 } from 'd3-scale-chromatic';
-import { brushX } from 'd3-brush';
+import { brushX, brushSelection } from 'd3-brush';
 
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
@@ -111,20 +110,6 @@ export default function ReadingTimeline({
   }, [sessionsWithCat]);
 
   const height = Math.max(MIN_HEIGHT, lanes * LANE_HEIGHT + LANE_PADDING);
-
-
-  const titles = useMemo(
-    () => Array.from(new Set(sessions.map((s) => s.title))),
-    [sessions],
-  );
-  const colorScale = useMemo(() => {
-    const colors = titles.map(
-      (_, i) => schemeTableau10[i % schemeTableau10.length],
-    );
-    return scaleOrdinal().domain(titles).range(colors);
-  }, [titles]);
-
-
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
@@ -371,7 +356,7 @@ export default function ReadingTimeline({
         </desc>
       </svg>
 
-      {titles.length > 0 && (
+      {legendTitles.length > 0 && showLegend && (
         <ul
           aria-label="Books"
           style={{
@@ -383,7 +368,7 @@ export default function ReadingTimeline({
             margin: '0.5rem 0',
           }}
         >
-          {titles.map((t, idx) => (
+          {legendTitles.map((t, idx) => (
             <li
               key={t}
               style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
@@ -398,30 +383,12 @@ export default function ReadingTimeline({
                     ? PATTERN_STYLES[idx % PATTERN_STYLES.length]
                     : 'none',
                   display: 'inline-block',
-
                 }}
-              >
-                {legendTitles.map((t) => (
-                  <li
-                    key={t}
-                    style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}
-                  >
-                    <span
-                      aria-hidden="true"
-                      style={{
-                        width: 12,
-                        height: 12,
-                        backgroundColor: colorScale(t),
-                        display: 'inline-block',
-                      }}
-                    />
-                    <span>{t}</span>
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
+              />
+              <span>{t}</span>
+            </li>
+          ))}
+        </ul>
       )}
       <button
         onClick={() => setShowLegend((v) => !v)}
