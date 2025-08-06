@@ -8,19 +8,22 @@ export default function useReadingSessions() {
 
   useEffect(() => {
     const controller = new AbortController();
+    const { signal } = controller;
 
-    getKindleSessions(controller.signal)
-      .then((d) => {
-        if (!controller.signal.aborted) setData(d);
-      })
-      .catch((err) => {
-        if (err.name !== 'AbortError' && !controller.signal.aborted) {
+    async function load() {
+      try {
+        const d = await getKindleSessions(signal);
+        if (!signal.aborted) setData(d);
+      } catch (err) {
+        if (err.name !== 'AbortError' && !signal.aborted) {
           setError(err);
         }
-      })
-      .finally(() => {
-        if (!controller.signal.aborted) setIsLoading(false);
-      });
+      } finally {
+        if (!signal.aborted) setIsLoading(false);
+      }
+    }
+
+    load();
 
     return () => controller.abort();
   }, []);
