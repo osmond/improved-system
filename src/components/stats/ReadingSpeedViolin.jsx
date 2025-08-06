@@ -60,10 +60,20 @@ export default function ReadingSpeedViolin() {
     const stats = {};
     periodOrder.forEach((period) => {
       const values = periods[period].map((d) => d.wpm);
+      const q1 = quantile(values, 0.25);
+      const q3 = quantile(values, 0.75);
+      const median = quantile(values, 0.5);
+      const iqr = q3 - q1;
+      const minVal = Math.min(...values);
+      const maxVal = Math.max(...values);
+      const lowerWhisker = Math.max(minVal, q1 - 1.5 * iqr);
+      const upperWhisker = Math.min(maxVal, q3 + 1.5 * iqr);
       stats[period] = {
-        median: quantile(values, 0.5),
-        q1: quantile(values, 0.25),
-        q3: quantile(values, 0.75),
+        median,
+        q1,
+        q3,
+        lowerWhisker,
+        upperWhisker,
       };
     });
 
@@ -149,32 +159,55 @@ export default function ReadingSpeedViolin() {
         .attr('d', areaGenerator)
         .attr('fill', fill);
 
-      const { q1, q3, median } = stats[period];
+      const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
       const q1Y = y(q1);
       const q3Y = y(q3);
       const medianY = y(median);
-      const boxWidth = x(maxDensity) * 0.3;
-      const medianHeight = 10;
+      const lowerWhiskerY = y(lowerWhisker);
+      const upperWhiskerY = y(upperWhisker);
+      const boxWidth = violinWidth;
+      const lineX1 = -violinWidth / 2;
+      const lineX2 = violinWidth / 2;
       const jitterWidth = x(maxDensity) * 0.3;
 
       // Interquartile range box
       g
         .append('rect')
-        .attr('x', -boxWidth / 2)
+        .attr('x', lineX1)
         .attr('y', q3Y)
         .attr('width', boxWidth)
         .attr('height', q1Y - q3Y)
         .attr('fill', fill)
         .attr('fill-opacity', 0.4)
-        .attr('stroke', fill);
+        .attr('stroke', fill)
+        .attr('stroke-width', 2);
 
       // Median line
       g
         .append('line')
-        .attr('x1', 0)
-        .attr('x2', 0)
-        .attr('y1', medianY - medianHeight / 2)
-        .attr('y2', medianY + medianHeight / 2)
+        .attr('x1', lineX1)
+        .attr('x2', lineX2)
+        .attr('y1', medianY)
+        .attr('y2', medianY)
+        .attr('stroke', fill)
+        .attr('stroke-width', 2);
+
+      // Whisker lines
+      g
+        .append('line')
+        .attr('x1', lineX1)
+        .attr('x2', lineX2)
+        .attr('y1', upperWhiskerY)
+        .attr('y2', upperWhiskerY)
+        .attr('stroke', fill)
+        .attr('stroke-width', 2);
+
+      g
+        .append('line')
+        .attr('x1', lineX1)
+        .attr('x2', lineX2)
+        .attr('y1', lowerWhiskerY)
+        .attr('y2', lowerWhiskerY)
         .attr('stroke', fill)
         .attr('stroke-width', 2);
 
