@@ -1,8 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { dashboardRoutes } from "@/routes";
-import { useIsMobile } from "@/hooks/use-mobile";
 import { Sheet, SheetContent, SheetTrigger } from "@/ui/sheet";
 import NavItems from "./NavItems";
 
@@ -29,19 +28,12 @@ function MobileMenuIcon({ open }: { open: boolean }) {
 
 export default function TopNavigation() {
   const [open, setOpen] = useState(false);
-  const isMobile = useIsMobile();
-
-  useEffect(() => {
-    if (!isMobile) {
-      setOpen(false);
-    }
-  }, [isMobile]);
 
   return (
     <nav className="flex items-center">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
-          <button className="md:hidden p-2" aria-expanded={open}>
+          <button className="p-2" aria-expanded={open}>
             <MobileMenuIcon open={open} />
             <span className="sr-only">Open navigation menu</span>
           </button>
@@ -50,11 +42,6 @@ export default function TopNavigation() {
           <NavItems groups={dashboardRoutes} orientation="vertical" />
         </SheetContent>
       </Sheet>
-      <NavItems
-        groups={dashboardRoutes}
-        orientation="horizontal"
-        className="hidden md:flex"
-      />
     </nav>
   );
 }
