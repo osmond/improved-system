@@ -181,4 +181,26 @@ describe('GenreSankey', () => {
       expect(tooltip).toHaveStyle({ display: 'none' });
     });
   });
+
+  it('does not change svg dimensions on re-render when container size is stable', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    const svg = container.querySelector('svg');
+    const initialWidth = svg.getAttribute('width');
+    const initialHeight = svg.getAttribute('height');
+
+    // Trigger a re-render that does not affect container size
+    fireEvent.change(screen.getByLabelText('Filter'), {
+      target: { value: 'Self-Help' },
+    });
+    fireEvent.change(screen.getByLabelText('Filter'), { target: { value: '' } });
+
+    await waitFor(() => {
+      const svg2 = container.querySelector('svg');
+      expect(svg2.getAttribute('width')).toBe(initialWidth);
+      expect(svg2.getAttribute('height')).toBe(initialHeight);
+    });
+  });
 });

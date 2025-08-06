@@ -9,6 +9,8 @@ import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
+  // Container specifically for the svg. The resize observer will measure this
+  // element so that changes to the svg itself do not affect the measurement.
   const containerRef = useRef(null);
   const tooltipRef = useRef(null);
   const zoomRef = useRef(null);
@@ -67,16 +69,20 @@ export default function GenreSankey() {
 
   useEffect(() => {
     const updateSize = () => {
-      if (containerRef.current) {
-        const { width, height } = containerRef.current.getBoundingClientRect();
-        setDimensions({
-          width: width || 600,
-          height: height || 400,
-        });
-      } else {
-        setDimensions({ width: window.innerWidth, height: window.innerHeight });
-      }
+      if (!containerRef.current) return;
+      const { width, height } = containerRef.current.getBoundingClientRect();
+      const newWidth = width || 600;
+      const newHeight = height || 400;
+      // Only update when the measured dimensions actually change. This avoids
+      // triggering React renders that would cause ResizeObserver to fire again.
+      setDimensions((prev) => {
+        if (prev.width !== newWidth || prev.height !== newHeight) {
+          return { width: newWidth, height: newHeight };
+        }
+        return prev;
+      });
     };
+
     updateSize();
     let observer;
     if (typeof ResizeObserver !== 'undefined') {
@@ -288,11 +294,16 @@ export default function GenreSankey() {
 
   return (
     <div
-      ref={containerRef}
-      style={{ position: 'relative', width: '100%', height: '100%' }}
+      style={{
+        position: 'relative',
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        flexDirection: 'column',
+      }}
     >
       <div>
-        <label>
+      <label>
           Start
           <input type="date" value={start} onChange={(e) => setStart(e.target.value)} />
         </label>
@@ -313,11 +324,16 @@ export default function GenreSankey() {
         <button onClick={handleResetZoom}>Reset Zoom</button>
         <button onClick={() => setFilter('')}>Clear Filter</button>
       </div>
-      {(!data || data.length === 0) ? (
-        <Skeleton className="h-64 w-full" data-testid="genre-sankey-skeleton" />
-      ) : (
-        <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
-      )}
+      <div
+        ref={containerRef}
+        style={{ position: 'relative', width: '100%', height: '100%', flex: 1 }}
+      >
+        {(!data || data.length === 0) ? (
+          <Skeleton className="h-full w-full" data-testid="genre-sankey-skeleton" />
+        ) : (
+          <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
+        )}
+      </div>
       <div
         ref={tooltipRef}
         data-testid="tooltip"
