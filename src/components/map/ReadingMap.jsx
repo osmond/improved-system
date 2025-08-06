@@ -15,7 +15,7 @@ import { feature } from 'topojson-client';
 import { geoContains } from 'd3-geo';
 import { scaleSequential } from 'd3-scale';
 import { interpolateHsl } from 'd3-interpolate';
-import { fetchSessionLocations } from '@/services/locationData';
+import { fetchSessionLocations, getSessionLocations } from '@/services/locationData';
 import statesTopo from '@/lib/us-states.json';
 import worldTopo from '@/lib/world-countries.json';
 import { Skeleton } from '@/ui/skeleton';
@@ -24,6 +24,7 @@ export default function ReadingMap() {
   const [locations, setLocations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [message, setMessage] = useState('');
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [title, setTitle] = useState('');
@@ -53,7 +54,18 @@ export default function ReadingMap() {
         setLocations(sorted);
         if (!data.length) setError('No location data available');
       })
-      .catch(() => setError('Failed to load location data'))
+      .catch(() => {
+        const local = getSessionLocations();
+        const sorted = [...local].sort(
+          (a, b) => new Date(a.start) - new Date(b.start)
+        );
+        setLocations(sorted);
+        if (local.length) {
+          setMessage('Showing local location data');
+        } else {
+          setError('Failed to load location data');
+        }
+      })
       .finally(() => setLoading(false));
   }, []);
 
@@ -238,6 +250,11 @@ export default function ReadingMap() {
 
   return (
     <div>
+      {message && (
+        <div data-testid="message" role="status">
+          {message}
+        </div>
+      )}
       <div style={{ marginBottom: '1rem' }}>
         <input
           type="date"

@@ -7,8 +7,6 @@ import {
   act,
 } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
-import ReadingMap from '../ReadingMap';
-
 vi.mock('react-leaflet', () => {
   const LayersControl = ({ children }) => <div>{children}</div>;
   LayersControl.BaseLayer = ({ children }) => <div>{children}</div>;
@@ -51,28 +49,39 @@ vi.mock('../HeatmapLayer', () => ({
 }));
 
 vi.mock('@/services/locationData', () => ({
-  fetchSessionLocations: () =>
-    Promise.resolve([
-      {
-        start: '2020-01-01T00:00:00Z',
-        title: 'Alpha',
-        latitude: 0,
-        longitude: 0,
-      },
-      {
-        start: '2021-06-01T00:00:00Z',
-        title: 'Beta',
-        latitude: 1,
-        longitude: 1,
-      },
-      {
-        start: '2022-01-01T00:00:00Z',
-        title: 'Gamma',
-        latitude: 2,
-        longitude: 2,
-      },
-    ]),
+  fetchSessionLocations: vi.fn(),
+  getSessionLocations: vi.fn(),
 }));
+
+import ReadingMap from '../ReadingMap';
+import {
+  fetchSessionLocations,
+  getSessionLocations,
+} from '@/services/locationData';
+
+const remoteData = [
+  {
+    start: '2020-01-01T00:00:00Z',
+    title: 'Alpha',
+    latitude: 0,
+    longitude: 0,
+  },
+  {
+    start: '2021-06-01T00:00:00Z',
+    title: 'Beta',
+    latitude: 1,
+    longitude: 1,
+  },
+  {
+    start: '2022-01-01T00:00:00Z',
+    title: 'Gamma',
+    latitude: 2,
+    longitude: 2,
+  },
+];
+
+fetchSessionLocations.mockResolvedValue(remoteData);
+getSessionLocations.mockReturnValue(remoteData);
 
 describe('ReadingMap', () => {
   it('renders map with controls', async () => {
@@ -158,5 +167,15 @@ describe('ReadingMap', () => {
     expect(screen.getByTestId('heatmap')).toBeTruthy();
     expect(screen.queryAllByTestId('marker')).toHaveLength(0);
     expect(screen.queryByTestId('cluster')).toBeNull();
+  });
+
+  it('falls back to local data when fetch fails', async () => {
+    fetchSessionLocations.mockRejectedValueOnce(new Error('fail'));
+    render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+    expect(getSessionLocations).toHaveBeenCalled();
+    await waitFor(() =>
+      expect(screen.getByTestId('message').textContent).toContain('local')
+    );
   });
 });
