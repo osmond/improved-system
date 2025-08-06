@@ -145,7 +145,13 @@ export default function ReadingTimeline({
 
   useEffect(() => {
     const svg = select(ref.current);
-    svg.selectAll('*').remove();
+    svg
+      .selectAll('*')
+      .filter(function () {
+        const tag = this.tagName.toLowerCase();
+        return tag !== 'title' && tag !== 'desc';
+      })
+      .remove();
     if (!parsedSessions.length) return;
 
     const longest = parsedSessions.reduce((a, b) =>
@@ -355,8 +361,15 @@ export default function ReadingTimeline({
     <div ref={containerRef}>
       <svg
         ref={ref}
+        role="img"
+        aria-labelledby="reading-timeline-title reading-timeline-desc"
         style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
-      />
+      >
+        <title id="reading-timeline-title">Reading timeline chart</title>
+        <desc id="reading-timeline-desc">
+          Drag the brush below the chart to zoom into a specific time range.
+        </desc>
+      </svg>
 
       {titles.length > 0 && (
         <ul
