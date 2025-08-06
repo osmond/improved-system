@@ -345,6 +345,13 @@ export const kindleRoutes = withIcon(BookOpen, [
     component: "@/pages/charts/BookNetwork",
     tags: ["kindle"],
   },
+  {
+    to: "/dashboard/kindle/bookshelf",
+    label: "Bookshelf by Year",
+    description: "Book covers organized chronologically",
+    component: "@/pages/charts/BookshelfByYear",
+    tags: ["kindle"],
+  },
 ]);
 
 const kindleRouteGroup: DashboardRouteGroup = {
