@@ -7,15 +7,27 @@ export default function GenreSunburstPage() {
   const [view, setView] = useState('sunburst');
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     let isMounted = true;
-    import('@/data/kindle/genre-hierarchy.json').then((module) => {
-      if (isMounted) {
-        setData(module.default);
-        setIsLoading(false);
-      }
-    });
+    fetch('/api/kindle/genre-hierarchy')
+      .then((res) => {
+        if (!res.ok) throw new Error('Network response was not ok');
+        return res.json();
+      })
+      .then((json) => {
+        if (isMounted) {
+          setData(json);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (isMounted) {
+          setError('Failed to load genre hierarchy');
+          setIsLoading(false);
+        }
+      });
     return () => {
       isMounted = false;
     };
@@ -45,6 +57,8 @@ export default function GenreSunburstPage() {
           className="h-[400px] w-full"
           data-testid="genre-hierarchy-skeleton"
         />
+      ) : error ? (
+        <div role="alert">{error}</div>
       ) : view === 'sunburst' ? (
         <GenreSunburst data={data} />
       ) : (
