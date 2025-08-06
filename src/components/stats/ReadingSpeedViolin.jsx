@@ -203,12 +203,26 @@ export default function ReadingSpeedViolin() {
       .enter()
       .append('g')
       .attr('transform', (_, i) => `translate(0, ${i * 20})`)
+      .attr('role', 'checkbox')
+      .attr('tabindex', 0)
+      .attr('aria-label', (d) => d.label)
+      .attr('aria-checked', (d) => d.visible)
       .style('cursor', 'pointer')
       .on('click', (_, d) => {
         if (d.key === 'morning') {
           setShowMorning((s) => !s);
         } else {
           setShowEvening((s) => !s);
+        }
+      })
+      .on('keydown', (event, d) => {
+        if (event.key === 'Enter' || event.key === ' ') {
+          event.preventDefault();
+          if (d.key === 'morning') {
+            setShowMorning((s) => !s);
+          } else {
+            setShowEvening((s) => !s);
+          }
         }
       });
 
