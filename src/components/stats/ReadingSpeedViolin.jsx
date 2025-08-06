@@ -13,12 +13,30 @@ export const color = {
 export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
+  const containerRef = useRef(null);
+  const [dimensions, setDimensions] = useState({ width: 700, height: 450 });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
   const [bandwidth, setBandwidth] = useState(150);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new ResizeObserver((entries) => {
+      const entry = entries[0];
+      if (entry) {
+        const width = entry.contentRect.width;
+        if (width > 0) {
+          const height = width * 0.64;
+          setDimensions({ width, height });
+        }
+      }
+    });
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -42,8 +60,10 @@ export default function ReadingSpeedViolin() {
   }, []);
 
   useEffect(() => {
+    const { width, height } = dimensions;
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
+    if (!width || !height) return;
 
     // Pre-compute values for each period so scales stay consistent
     const periods = {
@@ -77,8 +97,7 @@ export default function ReadingSpeedViolin() {
       };
     });
 
-    const width = 700;
-    const height = 450;
+    const isSmall = width < 600;
     const margin = { top: 20, right: 20, bottom: 60, left: 80 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
@@ -153,11 +172,13 @@ export default function ReadingSpeedViolin() {
         .style('display', show ? null : 'none');
       const fill = color[period];
 
-      g
-        .append('path')
-        .datum(density)
-        .attr('d', areaGenerator)
-        .attr('fill', fill);
+      if (!isSmall) {
+        g
+          .append('path')
+          .datum(density)
+          .attr('d', areaGenerator)
+          .attr('fill', fill);
+      }
 
       const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
       const q1Y = y(q1);
@@ -168,7 +189,7 @@ export default function ReadingSpeedViolin() {
       const boxWidth = violinWidth;
       const lineX1 = -violinWidth / 2;
       const lineX2 = violinWidth / 2;
-      const jitterWidth = x(maxDensity) * 0.3;
+      const jitterWidth = isSmall ? violinWidth * 0.1 : x(maxDensity) * 0.3;
 
       // Interquartile range box
       g
@@ -240,7 +261,7 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
-  }, [data, showMorning, showEvening, bandwidth]);
+  }, [data, showMorning, showEvening, bandwidth, dimensions]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -267,7 +288,14 @@ export default function ReadingSpeedViolin() {
           Evening
         </label>
       </div>
-      <svg ref={svgRef} width="700" height="450" />
+      <div ref={containerRef} style={{ width: '100%' }}>
+        <svg
+          ref={svgRef}
+          width={dimensions.width}
+          height={dimensions.height}
+          style={{ width: '100%', height: 'auto' }}
+        />
+      </div>
       <div
         ref={tooltipRef}
         style={{
