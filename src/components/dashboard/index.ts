@@ -8,10 +8,8 @@ export * from "./AcwrGauge";
 export * from "./ChartSelectionContext";
 export { default as WeeklyVolumeChart } from "./WeeklyVolumeChart";
 export { default as TopInsights } from "./TopInsights";
-export { default as BehavioralWeatherWidget } from "./BehavioralWeatherWidget";
 export { default as TimeInBedChart } from "./TimeInBedChart";
 export { default as ReadingProbabilityTimeline } from "./ReadingProbabilityTimeline";
-export { default as DeltaSpotlightTiles } from "./DeltaSpotlightTiles";
 
 export { default as CommuteRank } from "./CommuteRank";
 
@@ -41,7 +39,4 @@ export { default as RouteNoveltyMap } from "./RouteNoveltyMap";
 
 export { default as SocialEngagementCard } from "./SocialEngagementCard";
 export { default as MapView } from "./MapView";
-
-export { default as FavoriteVisualizations } from "./FavoriteVisualizations";
-
 
