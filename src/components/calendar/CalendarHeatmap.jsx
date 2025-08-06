@@ -155,6 +155,11 @@ function YearlyHeatmap({ data }) {
       <Tooltip>
         <TooltipTrigger
           asChild
+          onClick={(e) =>
+            e.target.dispatchEvent(
+              new MouseEvent('mouseover', { bubbles: true })
+            )
+          }
           onFocus={(e) =>
             e.target.dispatchEvent(
               new MouseEvent('mouseover', { bubbles: true })
