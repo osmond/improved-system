@@ -1,4 +1,4 @@
-import json, time, os, numpy as np, pandas as pd
+import json, time, os, pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from hmmlearn.hmm import GaussianHMM
