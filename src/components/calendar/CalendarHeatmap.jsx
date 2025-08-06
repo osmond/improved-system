@@ -187,11 +187,19 @@ function YearlyHeatmap({ data, maxMinutes }) {
             y2={bottomY - 12}
             className={boundaryClass}
           />
-          <text x={element.props.x} y={topY - 2} className="text-xs">
+          <text
+            x={element.props.x}
+            y={topY - 4}
+            className="text-sm font-medium"
+          >
             {monthNames[date.getMonth()]}
           </text>
           {cell}
-          <text x={element.props.x} y={bottomY} className="text-xs">
+          <text
+            x={element.props.x}
+            y={bottomY}
+            className="text-sm font-medium"
+          >
             {monthTotals[key]}
           </text>
         </g>
