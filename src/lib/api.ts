@@ -12,6 +12,7 @@ export { calculateRouteSimilarity } from "./routeMetrics";
 export type { LocationVisit } from "./locationStore";
 import dailyReadingData from "@/data/kindle/daily-stats.json";
 import sessionData from "../data/kindle/sessions.json";
+import asinTitleMap from "../data/kindle/asin-title-map.json";
 
 export type Activity = {
   id: number;
@@ -1696,7 +1697,10 @@ export interface KindleSession {
 }
 
 export async function getKindleSessions(): Promise<KindleSession[]> {
-  return sessionData;
+  return sessionData.map((s) => ({
+    ...s,
+    title: (asinTitleMap as Record<string, string>)[s.asin] ?? s.asin,
+  }));
 }
 
 // ----- Focus sessions -----

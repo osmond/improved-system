@@ -176,4 +176,15 @@ describe('ReadingTimeline', () => {
     const swatch = items[0].querySelector('span[aria-hidden="true"]');
     expect(swatch).toHaveStyle({ backgroundColor: 'hsl(var(--chart-1))' });
   });
+
+  it('displays titles in bar tooltips and legend labels', () => {
+    const { container, getByRole } = render(
+      <ReadingTimeline sessions={sessions} />,
+    );
+    const svg = container.querySelector('svg');
+    const rects = svg.querySelectorAll('rect[height="30"]');
+    expect(rects[0].querySelector('title')?.textContent).toContain('Test Book 1');
+    const list = getByRole('list', { name: /books/i });
+    expect(within(list).getByText('Test Book 1')).toBeInTheDocument();
+  });
 });
