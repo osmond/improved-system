@@ -16,12 +16,14 @@ interface NavItemsProps {
   groups: DashboardRouteGroup[];
   orientation?: "vertical" | "horizontal";
   className?: string;
+  closeOnLinkClick?: boolean;
 }
 
 export default function NavItems({
   groups,
   orientation = "vertical",
   className,
+  closeOnLinkClick = false,
 }: NavItemsProps) {
   const vertical = orientation === "vertical";
   const [query, setQuery] = React.useState("");
@@ -85,7 +87,7 @@ export default function NavItems({
         <span>{label}</span>
       </NavLink>
     );
-    return vertical ? <SheetClose asChild>{link}</SheetClose> : link;
+    return closeOnLinkClick ? <SheetClose asChild>{link}</SheetClose> : link;
   };
 
   if (vertical) {
