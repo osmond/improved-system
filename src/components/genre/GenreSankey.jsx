@@ -260,7 +260,10 @@ export default function GenreSankey() {
   }, [data, dimensions]);
 
   return (
-    <div ref={containerRef} style={{ position: 'relative' }}>
+    <div
+      ref={containerRef}
+      style={{ position: 'relative', width: '100%', height: '100%' }}
+    >
       <div>
         <label>
           Start
