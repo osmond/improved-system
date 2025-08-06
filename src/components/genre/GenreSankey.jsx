@@ -3,6 +3,7 @@ import { select } from 'd3-selection';
 import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeSet3 } from 'd3-scale-chromatic';
+import { zoom, zoomIdentity } from 'd3-zoom';
 import transitions from '@/data/kindle/genre-transitions.json';
 import { Skeleton } from '@/ui/skeleton';
 
@@ -10,6 +11,7 @@ export default function GenreSankey() {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const tooltipRef = useRef(null);
+  const zoomRef = useRef(null);
   const [data, setData] = useState(null);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
@@ -26,6 +28,12 @@ export default function GenreSankey() {
         monthlyCounts: d.monthlyCounts || Array(12).fill(0),
       })),
     );
+  };
+
+  const handleReset = () => {
+    if (zoomRef.current) {
+      zoomRef.current();
+    }
   };
 
   useEffect(() => {
@@ -120,14 +128,35 @@ export default function GenreSankey() {
     const barFill = schemeSet3[0];
 
 
-    svg.attr('viewBox', `0 0 ${width} ${height}`).attr('width', width).attr('height', height);
+    svg
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('width', width)
+      .attr('height', height);
 
     const defs = svg.append('defs');
+    const g = svg.append('g');
+
+    const zoomBehavior = zoom()
+      .scaleExtent([0.5, 4])
+      .translateExtent([
+        [0, 0],
+        [width, height],
+      ])
+      .on('zoom', (event) => {
+        g.attr('transform', event.transform);
+      });
+
+    svg.call(zoomBehavior);
+    zoomRef.current = () =>
+      svg
+        .transition()
+        .duration(750)
+        .call(zoomBehavior.transform, zoomIdentity);
 
     const values = l.map((d) => d.value).sort((a, b) => a - b);
     const cutoff = values[Math.floor(values.length * 0.95)] || 0;
 
-    const link = svg
+    const link = g
       .append('g')
       .selectAll('path')
       .data(l)
@@ -191,7 +220,7 @@ export default function GenreSankey() {
 
     // annotate major flows
     const labelData = l.filter((d) => d.value >= cutoff);
-    svg
+    g
       .append('g')
       .selectAll('text')
       .data(labelData)
@@ -202,7 +231,7 @@ export default function GenreSankey() {
       .attr('font-size', '10px')
       .text((d) => `${d.source.name} → ${d.target.name}: ${d.value}`);
 
-    const node = svg
+    const node = g
       .append('g')
       .selectAll('g')
       .data(n)
@@ -242,6 +271,7 @@ export default function GenreSankey() {
           <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
         </label>
         <button onClick={fetchData}>Apply</button>
+        <button onClick={handleReset}>Reset View</button>
       </div>
       {(!data || data.length === 0) ? (
         <Skeleton className="h-64 w-full" data-testid="genre-sankey-skeleton" />
