@@ -1,4 +1,5 @@
 import { render, screen, within, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
@@ -37,6 +38,28 @@ describe('CalendarHeatmap', () => {
     expect(screen.getByTestId('calendar-heatmap-skeleton')).not.toBeNull();
   });
 
+  it('renders an error message when data fails to load', () => {
+    useDailyReading.mockReturnValueOnce({
+      data: null,
+      error: new Error('oops'),
+      isLoading: false,
+    });
+    render(<CalendarHeatmap />);
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'Unable to load reading data.'
+    );
+  });
+
+  it('renders a message when no reading data is available', () => {
+    useDailyReading.mockReturnValueOnce({
+      data: [],
+      error: null,
+      isLoading: false,
+    });
+    render(<CalendarHeatmap />);
+    expect(screen.getByText('No reading data available')).not.toBeNull();
+  });
+
   it('renders heatmap cells', () => {
     const { container } = render(<CalendarHeatmap />);
     const svg = container.querySelector('svg.react-calendar-heatmap');
@@ -47,9 +70,10 @@ describe('CalendarHeatmap', () => {
     const { container, getByTestId } = render(<CalendarHeatmap />);
     const legend = getByTestId('reading-legend');
     expect(legend).not.toBeNull();
+    expect(legend.tagName).toBe('UL');
 
     expect(container.querySelector('rect.reading-scale-1')).not.toBeNull();
-    const swatches = legend.querySelectorAll('[data-legend-level]');
+    const swatches = legend.querySelectorAll('li[data-legend-level]');
     expect(swatches.length).toBe(4);
     expect(
       swatches[0].querySelector('div').classList.contains('reading-scale-1')
@@ -57,7 +81,7 @@ describe('CalendarHeatmap', () => {
     expect(
       swatches[3].querySelector('div').classList.contains('reading-scale-4')
     ).toBe(true);
-    expect(legend.querySelector('[data-no-data]')).not.toBeNull();
+    expect(legend.querySelector('li[data-no-data]')).not.toBeNull();
   });
 
   it('renders month and quarter boundaries', () => {
@@ -189,30 +213,43 @@ describe('CalendarHeatmap', () => {
       { date: '2023-12-31', minutes: 30, pages: 10 },
       { date: '2024-01-01', minutes: 5, pages: 2 },
     ];
-    const { container, getByText } = render(
+    const { container, getByRole } = render(
       <CalendarHeatmap data={twoYearData} />
     );
     const svgs = container.querySelectorAll('svg.react-calendar-heatmap');
-    expect(svgs.length).toBe(2);
-    getByText('2023');
-    getByText('2024');
-
-    const [svg2023, svg2024] = svgs;
-      expect(svg2023.querySelector('rect.reading-scale-3')).not.toBeNull();
-      expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
+    expect(svgs.length).toBe(1);
+    getByRole('combobox', { name: /year/i });
   });
 
-  it('can render a single heatmap when multiYear is false', () => {
+  it('can toggle to show all years', async () => {
+    const user = userEvent.setup();
     const twoYearData = [
       { date: '2023-12-31', minutes: 30, pages: 10 },
       { date: '2024-01-01', minutes: 5, pages: 2 },
     ];
-    const { container, queryByText } = render(
-      <CalendarHeatmap data={twoYearData} multiYear={false} />
+    const { container, getByText } = render(
+      <CalendarHeatmap data={twoYearData} />
+    );
+    await user.click(screen.getByRole('button', { name: /show all years/i }));
+    const svgs = container.querySelectorAll('svg.react-calendar-heatmap');
+    expect(svgs.length).toBe(2);
+    getByText('2023');
+    getByText('2024');
+    const [svg2023, svg2024] = svgs;
+    expect(svg2023.querySelector('rect.reading-scale-3')).not.toBeNull();
+    expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
+  });
+
+  it('defaults to multi-year view when multiYear is true', () => {
+    const twoYearData = [
+      { date: '2023-12-31', minutes: 30, pages: 10 },
+      { date: '2024-01-01', minutes: 5, pages: 2 },
+    ];
+    const { container, getByRole } = render(
+      <CalendarHeatmap data={twoYearData} multiYear />
     );
     const svgs = container.querySelectorAll('svg.react-calendar-heatmap');
-    expect(svgs.length).toBe(1);
-    expect(queryByText('2023')).toBeNull();
-    expect(queryByText('2024')).toBeNull();
+    expect(svgs.length).toBe(2);
+    getByRole('button', { name: /show selected year/i });
   });
 });

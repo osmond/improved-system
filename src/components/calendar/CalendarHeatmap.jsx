@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, useState } from 'react';
 import Heatmap from 'react-calendar-heatmap';
 import 'react-calendar-heatmap/dist/styles.css';
 import useDailyReading from '@/hooks/useDailyReading';
@@ -9,6 +9,8 @@ import {
   TooltipProvider,
 } from '@/ui/tooltip';
 import { Skeleton } from '@/ui/skeleton';
+import { SimpleSelect } from '@/ui/select';
+import { Button } from '@/ui/button';
 import {
   getISOWeek,
   getISOWeekYear,
@@ -238,21 +240,22 @@ function YearlyHeatmap({ data }) {
           className="w-full h-auto"
           style={{ width: '100%', overflow: 'visible' }}
         />
-        <div
+        <ul
+          role="list"
           className="flex flex-wrap items-center gap-2 md:gap-3 mt-2 text-xs md:text-sm"
           data-testid="reading-legend"
         >
-          <div className="flex items-center gap-1" data-no-data>
+          <li className="flex items-center gap-1" data-no-data>
             <div className="w-3 h-3 border" />
             <span>No data</span>
-          </div>
+          </li>
           {categories.map((cat, idx) => {
             const rangeLabel =
               cat.max === Infinity
                 ? `${cat.min}+`
                 : `${cat.min}-${cat.max}`;
             return (
-              <div
+              <li
                 key={idx}
                 className="flex items-center gap-1"
                 data-legend-level
@@ -261,22 +264,27 @@ function YearlyHeatmap({ data }) {
                 <span>
                   {rangeLabel} min ({cat.label})
                 </span>
-              </div>
+              </li>
             );
           })}
-        </div>
+        </ul>
       </div>
     </TooltipProvider>
   );
 }
 
 export default function CalendarHeatmap({ data: propData, multiYear }) {
-  const { data: hookData, isLoading } = useDailyReading();
+  const { data: hookData, isLoading, error } = useDailyReading();
   const data = propData || hookData;
   if (isLoading) {
     return <Skeleton className="h-64" data-testid="calendar-heatmap-skeleton" />;
   }
-  if (!data || data.length === 0) return null;
+  if (error) {
+    return <div role="alert">Unable to load reading data.</div>;
+  }
+  if (!data || data.length === 0) {
+    return <div>No reading data available</div>;
+  }
 
   const dataByYear = data.reduce((acc, d) => {
     const year = new Date(d.date).getFullYear();
@@ -285,22 +293,56 @@ export default function CalendarHeatmap({ data: propData, multiYear }) {
     return acc;
   }, {});
 
-  const years = Object.keys(dataByYear).sort();
-  const isMultiYear = multiYear ?? years.length > 1;
+  const years = Object.keys(dataByYear)
+    .map(Number)
+    .sort((a, b) => a - b);
 
-  if (!isMultiYear) {
-    const year = years[0];
-    return <YearlyHeatmap data={dataByYear[year]} />;
+  const [selectedYear, setSelectedYear] = useState(
+    String(years[years.length - 1])
+  );
+  const [showAll, setShowAll] = useState(multiYear ?? false);
+
+  if (years.length === 1 && !showAll) {
+    return <YearlyHeatmap data={dataByYear[years[0]]} />;
   }
 
   return (
     <div>
-      {years.map((year) => (
-        <div key={year} className="mb-8">
-          <div className="mb-2 font-semibold">{year}</div>
-          <YearlyHeatmap data={dataByYear[year]} />
+      {years.length > 1 && (
+        <div className="flex items-center gap-2 mb-4">
+          {!showAll && (
+            <SimpleSelect
+              value={selectedYear}
+              onValueChange={setSelectedYear}
+              options={years.map((y) => ({
+                value: String(y),
+                label: String(y),
+              }))}
+              label="Year"
+            />
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowAll((prev) => !prev)}
+          >
+            {showAll ? 'Show selected year' : 'Show all years'}
+          </Button>
         </div>
-      ))}
+      )}
+      {showAll
+        ? years.map((year) => (
+            <div key={year} className="mb-8">
+              <div className="mb-2 font-semibold">{year}</div>
+              <YearlyHeatmap data={dataByYear[year]} />
+            </div>
+          ))
+        : (
+            <div>
+              <div className="mb-2 font-semibold">{selectedYear}</div>
+              <YearlyHeatmap data={dataByYear[selectedYear]} />
+            </div>
+          )}
     </div>
   );
 }

@@ -64,7 +64,7 @@ describe('ReadingTimeline', () => {
   });
 
   it('updates bar widths when brushed and resets via control', () => {
-    const { container, getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    const { container, queryByRole, getByRole } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const brush = svg.__brush;
     const viewWidth = Number(svg.getAttribute('viewBox').split(' ')[2]);
@@ -77,6 +77,9 @@ describe('ReadingTimeline', () => {
     expect(axisLabel.textContent).toBe('Date');
     let tickLines = svg.querySelectorAll('.x-axis .tick line');
     expect(Number(tickLines[0].getAttribute('y2'))).toBeLessThan(0);
+
+    // Reset button should be hidden initially
+    expect(queryByRole('button', { name: /reset/i })).toBeNull();
 
     act(() => {
       select(svg.querySelector('.brush')).call(brush.move, [0, viewWidth / 2]);
@@ -100,7 +103,7 @@ describe('ReadingTimeline', () => {
     rect = svg.querySelector('rect');
     const resetWidth = Number(rect.getAttribute('width'));
     expect(resetWidth).toBeCloseTo(initialWidth);
-    expect(resetBtn).toBeDisabled();
+    expect(queryByRole('button', { name: /reset/i })).toBeNull();
   });
 
   it('renders axis ticks and annotations', () => {
@@ -108,8 +111,8 @@ describe('ReadingTimeline', () => {
     const svg = container.querySelector('svg');
     const ticks = svg.querySelectorAll('.x-axis .tick');
     expect(ticks.length).toBeGreaterThan(0);
-    // axis uses monthly ticks with abbreviated month names
-    expect(ticks[0].textContent).toMatch(/^[A-Za-z]{3}$/);
+    // axis uses quarterly ticks with month labels and occasional year
+    expect(ticks[0].textContent).toMatch(/[A-Za-z]{3}/);
     const axisLabel = svg.querySelector('.x-axis .axis-label');
     expect(axisLabel).toBeInTheDocument();
     expect(axisLabel.textContent).toBe('Date');
@@ -170,6 +173,7 @@ describe('ReadingTimeline', () => {
 
   it('renders a legend for books with matching colors', () => {
     const { getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    fireEvent.click(getByRole('button', { name: /show books/i }));
     const list = getByRole('list', { name: /books/i });
     const items = within(list).getAllByRole('listitem');
     expect(items).toHaveLength(2);
@@ -178,16 +182,32 @@ describe('ReadingTimeline', () => {
     expect(swatch).toHaveStyle({ backgroundColor: schemeTableau10[0] });
   });
 
+  it('supports keyboard interaction with the brush', () => {
+    const { container, getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    const svg = container.querySelector('svg');
+    const brushG = svg.querySelector('.brush');
+    expect(brushG.getAttribute('tabindex')).toBe('0');
+
+    // move selection with keyboard and apply with Enter
+    fireEvent.keyDown(brushG, { key: 'ArrowRight' });
+    fireEvent.keyDown(brushG, { key: 'Enter' });
+
+    const resetBtn = getByRole('button', { name: /reset/i });
+    expect(resetBtn).toBeEnabled();
+  });
+
   it('displays titles in bar tooltips and legend labels', () => {
     const { container, getByRole } = render(
       <ReadingTimeline sessions={sessions} />,
     );
+    fireEvent.click(getByRole('button', { name: /show books/i }));
     const svg = container.querySelector('svg');
     const rects = svg.querySelectorAll('rect[height="30"]');
     expect(rects[0].querySelector('title')?.textContent).toContain('Test Book 1');
     const list = getByRole('list', { name: /books/i });
     expect(within(list).getByText('Test Book 1')).toBeInTheDocument();
   });
+
 
   it('can show patterned legend swatches for color-blind users', () => {
     const { getByRole } = render(
@@ -199,5 +219,6 @@ describe('ReadingTimeline', () => {
     expect(swatch).toHaveStyle({
       backgroundImage: expect.stringContaining('repeating-linear-gradient'),
     });
+
   });
 });
