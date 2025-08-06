@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { select } from 'd3-selection';
+import { select, pointer } from 'd3-selection';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
@@ -171,13 +171,30 @@ export default function ReadingSpeedViolin() {
         .attr('transform', `translate(${center},0)`)
         .style('display', show ? null : 'none');
       const fill = color[period];
+      const tooltip = select(tooltipRef.current);
 
       if (!isSmall) {
         g
           .append('path')
           .datum(density)
           .attr('d', areaGenerator)
-          .attr('fill', fill);
+          .attr('fill', fill)
+          .on('mousemove', (event) => {
+            const [, yPos] = pointer(event);
+            const wpmVal = y.invert(yPos);
+            const nearest = density.reduce((a, b) =>
+              Math.abs(b[0] - wpmVal) < Math.abs(a[0] - wpmVal) ? b : a
+            );
+            const rect = svgRef.current.getBoundingClientRect();
+            tooltip
+              .style('opacity', 1)
+              .html(
+                `WPM: ${wpmVal.toFixed(0)}<br/>Density: ${nearest[1].toFixed(3)}`
+              )
+              .style('left', event.clientX - rect.left + 10 + 'px')
+              .style('top', event.clientY - rect.top + 10 + 'px');
+          })
+          .on('mouseout', () => tooltip.style('opacity', 0));
       }
 
       const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
@@ -233,7 +250,6 @@ export default function ReadingSpeedViolin() {
         .attr('stroke-width', 2);
 
       // Plot individual reading speed points with slight horizontal jitter
-      const tooltip = select(tooltipRef.current);
       values.forEach((v) => {
         g
           .append('circle')
@@ -244,10 +260,18 @@ export default function ReadingSpeedViolin() {
           .attr('fill-opacity', 0.6)
           .on('mouseover', (event) => {
             const rect = svgRef.current.getBoundingClientRect();
+            const meta = Object.entries(v)
+              .filter(([k]) => !['wpm', 'start', 'period'].includes(k))
+              .map(
+                ([k, val]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${val}`
+              )
+              .join('<br/>');
             tooltip
               .style('opacity', 1)
               .html(
-                `WPM: ${v.wpm}<br/>${new Date(v.start).toLocaleString()}`
+                `WPM: ${v.wpm}<br/>${new Date(v.start).toLocaleString()}${
+                  meta ? '<br/>' + meta : ''
+                }`
               )
               .style('left', event.clientX - rect.left + 10 + 'px')
               .style('top', event.clientY - rect.top + 10 + 'px');
@@ -302,10 +326,12 @@ export default function ReadingSpeedViolin() {
           position: 'absolute',
           pointerEvents: 'none',
           opacity: 0,
-          background: 'white',
+          background: 'rgba(255,255,255,0.9)',
+          color: '#000',
           border: '1px solid #ccc',
           padding: '4px',
           borderRadius: '4px',
+          boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
         }}
       />
       <div>
