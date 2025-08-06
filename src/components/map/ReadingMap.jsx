@@ -245,6 +245,13 @@ export default function ReadingMap() {
     return 'markers';
   }, [mode, zoom]);
 
+  function handleFeature(feature, layer) {
+    const count = feature.properties.count || 0;
+    layer.bindTooltip(
+      `${feature.properties.name}: ${count} title${count === 1 ? '' : 's'}`
+    );
+  }
+
   if (loading)
     return <Skeleton className="h-[480px] w-full" data-testid="loading" />;
 
@@ -376,6 +383,7 @@ export default function ReadingMap() {
             color: 'hsl(var(--background))',
             fillOpacity: 0.7,
           })}
+          onEachFeature={handleFeature}
         />
         <Legend colorScale={colorScale} maxCount={maxCount} />
         {computedMode === 'heatmap' && <HeatmapLayer points={points} />}
