@@ -110,8 +110,8 @@ describe('ReadingTimeline', () => {
     const svg = container.querySelector('svg');
     const ticks = svg.querySelectorAll('.x-axis .tick');
     expect(ticks.length).toBeGreaterThan(0);
-    // axis uses monthly ticks with abbreviated month names
-    expect(ticks[0].textContent).toMatch(/^[A-Za-z]{3}$/);
+    // axis uses quarterly ticks with month labels and occasional year
+    expect(ticks[0].textContent).toMatch(/[A-Za-z]{3}/);
     const axisLabel = svg.querySelector('.x-axis .axis-label');
     expect(axisLabel).toBeInTheDocument();
     expect(axisLabel.textContent).toBe('Date');
@@ -172,6 +172,7 @@ describe('ReadingTimeline', () => {
 
   it('renders a legend for books with matching colors', () => {
     const { getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    fireEvent.click(getByRole('button', { name: /show books/i }));
     const list = getByRole('list', { name: /books/i });
     const items = within(list).getAllByRole('listitem');
     expect(items).toHaveLength(2);
@@ -198,10 +199,25 @@ describe('ReadingTimeline', () => {
     const { container, getByRole } = render(
       <ReadingTimeline sessions={sessions} />,
     );
+    fireEvent.click(getByRole('button', { name: /show books/i }));
     const svg = container.querySelector('svg');
     const rects = svg.querySelectorAll('rect[height="30"]');
     expect(rects[0].querySelector('title')?.textContent).toContain('Test Book 1');
     const list = getByRole('list', { name: /books/i });
     expect(within(list).getByText('Test Book 1')).toBeInTheDocument();
+  });
+
+  it('filters sessions based on search', async () => {
+    const { getByPlaceholderText, container, getByRole } = render(
+      <ReadingTimeline sessions={sessions} />,
+    );
+    fireEvent.click(getByRole('button', { name: /show books/i }));
+    const input = getByPlaceholderText(/search/i);
+    await act(async () => {
+      fireEvent.change(input, { target: { value: 'Book 1' } });
+    });
+    const svg = container.querySelector('svg');
+    const rects = svg.querySelectorAll('rect[height="30"]');
+    expect(rects).toHaveLength(1);
   });
 });
