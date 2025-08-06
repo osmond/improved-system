@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, it, expect, vi, afterEach } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
 import '@testing-library/jest-dom';
 import GenreSunburstPage from '../GenreSunburst.jsx';
 
@@ -13,19 +13,8 @@ vi.mock('@/components/genre/GenreIcicle.jsx', () => ({
   default: () => <div data-testid="icicle-layout" />,
 }));
 
-const mockData = { name: 'root', children: [] };
-
 describe('GenreSunburstPage', () => {
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
   it('toggles between sunburst and icicle layouts', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockData),
-    });
-
     const user = userEvent.setup();
     render(<GenreSunburstPage />);
     const sunburstButton = screen.getByRole('button', { name: /sunburst/i });
@@ -57,37 +46,12 @@ describe('GenreSunburstPage', () => {
     expect(icicleButton).not.toHaveClass('text-white');
   });
 
-  it('displays chart description', async () => {
-    vi.spyOn(global, 'fetch').mockResolvedValue({
-      ok: true,
-      json: () => Promise.resolve(mockData),
-    });
-
+  it('displays chart description', () => {
     render(<GenreSunburstPage />);
     expect(
       screen.getByText(
         /each slice represents time spent reading in that genre/i
       )
-    ).toBeInTheDocument();
-  });
-
-  it('disables view buttons while loading', () => {
-    vi.spyOn(global, 'fetch').mockImplementation(() => new Promise(() => {}));
-
-    render(<GenreSunburstPage />);
-    const sunburstButton = screen.getByRole('button', { name: /sunburst/i });
-    const icicleButton = screen.getByRole('button', { name: /icicle/i });
-    expect(sunburstButton).toBeDisabled();
-    expect(icicleButton).toBeDisabled();
-  });
-
-  it('renders an error message when the fetch fails', async () => {
-    vi.spyOn(global, 'fetch').mockRejectedValue(new Error('API error'));
-
-    render(<GenreSunburstPage />);
-
-    expect(
-      await screen.findByText(/failed to load genre hierarchy/i)
     ).toBeInTheDocument();
   });
 });

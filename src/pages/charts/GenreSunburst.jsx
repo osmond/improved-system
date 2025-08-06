@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import GenreSunburst from '@/components/genre/GenreSunburst.jsx';
 import GenreIcicle from '@/components/genre/GenreIcicle.jsx';
+import hierarchy from '@/data/kindle/genre-hierarchy.json';
 import { Skeleton } from '@/ui/skeleton';
 import { cn } from '@/lib/utils';
 
@@ -8,30 +9,10 @@ export default function GenreSunburstPage() {
   const [view, setView] = useState('sunburst');
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
 
   useEffect(() => {
-    let isMounted = true;
-    fetch('/api/kindle/genre-hierarchy')
-      .then((res) => {
-        if (!res.ok) throw new Error('Network response was not ok');
-        return res.json();
-      })
-      .then((json) => {
-        if (isMounted) {
-          setData(json);
-          setIsLoading(false);
-        }
-      })
-      .catch(() => {
-        if (isMounted) {
-          setError('Failed to load genre hierarchy');
-          setIsLoading(false);
-        }
-      });
-    return () => {
-      isMounted = false;
-    };
+    setData(hierarchy);
+    setIsLoading(false);
   }, []);
 
   return (
@@ -72,8 +53,6 @@ export default function GenreSunburstPage() {
           className="h-[400px] w-full"
           data-testid="genre-hierarchy-skeleton"
         />
-      ) : error ? (
-        <div role="alert">{error}</div>
       ) : view === 'sunburst' ? (
         <GenreSunburst data={data} />
       ) : (
