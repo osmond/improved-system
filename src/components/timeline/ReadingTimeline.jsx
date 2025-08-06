@@ -215,6 +215,11 @@ export default function ReadingTimeline({ sessions = [] }) {
         ref={ref}
         style={{ width: '100%', height: height + BRUSH_HEIGHT + AXIS_HEIGHT }}
       />
+      <p
+        style={{ fontSize: '0.875rem', color: '#555', margin: '0.5rem 0' }}
+      >
+        Drag across the timeline to zoom; use Reset to return.
+      </p>
       {titles.length > 0 && (
         <ul
           aria-label="Books"
@@ -246,9 +251,11 @@ export default function ReadingTimeline({ sessions = [] }) {
           ))}
         </ul>
       )}
-      <button onClick={reset} disabled={!zoomed} aria-label="Reset zoom">
-        Reset
-      </button>
+      {zoomed && (
+        <button onClick={reset} aria-label="Reset zoom">
+          Reset
+        </button>
+      )}
     </div>
   );
 }

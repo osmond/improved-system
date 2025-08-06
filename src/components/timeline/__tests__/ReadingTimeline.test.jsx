@@ -63,7 +63,7 @@ describe('ReadingTimeline', () => {
   });
 
   it('updates bar widths when brushed and resets via control', () => {
-    const { container, getByRole } = render(<ReadingTimeline sessions={sessions} />);
+    const { container, queryByRole, getByRole } = render(<ReadingTimeline sessions={sessions} />);
     const svg = container.querySelector('svg');
     const brush = svg.__brush;
     const viewWidth = Number(svg.getAttribute('viewBox').split(' ')[2]);
@@ -76,6 +76,9 @@ describe('ReadingTimeline', () => {
     expect(axisLabel.textContent).toBe('Date');
     let tickLines = svg.querySelectorAll('.x-axis .tick line');
     expect(Number(tickLines[0].getAttribute('y2'))).toBeLessThan(0);
+
+    // Reset button should be hidden initially
+    expect(queryByRole('button', { name: /reset/i })).toBeNull();
 
     act(() => {
       select(svg.querySelector('.brush')).call(brush.move, [0, viewWidth / 2]);
@@ -99,7 +102,7 @@ describe('ReadingTimeline', () => {
     rect = svg.querySelector('rect');
     const resetWidth = Number(rect.getAttribute('width'));
     expect(resetWidth).toBeCloseTo(initialWidth);
-    expect(resetBtn).toBeDisabled();
+    expect(queryByRole('button', { name: /reset/i })).toBeNull();
   });
 
   it('renders axis ticks and annotations', () => {
