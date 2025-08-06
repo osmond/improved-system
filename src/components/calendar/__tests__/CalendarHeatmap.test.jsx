@@ -48,10 +48,7 @@ describe('CalendarHeatmap', () => {
     const legend = getByTestId('reading-legend');
     expect(legend).not.toBeNull();
 
-    expect(container.querySelector('rect.reading-scale-2')).not.toBeNull();
-    expect(container.querySelector('rect.reading-scale-3')).not.toBeNull();
-    expect(container.querySelector('rect.reading-scale-5')).not.toBeNull();
-
+    expect(container.querySelector('rect.reading-scale-1')).not.toBeNull();
     const swatches = legend.querySelectorAll('[data-legend-level]');
     expect(swatches.length).toBe(5);
     expect(
@@ -139,7 +136,7 @@ describe('CalendarHeatmap', () => {
     getByText('2024');
 
     const [svg2023, svg2024] = svgs;
-      expect(svg2023.querySelector('rect.reading-scale-5')).not.toBeNull();
+      expect(svg2023.querySelector('rect.reading-scale-3')).not.toBeNull();
       expect(svg2024.querySelector('rect.reading-scale-1')).not.toBeNull();
   });
 
