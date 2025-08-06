@@ -67,9 +67,9 @@ export default function ReadingSpeedViolin() {
       };
     });
 
-    const width = 400;
-    const height = 300;
-    const margin = { top: 10, right: 10, bottom: 40, left: 60 };
+    const width = 700;
+    const height = 450;
+    const margin = { top: 20, right: 20, bottom: 60, left: 80 };
     const innerWidth = width - margin.left - margin.right;
     const innerHeight = height - margin.top - margin.bottom;
     const xCat = scaleBand()
@@ -234,7 +234,7 @@ export default function ReadingSpeedViolin() {
           Evening
         </label>
       </div>
-      <svg ref={svgRef} width="400" height="300" />
+      <svg ref={svgRef} width="700" height="450" />
       <div
         ref={tooltipRef}
         style={{
