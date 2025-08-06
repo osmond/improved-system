@@ -7,6 +7,7 @@ import {
   GeoJSON,
   useMap,
   Tooltip,
+  Polyline,
 } from 'react-leaflet';
 import L from 'leaflet';
 import MarkerClusterGroup from 'react-leaflet-markercluster';
@@ -226,7 +227,8 @@ export default function ReadingMap() {
   }, [maxCount]);
 
   const points = useMemo(() => {
-    return filtered
+    return [...filtered]
+      .sort((a, b) => new Date(a.start) - new Date(b.start))
       .slice(0, currentIndex + 1)
       .map((loc) => [loc.latitude, loc.longitude]);
   }, [filtered, currentIndex]);
@@ -367,6 +369,10 @@ export default function ReadingMap() {
         />
         <Legend colorScale={colorScale} maxCount={maxCount} />
         {computedMode === 'heatmap' && <HeatmapLayer points={points} />}
+        <Polyline
+          positions={points}
+          pathOptions={{ color: 'hsl(var(--chart-2))', weight: 4 }}
+        />
         {computedMode === 'cluster' && (
           <MarkerClusterGroup>
             {filtered.slice(0, currentIndex + 1).map((loc, idx) => (
