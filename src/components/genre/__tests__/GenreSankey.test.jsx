@@ -62,6 +62,25 @@ describe('GenreSankey', () => {
     expect(container.querySelectorAll('path').length).not.toBe(initialCount);
   });
 
+  it('filters data by genre name', async () => {
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    const initialCount = container.querySelectorAll('path').length;
+    fireEvent.change(screen.getByLabelText('Filter'), {
+      target: { value: 'Self-Help' },
+    });
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBe(4);
+    });
+    expect(container.querySelectorAll('path').length).toBeLessThan(initialCount);
+    fireEvent.click(screen.getByText('Clear Filter'));
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBe(initialCount);
+    });
+  });
+
   it('renders link gradients transitioning between node colors', async () => {
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
