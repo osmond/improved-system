@@ -345,6 +345,13 @@ export const kindleRoutes = withIcon(BookOpen, [
     component: "@/pages/charts/BookNetwork",
     tags: ["kindle"],
   },
+  {
+    to: "/dashboard/kindle/book-progress-spiral",
+    label: "Book Progress Spirals",
+    description: "Spiral chart of book progress over time",
+    component: "@/pages/charts/BookProgressSpiral",
+    tags: ["kindle"],
+  },
 ]);
 
 const kindleRouteGroup: DashboardRouteGroup = {
