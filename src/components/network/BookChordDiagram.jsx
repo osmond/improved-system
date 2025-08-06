@@ -29,15 +29,37 @@ export default function BookChordDiagram({ data = graphData }) {
       .append('g')
       .attr('transform', `translate(${width / 2},${height / 2})`);
 
-    g.append('g')
-      .selectAll('path')
+    const group = g
+      .append('g')
+      .selectAll('g')
       .data(chords.groups)
-      .join('path')
+      .join('g');
+
+    group
+      .append('path')
       .attr('fill', (d) => color(d.index))
       .attr('stroke', (d) => color(d.index))
       .attr('d', arc().innerRadius(innerRadius).outerRadius(outerRadius));
 
-    g.append('g')
+    group
+      .append('text')
+      .each((d) => (d.angle = (d.startAngle + d.endAngle) / 2))
+      .attr('dy', '.35em')
+      .attr(
+        'transform',
+        (d) =>
+          `rotate(${(d.angle * 180) / Math.PI - 90}) translate(${
+            outerRadius + 5
+          }) ${d.angle > Math.PI ? 'rotate(180)' : ''}`
+      )
+      .attr('text-anchor', (d) => (d.angle > Math.PI ? 'end' : 'start'))
+      .text(
+        (d) => data.nodes[d.index].title || data.nodes[d.index].id || ''
+      )
+      .attr('data-testid', 'label');
+
+    const chordPaths = g
+      .append('g')
       .selectAll('path')
       .data(chords)
       .join('path')
@@ -46,6 +68,21 @@ export default function BookChordDiagram({ data = graphData }) {
       .attr('d', ribbon().radius(innerRadius))
       .attr('opacity', 0.7)
       .attr('data-testid', 'chord');
+
+    chordPaths
+      .append('title')
+      .text(
+        (d) =>
+          `${
+            data.nodes[d.source.index].title ||
+            data.nodes[d.source.index].id ||
+            ''
+          } → ${
+            data.nodes[d.target.index].title ||
+            data.nodes[d.target.index].id ||
+            ''
+          }`
+      );
   }, [data]);
 
   return <svg ref={svgRef} width={600} height={400}></svg>;
