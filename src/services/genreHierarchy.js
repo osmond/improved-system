@@ -1,4 +1,5 @@
 const asinTitleMap = require('../data/kindle/asin-title-map.json');
+const asinSubgenreMap = require('../data/kindle/asin-subgenre-map.json');
 
 function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
   const genreByAsin = {};
@@ -7,7 +8,7 @@ function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
     const genre = g.Genre;
     if (asin && genre && !genreByAsin[asin]) genreByAsin[asin] = genre;
   }
-  const subgenreByAsin = {};
+  const subgenreByAsin = { ...asinSubgenreMap };
   for (const t of tags) {
     if (t['Tag Source Group'] !== 'genre') continue;
     const asin = t.ASIN;
