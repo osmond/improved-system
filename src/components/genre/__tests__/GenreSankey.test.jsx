@@ -31,6 +31,7 @@ describe('GenreSankey', () => {
   it('filters data when dates are applied', async () => {
     const filtered = [{ source: 'A', target: 'B', count: 1 }];
     global.fetch = vi.fn().mockResolvedValue({
+      ok: true,
       json: () => Promise.resolve(filtered),
     });
 
@@ -60,6 +61,58 @@ describe('GenreSankey', () => {
       expect(container.querySelectorAll('path').length).toBe(filtered.length);
     });
     expect(container.querySelectorAll('path').length).not.toBe(initialCount);
+  });
+
+  it('disables Apply button while loading', async () => {
+    let resolveFetch;
+    global.fetch = vi.fn().mockImplementation(
+      () =>
+        new Promise((res) => {
+          resolveFetch = res;
+        }),
+    );
+
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    fireEvent.change(screen.getByLabelText('Start'), {
+      target: { value: '2024-01-01' },
+    });
+    fireEvent.change(screen.getByLabelText('End'), {
+      target: { value: '2024-01-31' },
+    });
+    const apply = screen.getByText('Apply');
+    fireEvent.click(apply);
+    await waitFor(() => {
+      expect(apply).toBeDisabled();
+    });
+    resolveFetch({
+      ok: true,
+      json: () =>
+        Promise.resolve([{ source: 'A', target: 'B', count: 1 }]),
+    });
+    await waitFor(() => {
+      expect(apply).not.toBeDisabled();
+    });
+  });
+
+  it('shows an error message if fetch fails', async () => {
+    global.fetch = vi.fn().mockRejectedValue(new Error('Network error'));
+    const { container } = render(<GenreSankey />);
+    await waitFor(() => {
+      expect(container.querySelectorAll('path').length).toBeGreaterThan(0);
+    });
+    fireEvent.change(screen.getByLabelText('Start'), {
+      target: { value: '2024-01-01' },
+    });
+    fireEvent.change(screen.getByLabelText('End'), {
+      target: { value: '2024-01-31' },
+    });
+    fireEvent.click(screen.getByText('Apply'));
+    await waitFor(() => {
+      expect(screen.getByRole('alert')).toHaveTextContent('Network error');
+    });
   });
 
   it('filters data by genre name', async () => {

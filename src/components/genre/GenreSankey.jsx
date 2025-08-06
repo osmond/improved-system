@@ -20,18 +20,31 @@ export default function GenreSankey() {
   const [end, setEnd] = useState('');
   const [filter, setFilter] = useState('');
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const fetchData = async () => {
-    const res = await fetch(
-      `/api/kindle/genre-transitions?start=${start}&end=${end}`,
-    );
-    const json = await res.json();
-    const mapped = json.map((d) => ({
-      ...d,
-      monthlyCounts: d.monthlyCounts || Array(12).fill(0),
-    }));
-    setRawData(mapped);
-    setData(mapped);
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(
+        `/api/kindle/genre-transitions?start=${start}&end=${end}`,
+      );
+      if (!res.ok) {
+        throw new Error('Failed to fetch data');
+      }
+      const json = await res.json();
+      const mapped = json.map((d) => ({
+        ...d,
+        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+      }));
+      setRawData(mapped);
+      setData(mapped);
+    } catch (err) {
+      setError(err.message || 'Failed to fetch data');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const handleResetZoom = () => {
@@ -320,7 +333,7 @@ export default function GenreSankey() {
             placeholder="Genre name"
           />
         </label>
-        <button onClick={fetchData}>Apply</button>
+        <button onClick={fetchData} disabled={loading}>Apply</button>
         <button onClick={handleResetZoom}>Reset Zoom</button>
         <button onClick={() => setFilter('')}>Clear Filter</button>
       </div>
@@ -328,8 +341,13 @@ export default function GenreSankey() {
         ref={containerRef}
         style={{ position: 'relative', width: '100%', height: '100%', flex: 1 }}
       >
-        {(!data || data.length === 0) ? (
-          <Skeleton className="h-full w-full" data-testid="genre-sankey-skeleton" />
+        {error ? (
+          <div role="alert">{error}</div>
+        ) : loading || !data || data.length === 0 ? (
+          <Skeleton
+            className="h-full w-full"
+            data-testid="genre-sankey-skeleton"
+          />
         ) : (
           <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
         )}
