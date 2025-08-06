@@ -38,12 +38,8 @@ export default function TopNavigation() {
             <span className="sr-only">Open navigation menu</span>
           </button>
         </SheetTrigger>
-        <SheetContent side="left" className="flex h-full p-4">
-          <NavItems
-            groups={dashboardRoutes}
-            orientation="vertical"
-            className="h-full"
-          />
+        <SheetContent side="left" className="p-4">
+          <NavItems groups={dashboardRoutes} orientation="vertical" />
         </SheetContent>
       </Sheet>
     </nav>

@@ -47,28 +47,3 @@ describe("NavItems Accordion", () => {
     expect(trigger).toHaveAttribute("aria-expanded", "false");
   });
 });
-
-describe("NavItems layout", () => {
-  it("places groups after top links and anchors them to the bottom", () => {
-    render(
-      <MemoryRouter>
-        <NavItems groups={groups} orientation="vertical" />
-      </MemoryRouter>,
-    );
-
-    const root = screen.getByRole("list");
-    const dashboardLink = screen.getByRole("link", { name: "Dashboard" });
-    const groupTrigger = screen.getByRole("button", { name: "Group" });
-
-    // Dashboard link should appear before the group trigger in the DOM
-    expect(
-      dashboardLink.compareDocumentPosition(groupTrigger) &
-        Node.DOCUMENT_POSITION_FOLLOWING,
-    ).toBeTruthy();
-
-    // Groups should be wrapped in a container anchored to the bottom
-    const groupContainer = groupTrigger.closest("li");
-    expect(groupContainer).toHaveClass("mt-auto");
-    expect(root.lastElementChild).toBe(groupContainer);
-  });
-});

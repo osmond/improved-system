@@ -53,31 +53,29 @@ export default function NavItems({
 
   if (vertical) {
     return (
-      <ul className={cn("flex h-full flex-col gap-4", className)}>
-        <li>{renderLink("/", "Dashboard")}</li>
-        <li className="mt-auto">
-          <Accordion type="multiple" className="w-full">
-            {groups.map((group) => {
-              const Icon = group.icon;
-              return (
-                <AccordionItem key={group.label} value={group.label}>
-                  <AccordionTrigger className="group flex w-full items-center gap-2 px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
-                    {Icon && <Icon className="h-4 w-4" aria-hidden="true" />}
-                    <span>{group.label}</span>
-                  </AccordionTrigger>
-                  <AccordionContent>
-                    <ul className="flex flex-col gap-2 pl-4">
-                      {group.items.map((item) => (
-                        <li key={item.to}>{renderLink(item.to, item.label)}</li>
-                      ))}
-                    </ul>
-                  </AccordionContent>
-                </AccordionItem>
-              );
-            })}
-          </Accordion>
-        </li>
-      </ul>
+      <div className={cn("flex flex-col gap-4", className)}>
+        {renderLink("/", "Dashboard")}
+        <Accordion type="multiple" className="w-full">
+          {groups.map((group) => {
+            const Icon = group.icon;
+            return (
+              <AccordionItem key={group.label} value={group.label}>
+                <AccordionTrigger className="group flex w-full items-center gap-2 px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground">
+                  {Icon && <Icon className="h-4 w-4" aria-hidden="true" />}
+                  <span>{group.label}</span>
+                </AccordionTrigger>
+                <AccordionContent>
+                  <ul className="flex flex-col gap-2 pl-4">
+                    {group.items.map((item) => (
+                      <li key={item.to}>{renderLink(item.to, item.label)}</li>
+                    ))}
+                  </ul>
+                </AccordionContent>
+              </AccordionItem>
+            );
+          })}
+        </Accordion>
+      </div>
     );
   }
 
