@@ -81,7 +81,7 @@ describe('CalendarHeatmap', () => {
     });
   });
 
-  it('positions month labels within the visible area', () => {
+  it('positions month labels above the grid and totals below', () => {
     const { container } = render(<CalendarHeatmap />);
     const svg = container.querySelector('svg.react-calendar-heatmap');
     expect(svg).not.toBeNull();
@@ -92,13 +92,21 @@ describe('CalendarHeatmap', () => {
       )
     );
 
+    const totalEls = Array.from(svg.querySelectorAll('text')).filter((el) =>
+      /^\d+$/.test(el.textContent || '')
+    );
+
     const cellHeight = parseFloat(svg.querySelector('rect').getAttribute('height'));
     const heatmapHeight = cellHeight * 7;
 
     monthLabelEls.forEach((label) => {
       const y = parseFloat(label.getAttribute('y'));
-      expect(y).toBeGreaterThanOrEqual(0);
-      expect(y).toBeLessThanOrEqual(heatmapHeight);
+      expect(y).toBeLessThan(0);
+    });
+
+    totalEls.forEach((total) => {
+      const y = parseFloat(total.getAttribute('y'));
+      expect(y).toBeGreaterThan(heatmapHeight);
     });
   });
 
@@ -123,6 +131,28 @@ describe('CalendarHeatmap', () => {
     within(tooltip).getByText('Jan 2, 2024');
     within(tooltip).getByText('10 min');
     within(tooltip).getByTestId('sparkline');
+  });
+
+  it('shows tooltip when interacting with days that have month labels and totals', async () => {
+    const user = userEvent.setup();
+    const { container, getByText } = render(<CalendarHeatmap />);
+    // Ensure month label and total are present
+    getByText('Jan');
+    getByText('15');
+
+    const day = container.querySelector('rect[data-date="2024-01-01"]');
+    expect(day).not.toBeNull();
+
+    await user.hover(day);
+    let tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 1, 2024');
+    within(tooltip).getByText('5 min');
+    await user.unhover(day);
+
+    fireEvent.focus(day);
+    tooltip = await screen.findByRole('tooltip');
+    within(tooltip).getByText('Jan 1, 2024');
+    within(tooltip).getByText('5 min');
   });
 
   it('dispatches mouseover when clicking a cell', () => {
