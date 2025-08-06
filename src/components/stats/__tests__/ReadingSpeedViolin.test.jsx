@@ -1,4 +1,4 @@
-import { render, screen, waitFor } from '@testing-library/react';
+import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import React from 'react';
 import { vi } from 'vitest';
 import ReadingSpeedViolin, { color } from '../ReadingSpeedViolin';
@@ -41,45 +41,93 @@ afterEach(() => {
     it('applies period-specific colors', async () => {
       const { container } = render(<ReadingSpeedViolin />);
 
-    await waitFor(() => {
-      expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
+      await waitFor(() => {
+        expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
+      });
+
+      const colors = Object.values(color);
+
+      const pathFills = Array.from(container.querySelectorAll('path')).map((el) =>
+        el.getAttribute('fill')
+      );
+      colors.forEach((c) => {
+        expect(pathFills).toContain(c);
+      });
+
+      Array.from(container.querySelectorAll('rect')).forEach((el) => {
+        expect(colors).toContain(el.getAttribute('stroke'));
+        expect(colors).toContain(el.getAttribute('fill'));
+      });
+
+      const lineStrokes = Array.from(container.querySelectorAll('line')).map(
+        (el) => el.getAttribute('stroke')
+      );
+      colors.forEach((c) => {
+        expect(lineStrokes).toContain(c);
+      });
+
+      Array.from(container.querySelectorAll('circle')).forEach((el) => {
+        expect(colors).toContain(el.getAttribute('fill'));
+      });
     });
 
-    const colors = Object.values(color);
+    it('shows metadata in tooltip', async () => {
+      const mockData = [
+        {
+          start: '2020-01-01T00:00:00Z',
+          asin: 'TEST',
+          wpm: 250,
+          period: 'morning',
+          highlights: 3,
+          duration: 1.5,
+        },
+      ];
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      });
 
-    const pathFills = Array.from(container.querySelectorAll('path')).map((el) =>
-      el.getAttribute('fill')
-    );
-    colors.forEach((c) => {
-      expect(pathFills).toContain(c);
+      render(<ReadingSpeedViolin />);
+
+      await waitFor(() => {
+        expect(document.querySelector('circle')).toBeInTheDocument();
+      });
+
+      const circle = document.querySelector('circle');
+      fireEvent.mouseOver(circle);
+
+      await waitFor(() => {
+        const tooltip = document.querySelector('[style*="opacity: 1"]');
+        expect(tooltip.innerHTML).toContain('Highlights: 3');
+        expect(tooltip.innerHTML).toContain('Duration: 1.5');
+      });
     });
 
-    Array.from(container.querySelectorAll('rect')).forEach((el) => {
-      expect(colors).toContain(el.getAttribute('stroke'));
-      expect(colors).toContain(el.getAttribute('fill'));
+    it('displays density on violin hover', async () => {
+      render(<ReadingSpeedViolin />);
+
+      await waitFor(() => {
+      expect(document.querySelector('path[fill]:not([fill="none"])')).toBeInTheDocument();
     });
 
-    const lineStrokes = Array.from(container.querySelectorAll('line')).map(
-      (el) => el.getAttribute('stroke')
-    );
-    colors.forEach((c) => {
-      expect(lineStrokes).toContain(c);
+      const path = document.querySelector('path[fill]:not([fill="none"])');
+      fireEvent.mouseMove(path);
+
+      await waitFor(() => {
+        const tooltip = document.querySelector('[style*="opacity: 1"]');
+        expect(tooltip.innerHTML).toMatch(/Density:/);
+      });
     });
 
-    Array.from(container.querySelectorAll('circle')).forEach((el) => {
-      expect(colors).toContain(el.getAttribute('fill'));
+    it('falls back to local data when fetch fails', async () => {
+      global.fetch.mockRejectedValueOnce(new Error('Network error'));
+      render(<ReadingSpeedViolin />);
+
+      await waitFor(() => {
+        const paths = document.querySelectorAll('path');
+        expect(paths.length).toBeGreaterThan(0);
+      });
+
+      expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
-  });
-
-  it('falls back to local data when fetch fails', async () => {
-    global.fetch.mockRejectedValueOnce(new Error('Network error'));
-    render(<ReadingSpeedViolin />);
-
-    await waitFor(() => {
-      const paths = document.querySelectorAll('path');
-      expect(paths.length).toBeGreaterThan(0);
-    });
-
-    expect(screen.queryByRole('alert')).not.toBeInTheDocument();
-  });
 });
