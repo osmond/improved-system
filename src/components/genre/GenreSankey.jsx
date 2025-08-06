@@ -207,11 +207,21 @@ export default function GenreSankey() {
             `From ${d.source.name} to ${d.target.name}: ${d.value} sessions`,
           );
       })
-      .on('mouseover', (event, d) => {
+      .on('mouseover focus', (event, d) => {
         const tooltip = tooltipRef.current;
         if (!tooltip) return;
-        const x = event.pageX || event.clientX;
-        const y = event.pageY || event.clientY;
+        let x = event.pageX ?? event.clientX;
+        let y = event.pageY ?? event.clientY;
+        if (x == null || y == null) {
+          const rect = event.target?.getBoundingClientRect();
+          if (rect) {
+            x = rect.left + rect.width / 2 + window.scrollX;
+            y = rect.top + rect.height / 2 + window.scrollY;
+          } else {
+            x = 0;
+            y = 0;
+          }
+        }
         tooltip.style.display = 'block';
         tooltip.style.left = `${x + 10}px`;
         tooltip.style.top = `${y + 10}px`;
@@ -231,7 +241,7 @@ export default function GenreSankey() {
           .join('');
         tooltip.innerHTML = `<div>${text}</div><svg width="${counts.length * barWidth}" height="${barHeight}">${bars}</svg>`;
       })
-      .on('mouseout', () => {
+      .on('mouseout blur', () => {
         const tooltip = tooltipRef.current;
         if (tooltip) tooltip.style.display = 'none';
       });
