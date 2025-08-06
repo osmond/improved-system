@@ -1,4 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 import React from 'react';
 import { vi } from 'vitest';
 import ReadingSpeedViolin, { color } from '../ReadingSpeedViolin';
@@ -19,6 +20,7 @@ afterEach(() => {
   describe('ReadingSpeedViolin', () => {
     it('renders controls and chart', async () => {
       render(<ReadingSpeedViolin />);
+      expect(screen.getByLabelText('Chart Type')).toBeInTheDocument();
       expect(screen.getByLabelText('Morning')).toBeInTheDocument();
       expect(screen.getByLabelText('Evening')).toBeInTheDocument();
       expect(screen.getByLabelText('Bandwidth')).toBeInTheDocument();
@@ -80,5 +82,26 @@ afterEach(() => {
     });
 
     expect(screen.queryByRole('alert')).not.toBeInTheDocument();
+  });
+
+  it('switches to box plot when selected', async () => {
+    const { container } = render(<ReadingSpeedViolin />);
+
+    await waitFor(() => {
+      const paths = Array.from(container.querySelectorAll('path')).filter((p) =>
+        p.getAttribute('fill') && p.getAttribute('fill') !== 'none'
+      );
+      expect(paths.length).toBeGreaterThan(0);
+    });
+
+    await userEvent.selectOptions(screen.getByLabelText('Chart Type'), 'box');
+
+    await waitFor(() => {
+      const violinPaths = Array.from(container.querySelectorAll('path')).filter(
+        (p) => p.getAttribute('fill') && p.getAttribute('fill') !== 'none'
+      );
+      expect(violinPaths.length).toBe(0);
+      expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
+    });
   });
 });

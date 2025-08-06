@@ -19,6 +19,7 @@ export default function ReadingSpeedViolin() {
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
   const [bandwidth, setBandwidth] = useState(150);
+  const [chartType, setChartType] = useState('violin');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -88,32 +89,36 @@ export default function ReadingSpeedViolin() {
       .paddingInner(0.1);
     const violinWidth = xCat.bandwidth();
     const y = scaleLinear().domain([min, max]).range([innerHeight, 0]);
-    const yTicks = y.ticks(40);
 
-    const kernelDensityEstimator = (kernel, X) => (V) =>
-      X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
-    const kernelEpanechnikov = (k) => (v) => {
-      v /= k;
-      return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
-    };
-
-    const densities = {};
+    let densities = {};
     let maxDensity = 0;
-    periodOrder.forEach((period) => {
-      const density = kernelDensityEstimator(
-        kernelEpanechnikov(bandwidth),
-        yTicks
-      )(periods[period].map((d) => d.wpm));
-      densities[period] = density;
-      maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
-    });
+    let x;
+    let areaGenerator;
+    if (chartType === 'violin') {
+      const yTicks = y.ticks(40);
+      const kernelDensityEstimator = (kernel, X) => (V) =>
+        X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
+      const kernelEpanechnikov = (k) => (v) => {
+        v /= k;
+        return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+      };
 
-    const x = scaleLinear().domain([0, maxDensity]).range([0, violinWidth / 2]);
-    const areaGenerator = area()
-      .x0((d) => -x(d[1]))
-      .x1((d) => x(d[1]))
-      .y((d) => y(d[0]))
-      .curve(curveCatmullRom);
+      periodOrder.forEach((period) => {
+        const density = kernelDensityEstimator(
+          kernelEpanechnikov(bandwidth),
+          yTicks
+        )(periods[period].map((d) => d.wpm));
+        densities[period] = density;
+        maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
+      });
+
+      x = scaleLinear().domain([0, maxDensity]).range([0, violinWidth / 2]);
+      areaGenerator = area()
+        .x0((d) => -x(d[1]))
+        .x1((d) => x(d[1]))
+        .y((d) => y(d[0]))
+        .curve(curveCatmullRom);
+    }
 
     const root = svg
       .attr('viewBox', `0 0 ${width} ${height}`)
@@ -145,7 +150,6 @@ export default function ReadingSpeedViolin() {
     periodOrder.forEach((period) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
-      const density = densities[period];
       const center = xCat(period) + violinWidth / 2;
       const g = root
         .append('g')
@@ -153,11 +157,13 @@ export default function ReadingSpeedViolin() {
         .style('display', show ? null : 'none');
       const fill = color[period];
 
-      g
-        .append('path')
-        .datum(density)
-        .attr('d', areaGenerator)
-        .attr('fill', fill);
+      if (chartType === 'violin') {
+        g
+          .append('path')
+          .datum(densities[period])
+          .attr('d', areaGenerator)
+          .attr('fill', fill);
+      }
 
       const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
       const q1Y = y(q1);
@@ -168,7 +174,9 @@ export default function ReadingSpeedViolin() {
       const boxWidth = violinWidth;
       const lineX1 = -violinWidth / 2;
       const lineX2 = violinWidth / 2;
-      const jitterWidth = x(maxDensity) * 0.3;
+      const jitterWidth = chartType === 'violin' && x
+        ? x(maxDensity) * 0.3
+        : violinWidth * 0.3;
 
       // Interquartile range box
       g
@@ -240,7 +248,7 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
-  }, [data, showMorning, showEvening, bandwidth]);
+  }, [data, showMorning, showEvening, bandwidth, chartType]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -250,6 +258,16 @@ export default function ReadingSpeedViolin() {
         <p>No reading speed data available.</p>
       )}
       <div>
+        <label>
+          Chart Type
+          <select
+            value={chartType}
+            onChange={(e) => setChartType(e.target.value)}
+          >
+            <option value="violin">Violin</option>
+            <option value="box">Box</option>
+          </select>
+        </label>
         <label>
           <input
             type="checkbox"
