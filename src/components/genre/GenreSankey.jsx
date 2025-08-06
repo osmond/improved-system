@@ -8,10 +8,12 @@ import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSankey() {
   const svgRef = useRef(null);
+  const containerRef = useRef(null);
   const tooltipRef = useRef(null);
   const [data, setData] = useState(null);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
 
   const fetchData = async () => {
     const res = await fetch(
@@ -39,12 +41,36 @@ export default function GenreSankey() {
   }, []);
 
   useEffect(() => {
+    const updateSize = () => {
+      if (containerRef.current) {
+        const { width, height } = containerRef.current.getBoundingClientRect();
+        setDimensions({
+          width,
+          height: height || 400,
+        });
+      } else {
+        setDimensions({ width: window.innerWidth, height: window.innerHeight });
+      }
+    };
+    updateSize();
+    let observer;
+    if (typeof ResizeObserver !== 'undefined') {
+      observer = new ResizeObserver(updateSize);
+      if (containerRef.current) observer.observe(containerRef.current);
+    } else {
+      window.addEventListener('resize', updateSize);
+    }
+    return () => {
+      if (observer) observer.disconnect();
+      else window.removeEventListener('resize', updateSize);
+    };
+  }, []);
+
+  useEffect(() => {
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
-    if (!data || data.length === 0) return;
-
-    const width = 600;
-    const height = 400;
+    const { width, height } = dimensions;
+    if (!data || data.length === 0 || width === 0 || height === 0) return;
 
     const genres = Array.from(new Set(data.flatMap((d) => [d.source, d.target])));
 
@@ -94,7 +120,7 @@ export default function GenreSankey() {
     const barFill = schemeSet3[0];
 
 
-    svg.attr('viewBox', `0 0 ${width} ${height}`);
+    svg.attr('viewBox', `0 0 ${width} ${height}`).attr('width', width).attr('height', height);
 
     const defs = svg.append('defs');
 
@@ -202,10 +228,10 @@ export default function GenreSankey() {
       .filter((d) => d.x0 < width / 2)
       .attr('x', (d) => d.x1 + 6)
       .attr('text-anchor', 'start');
-  }, [data]);
+  }, [data, dimensions]);
 
   return (
-    <div style={{ position: 'relative' }}>
+    <div ref={containerRef} style={{ position: 'relative' }}>
       <div>
         <label>
           Start
@@ -220,7 +246,7 @@ export default function GenreSankey() {
       {(!data || data.length === 0) ? (
         <Skeleton className="h-64 w-full" data-testid="genre-sankey-skeleton" />
       ) : (
-        <svg ref={svgRef} width="600" height="400" />
+        <svg ref={svgRef} width={dimensions.width} height={dimensions.height} />
       )}
       <div
         ref={tooltipRef}
