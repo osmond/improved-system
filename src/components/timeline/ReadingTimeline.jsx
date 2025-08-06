@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useMemo, useState } from 'react';
 import { select } from 'd3-selection';
 import { scaleTime, scaleOrdinal, scaleLinear } from 'd3-scale';
-import { brushX } from 'd3-brush';
+import { brushX, brushSelection } from 'd3-brush';
 import { axisBottom } from 'd3-axis';
 import { timeMonth } from 'd3-time';
 import { timeFormat } from 'd3-time-format';
@@ -14,11 +14,17 @@ const BRUSH_HEIGHT = 10;
 const AXIS_HEIGHT = 40;
 const MIN_HEIGHT = 120;
 
-
+/**
+ * Timeline of reading sessions using a d3 brush.
+ * Keyboard shortcuts:
+ * - Arrow keys adjust the current brush selection.
+ * - Enter applies the current selection.
+ */
 export default function ReadingTimeline({ sessions = [] }) {
   const ref = useRef(null);
   const containerRef = useRef(null);
   const brushRef = useRef(null);
+  const adjustingRef = useRef(false);
   const [zoomed, setZoomed] = useState(false);
   const [width, setWidth] = useState(DEFAULT_WIDTH);
 
@@ -135,7 +141,13 @@ export default function ReadingTimeline({ sessions = [] }) {
           'aria-label',
           (d) =>
             `${d.title}, ${d.duration.toFixed(1)} minutes, ${d.highlights} highlights`,
-        );
+        )
+        .on('focus', function () {
+          select(this).attr('stroke', '#000').attr('stroke-width', 2);
+        })
+        .on('blur', function () {
+          select(this).attr('stroke', null).attr('stroke-width', null);
+        });
 
       bars
         .append('title')
@@ -186,6 +198,7 @@ export default function ReadingTimeline({ sessions = [] }) {
         [width, BRUSH_HEIGHT],
       ])
       .on('end', (event) => {
+        if (adjustingRef.current) return;
         if (event.selection) {
           const [x0, x1] = event.selection.map(x.invert);
           renderBars([x0, x1]);
@@ -196,7 +209,70 @@ export default function ReadingTimeline({ sessions = [] }) {
         }
       });
 
-    svg.append('g').attr('class', 'brush').call(brush);
+    const brushG = svg.append('g').attr('class', 'brush');
+    brushG.call(brush);
+    brushG
+      .attr('tabindex', 0)
+      .attr(
+        'aria-label',
+        'Timeline selection. Use arrow keys to adjust and Enter to apply.',
+      )
+      .on('focus', function () {
+        select(this).style('outline', '2px solid #000');
+      })
+      .on('blur', function () {
+        select(this).style('outline', 'none');
+      })
+      .on('keydown', (event) => {
+        const step = width / 100;
+        let sel = brushSelection(brushG.node());
+        if (!sel) sel = [0, width];
+        switch (event.key) {
+          case 'ArrowLeft':
+            sel = [Math.max(0, sel[0] - step), Math.max(step, sel[1] - step)];
+            adjustingRef.current = true;
+            brush.move(brushG, sel);
+            adjustingRef.current = false;
+            event.preventDefault();
+            break;
+          case 'ArrowRight':
+            sel = [Math.min(width - step, sel[0] + step), Math.min(width, sel[1] + step)];
+            adjustingRef.current = true;
+            brush.move(brushG, sel);
+            adjustingRef.current = false;
+            event.preventDefault();
+            break;
+          case 'ArrowUp':
+            sel = [Math.max(0, sel[0] - step), Math.min(width, sel[1] + step)];
+            adjustingRef.current = true;
+            brush.move(brushG, sel);
+            adjustingRef.current = false;
+            event.preventDefault();
+            break;
+          case 'ArrowDown':
+            if (sel[1] - sel[0] > step * 2) {
+              sel = [sel[0] + step, sel[1] - step];
+              adjustingRef.current = true;
+              brush.move(brushG, sel);
+              adjustingRef.current = false;
+              event.preventDefault();
+            }
+            break;
+          case 'Enter':
+            if (sel) {
+              const [x0, x1] = sel.map(x.invert);
+              renderBars([x0, x1]);
+              setZoomed(true);
+            } else {
+              renderBars(initialDomain);
+              setZoomed(false);
+            }
+            event.preventDefault();
+            break;
+          default:
+            break;
+        }
+      });
 
     // expose brush for tests
     ref.current.__brush = brush;
