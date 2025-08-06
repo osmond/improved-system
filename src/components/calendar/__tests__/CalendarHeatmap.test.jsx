@@ -47,9 +47,10 @@ describe('CalendarHeatmap', () => {
     const { container, getByTestId } = render(<CalendarHeatmap />);
     const legend = getByTestId('reading-legend');
     expect(legend).not.toBeNull();
+    expect(legend.tagName).toBe('UL');
 
     expect(container.querySelector('rect.reading-scale-1')).not.toBeNull();
-    const swatches = legend.querySelectorAll('[data-legend-level]');
+    const swatches = legend.querySelectorAll('li[data-legend-level]');
     expect(swatches.length).toBe(4);
     expect(
       swatches[0].querySelector('div').classList.contains('reading-scale-1')
@@ -57,7 +58,7 @@ describe('CalendarHeatmap', () => {
     expect(
       swatches[3].querySelector('div').classList.contains('reading-scale-4')
     ).toBe(true);
-    expect(legend.querySelector('[data-no-data]')).not.toBeNull();
+    expect(legend.querySelector('li[data-no-data]')).not.toBeNull();
   });
 
   it('renders month and quarter boundaries', () => {
