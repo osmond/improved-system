@@ -11,6 +11,8 @@ const {
   getLocations,
   getReadingSpeed,
   getBookGraph,
+  getSubgenreOverrides,
+  updateSubgenreOverride,
 } = require('../services/kindleService');
 
 const router = express.Router();
@@ -104,6 +106,27 @@ router.get('/book-graph', async (req, res) => {
     res.json(await getBookGraph());
   } catch (err) {
     res.status(500).json({ error: 'Failed to load book graph' });
+  }
+});
+
+router.get('/subgenre-overrides', async (req, res) => {
+  try {
+    res.json(await getSubgenreOverrides());
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to load subgenre overrides' });
+  }
+});
+
+router.post('/subgenre-overrides', async (req, res) => {
+  const { asin, subgenre } = req.body || {};
+  if (!asin || !subgenre) {
+    return res.status(400).json({ error: 'asin and subgenre required' });
+  }
+  try {
+    const map = await updateSubgenreOverride(asin, subgenre);
+    res.json(map);
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to update subgenre override' });
   }
 });
 

@@ -14,6 +14,9 @@ export default function BookNetwork({ data = graphData }) {
   const [selected, setSelected] = useState(null);
   const [highlightedNodes, setHighlightedNodes] = useState(new Set());
   const [highlightedLinks, setHighlightedLinks] = useState(new Set());
+  const [overrides, setOverrides] = useState({});
+  const [subgenre, setSubgenre] = useState('');
+  const [sgError, setSgError] = useState('');
 
   useEffect(() => {
     const degreeMap = {};
@@ -40,6 +43,22 @@ export default function BookNetwork({ data = graphData }) {
     return map;
   }, [graph]);
 
+  useEffect(() => {
+    fetch('/api/kindle/subgenre-overrides')
+      .then((res) => res.json())
+      .then((data) => setOverrides(data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    if (selected) {
+      setSubgenre(overrides[selected] || '');
+      setSgError('');
+    } else {
+      setSubgenre('');
+    }
+  }, [selected, overrides]);
+
   const toggleNeighbors = (id) => {
     setGraph((g) => {
       const target = g.nodes.find((n) => n.id === id);
@@ -52,6 +71,33 @@ export default function BookNetwork({ data = graphData }) {
       return { ...g, nodes };
     });
   };
+
+  function saveSubgenre() {
+    const sg = subgenre.trim();
+    if (!selected) return;
+    if (!sg) {
+      setSgError('Sub-genre required');
+      return;
+    }
+    if (
+      overrides[selected] &&
+      overrides[selected].toLowerCase() === sg.toLowerCase()
+    ) {
+      setSgError('Duplicate sub-genre');
+      return;
+    }
+    fetch('/api/kindle/subgenre-overrides', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ asin: selected, subgenre: sg }),
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setOverrides(data);
+        setSgError('');
+      })
+      .catch(() => setSgError('Failed to save sub-genre'));
+  }
 
   useEffect(() => {
     if (!selected || (!tag && !author)) {
@@ -276,6 +322,17 @@ export default function BookNetwork({ data = graphData }) {
           value={author}
           onChange={(e) => setAuthor(e.target.value)}
         />
+        {selected && (
+          <div>
+            <input
+              placeholder="Sub-genre"
+              value={subgenre}
+              onChange={(e) => setSubgenre(e.target.value)}
+            />
+            <button onClick={saveSubgenre}>Save</button>
+            {sgError && <div className="text-red-500 text-sm">{sgError}</div>}
+          </div>
+        )}
       </div>
       <svg ref={svgRef} width={600} height={400}></svg>
     </div>

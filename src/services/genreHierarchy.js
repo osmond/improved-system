@@ -1,4 +1,5 @@
 const asinTitleMap = require('../data/kindle/asin-title-map.json');
+const subgenreOverrides = require('../data/kindle/subgenre-overrides.json');
 
 function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
   const genreByAsin = {};
@@ -32,7 +33,7 @@ function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {
         title,
         minutes: 0,
         genre: genreByAsin[asin] || 'Unknown',
-        subgenre: subgenreByAsin[asin] || 'Unknown',
+        subgenre: subgenreOverrides[asin] || subgenreByAsin[asin] || 'Unknown',
         author: authorByAsin[asin] || 'Unknown',
       };
     }

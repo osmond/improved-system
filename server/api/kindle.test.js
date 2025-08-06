@@ -1,7 +1,8 @@
 /* @vitest-environment node */
 import request from 'supertest';
 import app from '../app';
-import { describe, it, expect } from 'vitest';
+import { describe, it, expect, vi } from 'vitest';
+import fs from 'fs';
 
 describe('GET /api/kindle', () => {
   it('returns events data', async () => {
@@ -89,5 +90,20 @@ describe('GET /api/kindle', () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('nodes');
     expect(res.body).toHaveProperty('links');
+  });
+
+  it('gets and updates subgenre overrides', async () => {
+    vi.spyOn(fs.promises, 'readFile').mockResolvedValue('{}');
+    const writeMock = vi.spyOn(fs.promises, 'writeFile').mockResolvedValue();
+    const getRes = await request(app).get('/api/kindle/subgenre-overrides');
+    expect(getRes.status).toBe(200);
+    expect(getRes.body).toEqual({});
+    const postRes = await request(app)
+      .post('/api/kindle/subgenre-overrides')
+      .send({ asin: 'TEST', subgenre: 'SG' });
+    expect(postRes.status).toBe(200);
+    expect(writeMock).toHaveBeenCalled();
+    expect(postRes.body).toHaveProperty('TEST', 'SG');
+    vi.restoreAllMocks();
   });
 });
