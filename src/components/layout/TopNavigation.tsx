@@ -30,7 +30,7 @@ export default function TopNavigation() {
   const [open, setOpen] = useState(false);
 
   return (
-    <nav className="flex items-center">
+    <nav className="flex items-center md:hidden">
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetTrigger asChild>
           <button className="p-2" aria-expanded={open}>
