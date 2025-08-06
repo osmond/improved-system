@@ -47,6 +47,12 @@ describe('GET /api/kindle', () => {
     expect(res.status).toBe(200);
     expect(res.body).toHaveProperty('name', 'root');
     expect(res.body).toHaveProperty('children');
+    function leaves(node) {
+      if (!node.children) return [node];
+      return node.children.flatMap(leaves);
+    }
+    const leafNames = leaves(res.body).map((n) => n.name);
+    expect(leafNames.some((n) => /\s/.test(n))).toBe(true);
   });
 
   it('returns genre transitions data', async () => {
@@ -75,6 +81,7 @@ describe('GET /api/kindle', () => {
     expect(Array.isArray(res.body)).toBe(true);
     expect(res.body[0]).toHaveProperty('latitude');
     expect(res.body[0]).toHaveProperty('longitude');
+    expect(res.body[0].title).not.toMatch(/^[A-Z0-9]{10}$/);
   });
 
   it('returns book graph data', async () => {

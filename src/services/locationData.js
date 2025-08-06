@@ -1,7 +1,11 @@
 import sessionLocations from '../data/kindle/locations.json' with { type: 'json' };
+import asinTitleMap from '../data/kindle/asin-title-map.json' with { type: 'json' };
 
 export function getSessionLocations() {
-  return sessionLocations;
+  return sessionLocations.map((l) => ({
+    ...l,
+    title: asinTitleMap[l.title] ?? l.title,
+  }));
 }
 
 export async function fetchSessionLocations() {
@@ -13,5 +17,8 @@ export async function fetchSessionLocations() {
   if (!res.ok) throw new Error('Failed to fetch locations');
   const data = await res.json();
   if (!Array.isArray(data)) throw new Error('Invalid locations data');
-  return data;
+  return data.map((l) => ({
+    ...l,
+    title: asinTitleMap[l.title] ?? l.title,
+  }));
 }

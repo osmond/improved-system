@@ -9,5 +9,6 @@ describe('location data serialization', () => {
     const item = data[0];
     expect(typeof item.latitude).toBe('number');
     expect(typeof item.longitude).toBe('number');
+    expect(item.title).not.toMatch(/^[A-Z0-9]{10}$/);
   });
 });
