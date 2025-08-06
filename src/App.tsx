@@ -1,9 +1,7 @@
 import React, { lazy, Suspense } from "react";
 import RootLayout from "@/layouts/RootLayout";
-import DashboardLanding from "@/pages/DashboardLanding";
 import SidebarDemoPage from "@/pages/SidebarDemo";
 import NotFound from "@/pages/NotFound";
-import Home from "@/pages/Home";
 import { dashboardRoutes } from "@/routes";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -47,8 +45,14 @@ function App() {
         <SelectionProvider>
           <RootLayout>
             <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/dashboard" element={<DashboardLanding />} />
+              <Route
+                path="/"
+                element={<Navigate to="/dashboard/all" replace />}
+              />
+              <Route
+                path="/dashboard"
+                element={<Navigate to="/dashboard/all" replace />}
+              />
               <Route
                 path="/visualizations"
                 element={<Navigate to="/dashboard/all" replace />}
