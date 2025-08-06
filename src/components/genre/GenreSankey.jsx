@@ -12,9 +12,11 @@ export default function GenreSankey() {
   const containerRef = useRef(null);
   const tooltipRef = useRef(null);
   const zoomRef = useRef(null);
+  const [rawData, setRawData] = useState(null);
   const [data, setData] = useState(null);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
+  const [filter, setFilter] = useState('');
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
 
   const fetchData = async () => {
@@ -22,38 +24,54 @@ export default function GenreSankey() {
       `/api/kindle/genre-transitions?start=${start}&end=${end}`,
     );
     const json = await res.json();
-    setData(
-      json.map((d) => ({
-        ...d,
-        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
-      })),
-    );
+    const mapped = json.map((d) => ({
+      ...d,
+      monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+    }));
+    setRawData(mapped);
+    setData(mapped);
   };
 
   const handleReset = () => {
     if (zoomRef.current) {
       zoomRef.current();
     }
+    setFilter('');
   };
 
   useEffect(() => {
     const t = setTimeout(() => {
-      setData(
-        transitions.map((d) => ({
-          ...d,
-          monthlyCounts: d.monthlyCounts || Array(12).fill(0),
-        })),
-      );
+      const mapped = transitions.map((d) => ({
+        ...d,
+        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+      }));
+      setRawData(mapped);
+      setData(mapped);
     }, 0);
     return () => clearTimeout(t);
   }, []);
+
+  useEffect(() => {
+    if (!rawData) return;
+    if (!filter) {
+      setData(rawData);
+      return;
+    }
+    const lower = filter.toLowerCase();
+    const filtered = rawData.filter(
+      (d) =>
+        d.source.toLowerCase().includes(lower) ||
+        d.target.toLowerCase().includes(lower),
+    );
+    setData(filtered);
+  }, [filter, rawData]);
 
   useEffect(() => {
     const updateSize = () => {
       if (containerRef.current) {
         const { width, height } = containerRef.current.getBoundingClientRect();
         setDimensions({
-          width,
+          width: width || 600,
           height: height || 400,
         });
       } else {
@@ -273,8 +291,18 @@ export default function GenreSankey() {
           End
           <input type="date" value={end} onChange={(e) => setEnd(e.target.value)} />
         </label>
+        <label>
+          Filter
+          <input
+            type="text"
+            value={filter}
+            onChange={(e) => setFilter(e.target.value)}
+            placeholder="Genre name"
+          />
+        </label>
         <button onClick={fetchData}>Apply</button>
         <button onClick={handleReset}>Reset View</button>
+        <button onClick={() => setFilter('')}>Clear Filter</button>
       </div>
       {(!data || data.length === 0) ? (
         <Skeleton className="h-64 w-full" data-testid="genre-sankey-skeleton" />
