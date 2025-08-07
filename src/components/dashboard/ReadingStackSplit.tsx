@@ -7,7 +7,6 @@ import {
   ChartTooltipContent,
   ChartLegend,
   ChartLegendContent,
-  ResponsiveContainer,
 } from "@/ui/chart";
 import { Cell, Label, type TooltipProps } from "recharts";
 import { useState } from "react";
@@ -101,8 +100,7 @@ export default function ReadingStackSplit() {
   return (
     <ChartCard title="Reading Stack Split" description="Time by device">
       <ChartContainer config={config} className="h-64 md:h-80 lg:h-96">
-        <ResponsiveContainer>
-          <PieChart>
+        <PieChart>
             <defs>
               {filtered.map((_, idx) => (
                 <linearGradient
@@ -174,8 +172,7 @@ export default function ReadingStackSplit() {
                 }}
               />
             </Pie>
-          </PieChart>
-        </ResponsiveContainer>
+        </PieChart>
       </ChartContainer>
     </ChartCard>
   );
