@@ -19,12 +19,15 @@ afterEach(() => {
   describe('ReadingSpeedViolin', () => {
     it('renders controls and chart', async () => {
       render(<ReadingSpeedViolin />);
-      expect(
-        screen.getByRole('checkbox', { name: 'Morning' })
-      ).toBeInTheDocument();
-      expect(
-        screen.getByRole('checkbox', { name: 'Evening' })
-      ).toBeInTheDocument();
+      await waitFor(() => {
+        expect(
+          screen.getByRole('checkbox', { name: 'Morning' })
+        ).toBeInTheDocument();
+        expect(
+          screen.getByRole('checkbox', { name: 'Evening' })
+        ).toBeInTheDocument();
+      });
+      expect(screen.getByLabelText('Show outliers')).toBeInTheDocument();
       expect(screen.getByLabelText('Smoothing')).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Show All/i })).toBeInTheDocument();
       expect(screen.getByRole('button', { name: /Deep reading/i })).toBeInTheDocument();
@@ -73,6 +76,41 @@ afterEach(() => {
       fireEvent.click(screen.getByRole('button', { name: /Show All/i }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(6);
+      });
+    });
+
+    it('expands y-domain when showing outliers', async () => {
+      const mockData = [
+        { start: '2020-01-01T00:00:00Z', asin: 'A', wpm: 100, period: 'morning' },
+        { start: '2020-01-01T00:30:00Z', asin: 'B', wpm: 700, period: 'evening' },
+      ];
+      global.fetch.mockResolvedValueOnce({
+        ok: true,
+        json: () => Promise.resolve(mockData),
+      });
+
+      render(<ReadingSpeedViolin />);
+
+      await waitFor(() => {
+        expect(document.querySelectorAll('circle').length).toBe(2);
+      });
+
+      const minCy = Math.min(
+        ...Array.from(document.querySelectorAll('circle')).map((c) =>
+          Number(c.getAttribute('cy'))
+        )
+      );
+      expect(minCy).toBeLessThan(0);
+
+      fireEvent.click(screen.getByLabelText('Show outliers'));
+
+      await waitFor(() => {
+        const minCyAfter = Math.min(
+          ...Array.from(document.querySelectorAll('circle')).map((c) =>
+            Number(c.getAttribute('cy'))
+          )
+        );
+        expect(minCyAfter).toBeGreaterThanOrEqual(0);
       });
     });
 

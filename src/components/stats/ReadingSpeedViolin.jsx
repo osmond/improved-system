@@ -21,6 +21,7 @@ export default function ReadingSpeedViolin() {
   const [error, setError] = useState(null);
   const [showMorning, setShowMorning] = useState(true);
   const [showEvening, setShowEvening] = useState(true);
+  const [showOutliers, setShowOutliers] = useState(false);
   const [bandwidth, setBandwidth] = useState(300);
   const presets = {
     deep: [0, 200],
@@ -120,7 +121,8 @@ export default function ReadingSpeedViolin() {
       .range([0, innerWidth])
       .paddingInner(0.1);
     const catWidth = xCat.bandwidth();
-    const y = scaleLinear().domain([min, max]).range([innerHeight, 0]);
+    const yDomain = showOutliers ? [min, max] : [0, 600];
+    const y = scaleLinear().domain(yDomain).range([innerHeight, 0]);
 
     let densities = {};
     let maxDensity = 0;
@@ -452,6 +454,7 @@ export default function ReadingSpeedViolin() {
     bandwidth,
     dimensions,
     chartType,
+    showOutliers,
   ]);
 
   return (
@@ -512,6 +515,16 @@ export default function ReadingSpeedViolin() {
             <option value={300}>Medium</option>
             <option value={600}>High</option>
           </select>
+        </label>
+      </div>
+      <div>
+        <label>
+          <input
+            type="checkbox"
+            checked={showOutliers}
+            onChange={(e) => setShowOutliers(e.target.checked)}
+          />
+          Show outliers
         </label>
       </div>
     </div>
