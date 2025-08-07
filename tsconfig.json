@@ -1,11 +1,7 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
-    ],
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
     "allowJs": false,
     "skipLibCheck": true,
     "esModuleInterop": true,
@@ -20,23 +16,13 @@
     "jsx": "react-jsx",
     "baseUrl": ".",
     "paths": {
-      "@/ui": [
-        "src/components/ui"
-      ],
-      "@/ui/*": [
-        "src/components/ui/*"
-      ],
-      "@/*": [
-        "src/*"
-      ]
+      "@/ui": ["src/components/ui"],
+      "@/ui/*": ["src/components/ui/*"],
+      "@/*": ["src/*"]
     },
-    "types": [
-      "vitest/globals"
-    ]
+    "types": ["vitest/globals"]
   },
-  "include": [
-    "src"
-  ],
+  "include": ["src"],
   "references": [
     {
       "path": "./tsconfig.node.json"
