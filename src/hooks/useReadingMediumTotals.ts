@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import type { ReadingMediumTotal } from '@/lib/api'
+import { getReadingMediumTotals } from '@/lib/api'
 
 interface UseReadingMediumTotalsOptions {
   /**
@@ -7,7 +8,9 @@ interface UseReadingMediumTotalsOptions {
    */
   data?: ReadingMediumTotal[]
   /**
-   * Optional fetcher function. Defaults to calling `/api/reading-medium-totals`.
+   * Optional fetcher function. By default the hook attempts to call
+   * `/api/reading-medium-totals` and falls back to mock data if the endpoint
+   * is unavailable.
    */
   fetcher?: () => Promise<ReadingMediumTotal[]>
 }
@@ -19,11 +22,20 @@ interface UseReadingMediumTotalsResult {
 }
 
 async function defaultFetcher(): Promise<ReadingMediumTotal[]> {
-  const res = await fetch('/api/reading-medium-totals')
-  if (!res.ok) throw new Error('Failed to fetch reading medium totals')
-  return res.json()
+  try {
+    const res = await fetch('/api/reading-medium-totals')
+    if (!res.ok) throw new Error('Failed to fetch reading medium totals')
+    return res.json()
+  } catch {
+    return getReadingMediumTotals()
+  }
 }
 
+/**
+ * Retrieves total reading time by medium. Attempts to fetch from the
+ * `/api/reading-medium-totals` endpoint and falls back to locally generated
+ * mock data when the API is absent.
+ */
 export default function useReadingMediumTotals(
   options: UseReadingMediumTotalsOptions = {},
 ): UseReadingMediumTotalsResult {
