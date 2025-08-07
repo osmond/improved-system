@@ -186,7 +186,9 @@ export default function ReadingSpeedViolin() {
           .tickFormat('')
       );
 
-    grid.selectAll('line').attr('stroke', (d) => (d % 250 === 0 ? '#ccc' : '#eee'));
+    grid
+      .selectAll('line')
+      .attr('stroke', (d) => (majorTicks.includes(d) ? '#ccc' : '#eee'));
     grid.select('.domain').remove();
 
     const yAxisGroup = root
@@ -194,8 +196,11 @@ export default function ReadingSpeedViolin() {
       .attr('class', 'y-axis')
       .call(axisLeft(y).tickValues(majorTicks));
 
-    yAxisGroup.selectAll('.tick line').attr('stroke', '#999');
-    yAxisGroup.selectAll('.tick text').attr('fill', '#555');
+    yAxisGroup.selectAll('.tick line').attr('stroke', '#777').attr('stroke-width', 1);
+    yAxisGroup
+      .selectAll('.tick text')
+      .attr('fill', '#333')
+      .style('font-weight', 'bold');
     yAxisGroup.select('.domain').remove();
 
     root
