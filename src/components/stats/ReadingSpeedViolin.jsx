@@ -34,7 +34,6 @@ export default function ReadingSpeedViolin() {
     skimming: [400, Infinity],
   };
   const [preset, setPreset] = useState('all');
-  const [chartType, setChartType] = useState('violin');
 
   const filteredData = React.useMemo(() => {
     if (preset === 'all') return data;
@@ -131,35 +130,31 @@ export default function ReadingSpeedViolin() {
 
     let densities = {};
     let maxDensity = 0;
-    let x;
-    let areaGenerator;
-    if (chartType === 'violin') {
-      const yTicks = y.ticks(40);
-      const kernelDensityEstimator = (kernel, X) => (V) =>
-        X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
-      const kernelEpanechnikov = (k) => (v) => {
-        v /= k;
-        return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
-      };
+    const yTicksDensity = y.ticks(40);
+    const kernelDensityEstimator = (kernel, X) => (V) =>
+      X.map((x) => [x, mean(V, (v) => kernel(x - v))]);
+    const kernelEpanechnikov = (k) => (v) => {
+      v /= k;
+      return Math.abs(v) <= 1 ? 0.75 * (1 - v * v) / k : 0;
+    };
 
-      periodOrder.forEach((period) => {
-        const values = periods[period].map((d) => d.wpm);
-        if (values.length === 0) return;
-        const density = kernelDensityEstimator(
-          kernelEpanechnikov(bandwidth),
-          yTicks
-        )(values);
-        densities[period] = density;
-        maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
-      });
+    periodOrder.forEach((period) => {
+      const values = periods[period].map((d) => d.wpm);
+      if (values.length === 0) return;
+      const density = kernelDensityEstimator(
+        kernelEpanechnikov(bandwidth),
+        yTicksDensity,
+      )(values);
+      densities[period] = density;
+      maxDensity = Math.max(maxDensity, ...density.map((d) => d[1]));
+    });
 
-      x = scaleLinear().domain([0, maxDensity]).range([0, catWidth / 2]);
-      areaGenerator = area()
-        .x0((d) => -x(d[1]))
-        .x1((d) => x(d[1]))
-        .y((d) => y(d[0]))
-        .curve(curveCatmullRom);
-    }
+    const x = scaleLinear().domain([0, maxDensity]).range([0, catWidth / 2]);
+    const areaGenerator = area()
+      .x0((d) => -x(d[1]))
+      .x1((d) => x(d[1]))
+      .y((d) => y(d[0]))
+      .curve(curveCatmullRom);
 
     const root = svg
       .attr('viewBox', `0 0 ${width} ${height}`)
@@ -229,68 +224,44 @@ export default function ReadingSpeedViolin() {
       .attr('text-anchor', 'middle')
       .text('Reading Period');
 
-    const legendData = [
-      { key: 'morning', label: 'Morning', visible: showMorning },
-      { key: 'evening', label: 'Evening', visible: showEvening },
-    ];
-
-    const legend = svg
-      .append('g')
-      .attr('class', 'legend')
-      .attr(
-        'transform',
-        `translate(${width - margin.right - 100},${margin.top})`
-      );
-
-    const legendItems = legend
-      .selectAll('g')
-      .data(legendData)
-      .enter()
-      .append('g')
-      .attr('transform', (_, i) => `translate(0, ${i * 20})`)
-      .attr('role', 'checkbox')
-      .attr('tabindex', 0)
-      .attr('aria-label', (d) => d.label)
-      .attr('aria-checked', (d) => d.visible)
-      .style('cursor', 'pointer')
-      .on('click', (_, d) => {
-        if (d.key === 'morning') {
-          setShowMorning((s) => !s);
-        } else {
-          setShowEvening((s) => !s);
-        }
-      })
-      .on('keydown', (event, d) => {
-        if (event.key === 'Enter' || event.key === ' ') {
-          event.preventDefault();
-          if (d.key === 'morning') {
-            setShowMorning((s) => !s);
-          } else {
-            setShowEvening((s) => !s);
-          }
-        }
-      });
-
-    legendItems
-      .append('rect')
-      .attr('width', 12)
-      .attr('height', 12)
-      .attr('fill', (d) => color[d.key])
-      .attr('fill-opacity', (d) => (d.visible ? 1 : 0.3))
-      .attr('stroke', (d) => color[d.key]);
-
-    legendItems
-      .append('text')
-      .attr('x', 18)
-      .attr('y', 10)
-      .text((d) => d.label)
-      .attr('fill', '#000');
-
     periodOrder.forEach((period) => {
       const show = period === 'morning' ? showMorning : showEvening;
       const values = periods[period];
       if (values.length === 0) return;
       const center = xCat(period) + catWidth / 2;
+
+      root
+        .append('text')
+        .attr('x', center)
+        .attr('y', -10)
+        .attr('text-anchor', 'middle')
+        .attr('fill', color[period])
+        .attr('role', 'checkbox')
+        .attr('tabindex', 0)
+        .attr('aria-label', period === 'morning' ? 'Morning' : 'Evening')
+        .attr('aria-checked', show ? 'true' : 'false')
+        .style('cursor', 'pointer')
+        .style('font-weight', 'bold')
+        .style('opacity', show ? 1 : 0.3)
+        .text(period === 'morning' ? 'Morning' : 'Evening')
+        .on('click', () => {
+          if (period === 'morning') {
+            setShowMorning((s) => !s);
+          } else {
+            setShowEvening((s) => !s);
+          }
+        })
+        .on('keydown', (event) => {
+          if (event.key === 'Enter' || event.key === ' ') {
+            event.preventDefault();
+            if (period === 'morning') {
+              setShowMorning((s) => !s);
+            } else {
+              setShowEvening((s) => !s);
+            }
+          }
+        });
+
       const g = root
         .append('g')
         .attr('transform', `translate(${center},0)`)
@@ -298,7 +269,7 @@ export default function ReadingSpeedViolin() {
       const fill = color[period];
       const tooltip = select(tooltipRef.current);
 
-      if (chartType === 'violin' && !isSmall) {
+      if (!isSmall) {
         const density = densities[period];
         g
           .append('path')
@@ -326,92 +297,42 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       }
 
-      if (chartType === 'box') {
-        const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
-        const q1Y = y(q1);
-        const q3Y = y(q3);
-        const medianY = y(median);
-        const lowerWhiskerY = y(lowerWhisker);
-        const upperWhiskerY = y(upperWhisker);
-        const boxWidth = catWidth;
-        const lineX1 = -catWidth / 2;
-        const lineX2 = catWidth / 2;
+      const { q1, q3, median } = stats[period];
+      const q1Y = y(q1);
+      const q3Y = y(q3);
+      const medianY = y(median);
+      const lineX1 = -catWidth / 2;
+      const lineX2 = catWidth / 2;
+      const tickWidth = catWidth * 0.3;
+      const tickX1 = -tickWidth / 2;
+      const tickX2 = tickWidth / 2;
 
-        g
-          .append('rect')
-          .attr('x', lineX1)
-          .attr('y', q3Y)
-          .attr('width', boxWidth)
-          .attr('height', q1Y - q3Y)
-          .attr('fill', fill)
-          .attr('fill-opacity', 0.4)
-          .attr('stroke', fill)
-          .attr('stroke-width', 2);
+      g
+        .append('line')
+        .attr('x1', lineX1)
+        .attr('x2', lineX2)
+        .attr('y1', medianY)
+        .attr('y2', medianY)
+        .attr('stroke', fill)
+        .attr('stroke-width', 4);
 
-        g
-          .append('line')
-          .attr('x1', lineX1)
-          .attr('x2', lineX2)
-          .attr('y1', medianY)
-          .attr('y2', medianY)
-          .attr('stroke', fill)
-          .attr('stroke-width', 2);
+      g
+        .append('line')
+        .attr('x1', tickX1)
+        .attr('x2', tickX2)
+        .attr('y1', q1Y)
+        .attr('y2', q1Y)
+        .attr('stroke', fill)
+        .attr('stroke-width', 1.5);
 
-        g
-          .append('line')
-          .attr('x1', lineX1)
-          .attr('x2', lineX2)
-          .attr('y1', upperWhiskerY)
-          .attr('y2', upperWhiskerY)
-          .attr('stroke', fill)
-          .attr('stroke-width', 2);
-
-        g
-          .append('line')
-          .attr('x1', lineX1)
-          .attr('x2', lineX2)
-          .attr('y1', lowerWhiskerY)
-          .attr('y2', lowerWhiskerY)
-          .attr('stroke', fill)
-          .attr('stroke-width', 2);
-      } else if (chartType === 'violin') {
-        const { q1, q3, median } = stats[period];
-        const q1Y = y(q1);
-        const q3Y = y(q3);
-        const medianY = y(median);
-        const lineX1 = -catWidth / 2;
-        const lineX2 = catWidth / 2;
-        const tickWidth = catWidth * 0.3;
-        const tickX1 = -tickWidth / 2;
-        const tickX2 = tickWidth / 2;
-
-        g
-          .append('line')
-          .attr('x1', lineX1)
-          .attr('x2', lineX2)
-          .attr('y1', medianY)
-          .attr('y2', medianY)
-          .attr('stroke', fill)
-          .attr('stroke-width', 4);
-
-        g
-          .append('line')
-          .attr('x1', tickX1)
-          .attr('x2', tickX2)
-          .attr('y1', q1Y)
-          .attr('y2', q1Y)
-          .attr('stroke', fill)
-          .attr('stroke-width', 1.5);
-
-        g
-          .append('line')
-          .attr('x1', tickX1)
-          .attr('x2', tickX2)
-          .attr('y1', q3Y)
-          .attr('y2', q3Y)
-          .attr('stroke', fill)
-          .attr('stroke-width', 1.5);
-      }
+      g
+        .append('line')
+        .attr('x1', tickX1)
+        .attr('x2', tickX2)
+        .attr('y1', q3Y)
+        .attr('y2', q3Y)
+        .attr('stroke', fill)
+        .attr('stroke-width', 1.5);
 
       const maxPoints = 300;
       const step = Math.ceil(values.length / maxPoints);
@@ -481,7 +402,6 @@ export default function ReadingSpeedViolin() {
     showEvening,
     bandwidth,
     dimensions,
-    chartType,
     showOutliers,
   ]);
 
@@ -518,11 +438,80 @@ export default function ReadingSpeedViolin() {
       {!loading && !error && data.length === 0 && (
         <p>No reading speed data available.</p>
       )}
-      <div>
-        <button onClick={() => setPreset('all')}>Show All</button>
-        <button onClick={() => setPreset('deep')}>Deep reading (0-200 WPM)</button>
-        <button onClick={() => setPreset('normal')}>Normal (200-400 WPM)</button>
-        <button onClick={() => setPreset('skimming')}>Skimming (400+ WPM)</button>
+      <div
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center',
+          marginBottom: '0.5rem',
+        }}
+      >
+        <div
+          role="group"
+          aria-label="Preset filters"
+          style={{
+            display: 'inline-flex',
+            border: '1px solid #ccc',
+            borderRadius: '8px',
+            overflow: 'hidden',
+          }}
+        >
+          <button
+            onClick={() => setPreset('all')}
+            aria-pressed={preset === 'all'}
+            style={{
+              padding: '0.25rem 0.5rem',
+              background: preset === 'all' ? '#e5e7eb' : 'transparent',
+              borderRight: '1px solid #ccc',
+            }}
+          >
+            All
+          </button>
+          <button
+            onClick={() => setPreset('deep')}
+            aria-pressed={preset === 'deep'}
+            style={{
+              padding: '0.25rem 0.5rem',
+              background: preset === 'deep' ? '#e5e7eb' : 'transparent',
+              borderRight: '1px solid #ccc',
+            }}
+          >
+            Deep
+          </button>
+          <button
+            onClick={() => setPreset('normal')}
+            aria-pressed={preset === 'normal'}
+            style={{
+              padding: '0.25rem 0.5rem',
+              background: preset === 'normal' ? '#e5e7eb' : 'transparent',
+              borderRight: '1px solid #ccc',
+            }}
+          >
+            Normal
+          </button>
+          <button
+            onClick={() => setPreset('skimming')}
+            aria-pressed={preset === 'skimming'}
+            style={{
+              padding: '0.25rem 0.5rem',
+              background: preset === 'skimming' ? '#e5e7eb' : 'transparent',
+              borderRight: 'none',
+            }}
+          >
+            Skimming
+          </button>
+        </div>
+        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
+          Smoothing
+          <select
+            value={bandwidth}
+            onChange={(e) => setBandwidth(Number(e.target.value))}
+          >
+            <option value={100}>Low</option>
+            <option value={300}>Medium</option>
+            <option value={600}>High</option>
+          </select>
+        </label>
       </div>
       {morningMedian != null && eveningMedian != null && (
         <div
@@ -549,6 +538,7 @@ export default function ReadingSpeedViolin() {
       </div>
       <div
         ref={tooltipRef}
+        data-testid="tooltip"
         style={{
           position: 'absolute',
           pointerEvents: 'none',
@@ -561,31 +551,6 @@ export default function ReadingSpeedViolin() {
           boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
         }}
       />
-      <div>
-        <label>
-          Chart Type
-          <select
-            value={chartType}
-            onChange={(e) => setChartType(e.target.value)}
-          >
-            <option value="violin">Violin</option>
-            <option value="box">Box Plot</option>
-          </select>
-        </label>
-      </div>
-      <div>
-        <label>
-          Smoothing
-          <select
-            value={bandwidth}
-            onChange={(e) => setBandwidth(Number(e.target.value))}
-          >
-            <option value={100}>Low</option>
-            <option value={300}>Medium</option>
-            <option value={600}>High</option>
-          </select>
-        </label>
-      </div>
       <div>
         <label>
           <input
