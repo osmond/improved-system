@@ -118,6 +118,26 @@ describe('ReadingMap', () => {
     );
   });
 
+  it('retains sessions on the end date', async () => {
+    const { container } = render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: 2 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(3)
+    );
+
+    const dateInputs = container.querySelectorAll('input[type="date"]');
+    const [, endInput] = dateInputs;
+    fireEvent.change(endInput, { target: { value: '2021-06-01' } });
+    fireEvent.change(slider, { target: { value: 1 } });
+    await waitFor(() => {
+      expect(screen.getAllByTestId('marker')).toHaveLength(2);
+      expect(screen.getByText('Beta')).toBeTruthy();
+    });
+  });
+
   it('plays through locations when toggling play', async () => {
     render(<ReadingMap />);
     await waitFor(() => screen.getByTestId('map'));

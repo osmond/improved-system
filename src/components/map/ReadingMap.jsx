@@ -77,8 +77,9 @@ export default function ReadingMap() {
 
   const filtered = useMemo(() => {
     return locations.filter((l) => {
-      if (start && l.start < start) return false;
-      if (end && l.start > end) return false;
+      const date = l.start.slice(0, 10);
+      if (start && date < start) return false;
+      if (end && date > end) return false;
       if (title && !l.title.toLowerCase().includes(title.toLowerCase())) return false;
       return true;
     });
