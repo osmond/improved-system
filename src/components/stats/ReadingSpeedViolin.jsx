@@ -28,6 +28,11 @@ export default function ReadingSpeedViolin() {
   const [showEvening, setShowEvening] = useState(true);
   const [showOutliers, setShowOutliers] = useState(false);
   const [bandwidth, setBandwidth] = useState(300);
+  const presetColors = {
+    deep: '#dbeafe',
+    normal: '#dcfce7',
+    skimming: '#fee2e2',
+  };
   const presets = {
     deep: [0, 200],
     normal: [200, 400],
@@ -160,6 +165,29 @@ export default function ReadingSpeedViolin() {
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const bandsGroup = root.append('g').attr('class', 'wpm-bands');
+    const bandDefs = [
+      { preset: 'deep', min: 0, max: 200 },
+      { preset: 'normal', min: 200, max: 400 },
+      { preset: 'skimming', min: 400, max: yDomain[1] },
+    ];
+    bandDefs.forEach(({ preset: bandPreset, min, max }) => {
+      if (min >= yDomain[1]) return;
+      const yTop = y(Math.min(max, yDomain[1]));
+      const yBottom = y(min);
+      bandsGroup
+        .append('rect')
+        .attr('x', 0)
+        .attr('y', yTop)
+        .attr('width', innerWidth)
+        .attr('height', yBottom - yTop)
+        .attr('fill', presetColors[bandPreset])
+        .attr(
+          'fill-opacity',
+          preset === 'all' || preset === bandPreset ? 0.15 : 0.05
+        );
+    });
 
     const defs = svg.append('defs');
     defs
@@ -406,6 +434,7 @@ export default function ReadingSpeedViolin() {
     bandwidth,
     dimensions,
     showOutliers,
+    preset,
   ]);
 
   const {
@@ -441,80 +470,42 @@ export default function ReadingSpeedViolin() {
       {!loading && !error && data.length === 0 && (
         <p>No reading speed data available.</p>
       )}
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: '0.5rem',
-        }}
-      >
-        <div
-          role="group"
-          aria-label="Preset filters"
+
+      <div>
+        <button
+          onClick={() => setPreset('all')}
+          style={{ fontWeight: preset === 'all' ? 'bold' : 'normal' }}
+        >
+          Show All
+        </button>
+        <button
+          onClick={() => setPreset('deep')}
           style={{
-            display: 'inline-flex',
-            border: '1px solid #ccc',
-            borderRadius: '8px',
-            overflow: 'hidden',
+            background: presetColors.deep,
+            fontWeight: preset === 'deep' ? 'bold' : 'normal',
           }}
         >
-          <button
-            onClick={() => setPreset('all')}
-            aria-pressed={preset === 'all'}
-            style={{
-              padding: '0.25rem 0.5rem',
-              background: preset === 'all' ? '#e5e7eb' : 'transparent',
-              borderRight: '1px solid #ccc',
-            }}
-          >
-            All
-          </button>
-          <button
-            onClick={() => setPreset('deep')}
-            aria-pressed={preset === 'deep'}
-            style={{
-              padding: '0.25rem 0.5rem',
-              background: preset === 'deep' ? '#e5e7eb' : 'transparent',
-              borderRight: '1px solid #ccc',
-            }}
-          >
-            Deep
-          </button>
-          <button
-            onClick={() => setPreset('normal')}
-            aria-pressed={preset === 'normal'}
-            style={{
-              padding: '0.25rem 0.5rem',
-              background: preset === 'normal' ? '#e5e7eb' : 'transparent',
-              borderRight: '1px solid #ccc',
-            }}
-          >
-            Normal
-          </button>
-          <button
-            onClick={() => setPreset('skimming')}
-            aria-pressed={preset === 'skimming'}
-            style={{
-              padding: '0.25rem 0.5rem',
-              background: preset === 'skimming' ? '#e5e7eb' : 'transparent',
-              borderRight: 'none',
-            }}
-          >
-            Skimming
-          </button>
-        </div>
-        <label style={{ display: 'flex', alignItems: 'center', gap: '0.25rem' }}>
-          Smoothing
-          <select
-            value={bandwidth}
-            onChange={(e) => setBandwidth(Number(e.target.value))}
-          >
-            <option value={100}>Low</option>
-            <option value={300}>Medium</option>
-            <option value={600}>High</option>
-          </select>
-        </label>
+          Deep reading (0-200 WPM)
+        </button>
+        <button
+          onClick={() => setPreset('normal')}
+          style={{
+            background: presetColors.normal,
+            fontWeight: preset === 'normal' ? 'bold' : 'normal',
+          }}
+        >
+          Normal (200-400 WPM)
+        </button>
+        <button
+          onClick={() => setPreset('skimming')}
+          style={{
+            background: presetColors.skimming,
+            fontWeight: preset === 'skimming' ? 'bold' : 'normal',
+          }}
+        >
+          Skimming (400+ WPM)
+        </button>
+
       </div>
       {morningMedian != null && eveningMedian != null && (
         <div
