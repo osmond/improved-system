@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { select, pointer } from 'd3-selection';
 import { scaleLinear, scaleBand } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
-import { mean, quantile } from 'd3-array';
+import { mean, quantile, range } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 
 export const color = {
@@ -121,6 +121,13 @@ export default function ReadingSpeedViolin() {
     const catWidth = xCat.bandwidth();
     const y = scaleLinear().domain([min, max]).range([innerHeight, 0]);
 
+    const tickStep = 50;
+    const yTickValues = range(
+      Math.floor(min / tickStep) * tickStep,
+      Math.ceil(max / tickStep) * tickStep + tickStep,
+      tickStep
+    );
+
     let densities = {};
     let maxDensity = 0;
     let x;
@@ -158,7 +165,39 @@ export default function ReadingSpeedViolin() {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    root.append('g').call(axisLeft(y));
+    const grid = root
+      .append('g')
+      .call(
+        axisLeft(y)
+          .tickValues(yTickValues)
+          .tickSize(-innerWidth)
+          .tickFormat('')
+      )
+      .call((g) => g.select('.domain').remove());
+
+    grid
+      .selectAll('line')
+      .attr('stroke', (d) => (d % 250 === 0 ? '#9ca3af' : '#e5e7eb'))
+      .attr('stroke-opacity', (d) => (d % 250 === 0 ? 1 : 0.3));
+
+    const yAxis = root
+      .append('g')
+      .call(
+        axisLeft(y)
+          .tickValues(yTickValues)
+          .tickFormat((d) => (d % 250 === 0 ? d : ''))
+      );
+
+    yAxis
+      .selectAll('.tick line')
+      .attr('x2', (d) => (d % 250 === 0 ? -6 : -3))
+      .attr('stroke', (d) => (d % 250 === 0 ? '#4b5563' : '#e5e7eb'))
+      .attr('stroke-opacity', (d) => (d % 250 === 0 ? 1 : 0.3));
+
+    yAxis
+      .selectAll('.tick text')
+      .attr('fill', (d) => (d % 250 === 0 ? '#374151' : '#9ca3af'));
+
     root
       .append('g')
       .attr('transform', `translate(0,${innerHeight})`)
