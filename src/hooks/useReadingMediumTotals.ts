@@ -8,9 +8,8 @@ interface UseReadingMediumTotalsOptions {
    */
   data?: ReadingMediumTotal[]
   /**
-   * Optional fetcher function. By default the hook attempts to call
-   * `/api/reading-medium-totals` and falls back to mock data if the endpoint
-   * is unavailable.
+   * Optional fetcher function. Defaults to {@link getReadingMediumTotals} which
+   * fetches Kindle session data and aggregates totals.
    */
   fetcher?: () => Promise<ReadingMediumTotal[]>
 }
@@ -22,19 +21,12 @@ interface UseReadingMediumTotalsResult {
 }
 
 async function defaultFetcher(): Promise<ReadingMediumTotal[]> {
-  try {
-    const res = await fetch('/api/reading-medium-totals')
-    if (!res.ok) throw new Error('Failed to fetch reading medium totals')
-    return res.json()
-  } catch {
-    return getReadingMediumTotals()
-  }
+  return getReadingMediumTotals()
 }
 
 /**
- * Retrieves total reading time by medium. Attempts to fetch from the
- * `/api/reading-medium-totals` endpoint and falls back to locally generated
- * mock data when the API is absent.
+ * Retrieves total reading time by medium. Uses Kindle session data and falls
+ * back to the bundled JSON if fetching fails.
  */
 export default function useReadingMediumTotals(
   options: UseReadingMediumTotalsOptions = {},

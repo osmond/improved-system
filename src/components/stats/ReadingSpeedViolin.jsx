@@ -5,6 +5,7 @@ import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { schemeSet2 } from 'd3-scale-chromatic';
+import { forceSimulation, forceX, forceY, forceCollide } from 'd3-force';
 
 export const color = {
   morning: schemeSet2[0],
@@ -224,12 +225,6 @@ export default function ReadingSpeedViolin() {
       .attr('text-anchor', 'middle')
       .text('Reading Period');
 
-    const jitterWidth = isSmall
-      ? catWidth * 0.1
-      : chartType === 'violin' && x
-      ? x(maxDensity) * 0.3
-      : catWidth * 0.3;
-
     const legendData = [
       { key: 'morning', label: 'Morning', visible: showMorning },
       { key: 'evening', label: 'Evening', visible: showEvening },
@@ -377,14 +372,38 @@ export default function ReadingSpeedViolin() {
           .attr('stroke-width', 2);
       }
 
-      values.forEach((v) => {
+      const maxPoints = 300;
+      const step = Math.ceil(values.length / maxPoints);
+      const sampled = step > 1 ? values.filter((_, i) => i % step === 0) : values;
+
+      const nodes = sampled.map((v) => ({ data: v, x: 0, y: y(v.wpm) }));
+
+      const rand = (() => {
+        let seed = 42;
+        return () => {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+        };
+      })();
+
+      const simulation = forceSimulation(nodes)
+        .force('x', forceX(0))
+        .force('y', forceY((d) => d.y).strength(1))
+        .force('collide', forceCollide(2.5))
+        .randomSource(rand)
+        .stop();
+
+      for (let i = 0; i < 200; i += 1) simulation.tick();
+
+      nodes.forEach((n) => {
+        const v = n.data;
         g
           .append('circle')
-          .attr('cx', Math.random() * jitterWidth - jitterWidth / 2)
-          .attr('cy', y(v.wpm))
-          .attr('r', 3)
+          .attr('cx', n.x)
+          .attr('cy', n.y)
+          .attr('r', 2)
           .attr('fill', fill)
-          .attr('fill-opacity', 0.8)
+          .attr('fill-opacity', 0.25)
           .attr('stroke', '#333')
           .attr('stroke-width', 0.5)
           .on('mouseover', (event) => {
@@ -415,38 +434,6 @@ export default function ReadingSpeedViolin() {
       });
     });
 
-    if (showMorning && showEvening && stats.morning && stats.evening) {
-      const morningMedian = stats.morning.median;
-      const eveningMedian = stats.evening.median;
-      const annotationY = -10;
-      const annotation = root.append('g').attr('class', 'median-annotation');
-      annotation
-        .append('text')
-        .attr('x', innerWidth / 2)
-        .attr('y', annotationY)
-        .attr('text-anchor', 'middle')
-        .text(
-          `Evening median ≈${Math.round(eveningMedian)} WPM vs. Morning ≈${Math.round(
-            morningMedian
-          )} WPM`
-        );
-      annotation
-        .append('line')
-        .attr('x1', innerWidth / 2)
-        .attr('y1', annotationY + 5)
-        .attr('x2', xCat('morning') + catWidth / 2)
-        .attr('y2', y(morningMedian))
-        .attr('stroke', color.morning)
-        .attr('marker-end', 'url(#arrow)');
-      annotation
-        .append('line')
-        .attr('x1', innerWidth / 2)
-        .attr('y1', annotationY + 5)
-        .attr('x2', xCat('evening') + catWidth / 2)
-        .attr('y2', y(eveningMedian))
-        .attr('stroke', color.evening)
-        .attr('marker-end', 'url(#arrow)');
-    }
   }, [
     filteredData,
     showMorning,
@@ -456,6 +443,32 @@ export default function ReadingSpeedViolin() {
     chartType,
     showOutliers,
   ]);
+
+  const {
+    morningMedian,
+    eveningMedian,
+    morningCount,
+    eveningCount,
+    delta,
+  } = React.useMemo(() => {
+    const morningVals = filteredData
+      .filter((d) => d.period === 'morning')
+      .map((d) => d.wpm);
+    const eveningVals = filteredData
+      .filter((d) => d.period === 'evening')
+      .map((d) => d.wpm);
+    const mMedian = morningVals.length ? quantile(morningVals, 0.5) : null;
+    const eMedian = eveningVals.length ? quantile(eveningVals, 0.5) : null;
+    const diff =
+      mMedian != null && eMedian != null ? eMedian - mMedian : null;
+    return {
+      morningMedian: mMedian,
+      eveningMedian: eMedian,
+      morningCount: morningVals.length,
+      eveningCount: eveningVals.length,
+      delta: diff,
+    };
+  }, [filteredData]);
 
   return (
     <div style={{ position: 'relative' }}>
@@ -470,6 +483,21 @@ export default function ReadingSpeedViolin() {
         <button onClick={() => setPreset('normal')}>Normal (200-400 WPM)</button>
         <button onClick={() => setPreset('skimming')}>Skimming (400+ WPM)</button>
       </div>
+      {morningMedian != null && eveningMedian != null && (
+        <div
+          style={{
+            margin: '1rem 0',
+            padding: '1rem',
+            background: '#f5f5f5',
+            borderRadius: '8px',
+            textAlign: 'center',
+            fontWeight: 'bold',
+            fontSize: '1.25rem',
+          }}
+        >
+          {`Morning median ${Math.round(morningMedian)} WPM (n=${morningCount}) vs Evening median ${Math.round(eveningMedian)} WPM (n=${eveningCount}, Δ = ${Math.round(delta)} WPM)`}
+        </div>
+      )}
       <div ref={containerRef} style={{ width: '100%' }}>
         <svg
           ref={svgRef}

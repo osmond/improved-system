@@ -7,6 +7,7 @@ import {
   act,
 } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+let geoJSONTooltips = [];
 vi.mock('react-leaflet', () => {
   const LayersControl = ({ children }) => <div>{children}</div>;
   LayersControl.BaseLayer = ({ children }) => <div>{children}</div>;
@@ -14,9 +15,18 @@ vi.mock('react-leaflet', () => {
     MapContainer: ({ children }) => <div data-testid="map">{children}</div>,
     TileLayer: () => null,
     CircleMarker: ({ children }) => <div data-testid="marker">{children}</div>,
-    GeoJSON: () => null,
+    GeoJSON: ({ data, onEachFeature }) => {
+      if (onEachFeature && data?.features) {
+        data.features.forEach((feature) =>
+          onEachFeature(feature, {
+            bindTooltip: (html) => geoJSONTooltips.push(html),
+          })
+        );
+      }
+      return null;
+    },
     Tooltip: ({ children }) => <div>{children}</div>,
-    Polyline: () => <div data-testid="polyline" />, 
+    Polyline: () => <div data-testid="polyline" />,
     LayersControl,
     useMap: () => ({
       setView: () => {},
@@ -59,6 +69,10 @@ import {
   fetchSessionLocations,
   getSessionLocations,
 } from '@/services/locationData';
+
+beforeEach(() => {
+  geoJSONTooltips = [];
+});
 
 const remoteData = [
   {
@@ -118,6 +132,26 @@ describe('ReadingMap', () => {
     );
   });
 
+  it('retains sessions on the end date', async () => {
+    const { container } = render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    const slider = screen.getByRole('slider');
+    fireEvent.change(slider, { target: { value: 2 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(3)
+    );
+
+    const dateInputs = container.querySelectorAll('input[type="date"]');
+    const [, endInput] = dateInputs;
+    fireEvent.change(endInput, { target: { value: '2021-06-01' } });
+    fireEvent.change(slider, { target: { value: 1 } });
+    await waitFor(() => {
+      expect(screen.getAllByTestId('marker')).toHaveLength(2);
+      expect(screen.getByText('Beta')).toBeTruthy();
+    });
+  });
+
   it('plays through locations when toggling play', async () => {
     render(<ReadingMap />);
     await waitFor(() => screen.getByTestId('map'));
@@ -141,6 +175,35 @@ describe('ReadingMap', () => {
 
     expect(screen.getAllByTestId('marker')).toHaveLength(2);
     vi.useRealTimers();
+  });
+
+  it('resets playback when filters change without altering results', async () => {
+    const { container } = render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    const slider = screen.getByRole('slider');
+    const button = screen.getByRole('button');
+
+    fireEvent.change(slider, { target: { value: 2 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(3)
+    );
+
+    vi.useFakeTimers();
+    fireEvent.click(button);
+    expect(button.textContent).toBe('Pause');
+    vi.useRealTimers();
+
+    const [startInput] = container.querySelectorAll('input[type="date"]');
+    fireEvent.change(startInput, { target: { value: '2019-01-01' } });
+
+    await waitFor(() => {
+      const updatedSlider = screen.getByRole('slider');
+      const updatedButton = screen.getByRole('button');
+      expect(updatedSlider.max).toBe('2');
+      expect(updatedSlider.value).toBe('0');
+      expect(updatedButton.textContent).toBe('Play');
+    });
   });
 
   it('switches map modes', async () => {
@@ -177,6 +240,39 @@ describe('ReadingMap', () => {
     expect(getSessionLocations).toHaveBeenCalled();
     await waitFor(() =>
       expect(screen.getByTestId('message').textContent).toContain('local')
+    );
+  });
+
+  it('keeps counts distinct for regions with the same name', async () => {
+    const collisionData = [
+      {
+        start: '2023-01-01T00:00:00Z',
+        title: 'State Book',
+        latitude: 33.749, // Atlanta, GA, USA
+        longitude: -84.388,
+      },
+      {
+        start: '2023-01-02T00:00:00Z',
+        title: 'Country Book',
+        latitude: 41.7151, // Tbilisi, Georgia (country)
+        longitude: 44.8271,
+      },
+    ];
+    fetchSessionLocations.mockResolvedValueOnce(collisionData);
+    getSessionLocations.mockReturnValueOnce(collisionData);
+
+    render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+    await waitFor(() =>
+      expect(
+        geoJSONTooltips.filter((t) => t.startsWith('Georgia:'))
+      ).toHaveLength(2)
+    );
+    const georgiaTooltips = geoJSONTooltips.filter((t) =>
+      t.startsWith('Georgia:')
+    );
+    georgiaTooltips.forEach((t) =>
+      expect(t).toBe('Georgia: 1 title')
     );
   });
 });

@@ -13,6 +13,8 @@ export type { LocationVisit } from "./locationStore";
 import dailyReadingData from "@/data/kindle/daily-stats.json";
 import sessionData from "../data/kindle/sessions.json";
 import asinTitleMap from "../data/kindle/asin-title-map.json";
+import readingSpeedData from "../data/kindle/reading-speed.json";
+import locationData from "../data/kindle/locations.json";
 
 export type Activity = {
   id: number;
@@ -217,44 +219,48 @@ export interface ActivitySnapshot {
   network: string;
 }
 
-export function generateMockActivitySnapshots(days = 30): ActivitySnapshot[] {
-  const data: ActivitySnapshot[] = [];
-  const locations = ["home", "office", "cafe"];
-  let currentLoc = locations[0];
-  const networks = ["wifi_home", "wifi_office", "wifi_public"];
-  let currentNet = networks[0];
-  for (let i = 0; i < days; i++) {
-    const base = new Date();
-    base.setDate(base.getDate() - i);
-    for (let h = 0; h < 24; h++) {
-      const d = new Date(base);
-      d.setHours(h, 0, 0, 0);
-      if (Math.random() < 0.1) {
-        currentLoc = locations[Math.floor(Math.random() * locations.length)];
-      }
-      if (Math.random() < 0.1) {
-        currentNet = networks[Math.floor(Math.random() * networks.length)];
-      }
-      data.push({
-        timestamp: d.toISOString(),
-        heartRate: Math.round(60 + Math.random() * 40),
-        steps: Math.floor(50 + Math.random() * 450),
-        appChanges: Math.floor(Math.random() * 6),
-        inputCadence: Math.floor(Math.random() * 200),
-        location: currentLoc,
-        network: currentNet,
-      });
-    }
-  }
-  return data;
-}
-
 export async function getActivitySnapshots(
   days = 30,
 ): Promise<ActivitySnapshot[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(generateMockActivitySnapshots(days)), 200);
+  const cutoff = new Date();
+  cutoff.setDate(cutoff.getDate() - days);
+
+  const speedMap = new Map<number, number>();
+  (readingSpeedData as { start: string; wpm: number }[]).forEach((r) => {
+    speedMap.set(new Date(r.start).getTime(), r.wpm);
   });
+
+  const locationMap = new Map<number, string>();
+  (
+    locationData as { start: string; latitude: number; longitude: number }[]
+  ).forEach((l) => {
+    locationMap.set(
+      new Date(l.start).getTime(),
+      `${l.latitude.toFixed(3)},${l.longitude.toFixed(3)}`,
+    );
+  });
+
+  const sessions = await getKindleSessions();
+
+  return sessions
+    .filter((s) => new Date(s.start) >= cutoff)
+    .map((s) => {
+      const start = new Date(s.start);
+      const hourStart = new Date(start);
+      hourStart.setMinutes(0, 0, 0);
+      const key = start.getTime();
+      const wpm = speedMap.get(key) ?? 0;
+      const loc = locationMap.get(key) ?? "unknown";
+      return {
+        timestamp: hourStart.toISOString(),
+        heartRate: wpm,
+        steps: s.duration,
+        appChanges: s.highlights,
+        inputCadence: wpm,
+        location: loc,
+        network: s.asin,
+      } as ActivitySnapshot;
+    });
 }
 
 // ----- State visit data -----
@@ -1613,6 +1619,7 @@ export interface ReadingSession {
   duration: number;
 }
 
+
 export function generateMockReadingSessions(count = 60): ReadingSession[] {
   const sessions: ReadingSession[] = [];
   const mediums: ReadingMedium[] = [
@@ -1647,6 +1654,7 @@ export async function getReadingSessions(
     medium: "kindle" as ReadingMedium,
     duration: s.duration,
   }));
+
 }
 
 export interface ReadingMediumTotal {
@@ -1675,12 +1683,13 @@ export function aggregateReadingMediumTotals(
 }
 
 export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const sessions = generateMockReadingSessions();
-      resolve(aggregateReadingMediumTotals(sessions));
-    }, 200);
-  });
+  try {
+    const sessions = await getReadingSessions();
+    return aggregateReadingMediumTotals(sessions);
+  } catch (err) {
+    console.error("Failed to load reading medium totals", err);
+    return aggregateReadingMediumTotals([]);
+  }
 }
 
 export interface DailyReadingStat {

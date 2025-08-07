@@ -51,6 +51,7 @@ export default function useReadingProbability(): ReadingProbabilityPoint[] | nul
   const [data, setData] = useState<ReadingProbabilityPoint[] | null>(null)
 
   useEffect(() => {
+
     const controller = new AbortController()
     const signal = controller.signal
     getKindleSessions(signal).then((sessions) => {
@@ -59,6 +60,7 @@ export default function useReadingProbability(): ReadingProbabilityPoint[] | nul
       }
     })
     return () => controller.abort()
+
   }, [])
 
   return data

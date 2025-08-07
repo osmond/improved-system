@@ -80,10 +80,10 @@ export function computeHeatmapFromActivity(
     prevNetwork = s.network
     cell.count += 1
   }
-  const stepThreshold = 200
-  const hrVarThreshold = 20
-  const appChangeThreshold = 3
-  const inputCadenceThreshold = 100
+  const stepThreshold = 60
+  const hrVarThreshold = 400
+  const appChangeThreshold = 5
+  const inputCadenceThreshold = 500
   const locationChangeThreshold = 2
   const networkChangeThreshold = 2
   const result: HeatmapCell[] = []
@@ -125,6 +125,7 @@ export default function useReadingHeatmap(): HeatmapCell[] | null {
   const [data, setData] = useState<HeatmapCell[] | null>(null)
 
   useEffect(() => {
+
     const controller = new AbortController()
     const signal = controller.signal
     getKindleSessions(signal).then((sessions) => {
@@ -133,6 +134,7 @@ export default function useReadingHeatmap(): HeatmapCell[] | null {
       }
     })
     return () => controller.abort()
+
   }, [])
 
   return data

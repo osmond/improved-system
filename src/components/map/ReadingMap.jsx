@@ -20,6 +20,7 @@ import { fetchSessionLocations, getSessionLocations } from '@/services/locationD
 import statesTopo from '@/lib/us-states.json';
 import worldTopo from '@/lib/world-countries.json';
 import { Skeleton } from '@/ui/skeleton';
+import { fipsToAbbr } from '@/lib/stateCodes';
 
 export default function ReadingMap() {
   const [locations, setLocations] = useState([]);
@@ -77,8 +78,9 @@ export default function ReadingMap() {
 
   const filtered = useMemo(() => {
     return locations.filter((l) => {
-      if (start && l.start < start) return false;
-      if (end && l.start > end) return false;
+      const date = l.start.slice(0, 10);
+      if (start && date < start) return false;
+      if (end && date > end) return false;
       if (title && !l.title.toLowerCase().includes(title.toLowerCase())) return false;
       return true;
     });
@@ -87,7 +89,7 @@ export default function ReadingMap() {
   useEffect(() => {
     setCurrentIndex(0);
     setPlaying(false);
-  }, [filtered.length]);
+  }, [filtered]);
 
   useEffect(() => {
     if (!playing) return;
@@ -172,37 +174,60 @@ export default function ReadingMap() {
   const { data: choropleth, counts } = useMemo(() => {
     const states = feature(statesTopo, statesTopo.objects.states);
     const countries = feature(worldTopo, worldTopo.objects.countries);
-    const features = [
-      ...countries.features.filter((f) => f.id !== '840'),
-      ...states.features,
-    ];
+
+    const countryFeatures = countries.features
+      .filter((f) => f.id !== '840')
+      .map((f) => ({ ...f, regionType: 'country' }));
+    const stateFeatures = states.features.map((f) => ({
+      ...f,
+      regionType: 'state',
+    }));
+
+    const features = [...countryFeatures, ...stateFeatures];
+
     const titleSets = {};
     filtered.forEach((loc) => {
       const point = [loc.longitude, loc.latitude];
-      let region = states.features.find((s) => geoContains(s, point));
+      let region = stateFeatures.find((s) => geoContains(s, point));
+      let regionType = 'state';
       if (!region) {
-        region = countries.features.find((c) => geoContains(c, point));
+        region = countryFeatures.find((c) => geoContains(c, point));
+        regionType = 'country';
       }
       if (region) {
-        const name = region.properties.name;
-        if (!titleSets[name]) titleSets[name] = new Set();
-        titleSets[name].add(loc.title);
+        const code =
+          regionType === 'state'
+            ? `state-${fipsToAbbr[region.id] || region.id}`
+            : `country-${region.id}`;
+        if (!titleSets[code]) titleSets[code] = new Set();
+        titleSets[code].add(loc.title);
       }
     });
+
     const counts = {};
-    Object.entries(titleSets).forEach(([name, set]) => {
-      counts[name] = set.size;
+    Object.entries(titleSets).forEach(([code, set]) => {
+      counts[code] = set.size;
     });
+
     return {
       data: {
         type: 'FeatureCollection',
-        features: features.map((f) => ({
-          ...f,
-          properties: {
-            ...f.properties,
-            count: counts[f.properties.name] || 0,
-          },
-        })),
+        features: features.map((f) => {
+          const { regionType, properties: origProps, ...rest } = f;
+          const code =
+            regionType === 'state'
+              ? `state-${fipsToAbbr[f.id] || f.id}`
+              : `country-${f.id}`;
+          return {
+            ...rest,
+            properties: {
+              ...origProps,
+              name: origProps.name,
+              code,
+              count: counts[code] || 0,
+            },
+          };
+        }),
       },
       counts,
     };
