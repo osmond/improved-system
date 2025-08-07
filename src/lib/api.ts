@@ -1745,26 +1745,33 @@ export interface KindleSession {
 export async function getKindleSessions(
   signal?: AbortSignal
 ): Promise<KindleSession[]> {
+  let sessions: KindleSession[] | undefined;
   if (typeof fetch === "function") {
     try {
       const res = await fetch("/api/kindle/sessions", {
         ...(signal ? { signal } : {}),
       });
       if (res.ok) {
-        return res.json();
+        sessions = await res.json();
+      } else {
+        console.warn(
+          `Failed to fetch Kindle sessions: ${res.status} ${res.statusText}. Using local data.`,
+        );
       }
-      console.warn(
-        `Failed to fetch Kindle sessions: ${res.status} ${res.statusText}. Using local data.`,
-      );
     } catch (err: any) {
       if (err.name === "AbortError") throw err;
       console.warn("Failed to fetch Kindle sessions, using local data:", err);
     }
   }
 
-  return sessionData.map((s) => ({
+  if (!sessions) {
+    sessions = sessionData as KindleSession[];
+  }
+
+  return sessions.map((s) => ({
     ...s,
-    title: (asinTitleMap as Record<string, string>)[s.asin] ?? s.asin,
+    title:
+      (asinTitleMap as Record<string, string>)[s.asin] ?? s.title ?? s.asin,
   }));
 }
 
