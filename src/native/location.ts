@@ -19,10 +19,26 @@ interface LocationPlugin {
 const Location = registerPlugin<LocationPlugin>('Location');
 
 export const startLocationLogging = async () => {
-  await Location.start();
-  await Location.addListener('location', storeFix);
+  try {
+    await Location.start();
+    return await Location.addListener('location', storeFix);
+  } catch (err) {
+    console.error('Failed to start location logging', err);
+    throw err;
+  }
 };
 
-export const stopLocationLogging = () => Location.stop();
+export const stopLocationLogging = async (
+  handle?: PluginListenerHandle,
+) => {
+  if (handle) {
+    try {
+      await handle.remove();
+    } catch (err) {
+      console.error('Failed to remove location listener', err);
+    }
+  }
+  return Location.stop();
+};
 
 export default Location;
