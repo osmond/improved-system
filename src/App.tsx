@@ -1,10 +1,7 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import RootLayout from "@/layouts/RootLayout";
-import SidebarDemoPage from "@/pages/SidebarDemo";
-import NotFound from "@/pages/NotFound";
-import Home from "@/pages/Home";
-import VisualizationsList from "@/pages/VisualizationsList";
 import { dashboardRoutes } from "@/routes";
+import { baseRoutes } from "@/routes/baseRoutes";
 import { getLazyComponent } from "@/lib/routeLoader";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
@@ -38,18 +35,14 @@ function App() {
         <SelectionProvider>
           <RootLayout>
             <Routes>
-              <Route path="/" element={<Home />} />
+              {baseRoutes.map(({ path, element }) => (
+                <Route key={path} path={path} element={element} />
+              ))}
               <Route
                 path="/dashboard"
                 element={<Navigate to="/" replace />}
               />
-              <Route
-                path="/visualizations"
-                element={<VisualizationsList />}
-              />
-              <Route path="/sidebar-demo" element={<SidebarDemoPage />} />
               {createDashboardRoutes()}
-              <Route path="*" element={<NotFound />} />
             </Routes>
           </RootLayout>
         </SelectionProvider>
