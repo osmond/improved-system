@@ -48,9 +48,17 @@ export default function useReadingProbability(): ReadingProbabilityPoint[] | nul
   const [data, setData] = useState<ReadingProbabilityPoint[] | null>(null)
 
   useEffect(() => {
-    getReadingSessions().then((sessions) =>
-      setData(computeReadingProbability(sessions)),
-    )
+    let active = true
+    getReadingSessions()
+      .then((sessions) => {
+        if (active) setData(computeReadingProbability(sessions))
+      })
+      .catch(() => {
+        if (active) setData([])
+      })
+    return () => {
+      active = false
+    }
   }, [])
 
   return data

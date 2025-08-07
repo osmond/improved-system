@@ -122,7 +122,17 @@ export default function useReadingHeatmap(): HeatmapCell[] | null {
   const [data, setData] = useState<HeatmapCell[] | null>(null)
 
   useEffect(() => {
-    getReadingSessions().then((sessions) => setData(computeReadingHeatmap(sessions)))
+    let active = true
+    getReadingSessions()
+      .then((sessions) => {
+        if (active) setData(computeReadingHeatmap(sessions))
+      })
+      .catch(() => {
+        if (active) setData([])
+      })
+    return () => {
+      active = false
+    }
   }, [])
 
   return data

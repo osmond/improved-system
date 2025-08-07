@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import type { ReadingMediumTotal } from '@/lib/api'
+import { getReadingMediumTotals, type ReadingMediumTotal } from '@/lib/api'
 
 interface UseReadingMediumTotalsOptions {
   /**
@@ -7,7 +7,7 @@ interface UseReadingMediumTotalsOptions {
    */
   data?: ReadingMediumTotal[]
   /**
-   * Optional fetcher function. Defaults to calling `/api/reading-medium-totals`.
+   * Optional fetcher function. Defaults to `getReadingMediumTotals`.
    */
   fetcher?: () => Promise<ReadingMediumTotal[]>
 }
@@ -19,9 +19,7 @@ interface UseReadingMediumTotalsResult {
 }
 
 async function defaultFetcher(): Promise<ReadingMediumTotal[]> {
-  const res = await fetch('/api/reading-medium-totals')
-  if (!res.ok) throw new Error('Failed to fetch reading medium totals')
-  return res.json()
+  return getReadingMediumTotals()
 }
 
 export default function useReadingMediumTotals(

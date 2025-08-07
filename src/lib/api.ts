@@ -1613,34 +1613,26 @@ export interface ReadingSession {
   duration: number;
 }
 
-export function generateMockReadingSessions(count = 60): ReadingSession[] {
-  const sessions: ReadingSession[] = [];
-  const mediums: ReadingMedium[] = [
-    "phone",
-    "computer",
-    "tablet",
-    "kindle",
-    "real_book",
-    "other",
-  ];
-  for (let i = 0; i < count; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - Math.floor(Math.random() * 30));
-    d.setHours(Math.floor(Math.random() * 24), 0, 0, 0);
-    sessions.push({
-      timestamp: d.toISOString(),
-      intensity: +Math.random().toFixed(2),
-      medium: mediums[Math.floor(Math.random() * mediums.length)],
-      duration: Math.floor(5 + Math.random() * 55),
-    });
+export async function getReadingSessions(
+  signal?: AbortSignal,
+): Promise<ReadingSession[]> {
+  try {
+    const sessions = await getKindleSessions(signal);
+    return sessions.map((s) => ({
+      timestamp: s.start,
+      intensity: s.highlights > 0 ? 0.8 : 0.3,
+      medium: "kindle",
+      duration: s.duration,
+    }));
+  } catch (err) {
+    // As a final fallback, use local session data if available
+    return (sessionData as any[]).map((s) => ({
+      timestamp: s.start,
+      intensity: s.highlights > 0 ? 0.8 : 0.3,
+      medium: "kindle",
+      duration: s.duration,
+    }));
   }
-  return sessions;
-}
-
-export async function getReadingSessions(): Promise<ReadingSession[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(generateMockReadingSessions()), 200);
-  });
 }
 
 export interface ReadingMediumTotal {
@@ -1668,13 +1660,11 @@ export function aggregateReadingMediumTotals(
   }));
 }
 
-export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const sessions = generateMockReadingSessions();
-      resolve(aggregateReadingMediumTotals(sessions));
-    }, 200);
-  });
+export async function getReadingMediumTotals(
+  signal?: AbortSignal,
+): Promise<ReadingMediumTotal[]> {
+  const sessions = await getReadingSessions(signal);
+  return aggregateReadingMediumTotals(sessions);
 }
 
 export interface DailyReadingStat {
