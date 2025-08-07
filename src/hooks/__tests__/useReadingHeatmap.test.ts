@@ -1,27 +1,33 @@
 import { describe, it, expect } from 'vitest'
 import { computeReadingHeatmap, computeHeatmapFromActivity } from '../useReadingHeatmap'
-import type { ReadingSession, ActivitySnapshot } from '@/lib/api'
+import type { KindleSession, ActivitySnapshot } from '@/lib/api'
 
 describe('computeReadingHeatmap', () => {
   it('bins by hour and weekday', () => {
-    const sessions: ReadingSession[] = [
+    const sessions: KindleSession[] = [
       {
-        timestamp: '2025-07-28T10:00:00Z',
-        intensity: 0.5,
-        medium: 'phone',
+        start: '2025-07-28T10:00:00Z',
+        end: '2025-07-28T10:30:00Z',
+        asin: 'A',
+        title: 'Book A',
         duration: 30,
+        highlights: 15,
       },
       {
-        timestamp: '2025-07-28T10:30:00Z',
-        intensity: 0.7,
-        medium: 'phone',
-        duration: 15,
-      },
-      {
-        timestamp: '2025-07-29T11:00:00Z',
-        intensity: 0.2,
-        medium: 'kindle',
+        start: '2025-07-28T10:30:00Z',
+        end: '2025-07-28T10:50:00Z',
+        asin: 'A',
+        title: 'Book A',
         duration: 20,
+        highlights: 14,
+      },
+      {
+        start: '2025-07-29T11:00:00Z',
+        end: '2025-07-29T11:20:00Z',
+        asin: 'B',
+        title: 'Book B',
+        duration: 20,
+        highlights: 4,
       },
     ]
     const result = computeReadingHeatmap(sessions)

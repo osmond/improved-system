@@ -40,7 +40,9 @@ describe('BookNetwork component', () => {
 
 
   it('shows sub-genre input and saves override', async () => {
-    const { container } = render(<BookNetwork data={createMockGraph()} />);
+    const { container, getByLabelText, getByText } = render(
+      <BookNetwork data={createMockGraph()} />
+    );
     act(() => {
       resizeCallback?.([{ contentRect: { width: 600, height: 400 } }]);
     });
@@ -67,6 +69,9 @@ describe('BookNetwork component', () => {
     const { container, getByLabelText, getByText, queryByLabelText } = render(
       <BookNetwork data={createMockGraph()} />
     );
+    act(() => {
+      resizeCallback?.([{ contentRect: { width: 600, height: 400 } }]);
+    });
     await waitFor(() => {
       expect(container.querySelectorAll('[data-testid="node"]').length).toBe(3);
     });

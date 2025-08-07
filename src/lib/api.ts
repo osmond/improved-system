@@ -1619,20 +1619,42 @@ export interface ReadingSession {
   duration: number;
 }
 
-export async function getReadingSessions(): Promise<ReadingSession[]> {
-  try {
-    const kindleSessions = await getKindleSessions();
-    return kindleSessions.map((s) => ({
-      timestamp: s.start,
-      // Rough intensity estimate based on highlight activity
-      intensity: Math.min(1, (s.highlights + 1) / 5),
-      medium: "kindle" as ReadingMedium,
-      duration: s.duration,
-    }));
-  } catch (err) {
-    console.error("Failed to load reading sessions", err);
-    return [];
+
+export function generateMockReadingSessions(count = 60): ReadingSession[] {
+  const sessions: ReadingSession[] = [];
+  const mediums: ReadingMedium[] = [
+    "phone",
+    "computer",
+    "tablet",
+    "kindle",
+    "real_book",
+    "other",
+  ];
+  for (let i = 0; i < count; i++) {
+    const d = new Date();
+    d.setDate(d.getDate() - Math.floor(Math.random() * 30));
+    d.setHours(Math.floor(Math.random() * 24), 0, 0, 0);
+    sessions.push({
+      timestamp: d.toISOString(),
+      intensity: +Math.random().toFixed(2),
+      medium: mediums[Math.floor(Math.random() * mediums.length)],
+      duration: Math.floor(5 + Math.random() * 55),
+    });
   }
+  return sessions;
+}
+
+export async function getReadingSessions(
+  signal?: AbortSignal,
+): Promise<ReadingSession[]> {
+  const sessions = await getKindleSessions(signal);
+  return sessions.map((s) => ({
+    timestamp: s.start,
+    intensity: s.duration ? Math.min(1, (s.highlights || 0) / s.duration) : 0,
+    medium: "kindle" as ReadingMedium,
+    duration: s.duration,
+  }));
+
 }
 
 export interface ReadingMediumTotal {

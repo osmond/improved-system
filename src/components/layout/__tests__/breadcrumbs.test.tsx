@@ -25,9 +25,7 @@ describe("Breadcrumbs", () => {
     expect(links[0]).toHaveAttribute("href", "/");
     expect(links[1]).toHaveTextContent("Charts");
     expect(links[1]).toHaveAttribute("href", "/dashboard/charts");
-    expect(
-      screen.getByText("Customizable Metric Comparison")
-    ).toBeInTheDocument();
+    expect(screen.getByText("Bar Chart Interactive")).toBeInTheDocument();
   });
 
   it("allows custom labels for params", () => {

@@ -1,8 +1,8 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  getReadingSessions,
+  getKindleSessions,
   getActivitySnapshots,
-  type ReadingSession,
+  type KindleSession,
   type ActivitySnapshot,
 } from '@/lib/api'
 
@@ -14,15 +14,18 @@ export interface HeatmapCell {
   fragmentation?: number
 }
 
-export function computeReadingHeatmap(sessions: ReadingSession[]): HeatmapCell[] {
+export function computeReadingHeatmap(sessions: KindleSession[]): HeatmapCell[] {
   const bins = Array.from({ length: 7 }, () =>
     Array.from({ length: 24 }, () => ({ total: 0, count: 0 })),
   )
   for (const s of sessions) {
-    const d = new Date(s.timestamp)
+    const d = new Date(s.start)
     const day = d.getDay()
     const hour = d.getHours()
-    bins[day][hour].total += s.intensity
+    const intensity = s.duration
+      ? Math.min(1, (s.highlights || 0) / s.duration)
+      : 0
+    bins[day][hour].total += intensity
     bins[day][hour].count += 1
   }
   const result: HeatmapCell[] = []
@@ -122,17 +125,16 @@ export default function useReadingHeatmap(): HeatmapCell[] | null {
   const [data, setData] = useState<HeatmapCell[] | null>(null)
 
   useEffect(() => {
-    let active = true
-    getReadingSessions()
-      .then((sessions) => {
-        if (active) setData(computeReadingHeatmap(sessions))
-      })
-      .catch(() => {
-        if (active) setData(computeReadingHeatmap([]))
-      })
-    return () => {
-      active = false
-    }
+
+    const controller = new AbortController()
+    const signal = controller.signal
+    getKindleSessions(signal).then((sessions) => {
+      if (!signal.aborted) {
+        setData(computeReadingHeatmap(sessions))
+      }
+    })
+    return () => controller.abort()
+
   }, [])
 
   return data

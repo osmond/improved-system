@@ -252,45 +252,52 @@ export default function GenreSankey() {
             'aria-label',
             `From ${d.source.name} to ${d.target.name}: ${d.value} sessions`,
           );
-      })
-      .on('mouseover focus', (event, d) => {
-        const tooltip = tooltipRef.current;
-        if (!tooltip) return;
-        let x = event.pageX ?? event.clientX;
-        let y = event.pageY ?? event.clientY;
-        if (x == null || y == null) {
-          const rect = event.target?.getBoundingClientRect();
-          if (rect) {
-            x = rect.left + rect.width / 2 + window.scrollX;
-            y = rect.top + rect.height / 2 + window.scrollY;
-          } else {
-            x = 0;
-            y = 0;
-          }
-        }
-        tooltip.style.display = 'block';
-        tooltip.style.left = `${x + 10}px`;
-        tooltip.style.top = `${y + 10}px`;
-        const percent = (
-          (d.value / (sourceTotals[d.source.name] || d.value)) * 100
-        ).toFixed(0);
-        const text = `${d.source.name} → ${d.target.name}: ${d.value} sessions (${percent}% of ${d.source.name}) in ${monthNames[month]}`;
-        const counts = d.monthlyCounts || [];
-        const max = Math.max(...counts, 0);
-        const barWidth = 5;
-        const barHeight = 20;
-        const bars = counts
-          .map((c, i) => {
-            const h = max ? (c / max) * barHeight : 0;
-            return `<rect x="${i * barWidth}" y="${barHeight - h}" width="${barWidth - 1}" height="${h}" fill="${barFill}" />`;
-          })
-          .join('');
-        tooltip.innerHTML = `<div>${text}</div><svg width="${counts.length * barWidth}" height="${barHeight}">${bars}</svg>`;
-      })
-      .on('mouseout blur', () => {
-        const tooltip = tooltipRef.current;
-        if (tooltip) tooltip.style.display = 'none';
       });
+
+    const showTooltip = (event, d) => {
+      const tooltip = tooltipRef.current;
+      if (!tooltip) return;
+      let x = event.pageX ?? event.clientX;
+      let y = event.pageY ?? event.clientY;
+      if (x == null || y == null) {
+        const rect = event.target?.getBoundingClientRect();
+        if (rect) {
+          x = rect.left + rect.width / 2 + window.scrollX;
+          y = rect.top + rect.height / 2 + window.scrollY;
+        } else {
+          x = 0;
+          y = 0;
+        }
+      }
+      tooltip.style.display = 'block';
+      tooltip.style.left = `${x + 10}px`;
+      tooltip.style.top = `${y + 10}px`;
+      const percent = (
+        (d.value / (sourceTotals[d.source.name] || d.value)) * 100
+      ).toFixed(0);
+      const text = `${d.source.name} → ${d.target.name}: ${d.value} sessions (${percent}% of ${d.source.name}) in ${monthNames[month]}`;
+      const counts = d.monthlyCounts || [];
+      const max = Math.max(...counts, 0);
+      const barWidth = 5;
+      const barHeight = 20;
+      const bars = counts
+        .map((c, i) => {
+          const h = max ? (c / max) * barHeight : 0;
+          return `<rect x="${i * barWidth}" y="${barHeight - h}" width="${barWidth - 1}" height="${h}" fill="${barFill}" />`;
+        })
+        .join('');
+      tooltip.innerHTML = `<div>${text}</div><svg width="${counts.length * barWidth}" height="${barHeight}">${bars}</svg>`;
+    };
+    const hideTooltip = () => {
+      const tooltip = tooltipRef.current;
+      if (tooltip) tooltip.style.display = 'none';
+    };
+
+    g.selectAll('path')
+      .on('mouseover', showTooltip)
+      .on('focus', showTooltip)
+      .on('mouseout', hideTooltip)
+      .on('blur', hideTooltip);
 
     // annotate major flows
     const labelData = l.filter((d) => d.value >= cutoff);
