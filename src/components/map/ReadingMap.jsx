@@ -89,7 +89,7 @@ export default function ReadingMap() {
   useEffect(() => {
     setCurrentIndex(0);
     setPlaying(false);
-  }, [filtered.length]);
+  }, [filtered]);
 
   useEffect(() => {
     if (!playing) return;
