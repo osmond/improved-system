@@ -177,6 +177,35 @@ describe('ReadingMap', () => {
     vi.useRealTimers();
   });
 
+  it('resets playback when filters change without altering results', async () => {
+    const { container } = render(<ReadingMap />);
+    await waitFor(() => screen.getByTestId('map'));
+
+    const slider = screen.getByRole('slider');
+    const button = screen.getByRole('button');
+
+    fireEvent.change(slider, { target: { value: 2 } });
+    await waitFor(() =>
+      expect(screen.getAllByTestId('marker')).toHaveLength(3)
+    );
+
+    vi.useFakeTimers();
+    fireEvent.click(button);
+    expect(button.textContent).toBe('Pause');
+    vi.useRealTimers();
+
+    const [startInput] = container.querySelectorAll('input[type="date"]');
+    fireEvent.change(startInput, { target: { value: '2019-01-01' } });
+
+    await waitFor(() => {
+      const updatedSlider = screen.getByRole('slider');
+      const updatedButton = screen.getByRole('button');
+      expect(updatedSlider.max).toBe('2');
+      expect(updatedSlider.value).toBe('0');
+      expect(updatedButton.textContent).toBe('Play');
+    });
+  });
+
   it('switches map modes', async () => {
     const { container } = render(<ReadingMap />);
     await waitFor(() => screen.getByTestId('map'));
