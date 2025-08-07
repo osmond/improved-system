@@ -1,10 +1,21 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { dashboardRoutes, type DashboardRoute } from "@/routes";
+import {
+  dashboardRoutes,
+  type DashboardRoute,
+  type DashboardRouteGroup,
+} from "@/routes";
 
-const routes: DashboardRoute[] = dashboardRoutes
-  .flatMap((group) => group.items)
-  .filter((route) => route.to !== "/dashboard/all");
+function flattenRoutes(groups: DashboardRouteGroup[]): DashboardRoute[] {
+  return groups.flatMap((group) => [
+    ...(group.items ?? []),
+    ...(group.groups ? flattenRoutes(group.groups) : []),
+  ]);
+}
+
+const routes: DashboardRoute[] = flattenRoutes(dashboardRoutes).filter(
+  (route) => route.to !== "/dashboard/all",
+);
 
 export default function VisualizationsList() {
   return (
