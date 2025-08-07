@@ -1,5 +1,7 @@
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { getKindleSessions } from '../api'
+import rawSessions from '../../data/kindle/sessions.json'
+import asinTitleMap from '../../data/kindle/asin-title-map.json'
 
 afterEach(() => {
   vi.unstubAllGlobals()
@@ -18,17 +20,27 @@ describe('getKindleSessions', () => {
     expect(result).toEqual(sessions)
   })
 
-  it('throws when fetch rejects', async () => {
+  it('returns local data when fetch rejects', async () => {
     vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('network')))
-    await expect(getKindleSessions()).rejects.toThrow('network')
+    const result = await getKindleSessions()
+    const expected = (rawSessions as any[]).map((s) => ({
+      ...s,
+      title: (asinTitleMap as Record<string, string>)[s.asin] ?? s.asin,
+    }))
+    expect(result).toEqual(expected)
   })
 
-  it('throws when response is not ok', async () => {
+  it('returns local data when response is not ok', async () => {
     vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
       ok: false,
       status: 500,
       statusText: 'Server Error',
     }))
-    await expect(getKindleSessions()).rejects.toThrow(/Failed to fetch Kindle sessions/)
+    const result = await getKindleSessions()
+    const expected = (rawSessions as any[]).map((s) => ({
+      ...s,
+      title: (asinTitleMap as Record<string, string>)[s.asin] ?? s.asin,
+    }))
+    expect(result).toEqual(expected)
   })
 })
