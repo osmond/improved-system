@@ -28,6 +28,11 @@ export default function ReadingSpeedViolin() {
   const [showEvening, setShowEvening] = useState(true);
   const [showOutliers, setShowOutliers] = useState(false);
   const [bandwidth, setBandwidth] = useState(300);
+  const presetColors = {
+    deep: '#dbeafe',
+    normal: '#dcfce7',
+    skimming: '#fee2e2',
+  };
   const presets = {
     deep: [0, 200],
     normal: [200, 400],
@@ -165,6 +170,29 @@ export default function ReadingSpeedViolin() {
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+
+    const bandsGroup = root.append('g').attr('class', 'wpm-bands');
+    const bandDefs = [
+      { preset: 'deep', min: 0, max: 200 },
+      { preset: 'normal', min: 200, max: 400 },
+      { preset: 'skimming', min: 400, max: yDomain[1] },
+    ];
+    bandDefs.forEach(({ preset: bandPreset, min, max }) => {
+      if (min >= yDomain[1]) return;
+      const yTop = y(Math.min(max, yDomain[1]));
+      const yBottom = y(min);
+      bandsGroup
+        .append('rect')
+        .attr('x', 0)
+        .attr('y', yTop)
+        .attr('width', innerWidth)
+        .attr('height', yBottom - yTop)
+        .attr('fill', presetColors[bandPreset])
+        .attr(
+          'fill-opacity',
+          preset === 'all' || preset === bandPreset ? 0.15 : 0.05
+        );
+    });
 
     const defs = svg.append('defs');
     defs
@@ -483,6 +511,7 @@ export default function ReadingSpeedViolin() {
     dimensions,
     chartType,
     showOutliers,
+    preset,
   ]);
 
   const {
@@ -519,10 +548,39 @@ export default function ReadingSpeedViolin() {
         <p>No reading speed data available.</p>
       )}
       <div>
-        <button onClick={() => setPreset('all')}>Show All</button>
-        <button onClick={() => setPreset('deep')}>Deep reading (0-200 WPM)</button>
-        <button onClick={() => setPreset('normal')}>Normal (200-400 WPM)</button>
-        <button onClick={() => setPreset('skimming')}>Skimming (400+ WPM)</button>
+        <button
+          onClick={() => setPreset('all')}
+          style={{ fontWeight: preset === 'all' ? 'bold' : 'normal' }}
+        >
+          Show All
+        </button>
+        <button
+          onClick={() => setPreset('deep')}
+          style={{
+            background: presetColors.deep,
+            fontWeight: preset === 'deep' ? 'bold' : 'normal',
+          }}
+        >
+          Deep reading (0-200 WPM)
+        </button>
+        <button
+          onClick={() => setPreset('normal')}
+          style={{
+            background: presetColors.normal,
+            fontWeight: preset === 'normal' ? 'bold' : 'normal',
+          }}
+        >
+          Normal (200-400 WPM)
+        </button>
+        <button
+          onClick={() => setPreset('skimming')}
+          style={{
+            background: presetColors.skimming,
+            fontWeight: preset === 'skimming' ? 'bold' : 'normal',
+          }}
+        >
+          Skimming (400+ WPM)
+        </button>
       </div>
       {morningMedian != null && eveningMedian != null && (
         <div
