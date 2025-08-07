@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Menu, X } from "lucide-react";
 import { cn } from "@/lib/utils";
-import { dashboardRoutes } from "@/routes";
+import { dashboardRouteMeta as dashboardRoutes } from "@/routes/meta";
 import { Sheet, SheetContent, SheetTrigger } from "@/ui/sheet";
 import NavItems from "./NavItems";
 

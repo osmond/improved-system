@@ -1,6 +1,6 @@
 import { Suspense } from "react";
 import RootLayout from "@/layouts/RootLayout";
-import { dashboardRoutes } from "@/routes";
+import { generatedRoutes } from "@/routes.generated";
 import { baseRoutes } from "@/routes/baseRoutes";
 import { getLazyComponent } from "@/lib/routeLoader";
 
@@ -9,23 +9,20 @@ import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 import { SelectionProvider } from "@/hooks/useSelection";
 
 function createDashboardRoutes() {
-  return dashboardRoutes.flatMap(({ items }) =>
-    items.map(({ to, component }) => {
-      if (!component) return [];
-      const LazyComp = getLazyComponent(component);
-      return (
-        <Route
-          key={to}
-          path={to}
-          element={
-            <Suspense fallback={<div>Loading...</div>}>
-              <LazyComp />
-            </Suspense>
-          }
-        />
-      );
-    }),
-  );
+  return generatedRoutes.map(({ path, component }) => {
+    const LazyComp = getLazyComponent(component);
+    return (
+      <Route
+        key={path}
+        path={path}
+        element={
+          <Suspense fallback={<div>Loading...</div>}>
+            <LazyComp />
+          </Suspense>
+        }
+      />
+    );
+  });
 }
 
 function App() {
