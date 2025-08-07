@@ -2,6 +2,7 @@
 import { describe, it, expect, vi } from 'vitest';
 import fs from 'fs';
 import path from 'path';
+import { Readable } from 'stream';
 import { createRequire } from 'module';
 
 const require = createRequire(import.meta.url);
@@ -15,10 +16,13 @@ describe('getBookGraph highlight mapping', () => {
       A: ['A highlight'],
       B: ['B highlight']
     });
+    vi.spyOn(fs, 'createReadStream').mockImplementation((p) => {
+      if (p.includes('CustomerOrders')) return Readable.from([ordersCsv]);
+      if (p.includes('CustomerAuthorNameRelationship')) return Readable.from([authorsCsv]);
+      if (p.includes('CustomerGenres')) return Readable.from([genresCsv]);
+      throw new Error(`Unexpected path: ${p}`);
+    });
     vi.spyOn(fs.promises, 'readFile').mockImplementation(async (p) => {
-      if (p.includes('CustomerOrders')) return ordersCsv;
-      if (p.includes('CustomerAuthorNameRelationship')) return authorsCsv;
-      if (p.includes('CustomerGenres')) return genresCsv;
       if (p.endsWith('highlights.json')) return highlightsJson;
       return '';
     });

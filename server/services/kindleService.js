@@ -10,17 +10,14 @@ const { calculateGenreTransitions } = require('../../src/services/genreTransitio
 const { buildHighlightIndex, getExpansions } = require('../../src/services/highlightIndex');
 const { buildBookGraph } = require('../../src/services/bookGraph');
 
-async function parseCsv(filePath) {
-  const content = await fs.promises.readFile(filePath, 'utf-8');
+function parseCsv(filePath) {
   return new Promise((resolve, reject) => {
-    parse(
-      content,
-      { columns: true, skip_empty_lines: true, trim: true, bom: true },
-      (err, records) => {
-        if (err) reject(err);
-        else resolve(records);
-      }
-    );
+    const records = [];
+    fs.createReadStream(filePath)
+      .pipe(parse({ columns: true, skip_empty_lines: true, trim: true, bom: true }))
+      .on('data', (record) => records.push(record))
+      .on('end', () => resolve(records))
+      .on('error', reject);
   });
 }
 
@@ -35,7 +32,7 @@ async function getEvents() {
     'Kindle.Devices.KindleNotificationsEventsAndroid',
     'Kindle.Devices.KindleNotificationsEventsAndroid.csv'
   );
-  return parseCsv(filePath);
+  return await parseCsv(filePath);
 }
 
 async function getPoints() {
@@ -68,7 +65,7 @@ async function getAchievements() {
     'Kindle.BookRewards.Achievements.1',
     'Kindle.BookRewards.Achievements.1.csv'
   );
-  return parseCsv(filePath);
+  return await parseCsv(filePath);
 }
 
 async function getDailyStats() {
