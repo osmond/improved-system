@@ -81,7 +81,7 @@ router.get('/highlights/search', async (req, res) => {
   try {
     res.json(await getHighlightExpansions(keyword));
   } catch (err) {
-    res.status(500).json({ error: 'Failed to search highlights' });
+    res.status(500).json({ error: err.message || 'Failed to search highlights' });
   }
 });
 

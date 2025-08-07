@@ -231,18 +231,39 @@ async function getGenreTransitions(start, end) {
 let highlightTrie = null;
 async function getHighlightTrie() {
   if (!highlightTrie) {
-    const filePath = path.join(__dirname, '..', '..', 'data', 'kindle', 'highlights.json');
-    const content = await fs.promises.readFile(filePath, 'utf-8');
-    const map = JSON.parse(content);
-    const texts = Object.values(map).flat();
-    highlightTrie = buildHighlightIndex(texts);
+    const filePath = path.join(
+      __dirname,
+      '..',
+      '..',
+      'data',
+      'kindle',
+      'highlights.json'
+    );
+    try {
+      const content = await fs.promises.readFile(filePath, 'utf-8');
+      const map = JSON.parse(content);
+      const texts = Object.values(map).flat();
+      highlightTrie = buildHighlightIndex(texts);
+    } catch (err) {
+      if (err.code === 'ENOENT') {
+        highlightTrie = buildHighlightIndex([]);
+      } else if (err instanceof SyntaxError) {
+        throw new Error('Invalid highlights file');
+      } else {
+        throw new Error(`Failed to read highlights file: ${err.message}`);
+      }
+    }
   }
   return highlightTrie;
 }
 
 async function getHighlightExpansions(keyword) {
-  const trie = await getHighlightTrie();
-  return getExpansions(trie, keyword);
+  try {
+    const trie = await getHighlightTrie();
+    return getExpansions(trie, keyword);
+  } catch (err) {
+    throw new Error(`Unable to get highlight expansions: ${err.message}`);
+  }
 }
 
 async function getLocations() {
