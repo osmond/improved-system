@@ -29,10 +29,10 @@ afterEach(() => {
       });
       expect(screen.getByLabelText('Show outliers')).toBeInTheDocument();
       expect(screen.getByLabelText('Smoothing')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Show All/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Deep reading/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Normal/i })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: /Skimming/i })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Deep' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Normal' })).toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Skimming' })).toBeInTheDocument();
       await waitFor(() => {
         const paths = document.querySelectorAll('path');
         expect(paths.length).toBeGreaterThan(0);
@@ -58,22 +58,22 @@ afterEach(() => {
         expect(document.querySelectorAll('circle').length).toBe(6);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Deep reading/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Deep' }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(2);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Normal/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Normal' }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(2);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Skimming/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'Skimming' }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(2);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: /Show All/i }));
+      fireEvent.click(screen.getByRole('button', { name: 'All' }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(6);
       });
@@ -178,7 +178,8 @@ afterEach(() => {
       fireEvent.mouseOver(circle);
 
       await waitFor(() => {
-        const tooltip = document.querySelector('[style*="opacity: 1"]');
+        const tooltip = screen.getByTestId('tooltip');
+        expect(tooltip).toHaveStyle('opacity: 1');
         expect(tooltip.innerHTML).toContain('Highlights: 3');
         expect(tooltip.innerHTML).toContain('Duration: 1.5');
       });
@@ -195,7 +196,8 @@ afterEach(() => {
       fireEvent.mouseMove(path);
 
       await waitFor(() => {
-        const tooltip = document.querySelector('[style*="opacity: 1"]');
+        const tooltip = screen.getByTestId('tooltip');
+        expect(tooltip).toHaveStyle('opacity: 1');
         expect(tooltip.innerHTML).toMatch(/Density:/);
       });
     });
