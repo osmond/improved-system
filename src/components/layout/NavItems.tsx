@@ -37,18 +37,25 @@ export default function NavItems({
       group: DashboardRouteGroup,
     ): DashboardRouteGroup | null => {
       const labelMatches = group.label.toLowerCase().includes(lower);
-      const items = group.items?.filter((item) =>
-        item.label.toLowerCase().includes(lower),
-      );
+      const items = group.items?.filter((item) => {
+        const labelMatch = item.label.toLowerCase().includes(lower);
+        const tagMatch = item.tags?.some((tag) =>
+          tag.toLowerCase().includes(lower),
+        );
+        return labelMatch || tagMatch;
+      });
+      const uniqueItems = items
+        ? Array.from(new Map(items.map((i) => [i.to, i])).values())
+        : undefined;
       const groups = group.groups
         ?.map((g) => filterGroup(g))
         .filter((g): g is DashboardRouteGroup => g !== null);
 
-      const hasItems = items && items.length > 0;
+      const hasItems = uniqueItems && uniqueItems.length > 0;
       const hasGroups = groups && groups.length > 0;
 
       if (labelMatches || hasItems || hasGroups) {
-        return { ...group, items, groups };
+        return { ...group, items: uniqueItems, groups };
       }
       return null;
     };
