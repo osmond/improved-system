@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { buildGenreHierarchy } from '../genreHierarchy';
-const { UNCLASSIFIED_GENRE } = require('../../config/constants');
+const { UNCLASSIFIED_GENRE } = require('../../config/constants.cjs');
 
 describe('buildGenreHierarchy', () => {
   it('builds nested tree from flat records', () => {

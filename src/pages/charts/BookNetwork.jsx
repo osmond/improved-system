@@ -8,9 +8,26 @@ export default function BookNetworkPage() {
   const [view, setView] = useState('network');
 
   useEffect(() => {
-    import('@/data/kindle/book-graph.json').then((mod) => {
-      setData(mod.default);
-    });
+    let active = true;
+    const load = async () => {
+      try {
+        const res = await fetch('/api/kindle/book-graph');
+        if (!res.ok) throw new Error('Failed to fetch book graph');
+        const json = await res.json();
+        if (active) setData(json);
+      } catch {
+        try {
+          const mod = await import('@/data/kindle/book-graph.json');
+          if (active) setData(mod.default);
+        } catch {
+          // ignore
+        }
+      }
+    };
+    load();
+    return () => {
+      active = false;
+    };
   }, []);
 
   const toggleView = () => {

@@ -224,21 +224,42 @@ export async function getActivitySnapshots(
 ): Promise<ActivitySnapshot[]> {
   const cutoff = new Date();
   cutoff.setDate(cutoff.getDate() - days);
-
   const speedMap = new Map<number, number>();
-  (readingSpeedData as { start: string; wpm: number }[]).forEach((r) => {
-    speedMap.set(new Date(r.start).getTime(), r.wpm);
-  });
+  try {
+    const res = await fetch('/api/kindle/reading-speed');
+    if (!res.ok) throw new Error('fail');
+    const speeds: { start: string; wpm: number }[] = await res.json();
+    speeds.forEach((r) => {
+      speedMap.set(new Date(r.start).getTime(), r.wpm);
+    });
+  } catch {
+    (readingSpeedData as { start: string; wpm: number }[]).forEach((r) => {
+      speedMap.set(new Date(r.start).getTime(), r.wpm);
+    });
+  }
 
   const locationMap = new Map<number, string>();
-  (
-    locationData as { start: string; latitude: number; longitude: number }[]
-  ).forEach((l) => {
-    locationMap.set(
-      new Date(l.start).getTime(),
-      `${l.latitude.toFixed(3)},${l.longitude.toFixed(3)}`,
-    );
-  });
+  try {
+    const res = await fetch('/api/kindle/locations');
+    if (!res.ok) throw new Error('fail');
+    const locs: { start: string; latitude: number; longitude: number }[] =
+      await res.json();
+    locs.forEach((l) => {
+      locationMap.set(
+        new Date(l.start).getTime(),
+        `${l.latitude.toFixed(3)},${l.longitude.toFixed(3)}`,
+      );
+    });
+  } catch {
+    (
+      locationData as { start: string; latitude: number; longitude: number }[]
+    ).forEach((l) => {
+      locationMap.set(
+        new Date(l.start).getTime(),
+        `${l.latitude.toFixed(3)},${l.longitude.toFixed(3)}`,
+      );
+    });
+  }
 
   const sessions = await getKindleSessions();
 
@@ -1699,6 +1720,16 @@ export interface DailyReadingStat {
 }
 
 export async function getDailyReadingStats(): Promise<DailyReadingStat[]> {
+  if (typeof fetch === 'function') {
+    try {
+      const res = await fetch('/api/kindle/daily-stats');
+      if (res.ok) {
+        return res.json();
+      }
+    } catch {
+      // ignore and fall back
+    }
+  }
   return dailyReadingData;
 }
 

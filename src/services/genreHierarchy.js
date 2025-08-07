@@ -2,7 +2,7 @@ const asinTitleMap = require('../data/kindle/asin-title-map.json');
 
 const subgenreOverrides = require('../data/kindle/subgenre-overrides.json');
 const asinSubgenreMap = require('../data/kindle/asin-subgenre-map.json');
-const { UNCLASSIFIED_GENRE } = require('../config/constants');
+const { UNCLASSIFIED_GENRE } = require('../config/constants.cjs');
 
 
 function buildGenreHierarchy(sessions, genres = [], authors = [], tags = []) {

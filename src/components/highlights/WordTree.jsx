@@ -6,10 +6,7 @@ import { linkHorizontal } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import Sentiment from 'sentiment';
 import nlp from 'compromise';
-import highlightsMap from '@/data/kindle/highlights.json';
 import { Skeleton } from '@/ui/skeleton';
-
-const highlights = Object.values(highlightsMap).flat();
 
 const sentimentAnalyzer = new Sentiment();
 const sentimentColor = scaleLinear()
@@ -35,22 +32,20 @@ function analyzeWord(word) {
   return { sentiment, pos };
 }
 
-function getExpansions(word) {
-  const counts = {};
-  const target = word.toLowerCase();
-  for (const h of highlights) {
-    const parts = h.toLowerCase().split(/\s+/);
-    for (let i = 0; i < parts.length - 1; i++) {
-      if (parts[i] === target) {
-        const next = parts[i + 1];
-        counts[next] = (counts[next] || 0) + 1;
-      }
-    }
+async function fetchExpansions(word) {
+  try {
+    const res = await fetch(
+      `/api/kindle/highlights/search?keyword=${encodeURIComponent(word)}`,
+    );
+    if (!res.ok) throw new Error('Failed to fetch expansions');
+    const json = await res.json();
+    return json.map((e) => {
+      const { sentiment, pos } = analyzeWord(e.word);
+      return { ...e, sentiment, pos };
+    });
+  } catch {
+    return [];
   }
-  return Object.entries(counts).map(([w, count]) => {
-    const { sentiment, pos } = analyzeWord(w);
-    return { word: w, count, sentiment, pos };
-  });
 }
 
 export default function WordTree() {
@@ -73,7 +68,7 @@ export default function WordTree() {
         d.data._children = undefined;
         d.data.expanded = true;
       } else {
-        const expansions = await Promise.resolve(getExpansions(d.data.word));
+        const expansions = await fetchExpansions(d.data.word);
         d.data.children = expansions.map(e => ({
           id: `${d.data.id}-${e.word}`,
           word: e.word,

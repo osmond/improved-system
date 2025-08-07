@@ -5,9 +5,7 @@ import { forceSimulation, forceLink, forceManyBody, forceCenter } from 'd3-force
 import { drag } from 'd3-drag';
 import { scaleOrdinal, scaleLinear } from 'd3-scale';
 import { zoom } from 'd3-zoom';
-import graphData from '@/data/kindle/book-graph.json';
-
-export default function BookNetwork({ data = graphData }) {
+export default function BookNetwork({ data = { nodes: [], links: [] } }) {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
