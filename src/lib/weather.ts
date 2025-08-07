@@ -18,9 +18,10 @@ export function mapWeatherCode(code: number): string {
 export async function getCurrentWeather(
   lat: number,
   lon: number,
+  signal?: AbortSignal,
 ): Promise<CurrentWeather> {
   const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`
-  const res = await fetch(url)
+  const res = await fetch(url, { signal })
   if (!res.ok) {
     throw new Error('Failed to fetch weather')
   }
