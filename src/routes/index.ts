@@ -74,7 +74,7 @@ const mapsRouteGroup: DashboardRouteGroup = {
   items: mapsRoutes,
 };
 
-export const trendsRoutes = withIcon(TrendingUp, [
+export const behaviorTrendRoutes = withIcon(TrendingUp, [
   {
     to: "/dashboard/habit-consistency",
     label: "Habit Consistency Trend",
@@ -87,6 +87,15 @@ export const trendsRoutes = withIcon(TrendingUp, [
     description: "Review past focus detections and interventions",
     component: "@/pages/FocusHistory",
   },
+]);
+
+const behaviorTrendGroup: DashboardRouteGroup = {
+  label: "Behavior Trends",
+  icon: TrendingUp,
+  items: behaviorTrendRoutes,
+};
+
+export const timeSeriesTrendRoutes = withIcon(TrendingUp, [
   {
     to: "/dashboard/charts/area-chart-interactive",
     label: "Customizable Time-Series Trend",
@@ -125,13 +134,19 @@ export const trendsRoutes = withIcon(TrendingUp, [
   },
 ]);
 
+const timeSeriesTrendGroup: DashboardRouteGroup = {
+  label: "Time-Series Charts",
+  icon: TrendingUp,
+  items: timeSeriesTrendRoutes,
+};
+
 const trendsRouteGroup: DashboardRouteGroup = {
   label: "Trends & Comparisons",
   icon: TrendingUp,
-  items: trendsRoutes,
+  groups: [behaviorTrendGroup, timeSeriesTrendGroup],
 };
 
-export const analyticalRoutes = withIcon(BarChart3, [
+export const analysisRoutes = withIcon(BarChart3, [
   {
     to: "/dashboard/fragility",
     label: "Fragility Analysis",
@@ -163,6 +178,15 @@ export const analyticalRoutes = withIcon(BarChart3, [
     description: "Explore correlations between daily metrics",
     component: "@/pages/Statistics",
   },
+]);
+
+const analysisGroup: DashboardRouteGroup = {
+  label: "Analyses",
+  icon: BarChart3,
+  items: analysisRoutes,
+};
+
+export const barChartRoutes = withIcon(BarChart3, [
   {
     to: "/dashboard/charts/bar-chart-interactive",
     label: "Customizable Metric Comparison",
@@ -205,6 +229,15 @@ export const analyticalRoutes = withIcon(BarChart3, [
     description: "Compare treadmill and outdoor training",
     component: "@/pages/charts/TreadmillVsOutdoor",
   },
+]);
+
+const barChartGroup: DashboardRouteGroup = {
+  label: "Bar Charts",
+  icon: BarChart3,
+  items: barChartRoutes,
+};
+
+export const radarChartRoutes = withIcon(BarChart3, [
   {
     to: "/dashboard/charts/radar-chart-default",
     label: "Standard Multi-Metric Radar Profile",
@@ -241,6 +274,15 @@ export const analyticalRoutes = withIcon(BarChart3, [
     description: "Segment reading activity across categories",
     component: "@/pages/charts/ReadingStackSplit",
   },
+]);
+
+const radarChartGroup: DashboardRouteGroup = {
+  label: "Radar & Radial Charts",
+  icon: BarChart3,
+  items: radarChartRoutes,
+};
+
+export const miscAnalyticalRoutes = withIcon(BarChart3, [
   {
     to: "/dashboard/charts/ghost-self-rival-chart",
     label: "Ghost vs Self vs Rival Comparison",
@@ -267,10 +309,16 @@ export const analyticalRoutes = withIcon(BarChart3, [
   },
 ]);
 
+const miscAnalyticalGroup: DashboardRouteGroup = {
+  label: "Other Charts",
+  icon: BarChart3,
+  items: miscAnalyticalRoutes,
+};
+
 const analyticalRouteGroup: DashboardRouteGroup = {
   label: "Analytical Insights",
   icon: BarChart3,
-  items: analyticalRoutes,
+  groups: [analysisGroup, barChartGroup, radarChartGroup, miscAnalyticalGroup],
 };
 
 export const demoRoutes = withIcon(FlaskConical, [

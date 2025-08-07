@@ -20,7 +20,15 @@ export interface DashboardRoute {
 export interface DashboardRouteGroup {
   label: string;
   icon: LucideIcon;
-  items: DashboardRoute[];
+  /**
+   * Routes that belong directly to this group. When `groups` is provided these
+   * are treated as leaf nodes in the navigation tree.
+   */
+  items?: DashboardRoute[];
+  /**
+   * Optional sub-groups used to further categorize routes.
+   */
+  groups?: DashboardRouteGroup[];
 }
 
 export function withIcon(

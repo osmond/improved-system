@@ -32,17 +32,30 @@ export default function NavItems({
   const filteredGroups = React.useMemo(() => {
     if (!query) return groups;
     const lower = query.toLowerCase();
-    return groups
-      .map((group) => ({
-        ...group,
-        items: group.items.filter((item) =>
-          item.label.toLowerCase().includes(lower),
-        ),
-      }))
-      .filter(
-        (group) =>
-          group.items.length > 0 || group.label.toLowerCase().includes(lower),
+
+    const filterGroup = (
+      group: DashboardRouteGroup,
+    ): DashboardRouteGroup | null => {
+      const labelMatches = group.label.toLowerCase().includes(lower);
+      const items = group.items?.filter((item) =>
+        item.label.toLowerCase().includes(lower),
       );
+      const groups = group.groups
+        ?.map((g) => filterGroup(g))
+        .filter((g): g is DashboardRouteGroup => g !== null);
+
+      const hasItems = items && items.length > 0;
+      const hasGroups = groups && groups.length > 0;
+
+      if (labelMatches || hasItems || hasGroups) {
+        return { ...group, items, groups };
+      }
+      return null;
+    };
+
+    return groups
+      .map((group) => filterGroup(group))
+      .filter((g): g is DashboardRouteGroup => g !== null);
   }, [groups, query]);
 
   const handleKeyDown = (
@@ -124,11 +137,29 @@ export default function NavItems({
                   <span>{group.label}</span>
                 </AccordionTrigger>
                 <AccordionContent>
-                  <ul className="flex flex-col gap-2 pl-4">
-                    {group.items.map((item) => (
-                      <li key={item.to}>{renderLink(item.to, item.label)}</li>
-                    ))}
-                  </ul>
+                  {group.items && (
+                    <ul className="flex flex-col gap-2 pl-4">
+                      {group.items.map((item) => (
+                        <li key={item.to}>{renderLink(item.to, item.label)}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {group.groups?.map((sub) => {
+                    const SubIcon = sub.icon;
+                    return (
+                      <div key={sub.label} className="mt-4">
+                        <div className="mb-2 flex items-center gap-2 pl-4 text-sm font-medium text-sidebar-foreground">
+                          {SubIcon && <SubIcon className="h-4 w-4" aria-hidden="true" />}
+                          <span>{sub.label}</span>
+                        </div>
+                        <ul className="flex flex-col gap-2 pl-8">
+                          {sub.items?.map((item) => (
+                            <li key={item.to}>{renderLink(item.to, item.label)}</li>
+                          ))}
+                        </ul>
+                      </div>
+                    );
+                  })}
                 </AccordionContent>
               </AccordionItem>
             );
@@ -143,7 +174,8 @@ export default function NavItems({
       <li>{renderLink("/", "Dashboard", LayoutDashboard)}</li>
       {groups.map((group) => {
         const Icon = group.icon;
-        const firstItem = group.items[0];
+        const firstItem =
+          group.items?.[0] ?? group.groups?.[0]?.items?.[0];
         return (
           <li key={group.label}>
             <Popover>
@@ -151,20 +183,44 @@ export default function NavItems({
                 {renderLink(firstItem?.to ?? "#", group.label, Icon)}
               </PopoverTrigger>
               <PopoverContent className="w-48 flex flex-col gap-2 bg-white p-4 shadow-md data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 data-[side=bottom]:slide-in-from-top-2">
-                {group.items.map((item) => (
-                  <NavLink
-                    key={item.to}
-                    to={item.to}
-                    className={({ isActive }) =>
-                      cn(
-                        "relative block px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100",
-                        isActive && "active text-foreground after:scale-x-100",
-                      )
-                    }
-                  >
-                    {item.label}
-                  </NavLink>
-                ))}
+                {group.groups
+                  ? group.groups.map((sub) => (
+                      <div key={sub.label} className="flex flex-col gap-1">
+                        <div className="mb-1 text-sm font-medium text-muted-foreground">
+                          {sub.label}
+                        </div>
+                        {sub.items?.map((item) => (
+                          <NavLink
+                            key={item.to}
+                            to={item.to}
+                            className={({ isActive }) =>
+                              cn(
+                                "relative block px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100",
+                                isActive &&
+                                  "active text-foreground after:scale-x-100",
+                              )
+                            }
+                          >
+                            {item.label}
+                          </NavLink>
+                        ))}
+                      </div>
+                    ))
+                  : group.items?.map((item) => (
+                      <NavLink
+                        key={item.to}
+                        to={item.to}
+                        className={({ isActive }) =>
+                          cn(
+                            "relative block px-2 py-1 text-sm text-muted-foreground transition-colors hover:text-foreground after:absolute after:left-0 after:bottom-0 after:h-0.5 after:w-full after:origin-left after:scale-x-0 after:bg-current after:transition-transform after:duration-300 hover:after:scale-x-100",
+                            isActive &&
+                              "active text-foreground after:scale-x-100",
+                          )
+                        }
+                      >
+                        {item.label}
+                      </NavLink>
+                    ))}
               </PopoverContent>
             </Popover>
           </li>
