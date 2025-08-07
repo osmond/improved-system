@@ -21,15 +21,27 @@ vi.mock('@/components/genre/GenreIcicle.jsx', () => ({
   ),
 }));
 
-vi.mock('@/data/kindle/genre-hierarchy.json', () => ({
-  default: {
-    name: 'root',
-    children: [
-      { name: 'Fiction', children: [{ name: 'Book A', value: 1 }] },
-      { name: 'Unclassified', children: [{ name: 'Book B', value: 2 }] },
-    ],
-  },
-}), { virtual: true });
+const hierarchy = {
+  name: 'root',
+  children: [
+    { name: 'Fiction', children: [{ name: 'Book A', value: 1 }] },
+    { name: 'Unclassified', children: [{ name: 'Book B', value: 2 }] },
+  ],
+};
+
+const originalFetch = global.fetch;
+
+beforeEach(() => {
+  global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve(hierarchy),
+  });
+});
+
+afterEach(() => {
+  global.fetch = originalFetch;
+  vi.restoreAllMocks();
+});
 
 import GenreSunburstPage from '../GenreSunburst.jsx';
 

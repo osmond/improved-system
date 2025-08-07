@@ -3,10 +3,9 @@ import { select } from 'd3-selection';
 import { chord, ribbon } from 'd3-chord';
 import { arc } from 'd3-shape';
 import { scaleOrdinal } from 'd3-scale';
-import graphData from '@/data/kindle/book-graph.json';
 import buildChordMatrix from '@/services/chordMatrix.js';
 
-export default function BookChordDiagram({ data = graphData }) {
+export default function BookChordDiagram({ data = { nodes: [], links: [] } }) {
   const svgRef = useRef(null);
   const containerRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });

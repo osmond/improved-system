@@ -4,7 +4,6 @@ import { sankey, sankeyLinkHorizontal } from 'd3-sankey';
 import { scaleOrdinal } from 'd3-scale';
 import { schemeSet3 } from 'd3-scale-chromatic';
 import { zoom, zoomIdentity } from 'd3-zoom';
-import transitions from '@/data/kindle/genre-transitions.json';
 import { Skeleton } from '@/ui/skeleton';
 
 export default function GenreSankey() {
@@ -43,12 +42,9 @@ export default function GenreSankey() {
     setLoading(true);
     setError(null);
     try {
-      const res = await fetch(
-        `/api/kindle/genre-transitions?start=${start}&end=${end}`,
-      );
-      if (!res.ok) {
-        throw new Error('Failed to fetch data');
-      }
+      const url = `/api/kindle/genre-transitions?start=${start}&end=${end}`;
+      const res = await fetch(url);
+      if (!res.ok) throw new Error('Failed to fetch data');
       const json = await res.json();
       const mapped = json.map((d) => ({
         ...d,
@@ -57,7 +53,17 @@ export default function GenreSankey() {
       setRawData(mapped);
       setData(mapped);
     } catch (err) {
-      setError(err.message || 'Failed to fetch data');
+      try {
+        const local = await import('@/data/kindle/genre-transitions.json');
+        const mapped = local.default.map((d) => ({
+          ...d,
+          monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+        }));
+        setRawData(mapped);
+        setData(mapped);
+      } catch {
+        setError(err.message || 'Failed to fetch data');
+      }
     } finally {
       setLoading(false);
     }
@@ -70,15 +76,8 @@ export default function GenreSankey() {
   };
 
   useEffect(() => {
-    const t = setTimeout(() => {
-      const mapped = transitions.map((d) => ({
-        ...d,
-        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
-      }));
-      setRawData(mapped);
-      setData(mapped);
-    }, 0);
-    return () => clearTimeout(t);
+    fetchData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {

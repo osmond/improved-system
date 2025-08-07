@@ -13,6 +13,20 @@ vi.mock('@/components/network/BookChordDiagram.jsx', () => ({
   default: () => <div data-testid="book-chord" />,
 }));
 
+const originalFetch = global.fetch;
+
+beforeEach(() => {
+  global.fetch = vi.fn().mockResolvedValue({
+    ok: true,
+    json: () => Promise.resolve({ nodes: [], links: [] }),
+  });
+});
+
+afterEach(() => {
+  global.fetch = originalFetch;
+  vi.restoreAllMocks();
+});
+
 describe('BookNetworkPage', () => {
   it('displays a skeleton before data resolves', async () => {
     render(<BookNetworkPage />);
