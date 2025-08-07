@@ -4,10 +4,11 @@ import { scaleLinear, scaleBand } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
+import { schemeSet2 } from 'd3-scale-chromatic';
 
 export const color = {
-  morning: 'hsl(var(--chart-5))',
-  evening: 'hsl(var(--chart-8))',
+  morning: schemeSet2[0],
+  evening: schemeSet2[1],
 };
 
 export default function ReadingSpeedViolin() {
@@ -284,6 +285,9 @@ export default function ReadingSpeedViolin() {
           .datum(density)
           .attr('d', areaGenerator)
           .attr('fill', fill)
+          .attr('fill-opacity', 0.3)
+          .attr('stroke', fill)
+          .attr('stroke-width', 1)
           .on('mousemove', (event) => {
             const [, yPos] = pointer(event);
             const wpmVal = y.invert(yPos);
@@ -359,7 +363,9 @@ export default function ReadingSpeedViolin() {
           .attr('cy', y(v.wpm))
           .attr('r', 3)
           .attr('fill', fill)
-          .attr('fill-opacity', 0.6)
+          .attr('fill-opacity', 0.8)
+          .attr('stroke', '#333')
+          .attr('stroke-width', 0.5)
           .on('mouseover', (event) => {
             const rect = svgRef.current.getBoundingClientRect();
             const meta = Object.entries(v)
