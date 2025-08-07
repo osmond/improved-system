@@ -1613,34 +1613,20 @@ export interface ReadingSession {
   duration: number;
 }
 
-export function generateMockReadingSessions(count = 60): ReadingSession[] {
-  const sessions: ReadingSession[] = [];
-  const mediums: ReadingMedium[] = [
-    "phone",
-    "computer",
-    "tablet",
-    "kindle",
-    "real_book",
-    "other",
-  ];
-  for (let i = 0; i < count; i++) {
-    const d = new Date();
-    d.setDate(d.getDate() - Math.floor(Math.random() * 30));
-    d.setHours(Math.floor(Math.random() * 24), 0, 0, 0);
-    sessions.push({
-      timestamp: d.toISOString(),
-      intensity: +Math.random().toFixed(2),
-      medium: mediums[Math.floor(Math.random() * mediums.length)],
-      duration: Math.floor(5 + Math.random() * 55),
-    });
-  }
-  return sessions;
-}
-
 export async function getReadingSessions(): Promise<ReadingSession[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(generateMockReadingSessions()), 200);
-  });
+  try {
+    const kindleSessions = await getKindleSessions();
+    return kindleSessions.map((s) => ({
+      timestamp: s.start,
+      // Rough intensity estimate based on highlight activity
+      intensity: Math.min(1, (s.highlights + 1) / 5),
+      medium: "kindle" as ReadingMedium,
+      duration: s.duration,
+    }));
+  } catch (err) {
+    console.error("Failed to load reading sessions", err);
+    return [];
+  }
 }
 
 export interface ReadingMediumTotal {
@@ -1669,12 +1655,13 @@ export function aggregateReadingMediumTotals(
 }
 
 export async function getReadingMediumTotals(): Promise<ReadingMediumTotal[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const sessions = generateMockReadingSessions();
-      resolve(aggregateReadingMediumTotals(sessions));
-    }, 200);
-  });
+  try {
+    const sessions = await getReadingSessions();
+    return aggregateReadingMediumTotals(sessions);
+  } catch (err) {
+    console.error("Failed to load reading medium totals", err);
+    return aggregateReadingMediumTotals([]);
+  }
 }
 
 export interface DailyReadingStat {
