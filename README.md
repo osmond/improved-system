@@ -274,10 +274,13 @@ Unit tests (Vitest + Testing Library) should live alongside components in a `__t
 ## Development
 
 ```bash
-npm run dev
+npm run server    # start Express API on :3000
+npm run dev       # start Vite dev server on :5173
 npm run build
 npm test
 ```
+
+The Vite dev server is configured to proxy `/api` requests to the Express backend. With both commands running, pages like `/dashboard/charts/book-progress-spiral` can fetch Kindle data during local development.
 
 ## Spotify integration
 The Run Soundtrack card uses the Spotify Web API. Set the following environment variables so the helpers can obtain an access token:

@@ -16,4 +16,12 @@ export default defineConfig({
       events: 'events',
     },
   },
+  server: {
+    proxy: {
+      '/api': {
+        target: 'http://localhost:3000',
+        changeOrigin: true,
+      },
+    },
+  },
 })
