@@ -39,11 +39,19 @@ export default function ReadingTimeline({
   const adjustingRef = useRef(false);
   const [zoomed, setZoomed] = useState(false);
   const [width, setWidth] = useState(DEFAULT_WIDTH);
-  const [showLegend, setShowLegend] = useState(false);
+  const [showLegend, setShowLegend] = useState(colorBlindFriendly);
   const [search, setSearch] = useState('');
   const [colorBy, setColorBy] = useState('title');
   const [minDuration, setMinDuration] = useState(0);
   const [minHighlights, setMinHighlights] = useState(0);
+
+  const prevColorBlindRef = useRef(colorBlindFriendly);
+  useEffect(() => {
+    if (prevColorBlindRef.current !== colorBlindFriendly) {
+      setShowLegend(colorBlindFriendly);
+      prevColorBlindRef.current = colorBlindFriendly;
+    }
+  }, [colorBlindFriendly]);
 
   const filteredSessions = useMemo(() => {
     const term = search.toLowerCase();
