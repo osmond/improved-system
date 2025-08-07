@@ -77,10 +77,10 @@ export function computeHeatmapFromActivity(
     prevNetwork = s.network
     cell.count += 1
   }
-  const stepThreshold = 200
-  const hrVarThreshold = 20
-  const appChangeThreshold = 3
-  const inputCadenceThreshold = 100
+  const stepThreshold = 60
+  const hrVarThreshold = 400
+  const appChangeThreshold = 5
+  const inputCadenceThreshold = 500
   const locationChangeThreshold = 2
   const networkChangeThreshold = 2
   const result: HeatmapCell[] = []
