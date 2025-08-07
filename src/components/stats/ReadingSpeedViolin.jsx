@@ -4,12 +4,16 @@ import { scaleLinear, scaleBand } from 'd3-scale';
 import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
-import { schemeSet2 } from 'd3-scale-chromatic';
 import { forceSimulation, forceX, forceY, forceCollide } from 'd3-force';
 
+const okabeIto = {
+  blue: '#0072B2',
+  vermillion: '#D55E00',
+};
+
 export const color = {
-  morning: schemeSet2[0],
-  evening: schemeSet2[1],
+  morning: okabeIto.blue,
+  evening: okabeIto.vermillion,
 };
 
 export default function ReadingSpeedViolin() {
@@ -191,7 +195,7 @@ export default function ReadingSpeedViolin() {
 
     grid
       .selectAll('line')
-      .attr('stroke', (d) => (majorTicks.includes(d) ? '#ccc' : '#eee'));
+      .attr('stroke', (d) => (majorTicks.includes(d) ? '#555' : '#777'));
     grid.select('.domain').remove();
 
     const yAxisGroup = root
@@ -199,7 +203,7 @@ export default function ReadingSpeedViolin() {
       .attr('class', 'y-axis')
       .call(axisLeft(y).tickValues(majorTicks));
 
-    yAxisGroup.selectAll('.tick line').attr('stroke', '#777').attr('stroke-width', 1);
+    yAxisGroup.selectAll('.tick line').attr('stroke', '#555').attr('stroke-width', 1);
     yAxisGroup
       .selectAll('.tick text')
       .attr('fill', '#333')
@@ -551,7 +555,7 @@ export default function ReadingSpeedViolin() {
           opacity: 0,
           background: 'rgba(255,255,255,0.9)',
           color: '#000',
-          border: '1px solid #ccc',
+          border: '1px solid #777',
           padding: '4px',
           borderRadius: '4px',
           boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
