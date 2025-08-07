@@ -159,6 +159,20 @@ export default function ReadingSpeedViolin() {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
+    const defs = svg.append('defs');
+    defs
+      .append('marker')
+      .attr('id', 'arrow')
+      .attr('viewBox', '0 -5 10 10')
+      .attr('refX', 5)
+      .attr('refY', 0)
+      .attr('markerWidth', 6)
+      .attr('markerHeight', 6)
+      .attr('orient', 'auto')
+      .append('path')
+      .attr('d', 'M0,-5L10,0L0,5')
+      .attr('fill', '#555');
+
     const yTicks = y.ticks();
     const majorTicks = yTicks.filter((d) => d % 250 === 0);
 
@@ -393,6 +407,39 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       });
     });
+
+    if (showMorning && showEvening && stats.morning && stats.evening) {
+      const morningMedian = stats.morning.median;
+      const eveningMedian = stats.evening.median;
+      const annotationY = -10;
+      const annotation = root.append('g').attr('class', 'median-annotation');
+      annotation
+        .append('text')
+        .attr('x', innerWidth / 2)
+        .attr('y', annotationY)
+        .attr('text-anchor', 'middle')
+        .text(
+          `Evening median ≈${Math.round(eveningMedian)} WPM vs. Morning ≈${Math.round(
+            morningMedian
+          )} WPM`
+        );
+      annotation
+        .append('line')
+        .attr('x1', innerWidth / 2)
+        .attr('y1', annotationY + 5)
+        .attr('x2', xCat('morning') + catWidth / 2)
+        .attr('y2', y(morningMedian))
+        .attr('stroke', color.morning)
+        .attr('marker-end', 'url(#arrow)');
+      annotation
+        .append('line')
+        .attr('x1', innerWidth / 2)
+        .attr('y1', annotationY + 5)
+        .attr('x2', xCat('evening') + catWidth / 2)
+        .attr('y2', y(eveningMedian))
+        .attr('stroke', color.evening)
+        .attr('marker-end', 'url(#arrow)');
+    }
   }, [
     filteredData,
     showMorning,

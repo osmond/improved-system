@@ -178,4 +178,16 @@ afterEach(() => {
 
       expect(screen.queryByRole('alert')).not.toBeInTheDocument();
     });
-});
+
+    it('annotates median comparison', async () => {
+      render(<ReadingSpeedViolin />);
+
+      await waitFor(() => {
+        expect(screen.getByText(/Evening median/)).toBeInTheDocument();
+      });
+
+      const annotation = document.querySelector('.median-annotation');
+      expect(annotation).toBeInTheDocument();
+      expect(annotation.querySelectorAll('line').length).toBe(2);
+    });
+  });
