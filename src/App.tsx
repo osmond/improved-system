@@ -1,30 +1,21 @@
-import React, { lazy, Suspense } from "react";
+import React, { Suspense } from "react";
 import RootLayout from "@/layouts/RootLayout";
 import SidebarDemoPage from "@/pages/SidebarDemo";
 import NotFound from "@/pages/NotFound";
 import Home from "@/pages/Home";
 import VisualizationsList from "@/pages/VisualizationsList";
 import { dashboardRoutes } from "@/routes";
+import { getLazyComponent } from "@/lib/routeLoader";
 
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { DashboardFiltersProvider } from "@/hooks/useDashboardFilters";
 import { SelectionProvider } from "@/hooks/useSelection";
 
-const MissingComponent = () => <div>Component not found</div>;
-
-const pageModules = import.meta.glob("./pages/**/*.{ts,tsx,js,jsx}");
-
 function createDashboardRoutes() {
   return dashboardRoutes.flatMap(({ items }) =>
     items.map(({ to, component }) => {
       if (!component) return [];
-      const path = component.replace("@/", "./");
-      const importer =
-        pageModules[`${path}.tsx`] ||
-        pageModules[`${path}.ts`] ||
-        pageModules[`${path}.jsx`] ||
-        pageModules[`${path}.js`];
-      const LazyComp = importer ? lazy(importer as any) : MissingComponent;
+      const LazyComp = getLazyComponent(component);
       return (
         <Route
           key={to}
