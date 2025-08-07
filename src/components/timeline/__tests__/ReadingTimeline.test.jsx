@@ -199,6 +199,9 @@ describe('ReadingTimeline', () => {
     let rects = container.querySelectorAll('rect[height="30"]');
     expect(rects).toHaveLength(1);
 
+    fireEvent.change(getByLabelText(/min duration/i), {
+      target: { value: '0' },
+    });
     fireEvent.change(getByLabelText(/min highlights/i), {
       target: { value: '2' },
     });
