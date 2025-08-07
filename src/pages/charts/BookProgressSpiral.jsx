@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef } from 'react';
 import { select } from 'd3-selection';
 import { scaleLinear, scaleOrdinal } from 'd3-scale';
 import { lineRadial, curveCatmullRom } from 'd3-shape';
@@ -9,8 +9,18 @@ export default function BookProgressSpiral() {
   const { data: sessions, error, isLoading } = useReadingSessions();
   const svgRef = useRef(null);
 
+  const books = useMemo(() => {
+    if (!sessions) return [];
+    return Object.entries(
+      sessions.reduce((acc, s) => {
+        (acc[s.title] ||= []).push(s);
+        return acc;
+      }, {})
+    );
+  }, [sessions]);
+
   useEffect(() => {
-    if (!sessions) return;
+    if (books.length === 0) return;
 
     const width = 800;
     const height = 800;
@@ -22,18 +32,16 @@ export default function BookProgressSpiral() {
 
     const g = svg.append('g').attr('transform', `translate(${width / 2},${height / 2})`);
 
-    const books = Object.entries(
-      sessions.reduce((acc, s) => {
-        (acc[s.title] ||= []).push(s);
-        return acc;
-      }, {})
-    );
-
     const color = scaleOrdinal(schemeCategory10).domain(books.map(([title]) => title));
 
-    const maxTime = Math.max(
-      ...books.map(([_, arr]) => new Date(arr[arr.length - 1].start) - new Date(arr[0].start))
-    );
+    const maxTime = books.length > 0
+      ? Math.max(
+          ...books.map(
+            ([_, arr]) =>
+              new Date(arr[arr.length - 1].start) - new Date(arr[0].start)
+          )
+        )
+      : 0;
     const radius = scaleLinear()
       .domain([0, maxTime])
       .range([20, Math.min(width, height) / 2 - 20]);
@@ -60,7 +68,7 @@ export default function BookProgressSpiral() {
         .attr('stroke-width', 1.5)
         .attr('opacity', 0.8);
     });
-  }, [sessions]);
+  }, [books]);
 
   if (error) return <div>Failed to load sessions</div>;
   if (isLoading) return <div>Loading sessions...</div>;
@@ -68,7 +76,11 @@ export default function BookProgressSpiral() {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold mb-4">Book Progress Spiral</h1>
-      <svg ref={svgRef} className="w-full max-w-[800px] h-[800px]" />
+      {books.length > 0 ? (
+        <svg ref={svgRef} className="w-full max-w-[800px] h-[800px]" />
+      ) : (
+        <div>No session data</div>
+      )}
     </div>
   );
 }
