@@ -18,15 +18,16 @@ function BookCover({ title }: { title: string }) {
   const [url, setUrl] = useState<string | null>(null);
 
   useEffect(() => {
-    let cancelled = false;
+    const controller = new AbortController();
     async function fetchCover() {
       try {
         const res = await fetch(
-          `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1`
+          `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1`,
+          { signal: controller.signal }
         );
         const data = await res.json();
         const coverId = data?.docs?.[0]?.cover_i;
-        if (!cancelled && coverId) {
+        if (coverId) {
           setUrl(`https://covers.openlibrary.org/b/id/${coverId}-M.jpg`);
         }
       } catch {
@@ -35,7 +36,7 @@ function BookCover({ title }: { title: string }) {
     }
     fetchCover();
     return () => {
-      cancelled = true;
+      controller.abort();
     };
   }, [title]);
 
