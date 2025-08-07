@@ -175,8 +175,8 @@ export default function ReadingSpeedViolin() {
       .attr('d', 'M0,-5L10,0L0,5')
       .attr('fill', '#555');
 
-    const yTicks = y.ticks();
-    const majorTicks = yTicks.filter((d) => d % 250 === 0);
+    const yTicks = y.ticks(12);
+    const majorTicks = yTicks.filter((d) => d % 100 === 0);
 
     const grid = root
       .append('g')
@@ -190,7 +190,7 @@ export default function ReadingSpeedViolin() {
 
     grid
       .selectAll('line')
-      .attr('stroke', (d) => (majorTicks.includes(d) ? '#555' : '#777'));
+      .attr('stroke', (d) => (majorTicks.includes(d) ? '#d0d0d0' : '#f0f0f0'));
     grid.select('.domain').remove();
 
     const yAxisGroup = root
@@ -198,7 +198,10 @@ export default function ReadingSpeedViolin() {
       .attr('class', 'y-axis')
       .call(axisLeft(y).tickValues(majorTicks));
 
-    yAxisGroup.selectAll('.tick line').attr('stroke', '#555').attr('stroke-width', 1);
+    yAxisGroup
+      .selectAll('.tick line')
+      .attr('stroke', '#d0d0d0')
+      .attr('stroke-width', 1);
     yAxisGroup
       .selectAll('.tick text')
       .attr('fill', '#333')
@@ -216,7 +219,7 @@ export default function ReadingSpeedViolin() {
       .attr('x', -innerHeight / 2)
       .attr('y', -margin.left + 20)
       .attr('text-anchor', 'middle')
-      .text('Words per Minute');
+      .text('Words per minute (WPM)');
     root
       .append('text')
       .attr('x', innerWidth / 2)
