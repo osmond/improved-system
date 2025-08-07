@@ -5,6 +5,7 @@ import { area, curveCatmullRom } from 'd3-shape';
 import { mean, quantile } from 'd3-array';
 import { axisLeft, axisBottom } from 'd3-axis';
 import { schemeSet2 } from 'd3-scale-chromatic';
+import { forceSimulation, forceX, forceY, forceCollide } from 'd3-force';
 
 export const color = {
   morning: schemeSet2[0],
@@ -224,12 +225,6 @@ export default function ReadingSpeedViolin() {
       .attr('text-anchor', 'middle')
       .text('Reading Period');
 
-    const jitterWidth = isSmall
-      ? catWidth * 0.1
-      : chartType === 'violin' && x
-      ? x(maxDensity) * 0.3
-      : catWidth * 0.3;
-
     const legendData = [
       { key: 'morning', label: 'Morning', visible: showMorning },
       { key: 'evening', label: 'Evening', visible: showEvening },
@@ -377,14 +372,38 @@ export default function ReadingSpeedViolin() {
           .attr('stroke-width', 2);
       }
 
-      values.forEach((v) => {
+      const maxPoints = 300;
+      const step = Math.ceil(values.length / maxPoints);
+      const sampled = step > 1 ? values.filter((_, i) => i % step === 0) : values;
+
+      const nodes = sampled.map((v) => ({ data: v, x: 0, y: y(v.wpm) }));
+
+      const rand = (() => {
+        let seed = 42;
+        return () => {
+          seed = (seed * 16807) % 2147483647;
+          return (seed - 1) / 2147483646;
+        };
+      })();
+
+      const simulation = forceSimulation(nodes)
+        .force('x', forceX(0))
+        .force('y', forceY((d) => d.y).strength(1))
+        .force('collide', forceCollide(2.5))
+        .randomSource(rand)
+        .stop();
+
+      for (let i = 0; i < 200; i += 1) simulation.tick();
+
+      nodes.forEach((n) => {
+        const v = n.data;
         g
           .append('circle')
-          .attr('cx', Math.random() * jitterWidth - jitterWidth / 2)
-          .attr('cy', y(v.wpm))
-          .attr('r', 3)
+          .attr('cx', n.x)
+          .attr('cy', n.y)
+          .attr('r', 2)
           .attr('fill', fill)
-          .attr('fill-opacity', 0.8)
+          .attr('fill-opacity', 0.25)
           .attr('stroke', '#333')
           .attr('stroke-width', 0.5)
           .on('mouseover', (event) => {
