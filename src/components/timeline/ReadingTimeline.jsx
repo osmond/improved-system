@@ -403,6 +403,17 @@ export default function ReadingTimeline({
           Drag the brush below the chart to zoom into a specific time range.
         </desc>
       </svg>
+      {zoomed && (
+        <button
+          onClick={() => {
+            reset();
+            setZoomed(false);
+          }}
+          style={{ marginTop: '0.5rem' }}
+        >
+          Reset
+        </button>
+      )}
 
       {legendKeys.length > 0 && showLegend && (
         <ul
