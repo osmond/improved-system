@@ -1,2 +1,4 @@
-const UNCLASSIFIED_GENRE = 'Unclassified';
-module.exports = { UNCLASSIFIED_GENRE };
+export const UNCLASSIFIED_GENRE = 'Unclassified';
+
+export default { UNCLASSIFIED_GENRE };
+
