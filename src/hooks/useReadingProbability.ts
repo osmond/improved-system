@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react'
 import {
-  getReadingSessions,
-  type ReadingSession,
+  getKindleSessions,
+  type KindleSession,
   type ReadingProbabilityPoint,
 } from '@/lib/api'
 
 export function computeReadingProbability(
-  sessions: ReadingSession[],
+  sessions: KindleSession[],
 ): ReadingProbabilityPoint[] {
   const bins = Array.from({ length: 24 }, () => ({
     count: 0,
@@ -14,10 +14,13 @@ export function computeReadingProbability(
     duration: 0,
   }))
   for (const s of sessions) {
-    const d = new Date(s.timestamp)
+    const d = new Date(s.start)
     const hour = d.getHours()
+    const intensity = s.duration
+      ? Math.min(1, (s.highlights || 0) / s.duration)
+      : 0
     bins[hour].count += 1
-    bins[hour].total += s.intensity
+    bins[hour].total += intensity
     bins[hour].duration += s.duration
   }
   const totalSessions = sessions.length
@@ -48,9 +51,14 @@ export default function useReadingProbability(): ReadingProbabilityPoint[] | nul
   const [data, setData] = useState<ReadingProbabilityPoint[] | null>(null)
 
   useEffect(() => {
-    getReadingSessions().then((sessions) =>
-      setData(computeReadingProbability(sessions)),
-    )
+    const controller = new AbortController()
+    const signal = controller.signal
+    getKindleSessions(signal).then((sessions) => {
+      if (!signal.aborted) {
+        setData(computeReadingProbability(sessions))
+      }
+    })
+    return () => controller.abort()
   }, [])
 
   return data

@@ -68,14 +68,13 @@ async function getAchievements() {
   return await parseCsv(filePath);
 }
 
+const KINDLE_DIR =
+  process.env.KINDLE_EXPORT_DIR ||
+  path.join(__dirname, '..', '..', 'data', 'kindle', 'Kindle');
+
 async function getDailyStats() {
   const filePath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'data',
-    'kindle',
-    'Kindle',
+    KINDLE_DIR,
     'Kindle.Devices.ReadingSession',
     'Kindle.Devices.ReadingSession.csv',
   );
@@ -85,32 +84,17 @@ async function getDailyStats() {
 
 async function getSessions() {
   const sessionsPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'data',
-    'kindle',
-    'Kindle',
+    KINDLE_DIR,
     'Kindle.Devices.ReadingSession',
     'Kindle.Devices.ReadingSession.csv',
   );
   const highlightsPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'data',
-    'kindle',
-    'Kindle',
+    KINDLE_DIR,
     'Kindle.Devices.kindleHighlightActions',
     'Kindle.Devices.kindleHighlightActions.csv',
   );
   const ordersPath = path.join(
-    __dirname,
-    '..',
-    '..',
-    'data',
-    'kindle',
-    'Kindle',
+    KINDLE_DIR,
     'Kindle.UnifiedLibraryIndex',
     'datasets',
     'Kindle.UnifiedLibraryIndex.CustomerOrders',

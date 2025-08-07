@@ -1637,10 +1637,16 @@ export function generateMockReadingSessions(count = 60): ReadingSession[] {
   return sessions;
 }
 
-export async function getReadingSessions(): Promise<ReadingSession[]> {
-  return new Promise((resolve) => {
-    setTimeout(() => resolve(generateMockReadingSessions()), 200);
-  });
+export async function getReadingSessions(
+  signal?: AbortSignal,
+): Promise<ReadingSession[]> {
+  const sessions = await getKindleSessions(signal);
+  return sessions.map((s) => ({
+    timestamp: s.start,
+    intensity: s.duration ? Math.min(1, (s.highlights || 0) / s.duration) : 0,
+    medium: "kindle" as ReadingMedium,
+    duration: s.duration,
+  }));
 }
 
 export interface ReadingMediumTotal {
