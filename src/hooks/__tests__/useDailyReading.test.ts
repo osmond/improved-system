@@ -1,5 +1,5 @@
 import { renderHook, waitFor } from '@testing-library/react'
-import { describe, it, expect } from 'vitest'
+import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest'
 import useDailyReading from '../useDailyReading'
 
 const sample = [
@@ -9,6 +9,14 @@ const sample = [
 ]
 
 describe('useDailyReading', () => {
+  const originalFetch = global.fetch
+  beforeEach(() => {
+    global.fetch = vi.fn().mockRejectedValue(new Error('no server'))
+  })
+  afterEach(() => {
+    global.fetch = originalFetch
+    vi.restoreAllMocks()
+  })
   it('fetches daily reading data', async () => {
     const { result } = renderHook(() => useDailyReading())
     await waitFor(() => expect(result.current.isLoading).toBe(false))

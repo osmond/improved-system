@@ -17,20 +17,20 @@ export default function GenreSunburstPage() {
     let isMounted = true;
     const loadData = async () => {
       try {
-        const module = await import('@/data/kindle/genre-hierarchy.json');
-        const hierarchy = module.default || module;
-        if (isMounted) {
-          setData(hierarchy);
-        }
+        const res = await fetch('/api/kindle/genre-hierarchy');
+        if (!res.ok) throw new Error('Failed to fetch genre data');
+        const hierarchy = await res.json();
+        if (isMounted) setData(hierarchy);
       } catch (err) {
-        console.error(err);
-        if (isMounted) {
-          setError('Failed to load genre data');
+        try {
+          const module = await import('@/data/kindle/genre-hierarchy.json');
+          const hierarchy = module.default || module;
+          if (isMounted) setData(hierarchy);
+        } catch {
+          if (isMounted) setError('Failed to load genre data');
         }
       } finally {
-        if (isMounted) {
-          setIsLoading(false);
-        }
+        if (isMounted) setIsLoading(false);
       }
     };
     loadData();
