@@ -1,4 +1,4 @@
-const fs = require('fs');
+const fs = require('fs'); // Node filesystem module
 const path = require('path');
 const { parse } = require('csv-parse');
 const { getSessionLocations } = require('./locationData.cjs');
