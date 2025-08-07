@@ -6,8 +6,10 @@ import { linkHorizontal } from 'd3-shape';
 import { scaleLinear } from 'd3-scale';
 import Sentiment from 'sentiment';
 import nlp from 'compromise';
-import highlights from '@/data/kindle/highlights.json';
+import highlightsMap from '@/data/kindle/highlights.json';
 import { Skeleton } from '@/ui/skeleton';
+
+const highlights = Object.values(highlightsMap).flat();
 
 const sentimentAnalyzer = new Sentiment();
 const sentimentColor = scaleLinear()

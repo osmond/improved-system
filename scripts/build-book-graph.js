@@ -50,8 +50,14 @@ function main() {
     `${base}/Kindle.UnifiedLibraryIndex.CustomerGenres/Kindle.UnifiedLibraryIndex.CustomerGenres.csv`
   );
 
-  const highlightsPath = path.join(__dirname, '..', 'data', 'kindle', 'highlights.json');
-  let highlights = [];
+  const highlightsPath = path.join(
+    __dirname,
+    '..',
+    'data',
+    'kindle',
+    'highlights.json'
+  );
+  let highlights = {};
   if (fs.existsSync(highlightsPath)) {
     highlights = JSON.parse(fs.readFileSync(highlightsPath, 'utf-8'));
   }
@@ -89,11 +95,12 @@ function main() {
     }
   }
 
-  const bookList = Array.from(books.values());
-  highlights.forEach((text, i) => {
-    if (bookList[i]) bookList[i].highlights.push(text);
-  });
+  for (const [asin, texts] of Object.entries(highlights)) {
+    const book = books.get(asin);
+    if (book) book.highlights.push(...texts);
+  }
 
+  const bookList = Array.from(books.values());
   const graph = buildBookGraph(bookList);
   const outPath = path.join(
     __dirname,

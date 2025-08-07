@@ -233,7 +233,8 @@ async function getHighlightTrie() {
   if (!highlightTrie) {
     const filePath = path.join(__dirname, '..', '..', 'data', 'kindle', 'highlights.json');
     const content = await fs.promises.readFile(filePath, 'utf-8');
-    const texts = JSON.parse(content);
+    const map = JSON.parse(content);
+    const texts = Object.values(map).flat();
     highlightTrie = buildHighlightIndex(texts);
   }
   return highlightTrie;
@@ -322,11 +323,12 @@ async function getBookGraph() {
     if (book && genre && !book.tags.includes(genre)) book.tags.push(genre);
   }
 
-  const bookList = Array.from(books.values());
-  highlights.forEach((text, i) => {
-    if (bookList[i]) bookList[i].highlights.push(text);
-  });
+  for (const [asin, texts] of Object.entries(highlights)) {
+    const book = books.get(asin);
+    if (book) book.highlights.push(...texts);
+  }
 
+  const bookList = Array.from(books.values());
   return buildBookGraph(bookList);
 }
 
