@@ -8,7 +8,8 @@ export default function useReadingSessions() {
 
   useEffect(() => {
     const controller = new AbortController();
-    const { signal } = controller;
+    const signal = controller.signal;
+    setIsLoading(true);
 
     async function load() {
       try {
