@@ -5,6 +5,7 @@ import { Skeleton } from '@/ui/skeleton';
 
 export default function BookNetworkPage() {
   const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
   const [view, setView] = useState('network');
 
   useEffect(() => {
@@ -15,12 +16,14 @@ export default function BookNetworkPage() {
         if (!res.ok) throw new Error('Failed to fetch book graph');
         const json = await res.json();
         if (active) setData(json);
-      } catch {
+      } catch (fetchErr) {
+        console.error('Failed to fetch book graph', fetchErr);
         try {
           const mod = await import('@/data/kindle/book-graph.json');
           if (active) setData(mod.default);
-        } catch {
-          // ignore
+        } catch (importErr) {
+          console.error('Failed to load book graph', importErr);
+          if (active) setError('Failed to load book graph data');
         }
       }
     };
@@ -42,7 +45,9 @@ export default function BookNetworkPage() {
         scroll or pinch to zoom, drag the background to pan and use the switch
         below to view a chord diagram.
       </p>
-      {data ? (
+      {error ? (
+        <div className="text-sm text-destructive">{error}</div>
+      ) : data ? (
         <div>
           <div className="mb-4 flex flex-wrap items-center gap-4 text-xs text-muted-foreground">
             <div className="flex items-center gap-1">
