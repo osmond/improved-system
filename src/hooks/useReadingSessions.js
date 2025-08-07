@@ -10,14 +10,18 @@ export default function useReadingSessions() {
     const controller = new AbortController();
     const signal = controller.signal;
     setIsLoading(true);
+    setError(null);
 
     async function load() {
       try {
         const d = await getKindleSessions(signal);
-        if (!signal.aborted) setData(d);
+        if (!signal.aborted) {
+          setData(d);
+        }
       } catch (err) {
         if (err.name !== 'AbortError' && !signal.aborted) {
           setError(err);
+          setData(null);
         }
       } finally {
         if (!signal.aborted) setIsLoading(false);

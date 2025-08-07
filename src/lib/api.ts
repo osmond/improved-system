@@ -1704,11 +1704,13 @@ export async function getKindleSessions(
       const res = await fetch("/api/kindle/sessions", {
         ...(signal ? { signal } : {}),
       });
-      if (res.ok) {
-        return res.json();
+      if (!res.ok) {
+        throw new Error(`Failed to fetch Kindle sessions: ${res.status} ${res.statusText}`);
       }
+      return res.json();
     } catch (err: any) {
       if (err.name === "AbortError") throw err;
+      throw err;
     }
   }
 
