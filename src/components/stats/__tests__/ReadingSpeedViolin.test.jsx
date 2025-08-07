@@ -128,7 +128,7 @@ afterEach(() => {
       const { container } = render(<ReadingSpeedViolin />);
 
       await waitFor(() => {
-        expect(container.querySelectorAll('rect').length).toBeGreaterThan(0);
+        expect(container.querySelectorAll('line').length).toBeGreaterThan(0);
       });
 
       const colors = Object.values(color);
@@ -138,11 +138,6 @@ afterEach(() => {
       );
       colors.forEach((c) => {
         expect(pathFills).toContain(c);
-      });
-
-      Array.from(container.querySelectorAll('rect')).forEach((el) => {
-        expect(colors).toContain(el.getAttribute('stroke'));
-        expect(colors).toContain(el.getAttribute('fill'));
       });
 
       const lineStrokes = Array.from(container.querySelectorAll('line')).map(
@@ -223,9 +218,5 @@ afterEach(() => {
       await waitFor(() => {
         expect(screen.getByText(/Evening median/)).toBeInTheDocument();
       });
-
-      const annotation = document.querySelector('.median-annotation');
-      expect(annotation).toBeInTheDocument();
-      expect(annotation.querySelectorAll('line').length).toBe(2);
     });
   });

@@ -322,7 +322,7 @@ export default function ReadingSpeedViolin() {
           .on('mouseout', () => tooltip.style('opacity', 0));
       }
 
-      if (chartType === 'violin' || chartType === 'box') {
+      if (chartType === 'box') {
         const { q1, q3, median, lowerWhisker, upperWhisker } = stats[period];
         const q1Y = y(q1);
         const q3Y = y(q3);
@@ -370,6 +370,43 @@ export default function ReadingSpeedViolin() {
           .attr('y2', lowerWhiskerY)
           .attr('stroke', fill)
           .attr('stroke-width', 2);
+      } else if (chartType === 'violin') {
+        const { q1, q3, median } = stats[period];
+        const q1Y = y(q1);
+        const q3Y = y(q3);
+        const medianY = y(median);
+        const lineX1 = -catWidth / 2;
+        const lineX2 = catWidth / 2;
+        const tickWidth = catWidth * 0.3;
+        const tickX1 = -tickWidth / 2;
+        const tickX2 = tickWidth / 2;
+
+        g
+          .append('line')
+          .attr('x1', lineX1)
+          .attr('x2', lineX2)
+          .attr('y1', medianY)
+          .attr('y2', medianY)
+          .attr('stroke', fill)
+          .attr('stroke-width', 4);
+
+        g
+          .append('line')
+          .attr('x1', tickX1)
+          .attr('x2', tickX2)
+          .attr('y1', q1Y)
+          .attr('y2', q1Y)
+          .attr('stroke', fill)
+          .attr('stroke-width', 1.5);
+
+        g
+          .append('line')
+          .attr('x1', tickX1)
+          .attr('x2', tickX2)
+          .attr('y1', q3Y)
+          .attr('y2', q3Y)
+          .attr('stroke', fill)
+          .attr('stroke-width', 1.5);
       }
 
       const maxPoints = 300;
