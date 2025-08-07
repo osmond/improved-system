@@ -13,19 +13,23 @@ describe('calculateGenreTransitions', () => {
       { ASIN: 'B', Genre: 'Sci-Fi' },
     ];
     const result = calculateGenreTransitions(sessions, genres);
-    expect(result).toEqual([
-      {
-        source: 'Fantasy',
-        target: 'Sci-Fi',
-        count: 1,
-        monthlyCounts: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      },
-      {
-        source: 'Sci-Fi',
-        target: 'Fantasy',
-        count: 1,
-        monthlyCounts: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-      },
-    ]);
+    expect(result).toEqual({
+      transitions: [
+        {
+          source: 'Fantasy',
+          target: 'Sci-Fi',
+          count: 1,
+          monthlyCounts: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        },
+        {
+          source: 'Sci-Fi',
+          target: 'Fantasy',
+          count: 1,
+          monthlyCounts: [0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        },
+      ],
+      unknownCount: 0,
+      totalSessions: 3,
+    });
   });
 });

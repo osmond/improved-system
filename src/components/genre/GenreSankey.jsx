@@ -15,11 +15,15 @@ export default function GenreSankey() {
   const zoomRef = useRef(null);
   const [rawData, setRawData] = useState(null);
   const [data, setData] = useState(null);
+  const [unknownPct, setUnknownPct] = useState(0);
   const [start, setStart] = useState('');
   const [end, setEnd] = useState('');
   const [filter, setFilter] = useState('');
   const [month, setMonth] = useState(0);
   const [playing, setPlaying] = useState(false);
+  const [topN, setTopN] = useState(0);
+  const [minWeight, setMinWeight] = useState(0);
+  const [normalize, setNormalize] = useState(false);
   const monthNames = [
     'Jan',
     'Feb',
@@ -37,6 +41,7 @@ export default function GenreSankey() {
   const [dimensions, setDimensions] = useState({ width: 600, height: 400 });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [maxWeight, setMaxWeight] = useState(0);
 
   const fetchData = async () => {
     setLoading(true);
@@ -46,12 +51,23 @@ export default function GenreSankey() {
       const res = await fetch(url);
       if (!res.ok) throw new Error('Failed to fetch data');
       const json = await res.json();
-      const mapped = json.map((d) => ({
+      const transitions = json.transitions || json;
+      const mapped = transitions.map((d) => ({
         ...d,
         monthlyCounts: d.monthlyCounts || Array(12).fill(0),
       }));
       setRawData(mapped);
       setData(mapped);
+      if (json.unknownCount && json.totalSessions) {
+        setUnknownPct(json.unknownCount / json.totalSessions);
+      } else {
+        setUnknownPct(0);
+      }
+      const max = Math.max(
+        0,
+        ...mapped.map((d) => Math.max(...(d.monthlyCounts || []))),
+      );
+      setMaxWeight(max);
     } catch (err) {
       try {
         const local = await import('@/data/kindle/genre-transitions.json');
@@ -61,6 +77,11 @@ export default function GenreSankey() {
         }));
         setRawData(mapped);
         setData(mapped);
+        const max = Math.max(
+          0,
+          ...mapped.map((d) => Math.max(...(d.monthlyCounts || []))),
+        );
+        setMaxWeight(max);
       } catch {
         setError(err.message || 'Failed to fetch data');
       }
@@ -139,7 +160,19 @@ export default function GenreSankey() {
     const { width, height } = dimensions;
     if (!data || data.length === 0 || width === 0 || height === 0) return;
 
-    const genres = Array.from(new Set(data.flatMap((d) => [d.source, d.target])));
+    let filtered = data.filter(
+      (d) => (d.monthlyCounts && d.monthlyCounts[month]) >= minWeight,
+    );
+    filtered.sort(
+      (a, b) =>
+        (b.monthlyCounts && b.monthlyCounts[month]) -
+        (a.monthlyCounts && a.monthlyCounts[month]),
+    );
+    if (topN > 0) filtered = filtered.slice(0, topN);
+
+    const genres = Array.from(
+      new Set(filtered.flatMap((d) => [d.source, d.target])),
+    );
 
     // compute totals per genre (incoming + outgoing) using overall counts to keep layout stable
     const totals = data.reduce((acc, { source, target, count }) => {
@@ -159,17 +192,27 @@ export default function GenreSankey() {
     const nodes = genres
       .map((name) => ({ name, total: totals[name] || 0 }))
       .sort((a, b) => b.total - a.total);
+    const unknownIndex = nodes.findIndex((d) => d.name === 'Unknown');
+    if (unknownIndex >= 0) {
+      const unk = nodes.splice(unknownIndex, 1)[0];
+      nodes.push(unk);
+    }
 
     const sortedGenres = nodes.map((d) => d.name);
     const indexByName = Object.fromEntries(nodes.map((d, i) => [d.name, i]));
 
     // rebuild links with indices matching sorted node order
-    const links = data.map((d) => ({
-      source: indexByName[d.source],
-      target: indexByName[d.target],
-      value: (d.monthlyCounts && d.monthlyCounts[month]) || 0,
-      monthlyCounts: d.monthlyCounts || Array(12).fill(0),
-    }));
+    const links = filtered.map((d) => {
+      const absVal = (d.monthlyCounts && d.monthlyCounts[month]) || 0;
+      const pct = (absVal / (sourceTotals[d.source] || 1)) * 100;
+      return {
+        source: indexByName[d.source],
+        target: indexByName[d.target],
+        value: absVal,
+        displayValue: normalize ? pct : absVal,
+        monthlyCounts: d.monthlyCounts || Array(12).fill(0),
+      };
+    });
 
     const { nodes: n, links: l } = sankey()
       .nodeWidth(15)
@@ -213,7 +256,7 @@ export default function GenreSankey() {
         .duration(750)
         .call(zoomBehavior.transform, zoomIdentity);
 
-    const values = l.map((d) => d.value).sort((a, b) => a - b);
+    const values = l.map((d) => d.displayValue).sort((a, b) => a - b);
     const cutoff = values[Math.floor(values.length * 0.95)] || 0;
 
     const link = g
@@ -224,10 +267,14 @@ export default function GenreSankey() {
       .attr('d', sankeyLinkHorizontal())
       .attr('fill', 'none')
       .attr('stroke-width', 0)
-      .attr('opacity', (d) => (d.value < cutoff ? 0.3 : 1))
+      .attr('opacity', (d) => (d.displayValue < cutoff ? 0.3 : 1))
       .transition()
       .duration(750)
-      .attr('stroke-width', (d) => Math.max(1, d.width))
+      .attr('stroke-width', (d) =>
+        normalize
+          ? Math.max(1, (d.displayValue / 100) * 10)
+          : Math.max(1, d.width),
+      )
       .each(function (d, i) {
         const gradientId = `link-gradient-${i}`;
         const gradient = defs
@@ -274,7 +321,10 @@ export default function GenreSankey() {
       const percent = (
         (d.value / (sourceTotals[d.source.name] || d.value)) * 100
       ).toFixed(0);
-      const text = `${d.source.name} → ${d.target.name}: ${d.value} sessions (${percent}% of ${d.source.name}) in ${monthNames[month]}`;
+      const valueText = normalize
+        ? `${percent}% of ${d.source.name}`
+        : `${d.value} sessions (${percent}% of ${d.source.name})`;
+      const text = `${d.source.name} → ${d.target.name}: ${valueText} in ${monthNames[month]}`;
       const counts = d.monthlyCounts || [];
       const max = Math.max(...counts, 0);
       const barWidth = 5;
@@ -337,7 +387,7 @@ export default function GenreSankey() {
       .filter((d) => d.x0 < width / 2)
       .attr('x', (d) => d.x1 + 6)
       .attr('text-anchor', 'start');
-  }, [data, dimensions, month]);
+  }, [data, dimensions, month, topN, minWeight, normalize]);
 
   return (
     <div
@@ -371,6 +421,34 @@ export default function GenreSankey() {
         <button onClick={handleResetZoom}>Reset Zoom</button>
         <button onClick={() => setFilter('')}>Clear Filter</button>
         <label>
+          Top N Links
+          <input
+            type="number"
+            min="0"
+            value={topN}
+            onChange={(e) => setTopN(Number(e.target.value))}
+          />
+        </label>
+        <label>
+          Min Weight
+          <input
+            type="range"
+            min="0"
+            max={maxWeight}
+            value={minWeight}
+            onChange={(e) => setMinWeight(Number(e.target.value))}
+          />
+          <span>{minWeight}</span>
+        </label>
+        <label>
+          Normalize
+          <input
+            type="checkbox"
+            checked={normalize}
+            onChange={(e) => setNormalize(e.target.checked)}
+          />
+        </label>
+        <label>
           Month
           <input
             type="range"
@@ -384,6 +462,11 @@ export default function GenreSankey() {
         <button onClick={() => setPlaying((p) => !p)}>
           {playing ? 'Pause' : 'Play'}
         </button>
+        {unknownPct > 0 && (
+          <span style={{ marginLeft: '1rem' }}>
+            Unknown = {(unknownPct * 100).toFixed(1)}% of sessions
+          </span>
+        )}
       </div>
       <div
         ref={containerRef}
