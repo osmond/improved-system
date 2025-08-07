@@ -1,7 +1,7 @@
 const fs = require('fs');
 const path = require('path');
-const { pathToFileURL } = require('url');
 const { parse } = require('csv-parse');
+const { getSessionLocations } = require('./locationData.cjs');
 const { aggregateDailyReading } = require('../../src/services/readingStats');
 const { aggregateReadingSessions } = require('../../src/services/readingSessions');
 const { calculateReadingSpeeds } = require('../../src/services/readingSpeed');
@@ -245,10 +245,6 @@ async function getHighlightExpansions(keyword) {
 }
 
 async function getLocations() {
-  const moduleUrl = pathToFileURL(
-    path.join(__dirname, '../../src/services/locationData.js')
-  ).href;
-  const { getSessionLocations } = await import(moduleUrl);
   return getSessionLocations();
 }
 
