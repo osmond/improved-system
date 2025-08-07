@@ -323,8 +323,14 @@ export default function CalendarHeatmap({
   multiYear,
   buckets = defaultBuckets,
 }) {
-  const { data: hookData, isLoading, error } = useDailyReading();
+  const {
+    data: hookData,
+    isLoading: hookIsLoading,
+    error: hookError,
+  } = useDailyReading(!propData);
   const data = propData || hookData;
+  const isLoading = !propData && hookIsLoading;
+  const error = !propData && hookError;
   if (isLoading) {
     return <Skeleton className="h-64" data-testid="calendar-heatmap-skeleton" />;
   }

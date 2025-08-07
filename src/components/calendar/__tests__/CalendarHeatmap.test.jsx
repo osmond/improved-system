@@ -38,6 +38,17 @@ describe('CalendarHeatmap', () => {
     expect(screen.getByTestId('calendar-heatmap-skeleton')).not.toBeNull();
   });
 
+  it('skips loading state when prop data is provided', () => {
+    useDailyReading.mockReturnValueOnce({
+      data: null,
+      error: null,
+      isLoading: true,
+    });
+    render(<CalendarHeatmap data={mockData} />);
+    expect(screen.queryByTestId('calendar-heatmap-skeleton')).toBeNull();
+    expect(useDailyReading).toHaveBeenCalledWith(false);
+  });
+
   it('renders an error message when data fails to load', () => {
     useDailyReading.mockReturnValueOnce({
       data: null,
