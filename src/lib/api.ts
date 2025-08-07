@@ -1701,7 +1701,9 @@ export async function getKindleSessions(
 ): Promise<KindleSession[]> {
   if (typeof fetch === "function") {
     try {
-      const res = await fetch("/api/kindle/sessions", { signal });
+      const res = await fetch("/api/kindle/sessions", {
+        ...(signal ? { signal } : {}),
+      });
       if (res.ok) {
         return res.json();
       }
