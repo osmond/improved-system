@@ -371,7 +371,7 @@ export default function BookNetwork({ data = { nodes: [], links: [] } }) {
           </div>
         )}
       </div>
-      <div ref={containerRef}>
+      <div ref={containerRef} className="h-96 w-full">
         <svg ref={svgRef} width={dimensions.width} height={dimensions.height}></svg>
       </div>
     </div>
