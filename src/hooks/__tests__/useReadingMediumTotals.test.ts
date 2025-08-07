@@ -31,7 +31,6 @@ describe("useReadingMediumTotals", () => {
     const mockData: ReadingMediumTotal[] = [
       { medium: "tablet", minutes: 45 },
     ]
-    vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new Error("fail")))
     const spy = vi
       .spyOn(api, "getReadingMediumTotals")
       .mockResolvedValue(mockData)
@@ -40,7 +39,6 @@ describe("useReadingMediumTotals", () => {
     expect(result.current.data).toEqual(mockData)
     expect(result.current.error).toBeNull()
     expect(spy).toHaveBeenCalled()
-    vi.unstubAllGlobals()
     spy.mockRestore()
   })
 })

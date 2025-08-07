@@ -46,14 +46,16 @@ export default function ChartRadialGrid({
       </div>
     )
 
-  const labelledData = data.map((d) => ({
+  const filtered = data.filter((d) => d.minutes > 0)
+
+  const labelledData = filtered.map((d) => ({
     ...d,
     label: labels[d.medium],
     fill: `var(--color-${d.medium})`,
   }))
 
   const chartConfig: ChartConfig = { minutes: { label: 'Minutes' } }
-  data.forEach((d, i) => {
+  filtered.forEach((d, i) => {
     ;(chartConfig as any)[d.medium] = {
       label: labels[d.medium],
       color: `hsl(var(--chart-${i + 1}))`,
