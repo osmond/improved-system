@@ -429,12 +429,12 @@ const otherRouteGroup: DashboardRouteGroup = {
 };
 
 export const dashboardRoutes: DashboardRouteGroup[] = [
-  kindleRouteGroup,
   allRouteGroup,
   mapsRouteGroup,
   trendsRouteGroup,
   analyticalRouteGroup,
   goalsRouteGroup,
+  kindleRouteGroup,
   otherRouteGroup,
 ];
 
