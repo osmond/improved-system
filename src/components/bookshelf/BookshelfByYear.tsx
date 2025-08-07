@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import type { KindleSession } from "@/lib/api";
 
 interface BookshelfByYearProps {
@@ -15,37 +15,23 @@ interface BookInfo {
 }
 
 function BookCover({ title }: { title: string }) {
-  const [url, setUrl] = useState<string | null>(null);
+  const [failed, setFailed] = useState(false);
+  const url = `https://covers.openlibrary.org/b/title/${encodeURIComponent(
+    title
+  )}-M.jpg?default=false`;
 
-  useEffect(() => {
-    const controller = new AbortController();
-    async function fetchCover() {
-      try {
-        const res = await fetch(
-          `https://openlibrary.org/search.json?title=${encodeURIComponent(title)}&limit=1`,
-          { signal: controller.signal }
-        );
-        const data = await res.json();
-        const coverId = data?.docs?.[0]?.cover_i;
-        if (coverId) {
-          setUrl(`https://covers.openlibrary.org/b/id/${coverId}-M.jpg`);
-        }
-      } catch {
-        // ignore
-      }
-    }
-    fetchCover();
-    return () => {
-      controller.abort();
-    };
-  }, [title]);
-
-  return url ? (
-    <img src={url} alt={title} className="w-full h-full object-cover" />
-  ) : (
+  return failed ? (
     <div className="w-full h-full bg-muted flex items-center justify-center text-[10px] p-1 text-center">
       {title}
     </div>
+  ) : (
+    <img
+      src={url}
+      alt={title}
+      loading="lazy"
+      onError={() => setFailed(true)}
+      className="w-full h-full object-cover"
+    />
   );
 }
 
