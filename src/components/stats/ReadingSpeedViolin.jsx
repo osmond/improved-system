@@ -158,7 +158,31 @@ export default function ReadingSpeedViolin() {
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
 
-    root.append('g').call(axisLeft(y));
+    const yTicks = y.ticks();
+    const majorTicks = yTicks.filter((d) => d % 250 === 0);
+
+    const grid = root
+      .append('g')
+      .attr('class', 'grid')
+      .call(
+        axisLeft(y)
+          .tickValues(yTicks)
+          .tickSize(-innerWidth)
+          .tickFormat('')
+      );
+
+    grid.selectAll('line').attr('stroke', (d) => (d % 250 === 0 ? '#ccc' : '#eee'));
+    grid.select('.domain').remove();
+
+    const yAxisGroup = root
+      .append('g')
+      .attr('class', 'y-axis')
+      .call(axisLeft(y).tickValues(majorTicks));
+
+    yAxisGroup.selectAll('.tick line').attr('stroke', '#999');
+    yAxisGroup.selectAll('.tick text').attr('fill', '#555');
+    yAxisGroup.select('.domain').remove();
+
     root
       .append('g')
       .attr('transform', `translate(0,${innerHeight})`)
