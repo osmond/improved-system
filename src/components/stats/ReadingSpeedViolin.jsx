@@ -20,6 +20,7 @@ export default function ReadingSpeedViolin() {
   const svgRef = useRef(null);
   const tooltipRef = useRef(null);
   const containerRef = useRef(null);
+  const canvasRef = useRef(null);
   const [dimensions, setDimensions] = useState({ width: 700, height: 450 });
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -45,6 +46,10 @@ export default function ReadingSpeedViolin() {
     const [min, max] = presets[preset];
     return data.filter((d) => d.wpm >= min && d.wpm < max);
   }, [data, preset]);
+
+  const useCanvas =
+    filteredData.length > 3000 &&
+    (typeof navigator === 'undefined' || !/jsdom/i.test(navigator.userAgent));
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -87,6 +92,24 @@ export default function ReadingSpeedViolin() {
     const { width, height } = dimensions;
     const svg = select(svgRef.current);
     svg.selectAll('*').remove();
+    const canvas = canvasRef.current;
+    let ctx = null;
+    if (canvas && useCanvas) {
+      try {
+        ctx = canvas.getContext('2d');
+      } catch {
+        ctx = null;
+      }
+    }
+    if (canvas) {
+      canvas.width = width;
+      canvas.height = height;
+      canvas.style.position = 'absolute';
+      canvas.style.top = '0';
+      canvas.style.left = '0';
+      canvas.style.display = useCanvas && ctx ? 'block' : 'none';
+      if (ctx) ctx.clearRect(0, 0, width, height);
+    }
     if (!width || !height) return;
 
     const periods = {
@@ -165,6 +188,8 @@ export default function ReadingSpeedViolin() {
       .attr('viewBox', `0 0 ${width} ${height}`)
       .append('g')
       .attr('transform', `translate(${margin.left},${margin.top})`);
+    const tooltip = select(tooltipRef.current);
+    const canvasNodes = [];
 
     const bandsGroup = root.append('g').attr('class', 'wpm-bands');
     const bandDefs = [
@@ -260,7 +285,6 @@ export default function ReadingSpeedViolin() {
       const values = periods[period];
       if (values.length === 0) return;
       const center = xCat(period) + catWidth / 2;
-
       root
         .append('text')
         .attr('x', center)
@@ -298,7 +322,6 @@ export default function ReadingSpeedViolin() {
         .attr('transform', `translate(${center},0)`)
         .style('display', show ? null : 'none');
       const fill = color[period];
-      const tooltip = select(tooltipRef.current);
 
       if (!isSmall) {
         const density = densities[period];
@@ -388,45 +411,105 @@ export default function ReadingSpeedViolin() {
 
       for (let i = 0; i < 200; i += 1) simulation.tick();
 
-      nodes.forEach((n) => {
-        const v = n.data;
-        g
-          .append('circle')
-          .attr('cx', n.x)
-          .attr('cy', n.y)
-          .attr('r', 2)
-          .attr('fill', fill)
-          .attr('fill-opacity', 0.25)
-          .attr('stroke', '#333')
-          .attr('stroke-width', 0.5)
-          .on('mouseover', (event) => {
-            const rect = svgRef.current.getBoundingClientRect();
-            const meta = Object.entries(v)
-              .filter(([k]) => !['wpm', 'start', 'period'].includes(k))
-              .map(
-                ([k, val]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${val}`
-              )
-              .join('<br/>');
-            tooltip
-              .style('opacity', 1)
-              .html(
-                `WPM: ${v.wpm}<br/>${new Date(v.start).toLocaleString()}${
-                  meta ? '<br/>' + meta : ''
-                }`
-              )
-              .style('left', event.clientX - rect.left + 10 + 'px')
-              .style('top', event.clientY - rect.top + 10 + 'px');
-          })
-          .on('mousemove', (event) => {
-            const rect = svgRef.current.getBoundingClientRect();
-            tooltip
-              .style('left', event.clientX - rect.left + 10 + 'px')
-              .style('top', event.clientY - rect.top + 10 + 'px');
-          })
-          .on('mouseout', () => tooltip.style('opacity', 0));
-      });
+      if (useCanvas && ctx) {
+        ctx.save();
+        ctx.translate(margin.left + center, margin.top);
+        nodes.forEach((n) => {
+          const v = n.data;
+          ctx.beginPath();
+          ctx.arc(n.x, n.y, 2, 0, Math.PI * 2);
+          ctx.fillStyle = fill;
+          ctx.globalAlpha = 0.25;
+          ctx.fill();
+          ctx.globalAlpha = 1;
+          ctx.strokeStyle = '#333';
+          ctx.lineWidth = 0.5;
+          ctx.stroke();
+          canvasNodes.push({
+            x: margin.left + center + n.x,
+            y: margin.top + n.y,
+            data: v,
+          });
+        });
+        ctx.restore();
+      } else {
+        nodes.forEach((n) => {
+          const v = n.data;
+          g
+            .append('circle')
+            .attr('cx', n.x)
+            .attr('cy', n.y)
+            .attr('r', 2)
+            .attr('fill', fill)
+            .attr('fill-opacity', 0.25)
+            .attr('stroke', '#333')
+            .attr('stroke-width', 0.5)
+            .on('mouseover', (event) => {
+              const rect = svgRef.current.getBoundingClientRect();
+              const meta = Object.entries(v)
+                .filter(([k]) => !['wpm', 'start', 'period'].includes(k))
+                .map(
+                  ([k, val]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${val}`
+                )
+                .join('<br/>');
+              tooltip
+                .style('opacity', 1)
+                .html(
+                  `WPM: ${v.wpm}<br/>${new Date(v.start).toLocaleString()}${
+                    meta ? '<br/>' + meta : ''
+                  }`
+                )
+                .style('left', event.clientX - rect.left + 10 + 'px')
+                .style('top', event.clientY - rect.top + 10 + 'px');
+            })
+            .on('mousemove', (event) => {
+              const rect = svgRef.current.getBoundingClientRect();
+              tooltip
+                .style('left', event.clientX - rect.left + 10 + 'px')
+                .style('top', event.clientY - rect.top + 10 + 'px');
+            })
+            .on('mouseout', () => tooltip.style('opacity', 0));
+        });
+      }
     });
 
+    if (useCanvas && ctx) {
+      const handleMove = (event) => {
+        const rect = canvas.getBoundingClientRect();
+        const xPos = event.clientX - rect.left;
+        const yPos = event.clientY - rect.top;
+        const hit = canvasNodes.find(
+          (n) => Math.hypot(xPos - n.x, yPos - n.y) <= 2
+        );
+        if (hit) {
+          const v = hit.data;
+          const meta = Object.entries(v)
+            .filter(([k]) => !['wpm', 'start', 'period'].includes(k))
+            .map(
+              ([k, val]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${val}`
+            )
+            .join('<br/>');
+          tooltip
+            .style('opacity', 1)
+            .html(
+              `WPM: ${v.wpm}<br/>${new Date(v.start).toLocaleString()}${
+                meta ? '<br/>' + meta : ''
+              }`
+            )
+            .style('left', xPos + 10 + 'px')
+            .style('top', yPos + 10 + 'px');
+        } else {
+          tooltip.style('opacity', 0);
+        }
+      };
+      const handleLeave = () => tooltip.style('opacity', 0);
+      canvas.addEventListener('mousemove', handleMove);
+      canvas.addEventListener('mouseleave', handleLeave);
+      return () => {
+        canvas.removeEventListener('mousemove', handleMove);
+        canvas.removeEventListener('mouseleave', handleLeave);
+      };
+    }
   }, [
     filteredData,
     showMorning,
@@ -435,6 +518,7 @@ export default function ReadingSpeedViolin() {
     dimensions,
     showOutliers,
     preset,
+    useCanvas,
   ]);
 
   const {
@@ -522,7 +606,15 @@ export default function ReadingSpeedViolin() {
           {`Morning median ${Math.round(morningMedian)} WPM (n=${morningCount}) vs Evening median ${Math.round(eveningMedian)} WPM (n=${eveningCount}, Δ = ${Math.round(delta)} WPM)`}
         </div>
       )}
-      <div ref={containerRef} style={{ width: '100%' }}>
+      <div ref={containerRef} style={{ width: '100%', position: 'relative' }}>
+        {useCanvas && (
+          <canvas
+            ref={canvasRef}
+            width={dimensions.width}
+            height={dimensions.height}
+            style={{ width: '100%', height: 'auto' }}
+          />
+        )}
         <svg
           ref={svgRef}
           width={dimensions.width}
