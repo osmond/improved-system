@@ -1,5 +1,12 @@
-[
-  "The first highlight text",
-  "Another highlight from a book",
-  "Last highlight"
-]
+{
+  "A": [
+    "The first highlight text"
+  ],
+  "B": [
+    "Another highlight from a book"
+  ],
+  "C": [
+    "Last highlight"
+  ]
+}
+

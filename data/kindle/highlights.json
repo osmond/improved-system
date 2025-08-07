@@ -1,5 +1,12 @@
-[
-  "the quick brown fox jumps over the lazy dog",
-  "the quick blue hare jumps high",
-  "the slow turtle crawls under the log"
-]
+{
+  "A": [
+    "the quick brown fox jumps over the lazy dog"
+  ],
+  "B": [
+    "the quick blue hare jumps high"
+  ],
+  "C": [
+    "the slow turtle crawls under the log"
+  ]
+}
+
