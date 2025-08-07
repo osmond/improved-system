@@ -1,10 +1,10 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import {
-  dashboardRoutes,
+  dashboardRouteMeta as dashboardRoutes,
   type DashboardRoute,
   type DashboardRouteGroup,
-} from "@/routes";
+} from "@/routes/meta";
 
 function flattenRoutes(groups: DashboardRouteGroup[]): DashboardRoute[] {
   return groups.flatMap((group) => [

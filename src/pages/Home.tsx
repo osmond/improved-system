@@ -1,33 +1,9 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { dashboardRoutes } from "@/routes";
-
-// Build a map of existing page modules so we can filter out
-// routes pointing to non-existent components.
-// Vite's import.meta.glob gives us an object where keys are paths
-// relative to this file's directory (src/pages).
-const pageModules = import.meta.glob("./**/*.{ts,tsx,js,jsx}");
-
-function hasPage(component?: string) {
-  if (!component) return true;
-  // Convert the @/pages/* path to a relative path like ./foo
-  const path = component.replace("@/pages", ".");
-  return (
-    pageModules[`${path}.tsx`] ||
-    pageModules[`${path}.ts`] ||
-    pageModules[`${path}.jsx`] ||
-    pageModules[`${path}.js`]
-  );
-}
+import { dashboardRouteMeta as dashboardRoutes } from "@/routes/meta";
 
 export default function Home() {
-  // Filter out routes that don't have an existing page module
-  const groups = dashboardRoutes
-    .map((group) => ({
-      ...group,
-      items: group.items.filter((item) => hasPage(item.component)),
-    }))
-    .filter((group) => group.items.length > 0);
+  const groups = dashboardRoutes;
 
   return (
     <div className="p-4 space-y-6">

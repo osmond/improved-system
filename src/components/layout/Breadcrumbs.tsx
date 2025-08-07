@@ -1,6 +1,6 @@
 import React from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
-import { dashboardRoutes } from "@/routes";
+import { dashboardRouteMeta as dashboardRoutes } from "@/routes/meta";
 
 const routeLabelMap: Record<string, string> = {};
 for (const group of dashboardRoutes) {
