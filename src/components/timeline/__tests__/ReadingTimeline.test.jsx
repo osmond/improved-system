@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent, within } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { select } from 'd3-selection';
-import { act } from 'react';
+import { act } from 'react-dom/test-utils';
 import ReadingTimeline from '../ReadingTimeline.jsx';
 import { schemeTableau10 } from 'd3-scale-chromatic';
 
