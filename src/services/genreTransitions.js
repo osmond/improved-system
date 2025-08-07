@@ -8,13 +8,18 @@ function calculateGenreTransitions(sessions, genres = []) {
     }
   }
 
+  let unknownCount = 0;
   const list = sessions
     .slice()
     .sort((a, b) => a.start.localeCompare(b.start))
-    .map((s) => ({
-      genre: genreByAsin[s.asin] || 'Unknown',
-      start: s.start,
-    }));
+    .map((s) => {
+      const genre = genreByAsin[s.asin] || 'Unknown';
+      if (genre === 'Unknown') unknownCount += 1;
+      return {
+        genre,
+        start: s.start,
+      };
+    });
 
   const map = {};
   for (let i = 0; i < list.length - 1; i++) {
@@ -33,10 +38,16 @@ function calculateGenreTransitions(sessions, genres = []) {
     map[key].monthlyCounts[month] += 1;
   }
 
-  return Object.entries(map).map(([key, value]) => {
+  const transitions = Object.entries(map).map(([key, value]) => {
     const [source, target] = key.split('->');
     return { source, target, count: value.count, monthlyCounts: value.monthlyCounts };
   });
+
+  return {
+    transitions,
+    unknownCount,
+    totalSessions: list.length,
+  };
 }
 
 module.exports = { calculateGenreTransitions };

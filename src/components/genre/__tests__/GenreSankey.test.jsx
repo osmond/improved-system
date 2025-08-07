@@ -16,7 +16,7 @@ describe('GenreSankey', () => {
   it('renders a skeleton before data resolves', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(transitions),
+      json: () => Promise.resolve({ transitions, unknownCount: 0, totalSessions: 0 }),
     });
     render(<GenreSankey />);
     expect(screen.getByTestId('genre-sankey-skeleton')).toBeInTheDocument();
@@ -31,11 +31,11 @@ describe('GenreSankey', () => {
       .fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(transitions),
+        json: () => Promise.resolve({ transitions, unknownCount: 0, totalSessions: 0 }),
       })
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(filtered),
+        json: () => Promise.resolve({ transitions: filtered, unknownCount: 0, totalSessions: 0 }),
       });
 
     const { container } = render(<GenreSankey />);
@@ -68,7 +68,7 @@ describe('GenreSankey', () => {
       .fn()
       .mockResolvedValueOnce({
         ok: true,
-        json: () => Promise.resolve(transitions),
+        json: () => Promise.resolve({ transitions, unknownCount: 0, totalSessions: 0 }),
       })
       .mockImplementationOnce(
         () =>
@@ -90,7 +90,7 @@ describe('GenreSankey', () => {
     });
     resolveFetch({
       ok: true,
-      json: () => Promise.resolve(filtered),
+      json: () => Promise.resolve({ transitions: filtered, unknownCount: 0, totalSessions: 0 }),
     });
     await waitFor(() => {
       expect(apply).not.toBeDisabled();
@@ -109,7 +109,7 @@ describe('GenreSankey', () => {
   it('filters data by genre name', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(transitions),
+      json: () => Promise.resolve({ transitions, unknownCount: 0, totalSessions: 0 }),
     });
     const { container } = render(<GenreSankey />);
     await waitFor(() => {
@@ -136,7 +136,7 @@ describe('GenreSankey', () => {
   it('renders link gradients transitioning between node colors', async () => {
     global.fetch = vi.fn().mockResolvedValue({
       ok: true,
-      json: () => Promise.resolve(transitions),
+      json: () => Promise.resolve({ transitions, unknownCount: 0, totalSessions: 0 }),
     });
     const { container } = render(<GenreSankey />);
     await waitFor(() => {

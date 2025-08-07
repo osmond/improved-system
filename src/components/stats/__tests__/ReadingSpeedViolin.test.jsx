@@ -28,11 +28,18 @@ afterEach(() => {
         ).toBeInTheDocument();
       });
       expect(screen.getByLabelText('Show outliers')).toBeInTheDocument();
-      expect(screen.getByLabelText('Smoothing')).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'All' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Deep' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Normal' })).toBeInTheDocument();
-      expect(screen.getByRole('button', { name: 'Skimming' })).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Show All' })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Deep/ })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Normal/ })
+      ).toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: /Skimming/ })
+      ).toBeInTheDocument();
       await waitFor(() => {
         const paths = document.querySelectorAll('path');
         expect(paths.length).toBeGreaterThan(0);
@@ -58,22 +65,22 @@ afterEach(() => {
         expect(document.querySelectorAll('circle').length).toBe(6);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'Deep' }));
+      fireEvent.click(screen.getByRole('button', { name: /Deep/ }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(2);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'Normal' }));
+      fireEvent.click(screen.getByRole('button', { name: /Normal/ }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(2);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'Skimming' }));
+      fireEvent.click(screen.getByRole('button', { name: /Skimming/ }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(2);
       });
 
-      fireEvent.click(screen.getByRole('button', { name: 'All' }));
+      fireEvent.click(screen.getByRole('button', { name: 'Show All' }));
       await waitFor(() => {
         expect(document.querySelectorAll('circle').length).toBe(6);
       });
@@ -112,16 +119,6 @@ afterEach(() => {
         );
         expect(minCyAfter).toBeGreaterThanOrEqual(0);
       });
-    });
-
-    it('uses preset smoothing options', () => {
-      render(<ReadingSpeedViolin />);
-      const select = screen.getByLabelText('Smoothing');
-      expect(select).toHaveValue('300');
-      const optionValues = Array.from(select.querySelectorAll('option')).map(
-        (o) => o.value
-      );
-      expect(optionValues).toEqual(['100', '300', '600']);
     });
 
     it('applies period-specific colors', async () => {

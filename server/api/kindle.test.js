@@ -59,12 +59,16 @@ describe('GET /api/kindle', () => {
   it('returns genre transitions data', async () => {
     const res = await request(app).get('/api/kindle/genre-transitions');
     expect(res.status).toBe(200);
-    expect(Array.isArray(res.body)).toBe(true);
-    if (res.body.length > 0) {
-      expect(res.body[0]).toHaveProperty('source');
-      expect(res.body[0]).toHaveProperty('target');
-      expect(res.body[0]).toHaveProperty('count');
-      expect(res.body[0]).toHaveProperty('monthlyCounts');
+    expect(res.body).toHaveProperty('transitions');
+    expect(res.body).toHaveProperty('unknownCount');
+    expect(res.body).toHaveProperty('totalSessions');
+    expect(Array.isArray(res.body.transitions)).toBe(true);
+    if (res.body.transitions.length > 0) {
+      const first = res.body.transitions[0];
+      expect(first).toHaveProperty('source');
+      expect(first).toHaveProperty('target');
+      expect(first).toHaveProperty('count');
+      expect(first).toHaveProperty('monthlyCounts');
     }
   });
 
