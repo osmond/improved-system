@@ -15,120 +15,69 @@ const {
   updateSubgenreOverride,
 } = require('../services/kindleService');
 
+const asyncHandler = require('./asyncHandler');
+
 const router = express.Router();
 
-router.get('/events', async (req, res) => {
-  try {
-    res.json(await getEvents());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load events' });
-  }
-});
+router.get('/events', asyncHandler(async (req, res) => {
+  res.json(await getEvents());
+}));
 
-router.get('/points', async (req, res) => {
-  try {
-    res.json(await getPoints());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load points' });
-  }
-});
+router.get('/points', asyncHandler(async (req, res) => {
+  res.json(await getPoints());
+}));
 
-router.get('/achievements', async (req, res) => {
-  try {
-    res.json(await getAchievements());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load achievements' });
-  }
-});
+router.get('/achievements', asyncHandler(async (req, res) => {
+  res.json(await getAchievements());
+}));
 
-router.get('/daily-stats', async (req, res) => {
-  try {
-    res.json(await getDailyStats());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load daily stats' });
-  }
-});
+router.get('/daily-stats', asyncHandler(async (req, res) => {
+  res.json(await getDailyStats());
+}));
 
-router.get('/sessions', async (req, res) => {
-  try {
-    res.json(await getSessions());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load sessions' });
-  }
-});
+router.get('/sessions', asyncHandler(async (req, res) => {
+  res.json(await getSessions());
+}));
 
-router.get('/genre-hierarchy', async (req, res) => {
-  try {
-    res.json(await getGenreHierarchy());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load genre hierarchy' });
-  }
-});
+router.get('/genre-hierarchy', asyncHandler(async (req, res) => {
+  res.json(await getGenreHierarchy());
+}));
 
-router.get('/genre-transitions', async (req, res) => {
-  try {
-    const { start, end } = req.query;
-    const transitions = await getGenreTransitions(start, end);
-    res.json(transitions);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load genre transitions' });
-  }
-});
+router.get('/genre-transitions', asyncHandler(async (req, res) => {
+  const { start, end } = req.query;
+  const transitions = await getGenreTransitions(start, end);
+  res.json(transitions);
+}));
 
-router.get('/highlights/search', async (req, res) => {
+router.get('/highlights/search', asyncHandler(async (req, res) => {
   const { keyword } = req.query;
   if (!keyword) return res.status(400).json({ error: 'keyword query required' });
-  try {
-    res.json(await getHighlightExpansions(keyword));
-  } catch (err) {
-    res.status(500).json({ error: err.message || 'Failed to search highlights' });
-  }
-});
+  res.json(await getHighlightExpansions(keyword));
+}));
 
-router.get('/locations', async (req, res) => {
-  try {
-    res.json(await getLocations());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load locations' });
-  }
-});
+router.get('/locations', asyncHandler(async (req, res) => {
+  res.json(await getLocations());
+}));
 
-router.get('/reading-speed', async (req, res) => {
-  try {
-    res.json(await getReadingSpeed());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load reading speed' });
-  }
-});
+router.get('/reading-speed', asyncHandler(async (req, res) => {
+  res.json(await getReadingSpeed());
+}));
 
-router.get('/book-graph', async (req, res) => {
-  try {
-    res.json(await getBookGraph());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load book graph' });
-  }
-});
+router.get('/book-graph', asyncHandler(async (req, res) => {
+  res.json(await getBookGraph());
+}));
 
-router.get('/subgenre-overrides', async (req, res) => {
-  try {
-    res.json(await getSubgenreOverrides());
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to load subgenre overrides' });
-  }
-});
+router.get('/subgenre-overrides', asyncHandler(async (req, res) => {
+  res.json(await getSubgenreOverrides());
+}));
 
-router.post('/subgenre-overrides', async (req, res) => {
+router.post('/subgenre-overrides', asyncHandler(async (req, res) => {
   const { asin, subgenre } = req.body || {};
   if (!asin || !subgenre) {
     return res.status(400).json({ error: 'asin and subgenre required' });
   }
-  try {
-    const map = await updateSubgenreOverride(asin, subgenre);
-    res.json(map);
-  } catch (err) {
-    res.status(500).json({ error: 'Failed to update subgenre override' });
-  }
-});
+  const map = await updateSubgenreOverride(asin, subgenre);
+  res.json(map);
+}));
 
 module.exports = router;
-
