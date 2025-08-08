@@ -48,11 +48,6 @@ export const readingRoutes = withIcon(BookOpen, [
     description: "Distribution of reading speed via violin plot.",
   },
   {
-    to: "/dashboard/charts/reading-stack-split",
-    label: "Reading Stack Split",
-    description: "Compare reading stacks by category.",
-  },
-  {
     to: "/dashboard/charts/reading-timeline",
     label: "Reading Timeline",
     description: "Chronological view of reading history.",

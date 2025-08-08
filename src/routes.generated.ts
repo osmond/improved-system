@@ -198,10 +198,6 @@ export const generatedRoutes: GeneratedRoute[] = [
     "component": "@/pages/charts/ReadingSpeedViolin"
   },
   {
-    "path": "/dashboard/charts/reading-stack-split",
-    "component": "@/pages/charts/ReadingStackSplit"
-  },
-  {
     "path": "/dashboard/charts/reading-timeline",
     "component": "@/pages/charts/ReadingTimeline"
   },
