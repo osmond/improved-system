@@ -115,7 +115,7 @@ export default function GenreSunburst({ data }) {
     <div>
       <div>
         {ancestors.map((node, i) => (
-          <span key={node.data.name}>
+          <span key={`${node.data.name}-${i}`}>
             {i > 0 && ' / '}
             <button
               type="button"
