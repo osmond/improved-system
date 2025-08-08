@@ -2,7 +2,7 @@ import { describe, it, expect } from 'vitest';
 import { calculateGenreTransitions } from '../genreTransitions';
 
 describe('calculateGenreTransitions', () => {
-  it('counts transitions between genres with monthly breakdowns', () => {
+  it('counts transitions between genres with monthly breakdowns and removes cycles', () => {
     const sessions = [
       { start: '2024-01-01T00:00:00Z', asin: 'A' },
       { start: '2024-01-02T00:00:00Z', asin: 'B' },
@@ -15,12 +15,6 @@ describe('calculateGenreTransitions', () => {
     const result = calculateGenreTransitions(sessions, genres);
     expect(result).toEqual({
       transitions: [
-        {
-          source: 'Fantasy',
-          target: 'Sci-Fi',
-          count: 1,
-          monthlyCounts: [1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-        },
         {
           source: 'Sci-Fi',
           target: 'Fantasy',
