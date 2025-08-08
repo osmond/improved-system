@@ -18,6 +18,10 @@ export default function BookProgressSpiral() {
       }, {})
     );
   }, [sessions]);
+  const color = useMemo(
+    () => scaleOrdinal(schemeCategory10).domain(books.map(([title]) => title)),
+    [books]
+  );
 
   useEffect(() => {
     if (books.length === 0) return;
@@ -25,26 +29,24 @@ export default function BookProgressSpiral() {
     const width = 800;
     const height = 800;
 
-    const svg = select(svgRef.current)
-      .attr('viewBox', `0 0 ${width} ${height}`);
+    const svg = select(svgRef.current).attr('viewBox', `0 0 ${width} ${height}`);
 
     svg.selectAll('*').remove();
 
     const g = svg.append('g').attr('transform', `translate(${width / 2},${height / 2})`);
 
-    const color = scaleOrdinal(schemeCategory10).domain(books.map(([title]) => title));
-
-    const maxTime = books.length > 0
-      ? Math.max(
-          ...books.map(
-            ([_, arr]) =>
-              new Date(arr[arr.length - 1].start) - new Date(arr[0].start)
+    const maxTime =
+      books.length > 0
+        ? Math.max(
+            ...books.map(
+              ([_, arr]) => new Date(arr[arr.length - 1].start) - new Date(arr[0].start)
+            )
           )
-        )
-      : 0;
-    const radius = scaleLinear()
-      .domain([0, maxTime])
-      .range([20, Math.min(width, height) / 2 - 20]);
+        : 0;
+    const radius =
+      scaleLinear()
+        .domain([0, maxTime])
+        .range([20, Math.min(width, height) / 2 - 20]);
 
     const line = lineRadial().curve(curveCatmullRom.alpha(0.5));
 
@@ -61,23 +63,43 @@ export default function BookProgressSpiral() {
         return [angle, r];
       });
 
-      g.append('path')
+      g
+        .append('path')
         .attr('d', line(points))
         .attr('fill', 'none')
         .attr('stroke', color(title))
         .attr('stroke-width', 1.5)
         .attr('opacity', 0.8);
     });
-  }, [books]);
+  }, [books, color]);
 
   if (error) return <div>Failed to load sessions</div>;
   if (isLoading) return <div>Loading sessions...</div>;
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold mb-4">Book Progress Spiral</h1>
+      <h1 className="text-xl font-bold mb-2">Book Progress Spiral</h1>
+      <p className="text-sm text-gray-600 mb-4">
+        The spiral illustrates how your reading sessions build over time: the radius shows
+        how long a book has been in progress, while the angle tracks cumulative reading
+        time, completing a full turn when the book is finished. Each color represents a
+        different book.
+      </p>
       {books.length > 0 ? (
-        <svg ref={svgRef} className="w-full max-w-[800px] h-[800px]" />
+        <>
+          <svg ref={svgRef} className="w-full max-w-[800px] h-[800px]" />
+          <div className="mt-4 space-y-1">
+            {books.map(([title]) => (
+              <div key={title} className="flex items-center text-sm">
+                <span
+                  className="w-3 h-3 rounded-sm mr-2"
+                  style={{ backgroundColor: color(title) }}
+                />
+                {title}
+              </div>
+            ))}
+          </div>
+        </>
       ) : (
         <div>No session data</div>
       )}
