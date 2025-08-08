@@ -194,7 +194,6 @@ FI grows with sample size and should complement, not replace, reported effect si
 - **Commute Rank** – ranking of commute times against peers.
 - **Reading Focus Heatmap** – intensity of reading focus by time.
 - **Books vs Calories** – correlation between reading time and calories burned.
-- **Reading Stack Split** – breakdown of reading categories.
 - **Run Soundtrack Card** – Spotify powered soundtrack for the next run.
 - **Compact Next Game Card** – quick view of the upcoming game.
 - **Movement Fingerprint** – fingerprint‑style visualization of route patterns.
