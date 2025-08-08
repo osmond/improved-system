@@ -5,10 +5,12 @@ import { lineRadial, curveCatmullRom } from 'd3-shape';
 import { schemeCategory10 } from 'd3-scale-chromatic';
 import useReadingSessions from '@/hooks/useReadingSessions';
 import CursorTooltip from '@/components/ui/cursor-tooltip';
+import useResizeObserver from '@/hooks/useResizeObserver';
 
 export default function BookProgressSpiral() {
   const { data: sessions, error, isLoading } = useReadingSessions();
   const svgRef = useRef(null);
+  const { ref: containerRef, width, height } = useResizeObserver();
   const [tooltip, setTooltip] = useState({
     visible: false,
     x: 0,
@@ -31,10 +33,7 @@ export default function BookProgressSpiral() {
   );
 
   useEffect(() => {
-    if (books.length === 0) return;
-
-    const width = 800;
-    const height = 800;
+    if (books.length === 0 || !width || !height) return;
 
     const svg = select(svgRef.current).attr('viewBox', `0 0 ${width} ${height}`);
 
@@ -111,7 +110,7 @@ export default function BookProgressSpiral() {
         prevPoint = point;
       });
     });
-  }, [books, color]);
+  }, [books, color, width, height]);
 
   if (error) return <div>Failed to load sessions</div>;
   if (isLoading) return <div>Loading sessions...</div>;
@@ -126,8 +125,13 @@ export default function BookProgressSpiral() {
         different book.
       </p>
       {books.length > 0 ? (
-        <> 
-          <svg ref={svgRef} className="w-full max-w-[800px] h-[800px]" />
+        <>
+          <div
+            ref={containerRef}
+            className="w-full max-w-[800px] aspect-square"
+          >
+            <svg ref={svgRef} className="w-full h-full" />
+          </div>
           <CursorTooltip
             x={tooltip.x}
             y={tooltip.y}
