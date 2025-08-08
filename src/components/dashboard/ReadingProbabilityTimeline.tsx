@@ -11,6 +11,8 @@ import {
   ReferenceArea,
   ChartTooltip,
   ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
 } from "@/ui/chart";
 import ChartCard from "./ChartCard";
 import type { ChartConfig } from "@/ui/chart";
@@ -24,10 +26,17 @@ export default function ReadingProbabilityTimeline() {
   const config = {
     probability: { label: "Probability", color: "hsl(var(--chart-1))" },
     confidence: { label: "Confidence", color: "hsl(var(--chart-2))" },
-    deepDive: { color: "hsl(var(--chart-4))" },
-    skim: { color: "hsl(var(--chart-5))" },
-    panic: { color: "hsl(var(--chart-6))" },
+    deepDive: { label: "Deep Dive", color: "hsl(var(--chart-4))" },
+    skim: { label: "Skim", color: "hsl(var(--chart-5))" },
+    panic: { label: "Page Turn Panic", color: "hsl(var(--chart-6))" },
   } satisfies ChartConfig;
+
+  const legendPayload = [
+    { dataKey: "probability", value: "probability", color: config.probability.color },
+    { dataKey: "deepDive", value: "deepDive", color: config.deepDive.color },
+    { dataKey: "skim", value: "skim", color: config.skim.color },
+    { dataKey: "panic", value: "panic", color: config.panic.color },
+  ];
 
   const data = React.useMemo(() => {
     if (!raw) return null;
@@ -101,6 +110,7 @@ export default function ReadingProbabilityTimeline() {
             />
           ))}
           <ChartTooltip content={<ReadingTooltip />} />
+          <ChartLegend content={<ChartLegendContent payload={legendPayload} />} />
           <Area
             type="monotone"
             dataKey="lower"
