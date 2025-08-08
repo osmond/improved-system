@@ -20,12 +20,14 @@ describe('calculateReadingSpeeds', () => {
       {
         start: '2024-01-01T08:00:00Z',
         asin: undefined,
+        title: undefined,
         wpm: 2500 / 10, // 10 pages * 250 words / 10 minutes
         period: 'morning',
       },
       {
         start: '2024-01-01T20:00:00Z',
         asin: undefined,
+        title: undefined,
         wpm: 1250 / 5, // 5 pages * 250 words / 5 minutes
         period: 'evening',
       },
