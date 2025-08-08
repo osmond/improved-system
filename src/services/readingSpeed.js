@@ -1,5 +1,6 @@
 const MAX_WPM = 2000;
 const MIN_DURATION_MILLIS = 60 * 1000;
+const asinTitleMap = require('../data/kindle/asin-title-map.json');
 
 function calculateReadingSpeeds(sessions) {
   return sessions
@@ -19,9 +20,11 @@ function calculateReadingSpeeds(sessions) {
       const wpm = minutes > 0 ? Math.min(words / minutes, MAX_WPM) : 0;
       const hour = new Date(start).getHours();
       const period = hour < 12 ? 'morning' : 'evening';
+      const asin = s.ASIN;
       return {
         start,
-        asin: s.ASIN,
+        asin,
+        title: asinTitleMap[asin] || asin,
         wpm,
         period,
       };

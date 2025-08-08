@@ -9,6 +9,7 @@ const { buildGenreHierarchy } = require('../../src/services/genreHierarchy');
 const { calculateGenreTransitions } = require('../../src/services/genreTransitions');
 const { buildHighlightIndex, getExpansions } = require('../../src/services/highlightIndex');
 const { buildBookGraph } = require('../../src/services/bookGraph');
+const asinTitleMap = require('../../src/data/kindle/asin-title-map.json');
 
 function parseCsv(filePath) {
   return new Promise((resolve, reject) => {
@@ -299,7 +300,7 @@ async function getBookGraph() {
     if (!books.has(asin)) {
       books.set(asin, {
         asin,
-        title: o['Product Name'] || asin,
+        title: asinTitleMap[asin] || o['Product Name'] || asin,
         authors: [],
         tags: [],
         highlights: [],

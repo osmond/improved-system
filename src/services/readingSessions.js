@@ -1,3 +1,5 @@
+const asinTitleMap = require('../data/kindle/asin-title-map.json');
+
 function aggregateReadingSessions(sessions, highlights = [], orders = []) {
   const titleByAsin = {};
   for (const o of orders) {
@@ -32,7 +34,7 @@ function aggregateReadingSessions(sessions, highlights = [], orders = []) {
           ? s.end_timestamp
           : s.start_timestamp;
       const asin = s.ASIN;
-      const title = titleByAsin[asin] || asin;
+      const title = asinTitleMap[asin] || titleByAsin[asin] || asin;
       const duration = Number(s.total_reading_millis || 0) / 60000;
       const list = highlightsByAsin[asin] || [];
       const highlightsCount = list.filter((ts) => ts >= start && ts <= end).length;
